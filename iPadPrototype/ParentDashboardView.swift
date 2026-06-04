@@ -556,18 +556,18 @@ private struct ProgressRing: View {
 private struct DrawingPreview: UIViewRepresentable {
     var drawingData: Data
 
-    func makeUIView(context: Context) -> PKCanvasView {
-        let canvas = PKCanvasView()
-        canvas.isUserInteractionEnabled = false
-        canvas.backgroundColor = .white
-        canvas.drawingPolicy = .anyInput
-        canvas.tool = PKInkingTool(.pen, color: .label, width: 7)
-        return canvas
+    func makeUIView(context: Context) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.backgroundColor = .white
+        imageView.contentMode = .scaleAspectFit
+        return imageView
     }
 
-    func updateUIView(_ canvas: PKCanvasView, context: Context) {
+    func updateUIView(_ imageView: UIImageView, context: Context) {
         if let drawing = try? PKDrawing(data: drawingData) {
-            canvas.drawing = drawing
+            imageView.image = drawing.previewImage()
+        } else {
+            imageView.image = nil
         }
     }
 }

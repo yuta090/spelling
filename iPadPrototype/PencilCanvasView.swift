@@ -49,4 +49,20 @@ extension PKDrawing {
             strokeImage.draw(in: CGRect(origin: .zero, size: strokeImage.size))
         }
     }
+
+    func previewImage(scale: CGFloat = 2) -> UIImage? {
+        guard !bounds.isNull, !bounds.isEmpty else {
+            return nil
+        }
+
+        let drawingBounds = bounds.insetBy(dx: -50, dy: -36)
+        let strokeImage = image(from: drawingBounds, scale: scale)
+        let renderer = UIGraphicsImageRenderer(size: strokeImage.size)
+
+        return renderer.image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: strokeImage.size))
+            strokeImage.draw(in: CGRect(origin: .zero, size: strokeImage.size))
+        }
+    }
 }
