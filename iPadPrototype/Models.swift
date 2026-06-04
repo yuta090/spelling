@@ -87,6 +87,7 @@ struct TestSettings: Equatable, Codable {
     var speechRate: Float = 0.42
     var secondsPerWord = 30
     var maxReplays = 2
+    var practiceRepetitions = 3
     var autoCorrectConfidence: Float = 0.80
     var lowConfidence: Float = 0.35
 
@@ -96,6 +97,7 @@ struct TestSettings: Equatable, Codable {
         case speechRate
         case secondsPerWord
         case maxReplays
+        case practiceRepetitions
         case autoCorrectConfidence
         case lowConfidence
     }
@@ -109,6 +111,7 @@ struct TestSettings: Equatable, Codable {
         speechRate = try container.decodeIfPresent(Float.self, forKey: .speechRate) ?? 0.42
         secondsPerWord = try container.decodeIfPresent(Int.self, forKey: .secondsPerWord) ?? 30
         maxReplays = try container.decodeIfPresent(Int.self, forKey: .maxReplays) ?? 2
+        practiceRepetitions = try container.decodeIfPresent(Int.self, forKey: .practiceRepetitions) ?? 3
         autoCorrectConfidence = try container.decodeIfPresent(Float.self, forKey: .autoCorrectConfidence) ?? 0.80
         lowConfidence = try container.decodeIfPresent(Float.self, forKey: .lowConfidence) ?? 0.35
     }

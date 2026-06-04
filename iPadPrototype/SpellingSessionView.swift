@@ -26,6 +26,7 @@ struct SpellingSessionView: View {
     @State private var showingPracticeReview = false
     @State private var sessionAttempts: [SpellingAttempt] = []
     @State private var showingTestResults = false
+    @State private var practiceRepeatIndex = 0
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -40,6 +41,14 @@ struct SpellingSessionView: View {
             return SpellingWord(text: "")
         }
         return words[min(index, max(words.count - 1, 0))]
+    }
+
+    private var practiceRepetitionCount: Int {
+        capturesPracticeSamples ? max(model.settings.practiceRepetitions, 1) : 1
+    }
+
+    private var isLastPracticeRepeat: Bool {
+        practiceRepeatIndex >= practiceRepetitionCount - 1
     }
 
     private var guideLabels: [String] {
@@ -146,6 +155,9 @@ struct SpellingSessionView: View {
                     TimerPill(seconds: remainingSeconds, language: language)
                 }
                 ProgressPill(current: index + 1, total: max(words.count, 1))
+                if capturesPracticeSamples && practiceRepetitionCount > 1 {
+                    RepeatPill(current: practiceRepeatIndex + 1, total: practiceRepetitionCount, language: language)
+                }
             }
         }
         .frame(minHeight: 46)
@@ -257,8 +269,8 @@ struct SpellingSessionView: View {
                 Spacer()
 
                     SessionControlButton(
-                        title: index == words.count - 1 ? language.text(japanese: "おわる", english: "Finish") : language.text(japanese: "つぎへ", english: "Next"),
-                        systemImage: index == words.count - 1 ? "flag.checkered" : "arrow.right",
+                        title: practiceNextButtonTitle,
+                        systemImage: practiceNextButtonIcon,
                         style: .primary
                     ) {
                         celebrateThenMoveNext()
@@ -337,6 +349,12 @@ struct SpellingSessionView: View {
     private func moveNext() {
         savePracticeDrawingIfNeeded()
 
+        if capturesPracticeSamples, !isLastPracticeRepeat {
+            practiceRepeatIndex += 1
+            clearCanvas()
+            return
+        }
+
         if index == words.count - 1 {
             if capturesPracticeSamples {
                 withAnimation(.easeInOut(duration: 0.18)) {
@@ -351,11 +369,29 @@ struct SpellingSessionView: View {
             }
         } else {
             index += 1
+            practiceRepeatIndex = 0
             clearCanvas()
             replayCount = 0
             resetTimer()
             startTimerIfNeeded()
         }
+    }
+
+    private var practiceNextButtonTitle: String {
+        if capturesPracticeSamples, !isLastPracticeRepeat {
+            return language.text(japanese: "もう一回", english: "Again")
+        }
+        if index == words.count - 1 {
+            return language.text(japanese: "おわる", english: "Finish")
+        }
+        return language.text(japanese: "つぎへ", english: "Next")
+    }
+
+    private var practiceNextButtonIcon: String {
+        if capturesPracticeSamples, !isLastPracticeRepeat {
+            return "arrow.counterclockwise"
+        }
+        return index == words.count - 1 ? "flag.checkered" : "arrow.right"
     }
 
     private func celebrateThenMoveNext() {
@@ -523,6 +559,32 @@ private struct ProgressPill: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color(red: 0.65, green: 0.78, blue: 0.97), lineWidth: 1)
             )
+    }
+}
+
+private struct RepeatPill: View {
+    var current: Int
+    var total: Int
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "repeat")
+                .font(.subheadline.weight(.bold))
+            Text("\(current) / \(total)")
+                .font(.headline.monospacedDigit().weight(.bold))
+        }
+        .foregroundStyle(Color(red: 0.48, green: 0.28, blue: 0.72))
+        .accessibilityLabel(language.text(japanese: "練習 \(current) 回目 / \(total) 回", english: "Practice \(current) of \(total)"))
+        .frame(minWidth: 76)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(.white.opacity(0.86))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.78, green: 0.68, blue: 0.94), lineWidth: 1)
+        )
     }
 }
 

@@ -278,6 +278,15 @@ private struct TestSettingsPanel: View {
                 }
             }
 
+            SettingBlock(title: language.text(japanese: "れんしゅう", english: "Practice")) {
+                Stepper(value: $model.settings.practiceRepetitions, in: 1...5) {
+                    SettingValueRow(
+                        title: language.text(japanese: "同じ単語を書く回数", english: "Writes per word"),
+                        value: "\(model.settings.practiceRepetitions)"
+                    )
+                }
+            }
+
             SettingBlock(title: language.text(japanese: "OCR判定", english: "OCR Grading")) {
                 SliderSetting(
                     title: language.text(japanese: "書き直し", english: "Rewrite"),
