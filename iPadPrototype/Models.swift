@@ -11,6 +11,31 @@ struct OCRCandidate: Equatable {
     var confidence: Float
 }
 
+enum AppLanguage: String, CaseIterable, Identifiable, Codable {
+    case japanese
+    case english
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .japanese:
+            return "日本語"
+        case .english:
+            return "English"
+        }
+    }
+
+    func text(japanese: String, english: String) -> String {
+        switch self {
+        case .japanese:
+            return japanese
+        case .english:
+            return english
+        }
+    }
+}
+
 enum GradeDecision: String, Equatable, Codable {
     case autoCorrect
     case autoIncorrect
@@ -19,17 +44,21 @@ enum GradeDecision: String, Equatable, Codable {
     case timeExpired
 
     var label: String {
+        label(language: .english)
+    }
+
+    func label(language: AppLanguage) -> String {
         switch self {
         case .autoCorrect:
-            return "Correct"
+            return language.text(japanese: "正解", english: "Correct")
         case .autoIncorrect:
-            return "Try Again"
+            return language.text(japanese: "もう一度", english: "Try Again")
         case .needsReview:
-            return "Check Later"
+            return language.text(japanese: "確認待ち", english: "Check Later")
         case .rewrite:
-            return "Rewrite"
+            return language.text(japanese: "書き直し", english: "Rewrite")
         case .timeExpired:
-            return "Time Up"
+            return language.text(japanese: "時間切れ", english: "Time Up")
         }
     }
 }
@@ -44,12 +73,36 @@ struct SpellingAttempt: Identifiable, Equatable, Codable {
 }
 
 struct TestSettings: Equatable, Codable {
+    var appLanguage: AppLanguage = .japanese
     var language = "en-US"
     var speechRate: Float = 0.42
     var secondsPerWord = 30
     var maxReplays = 2
     var autoCorrectConfidence: Float = 0.80
     var lowConfidence: Float = 0.35
+
+    enum CodingKeys: String, CodingKey {
+        case appLanguage
+        case language
+        case speechRate
+        case secondsPerWord
+        case maxReplays
+        case autoCorrectConfidence
+        case lowConfidence
+    }
+
+    init() {}
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        appLanguage = try container.decodeIfPresent(AppLanguage.self, forKey: .appLanguage) ?? .japanese
+        language = try container.decodeIfPresent(String.self, forKey: .language) ?? "en-US"
+        speechRate = try container.decodeIfPresent(Float.self, forKey: .speechRate) ?? 0.42
+        secondsPerWord = try container.decodeIfPresent(Int.self, forKey: .secondsPerWord) ?? 30
+        maxReplays = try container.decodeIfPresent(Int.self, forKey: .maxReplays) ?? 2
+        autoCorrectConfidence = try container.decodeIfPresent(Float.self, forKey: .autoCorrectConfidence) ?? 0.80
+        lowConfidence = try container.decodeIfPresent(Float.self, forKey: .lowConfidence) ?? 0.35
+    }
 }
 
 enum SessionMode: String, Identifiable {
@@ -60,13 +113,17 @@ enum SessionMode: String, Identifiable {
     var id: String { rawValue }
 
     var title: String {
+        title(language: .english)
+    }
+
+    func title(language: AppLanguage) -> String {
         switch self {
         case .practice:
-            return "Practice"
+            return language.text(japanese: "れんしゅうモード", english: "Practice Mode")
         case .test:
-            return "Test"
+            return language.text(japanese: "テストモード", english: "Test Mode")
         case .review:
-            return "Review"
+            return language.text(japanese: "ふくしゅうモード", english: "Review Mode")
         }
     }
 
