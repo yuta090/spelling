@@ -156,11 +156,9 @@ enum SessionMode: String, Identifiable {
 }
 
 struct OCRGrader {
-    var highConfidence: Float
     var lowConfidence: Float
 
     init(settings: TestSettings = TestSettings()) {
-        highConfidence = settings.autoCorrectConfidence
         lowConfidence = settings.lowConfidence
     }
 
@@ -171,15 +169,11 @@ struct OCRGrader {
         }
 
         let distance = levenshtein(best.normalizedText, expectedText)
-        let hasStrongAlternative = candidates.dropFirst().contains {
-            $0.confidence >= 0.75 && $0.normalizedText != best.normalizedText
-        }
         let hasExpectedAlternative = candidates.dropFirst().contains {
             $0.confidence >= 0.45 && $0.normalizedText == expectedText
         }
 
-        let exactMatchConfidence = min(highConfidence, 0.60)
-        if best.normalizedText == expectedText && best.confidence >= exactMatchConfidence && !best.isFallback && !hasStrongAlternative {
+        if best.normalizedText == expectedText {
             return .autoCorrect
         }
 
@@ -187,12 +181,8 @@ struct OCRGrader {
             return .rewrite
         }
 
-        if best.normalizedText == expectedText {
-            return .needsReview
-        }
-
         if hasExpectedAlternative {
-            return .needsReview
+            return .autoCorrect
         }
 
         let clearMissThreshold = max(3, Int(ceil(Double(max(expectedText.count, 1)) * 0.50)))

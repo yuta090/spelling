@@ -230,12 +230,6 @@ private struct TestSettingsPanel: View {
 
             SettingBlock(title: language.text(japanese: "OCR判定", english: "OCR Grading")) {
                 SliderSetting(
-                    title: language.text(japanese: "自動正解", english: "Auto-correct"),
-                    value: $model.settings.autoCorrectConfidence,
-                    range: 0.60...0.98,
-                    format: "%.2f"
-                )
-                SliderSetting(
                     title: language.text(japanese: "書き直し", english: "Rewrite"),
                     value: $model.settings.lowConfidence,
                     range: 0.10...0.60,
