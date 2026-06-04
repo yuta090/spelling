@@ -17,6 +17,7 @@ struct SpellingSessionView: View {
     @State private var remainingSeconds = 30
     @State private var replayCount = 0
     @State private var timer: Timer?
+    @State private var canvasResetID = UUID()
 
     private var currentWord: SpellingWord {
         guard !words.isEmpty else {
@@ -36,6 +37,7 @@ struct SpellingSessionView: View {
             }
 
             GuidedWritingCanvas(drawing: $drawing, mode: mode.canvasMode)
+                .id(canvasResetID)
 
             controls
             resultPanel
@@ -150,6 +152,7 @@ struct SpellingSessionView: View {
 
     private func clearCanvas() {
         drawing = PKDrawing()
+        canvasResetID = UUID()
         decision = nil
         candidates = []
     }
