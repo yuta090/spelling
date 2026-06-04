@@ -44,7 +44,14 @@ struct SpellingSessionView: View {
     }
 
     private var practiceRepetitionCount: Int {
-        capturesPracticeSamples ? max(model.settings.practiceRepetitions, 1) : 1
+        switch mode {
+        case .practice:
+            return max(model.settings.practiceRepetitions, 3)
+        case .review:
+            return max(model.settings.practiceRepetitions, 1)
+        case .test:
+            return 1
+        }
     }
 
     private var isLastPracticeRepeat: Bool {

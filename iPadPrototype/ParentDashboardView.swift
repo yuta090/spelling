@@ -279,9 +279,9 @@ private struct TestSettingsPanel: View {
             }
 
             SettingBlock(title: language.text(japanese: "れんしゅう", english: "Practice")) {
-                Stepper(value: $model.settings.practiceRepetitions, in: 1...5) {
+                Stepper(value: $model.settings.practiceRepetitions, in: 3...5) {
                     SettingValueRow(
-                        title: language.text(japanese: "同じ単語を書く回数", english: "Writes per word"),
+                        title: language.text(japanese: "初回に同じ単語を書く回数", english: "First practice writes"),
                         value: "\(model.settings.practiceRepetitions)"
                     )
                 }
