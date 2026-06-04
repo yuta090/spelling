@@ -5,4 +5,5 @@ DerivedData/
 generated/
 *.xcuserstate
 *.xcuserdata/
+xcuserdata/
 UserInterfaceState.xcuserstate
