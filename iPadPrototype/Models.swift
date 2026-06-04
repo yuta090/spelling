@@ -9,6 +9,7 @@ struct OCRCandidate: Equatable {
     var text: String
     var normalizedText: String
     var confidence: Float
+    var isFallback: Bool = false
 }
 
 enum AppLanguage: String, CaseIterable, Identifiable, Codable {
@@ -177,7 +178,8 @@ struct OCRGrader {
             $0.confidence >= 0.45 && $0.normalizedText == expectedText
         }
 
-        if best.normalizedText == expectedText && best.confidence >= highConfidence && !hasStrongAlternative {
+        let exactMatchConfidence = min(highConfidence, 0.60)
+        if best.normalizedText == expectedText && best.confidence >= exactMatchConfidence && !best.isFallback && !hasStrongAlternative {
             return .autoCorrect
         }
 

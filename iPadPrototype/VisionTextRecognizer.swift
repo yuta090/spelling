@@ -9,7 +9,8 @@ struct VisionSpellingOCR {
         let strictCandidates = try await performRecognition(
             image,
             expected: expected,
-            usesLanguageCorrection: usesLanguageCorrection
+            usesLanguageCorrection: usesLanguageCorrection,
+            isFallback: false
         )
 
         if !strictCandidates.isEmpty {
@@ -20,7 +21,8 @@ struct VisionSpellingOCR {
             image,
             expected: expected,
             usesLanguageCorrection: true,
-            confidenceCap: 0.64
+            confidenceCap: 0.64,
+            isFallback: true
         )
     }
 
@@ -28,7 +30,8 @@ struct VisionSpellingOCR {
         _ image: UIImage,
         expected: String,
         usesLanguageCorrection: Bool,
-        confidenceCap: Float? = nil
+        confidenceCap: Float? = nil,
+        isFallback: Bool
     ) async throws -> [OCRCandidate] {
         guard let cgImage = image.cgImage else {
             return []
@@ -49,7 +52,12 @@ struct VisionSpellingOCR {
                         return $0.boundingBox.origin.x < $1.boundingBox.origin.x
                     }
 
-                let candidates = buildCandidates(from: observations, expected: expected, confidenceCap: confidenceCap)
+                let candidates = buildCandidates(
+                    from: observations,
+                    expected: expected,
+                    confidenceCap: confidenceCap,
+                    isFallback: isFallback
+                )
 
                 continuation.resume(returning: candidates)
             }
@@ -72,7 +80,8 @@ struct VisionSpellingOCR {
     private func buildCandidates(
         from observations: [VNRecognizedTextObservation],
         expected: String,
-        confidenceCap: Float?
+        confidenceCap: Float?,
+        isFallback: Bool
     ) -> [OCRCandidate] {
         let groups = observations
             .map { $0.topCandidates(3) }
@@ -90,14 +99,15 @@ struct VisionSpellingOCR {
                 OCRCandidate(
                     text: bestParts.map(\.string).joined(separator: " "),
                     normalizedText: normalize(bestParts.map(\.string).joined(separator: " ")),
-                    confidence: capped(bestParts.map(\.confidence).reduce(0, +) / Float(bestParts.count), cap: confidenceCap)
+                    confidence: capped(bestParts.map(\.confidence).reduce(0, +) / Float(bestParts.count), cap: confidenceCap),
+                    isFallback: isFallback
                 ),
                 to: &candidates
             )
         }
 
         if groups.count > 1, groups.count <= 6 {
-            appendCombinationCandidates(from: groups, confidenceCap: confidenceCap, to: &candidates)
+            appendCombinationCandidates(from: groups, confidenceCap: confidenceCap, isFallback: isFallback, to: &candidates)
         }
 
         for group in groups {
@@ -106,7 +116,8 @@ struct VisionSpellingOCR {
                     OCRCandidate(
                         text: recognizedText.string,
                         normalizedText: normalize(recognizedText.string),
-                        confidence: capped(recognizedText.confidence, cap: confidenceCap)
+                        confidence: capped(recognizedText.confidence, cap: confidenceCap),
+                        isFallback: isFallback
                     ),
                     to: &candidates
                 )
@@ -130,7 +141,12 @@ struct VisionSpellingOCR {
         }
     }
 
-    private func appendCombinationCandidates(from groups: [[VNRecognizedText]], confidenceCap: Float?, to candidates: inout [OCRCandidate]) {
+    private func appendCombinationCandidates(
+        from groups: [[VNRecognizedText]],
+        confidenceCap: Float?,
+        isFallback: Bool,
+        to candidates: inout [OCRCandidate]
+    ) {
         var combinations: [(text: String, confidence: Float, count: Int)] = [("", 0, 0)]
 
         for group in groups {
@@ -153,7 +169,8 @@ struct VisionSpellingOCR {
                 OCRCandidate(
                     text: combination.text,
                     normalizedText: normalize(combination.text),
-                    confidence: capped(combination.confidence / Float(max(combination.count, 1)), cap: confidenceCap)
+                    confidence: capped(combination.confidence / Float(max(combination.count, 1)), cap: confidenceCap),
+                    isFallback: isFallback
                 ),
                 to: &candidates
             )
