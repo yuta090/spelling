@@ -193,7 +193,7 @@ struct OCRGrader {
             return .needsReview
         }
 
-        let clearMissThreshold = max(2, Int(ceil(Double(max(expectedText.count, 1)) * 0.34)))
+        let clearMissThreshold = max(3, Int(ceil(Double(max(expectedText.count, 1)) * 0.50)))
         if distance >= clearMissThreshold && best.confidence >= 0.65 {
             return .autoIncorrect
         }
