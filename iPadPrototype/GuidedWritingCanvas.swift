@@ -11,6 +11,7 @@ struct GuidedWritingCanvas: View {
     var mode: PracticeMode
     var guideLabels: [String] = ["Top line", "Mid line", "Base line", "Descender"]
     var sampleText: String?
+    var capture: DrawingCapture? = nil
 
     var body: some View {
         ZStack {
@@ -25,7 +26,7 @@ struct GuidedWritingCanvas: View {
                     .padding(.horizontal, 130)
                     .allowsHitTesting(false)
             }
-            PencilCanvasView(drawing: $drawing)
+            PencilCanvasView(drawing: $drawing, capture: capture)
         }
         .frame(minHeight: 285)
         .background(Color.white)

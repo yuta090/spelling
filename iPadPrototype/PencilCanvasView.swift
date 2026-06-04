@@ -2,11 +2,16 @@ import PencilKit
 import SwiftUI
 import UIKit
 
+final class DrawingCapture: ObservableObject {
+    var latestDrawing = PKDrawing()
+}
+
 struct PencilCanvasView: UIViewRepresentable {
     @Binding var drawing: PKDrawing
+    var capture: DrawingCapture? = nil
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(drawing: $drawing)
+        Coordinator(drawing: $drawing, capture: capture)
     }
 
     func makeUIView(context: Context) -> PKCanvasView {
@@ -20,20 +25,25 @@ struct PencilCanvasView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
+        context.coordinator.capture = capture
         if uiView.drawing.dataRepresentation() != drawing.dataRepresentation() {
             uiView.drawing = drawing
+            capture?.latestDrawing = drawing
         }
     }
 
     final class Coordinator: NSObject, PKCanvasViewDelegate {
         @Binding var drawing: PKDrawing
+        var capture: DrawingCapture?
 
-        init(drawing: Binding<PKDrawing>) {
+        init(drawing: Binding<PKDrawing>, capture: DrawingCapture?) {
             _drawing = drawing
+            self.capture = capture
         }
 
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
             drawing = canvasView.drawing
+            capture?.latestDrawing = canvasView.drawing
         }
     }
 }

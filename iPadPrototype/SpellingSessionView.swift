@@ -5,6 +5,7 @@ struct SpellingSessionView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
     @StateObject private var speech = SpeechPlayer()
+    @StateObject private var drawingCapture = DrawingCapture()
 
     var mode: SessionMode
     var words: [SpellingWord]
@@ -71,7 +72,8 @@ struct SpellingSessionView: View {
                         drawing: $drawing,
                         mode: mode.canvasMode,
                         guideLabels: guideLabels,
-                        sampleText: mode.showsWord ? currentWord.text : nil
+                        sampleText: mode.showsWord ? currentWord.text : nil,
+                        capture: drawingCapture
                     )
                     .id(canvasResetID)
                     .frame(maxHeight: 330)
@@ -284,6 +286,7 @@ struct SpellingSessionView: View {
 
     private func clearCanvas() {
         drawing = PKDrawing()
+        drawingCapture.latestDrawing = PKDrawing()
         canvasResetID = UUID()
         decision = nil
         candidates = []
@@ -336,13 +339,14 @@ struct SpellingSessionView: View {
     }
 
     private func savePracticeDrawingIfNeeded() {
-        guard capturesPracticeSamples, !drawing.bounds.isNull, !drawing.bounds.isEmpty else {
+        let latestDrawing = drawingCapture.latestDrawing
+        guard capturesPracticeSamples, !latestDrawing.bounds.isNull, !latestDrawing.bounds.isEmpty else {
             return
         }
 
         let sample = PracticeSample(
             word: normalize(currentWord.text),
-            drawingData: drawing.dataRepresentation(),
+            drawingData: latestDrawing.dataRepresentation(),
             mode: mode.rawValue
         )
         model.addPracticeSample(sample)
@@ -355,7 +359,7 @@ struct SpellingSessionView: View {
             word: currentWord.text,
             recognizedText: "",
             decision: .needsReview,
-            drawingData: drawing.dataRepresentation()
+            drawingData: drawingCapture.latestDrawing.dataRepresentation()
         )
         moveNext()
     }
@@ -395,12 +399,13 @@ struct SpellingSessionView: View {
         }
         remainingSeconds -= 1
         if remainingSeconds <= 0 {
+            let latestDrawing = drawingCapture.latestDrawing
             decision = .timeExpired
             model.addAttempt(
                 word: currentWord.text,
                 recognizedText: "",
                 decision: .timeExpired,
-                drawingData: drawing.dataRepresentation()
+                drawingData: latestDrawing.dataRepresentation()
             )
             stopTimer()
         }
@@ -412,7 +417,8 @@ struct SpellingSessionView: View {
         }
         stopTimer()
         isChecking = true
-        let image = drawing.spellingImage(defaultBounds: CGRect(x: 0, y: 0, width: 1000, height: 260))
+        let latestDrawing = drawingCapture.latestDrawing
+        let image = latestDrawing.spellingImage(defaultBounds: CGRect(x: 0, y: 0, width: 1000, height: 260))
 
         Task {
             defer { isChecking = false }
@@ -425,7 +431,7 @@ struct SpellingSessionView: View {
                     word: currentWord.text,
                     recognizedText: recognized.first?.text ?? "",
                     decision: grade,
-                    drawingData: drawing.dataRepresentation()
+                    drawingData: latestDrawing.dataRepresentation()
                 )
             } catch {
                 candidates = []
@@ -434,7 +440,7 @@ struct SpellingSessionView: View {
                     word: currentWord.text,
                     recognizedText: "",
                     decision: .rewrite,
-                    drawingData: drawing.dataRepresentation()
+                    drawingData: latestDrawing.dataRepresentation()
                 )
             }
         }
