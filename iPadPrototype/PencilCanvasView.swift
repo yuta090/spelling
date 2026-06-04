@@ -39,8 +39,8 @@ struct PencilCanvasView: UIViewRepresentable {
 }
 
 extension PKDrawing {
-    func spellingImage(defaultBounds: CGRect, scale: CGFloat = 2) -> UIImage {
-        let drawingBounds = bounds.isNull || bounds.isEmpty ? defaultBounds : bounds.insetBy(dx: -32, dy: -32)
+    func spellingImage(defaultBounds: CGRect, scale: CGFloat = 3) -> UIImage {
+        let drawingBounds = bounds.isNull || bounds.isEmpty ? defaultBounds : bounds.insetBy(dx: -90, dy: -70)
         let strokeImage = image(from: drawingBounds, scale: scale)
         let renderer = UIGraphicsImageRenderer(size: strokeImage.size)
         return renderer.image { context in

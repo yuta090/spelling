@@ -25,15 +25,7 @@ struct VisionSpellingOCR {
                         return $0.boundingBox.origin.x < $1.boundingBox.origin.x
                     }
 
-                let candidates = observations
-                    .flatMap { $0.topCandidates(3) }
-                    .map {
-                        OCRCandidate(
-                            text: $0.string,
-                            normalizedText: normalize($0.string),
-                            confidence: $0.confidence
-                        )
-                    }
+                let candidates = buildCandidates(from: observations)
 
                 continuation.resume(returning: candidates)
             }
@@ -42,7 +34,7 @@ struct VisionSpellingOCR {
             request.recognitionLanguages = [language]
             request.usesLanguageCorrection = usesLanguageCorrection
             request.customWords = [expected]
-            request.minimumTextHeight = 0.02
+            request.minimumTextHeight = 0.005
 
             let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
             do {
@@ -50,6 +42,54 @@ struct VisionSpellingOCR {
             } catch {
                 continuation.resume(throwing: error)
             }
+        }
+    }
+
+    private func buildCandidates(from observations: [VNRecognizedTextObservation]) -> [OCRCandidate] {
+        let groups = observations
+            .map { $0.topCandidates(3) }
+            .filter { !$0.isEmpty }
+
+        guard !groups.isEmpty else {
+            return []
+        }
+
+        var candidates: [OCRCandidate] = []
+
+        let bestParts = groups.compactMap(\.first)
+        if !bestParts.isEmpty {
+            appendCandidate(
+                OCRCandidate(
+                    text: bestParts.map(\.string).joined(separator: " "),
+                    normalizedText: normalize(bestParts.map(\.string).joined(separator: " ")),
+                    confidence: bestParts.map(\.confidence).reduce(0, +) / Float(bestParts.count)
+                ),
+                to: &candidates
+            )
+        }
+
+        for group in groups {
+            for recognizedText in group {
+                appendCandidate(
+                    OCRCandidate(
+                        text: recognizedText.string,
+                        normalizedText: normalize(recognizedText.string),
+                        confidence: recognizedText.confidence
+                    ),
+                    to: &candidates
+                )
+            }
+        }
+
+        return candidates
+    }
+
+    private func appendCandidate(_ candidate: OCRCandidate, to candidates: inout [OCRCandidate]) {
+        guard !candidate.normalizedText.isEmpty else {
+            return
+        }
+        if !candidates.contains(where: { $0.normalizedText == candidate.normalizedText }) {
+            candidates.append(candidate)
         }
     }
 }

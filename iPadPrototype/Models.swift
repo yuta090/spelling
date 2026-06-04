@@ -108,6 +108,9 @@ struct OCRGrader {
         let hasStrongAlternative = candidates.dropFirst().contains {
             $0.confidence >= 0.75 && $0.normalizedText != best.normalizedText
         }
+        let hasExpectedAlternative = candidates.dropFirst().contains {
+            $0.confidence >= 0.45 && $0.normalizedText == expectedText
+        }
 
         if best.normalizedText == expectedText && best.confidence >= highConfidence && !hasStrongAlternative {
             return .autoCorrect
@@ -118,6 +121,10 @@ struct OCRGrader {
         }
 
         if best.normalizedText == expectedText {
+            return .needsReview
+        }
+
+        if hasExpectedAlternative {
             return .needsReview
         }
 
