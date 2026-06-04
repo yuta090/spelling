@@ -68,7 +68,7 @@ struct HomeView: View {
                     words: mode == .review ? model.reviewWords : model.words
                 )
             }
-            .sheet(isPresented: $showingParent) {
+            .fullScreenCover(isPresented: $showingParent) {
                 ParentDashboardView()
                     .environmentObject(model)
             }

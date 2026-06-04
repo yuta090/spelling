@@ -4,6 +4,7 @@ import SwiftUI
 struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedSection: ParentSection = .history
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -18,8 +19,8 @@ struct ParentDashboardView: View {
                     header
 
                     GeometryReader { proxy in
-                        ScrollView {
-                            if proxy.size.width >= 980 {
+                        if proxy.size.width >= 980 {
+                            ScrollView {
                                 HStack(alignment: .top, spacing: 14) {
                                     VStack(spacing: 14) {
                                         ParentWordListPanel(language: language)
@@ -30,12 +31,19 @@ struct ParentDashboardView: View {
                                         LearningHistoryPanel(language: language)
                                     }
                                 }
-                            } else {
-                                VStack(spacing: 14) {
-                                    ParentWordListPanel(language: language)
-                                    TestSettingsPanel(language: language)
-                                    AnswerReviewPanel(language: language)
-                                    LearningHistoryPanel(language: language)
+                            }
+                        } else {
+                            VStack(spacing: 12) {
+                                Picker("", selection: $selectedSection) {
+                                    ForEach(ParentSection.allCases) { section in
+                                        Text(section.title(language: language)).tag(section)
+                                    }
+                                }
+                                .labelsHidden()
+                                .pickerStyle(.segmented)
+
+                                ScrollView {
+                                    selectedPanel
                                 }
                             }
                         }
@@ -51,6 +59,20 @@ struct ParentDashboardView: View {
                 .padding(22)
             }
             .toolbar(.hidden, for: .navigationBar)
+        }
+    }
+
+    @ViewBuilder
+    private var selectedPanel: some View {
+        switch selectedSection {
+        case .wordList:
+            ParentWordListPanel(language: language)
+        case .settings:
+            TestSettingsPanel(language: language)
+        case .review:
+            AnswerReviewPanel(language: language)
+        case .history:
+            LearningHistoryPanel(language: language)
         }
     }
 
@@ -78,6 +100,28 @@ struct ParentDashboardView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.green.opacity(0.25), lineWidth: 1)
             )
+        }
+    }
+}
+
+private enum ParentSection: String, CaseIterable, Identifiable {
+    case wordList
+    case settings
+    case review
+    case history
+
+    var id: String { rawValue }
+
+    func title(language: AppLanguage) -> String {
+        switch self {
+        case .wordList:
+            return language.text(japanese: "単語", english: "Words")
+        case .settings:
+            return language.text(japanese: "設定", english: "Settings")
+        case .review:
+            return language.text(japanese: "確認", english: "Review")
+        case .history:
+            return language.text(japanese: "履歴", english: "History")
         }
     }
 }
