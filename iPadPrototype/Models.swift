@@ -72,6 +72,14 @@ struct SpellingAttempt: Identifiable, Equatable, Codable {
     var date = Date()
 }
 
+struct PracticeSample: Identifiable, Equatable, Codable {
+    var id = UUID()
+    var word: String
+    var drawingData: Data
+    var mode: String
+    var date = Date()
+}
+
 struct TestSettings: Equatable, Codable {
     var appLanguage: AppLanguage = .japanese
     var language = "en-US"

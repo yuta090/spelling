@@ -21,9 +21,15 @@ struct SpellingSessionView: View {
     @State private var showingSparkles = false
     @State private var sparkleSeed = 0
     @State private var isAdvancing = false
+    @State private var sessionPracticeSamples: [PracticeSample] = []
+    @State private var showingPracticeReview = false
 
     private var language: AppLanguage {
         model.settings.appLanguage
+    }
+
+    private var capturesPracticeSamples: Bool {
+        mode == .practice || mode == .review
     }
 
     private var currentWord: SpellingWord {
@@ -44,30 +50,44 @@ struct SpellingSessionView: View {
         ZStack {
             SessionBackground()
 
-            VStack(spacing: 18) {
-                header
-                wordHeader
-
-                GuidedWritingCanvas(
-                    drawing: $drawing,
-                    mode: mode.canvasMode,
-                    guideLabels: guideLabels,
-                    sampleText: mode.showsWord ? currentWord.text : nil
+            if showingPracticeReview {
+                PracticeSessionReviewView(
+                    samples: sessionPracticeSamples,
+                    language: language,
+                    onDone: {
+                        dismiss()
+                    }
                 )
-                .id(canvasResetID)
-                .frame(maxHeight: 330)
+                .transition(.opacity)
+                .padding(.horizontal, 34)
+                .padding(.top, 24)
+                .padding(.bottom, 28)
+            } else {
+                VStack(spacing: 18) {
+                    header
+                    wordHeader
 
-                if mode == .review {
-                    ReviewHintPanel(word: currentWord.text, language: language)
+                    GuidedWritingCanvas(
+                        drawing: $drawing,
+                        mode: mode.canvasMode,
+                        guideLabels: guideLabels,
+                        sampleText: mode.showsWord ? currentWord.text : nil
+                    )
+                    .id(canvasResetID)
+                    .frame(maxHeight: 330)
+
+                    if mode == .review {
+                        ReviewHintPanel(word: currentWord.text, language: language)
+                    }
+
+                    controls
+                    resultPanel
+                    Spacer(minLength: 0)
                 }
-
-                controls
-                resultPanel
-                Spacer(minLength: 0)
+                .padding(.horizontal, 34)
+                .padding(.top, 24)
+                .padding(.bottom, 28)
             }
-            .padding(.horizontal, 34)
-            .padding(.top, 24)
-            .padding(.bottom, 28)
 
             if showingSparkles {
                 SparkleBurst(seed: sparkleSeed)
@@ -274,8 +294,16 @@ struct SpellingSessionView: View {
     }
 
     private func moveNext() {
+        savePracticeDrawingIfNeeded()
+
         if index == words.count - 1 {
-            dismiss()
+            if capturesPracticeSamples {
+                withAnimation(.easeInOut(duration: 0.18)) {
+                    showingPracticeReview = true
+                }
+            } else {
+                dismiss()
+            }
         } else {
             index += 1
             clearCanvas()
@@ -305,6 +333,20 @@ struct SpellingSessionView: View {
             moveNext()
             isAdvancing = false
         }
+    }
+
+    private func savePracticeDrawingIfNeeded() {
+        guard capturesPracticeSamples, !drawing.bounds.isNull, !drawing.bounds.isEmpty else {
+            return
+        }
+
+        let sample = PracticeSample(
+            word: normalize(currentWord.text),
+            drawingData: drawing.dataRepresentation(),
+            mode: mode.rawValue
+        )
+        model.addPracticeSample(sample)
+        sessionPracticeSamples.append(sample)
     }
 
     private func passWord() {
@@ -510,6 +552,140 @@ private struct ReviewHintPanel: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color(red: 0.95, green: 0.75, blue: 0.32), lineWidth: 1)
         )
+    }
+}
+
+private struct PracticeSessionReviewView: View {
+    var samples: [PracticeSample]
+    var language: AppLanguage
+    var onDone: () -> Void
+
+    private var columns: [GridItem] {
+        [
+            GridItem(.adaptive(minimum: 310), spacing: 14)
+        ]
+    }
+
+    var body: some View {
+        VStack(spacing: 18) {
+            HStack {
+                Label(language.text(japanese: "れんしゅうチェック", english: "Practice Check"), systemImage: "checklist")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
+
+                Spacer()
+
+                Text(language.text(japanese: "\(samples.count) こ書きました", english: "\(samples.count) words written"))
+                    .font(.headline.monospacedDigit().weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(spacing: 8) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 42, weight: .bold))
+                    .foregroundStyle(Color(red: 0.96, green: 0.68, blue: 0.06))
+                Text(language.text(japanese: "自分が書いた単語を見てみよう", english: "Look over the words you wrote"))
+                    .font(.system(size: 28, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                Text(language.text(
+                    japanese: "あとで保護者メニューでも見られるので、アドバイスをもらえます。",
+                    english: "Parents can see these later and give advice."
+                ))
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(18)
+            .background(.white.opacity(0.86))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color(red: 0.76, green: 0.84, blue: 0.96), lineWidth: 1)
+            )
+
+            if samples.isEmpty {
+                ContentUnavailableView(
+                    language.text(japanese: "まだ手書きがありません", english: "No handwriting saved"),
+                    systemImage: "pencil.and.scribble",
+                    description: Text(language.text(japanese: "単語を書いてから「つぎへ」を押すと保存されます。", english: "Write a word, then tap Next to save it."))
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.white.opacity(0.72))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 14) {
+                        ForEach(samples) { sample in
+                            PracticeSampleReviewCard(sample: sample, language: language)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+
+            Button(action: onDone) {
+                Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
+                    .font(.title3.weight(.bold))
+                    .frame(minWidth: 240)
+                    .padding(.vertical, 14)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+}
+
+private struct PracticeSampleReviewCard: View {
+    var sample: PracticeSample
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(sample.word)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                Spacer()
+                Label(language.text(japanese: "手書き", english: "Written"), systemImage: "pencil.line")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+
+            PracticeDrawingPreview(drawingData: sample.drawingData)
+                .frame(height: 150)
+                .background(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+                )
+        }
+        .padding(12)
+        .background(.white.opacity(0.90))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
+        )
+    }
+}
+
+private struct PracticeDrawingPreview: UIViewRepresentable {
+    var drawingData: Data
+
+    func makeUIView(context: Context) -> PKCanvasView {
+        let canvas = PKCanvasView()
+        canvas.isUserInteractionEnabled = false
+        canvas.backgroundColor = .white
+        canvas.drawingPolicy = .anyInput
+        canvas.tool = PKInkingTool(.pen, color: .label, width: 7)
+        return canvas
+    }
+
+    func updateUIView(_ canvas: PKCanvasView, context: Context) {
+        if let drawing = try? PKDrawing(data: drawingData) {
+            canvas.drawing = drawing
+        }
     }
 }
 

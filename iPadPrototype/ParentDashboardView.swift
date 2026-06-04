@@ -325,6 +325,10 @@ private struct AnswerReviewPanel: View {
             .reversed())
     }
 
+    private var latestPracticeSamples: [PracticeSample] {
+        Array(model.practiceSamples.reversed().prefix(8))
+    }
+
     private var total: Int {
         max(model.todaysAttempts.count, 1)
     }
@@ -380,6 +384,47 @@ private struct AnswerReviewPanel: View {
                     }
                 }
                 .frame(maxHeight: 370)
+            }
+
+            Divider()
+
+            HStack {
+                Label(language.text(japanese: "れんしゅう記録", english: "Practice Samples"), systemImage: "pencil.and.scribble")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(Color(red: 0.16, green: 0.42, blue: 0.78))
+
+                Spacer()
+
+                if !model.practiceSamples.isEmpty {
+                    Button(role: .destructive) {
+                        model.resetPracticeSamples()
+                    } label: {
+                        Label(language.text(japanese: "記録を消す", english: "Clear"), systemImage: "trash")
+                    }
+                    .font(.caption.weight(.bold))
+                    .buttonStyle(.bordered)
+                }
+            }
+
+            if latestPracticeSamples.isEmpty {
+                Text(language.text(
+                    japanese: "練習で書いた単語は、ここに表示されます。",
+                    english: "Words written in practice will appear here."
+                ))
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, minHeight: 80, alignment: .center)
+                .background(Color(red: 0.97, green: 0.99, blue: 0.96))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(latestPracticeSamples) { sample in
+                            ParentPracticeSampleCard(sample: sample, language: language)
+                        }
+                    }
+                }
+                .frame(maxHeight: 430)
             }
         }
     }
@@ -442,6 +487,50 @@ private struct ReviewAttemptCard: View {
         }
         .padding(10)
         .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct ParentPracticeSampleCard: View {
+    var sample: PracticeSample
+    var language: AppLanguage
+
+    private var modeLabel: String {
+        if sample.mode == SessionMode.review.rawValue {
+            return language.text(japanese: "ふくしゅう", english: "Review")
+        }
+        return language.text(japanese: "れんしゅう", english: "Practice")
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(sample.word)
+                        .font(.headline.weight(.bold))
+                    Text("\(modeLabel) ・ \(sample.date.formatted(date: .omitted, time: .shortened))")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "text.bubble.fill")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(Color(red: 0.16, green: 0.42, blue: 0.78))
+            }
+
+            DrawingPreview(drawingData: sample.drawingData)
+                .frame(height: 100)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+                )
+        }
+        .padding(10)
+        .background(Color(red: 0.97, green: 0.99, blue: 0.97))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

@@ -10,12 +10,17 @@ final class AppModel: ObservableObject {
         didSet { saveAttempts() }
     }
 
+    @Published var practiceSamples: [PracticeSample] {
+        didSet { savePracticeSamples() }
+    }
+
     @Published var settings: TestSettings {
         didSet { saveSettings() }
     }
 
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
+    private let practiceSamplesKey = "spellingTrainer.practiceSamples"
     private let settingsKey = "spellingTrainer.settings"
 
     init() {
@@ -26,6 +31,7 @@ final class AppModel: ObservableObject {
             SpellingWord(text: "school")
         ]
         attempts = Self.load([SpellingAttempt].self, key: attemptsKey) ?? []
+        practiceSamples = Self.load([PracticeSample].self, key: practiceSamplesKey) ?? []
         settings = Self.load(TestSettings.self, key: settingsKey) ?? TestSettings()
     }
 
@@ -48,6 +54,10 @@ final class AppModel: ObservableObject {
 
     var todaysCorrectCount: Int {
         todaysAttempts.filter { $0.decision == .autoCorrect }.count
+    }
+
+    var todaysPracticeSamples: [PracticeSample] {
+        practiceSamples.filter { Calendar.current.isDateInToday($0.date) }
     }
 
     func replaceWords(from rawText: String) {
@@ -82,12 +92,27 @@ final class AppModel: ObservableObject {
         attempts = []
     }
 
+    func addPracticeSample(_ sample: PracticeSample) {
+        practiceSamples.append(sample)
+        if practiceSamples.count > 200 {
+            practiceSamples.removeFirst(practiceSamples.count - 200)
+        }
+    }
+
+    func resetPracticeSamples() {
+        practiceSamples = []
+    }
+
     private func saveWords() {
         Self.save(words, key: wordsKey)
     }
 
     private func saveAttempts() {
         Self.save(attempts, key: attemptsKey)
+    }
+
+    private func savePracticeSamples() {
+        Self.save(practiceSamples, key: practiceSamplesKey)
     }
 
     private func saveSettings() {
