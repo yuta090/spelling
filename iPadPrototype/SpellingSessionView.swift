@@ -424,7 +424,8 @@ struct SpellingSessionView: View {
             defer { isChecking = false }
             do {
                 let recognized = try await VisionSpellingOCR(language: model.settings.language).recognize(image, expected: currentWord.text)
-                let grade = OCRGrader(settings: model.settings).grade(candidates: recognized, expected: currentWord.text)
+                let hasInk = !latestDrawing.bounds.isNull && !latestDrawing.bounds.isEmpty
+                let grade = OCRGrader(settings: model.settings).grade(candidates: recognized, expected: currentWord.text, hasInk: hasInk)
                 candidates = recognized
                 decision = grade
                 model.addAttempt(
@@ -434,12 +435,14 @@ struct SpellingSessionView: View {
                     drawingData: latestDrawing.dataRepresentation()
                 )
             } catch {
+                let hasInk = !latestDrawing.bounds.isNull && !latestDrawing.bounds.isEmpty
+                let fallbackDecision: GradeDecision = hasInk ? .needsReview : .rewrite
                 candidates = []
-                decision = .rewrite
+                decision = fallbackDecision
                 model.addAttempt(
                     word: currentWord.text,
                     recognizedText: "",
-                    decision: .rewrite,
+                    decision: fallbackDecision,
                     drawingData: latestDrawing.dataRepresentation()
                 )
             }

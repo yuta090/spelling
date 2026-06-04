@@ -6,6 +6,30 @@ struct VisionSpellingOCR {
     var usesLanguageCorrection = false
 
     func recognize(_ image: UIImage, expected: String) async throws -> [OCRCandidate] {
+        let strictCandidates = try await performRecognition(
+            image,
+            expected: expected,
+            usesLanguageCorrection: usesLanguageCorrection
+        )
+
+        if !strictCandidates.isEmpty {
+            return strictCandidates
+        }
+
+        return try await performRecognition(
+            image,
+            expected: expected,
+            usesLanguageCorrection: true,
+            confidenceCap: 0.64
+        )
+    }
+
+    private func performRecognition(
+        _ image: UIImage,
+        expected: String,
+        usesLanguageCorrection: Bool,
+        confidenceCap: Float? = nil
+    ) async throws -> [OCRCandidate] {
         guard let cgImage = image.cgImage else {
             return []
         }
@@ -25,7 +49,7 @@ struct VisionSpellingOCR {
                         return $0.boundingBox.origin.x < $1.boundingBox.origin.x
                     }
 
-                let candidates = buildCandidates(from: observations, expected: expected)
+                let candidates = buildCandidates(from: observations, expected: expected, confidenceCap: confidenceCap)
 
                 continuation.resume(returning: candidates)
             }
@@ -45,7 +69,11 @@ struct VisionSpellingOCR {
         }
     }
 
-    private func buildCandidates(from observations: [VNRecognizedTextObservation], expected: String) -> [OCRCandidate] {
+    private func buildCandidates(
+        from observations: [VNRecognizedTextObservation],
+        expected: String,
+        confidenceCap: Float?
+    ) -> [OCRCandidate] {
         let groups = observations
             .map { $0.topCandidates(3) }
             .filter { !$0.isEmpty }
@@ -62,14 +90,14 @@ struct VisionSpellingOCR {
                 OCRCandidate(
                     text: bestParts.map(\.string).joined(separator: " "),
                     normalizedText: normalize(bestParts.map(\.string).joined(separator: " ")),
-                    confidence: bestParts.map(\.confidence).reduce(0, +) / Float(bestParts.count)
+                    confidence: capped(bestParts.map(\.confidence).reduce(0, +) / Float(bestParts.count), cap: confidenceCap)
                 ),
                 to: &candidates
             )
         }
 
         if groups.count > 1, groups.count <= 6 {
-            appendCombinationCandidates(from: groups, to: &candidates)
+            appendCombinationCandidates(from: groups, confidenceCap: confidenceCap, to: &candidates)
         }
 
         for group in groups {
@@ -78,7 +106,7 @@ struct VisionSpellingOCR {
                     OCRCandidate(
                         text: recognizedText.string,
                         normalizedText: normalize(recognizedText.string),
-                        confidence: recognizedText.confidence
+                        confidence: capped(recognizedText.confidence, cap: confidenceCap)
                     ),
                     to: &candidates
                 )
@@ -102,7 +130,7 @@ struct VisionSpellingOCR {
         }
     }
 
-    private func appendCombinationCandidates(from groups: [[VNRecognizedText]], to candidates: inout [OCRCandidate]) {
+    private func appendCombinationCandidates(from groups: [[VNRecognizedText]], confidenceCap: Float?, to candidates: inout [OCRCandidate]) {
         var combinations: [(text: String, confidence: Float, count: Int)] = [("", 0, 0)]
 
         for group in groups {
@@ -125,7 +153,7 @@ struct VisionSpellingOCR {
                 OCRCandidate(
                     text: combination.text,
                     normalizedText: normalize(combination.text),
-                    confidence: combination.confidence / Float(max(combination.count, 1))
+                    confidence: capped(combination.confidence / Float(max(combination.count, 1)), cap: confidenceCap)
                 ),
                 to: &candidates
             )
@@ -137,6 +165,13 @@ struct VisionSpellingOCR {
         let distance = levenshtein(candidate.normalizedText, expectedText)
         let exactPenalty = candidate.normalizedText == expectedText ? 0 : 1
         return (exactPenalty, distance, -candidate.confidence)
+    }
+
+    private func capped(_ confidence: Float, cap: Float?) -> Float {
+        guard let cap else {
+            return confidence
+        }
+        return min(confidence, cap)
     }
 
     private func isEnglishLetterCandidate(_ text: String) -> Bool {

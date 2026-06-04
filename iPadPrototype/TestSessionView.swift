@@ -122,10 +122,12 @@ struct TestSessionView: View {
             do {
                 let recognized = try await VisionSpellingOCR().recognize(image, expected: currentWord.text)
                 candidates = recognized
-                decision = OCRGrader().grade(candidates: recognized, expected: currentWord.text)
+                let hasInk = !drawing.bounds.isNull && !drawing.bounds.isEmpty
+                decision = OCRGrader().grade(candidates: recognized, expected: currentWord.text, hasInk: hasInk)
             } catch {
                 candidates = []
-                decision = .rewrite
+                let hasInk = !drawing.bounds.isNull && !drawing.bounds.isEmpty
+                decision = hasInk ? .needsReview : .rewrite
             }
         }
     }

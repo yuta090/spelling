@@ -163,10 +163,10 @@ struct OCRGrader {
         lowConfidence = settings.lowConfidence
     }
 
-    func grade(candidates: [OCRCandidate], expected: String) -> GradeDecision {
+    func grade(candidates: [OCRCandidate], expected: String, hasInk: Bool = false) -> GradeDecision {
         let expectedText = normalize(expected)
         guard let best = candidates.first, !best.normalizedText.isEmpty else {
-            return .rewrite
+            return hasInk ? .needsReview : .rewrite
         }
 
         let distance = levenshtein(best.normalizedText, expectedText)
