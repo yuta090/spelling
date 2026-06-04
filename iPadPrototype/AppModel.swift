@@ -70,15 +70,16 @@ final class AppModel: ObservableObject {
         words = unique.map { SpellingWord(text: $0) }
     }
 
-    func addAttempt(word: String, recognizedText: String, decision: GradeDecision, drawingData: Data? = nil) {
-        attempts.append(
-            SpellingAttempt(
-                word: normalize(word),
-                recognizedText: normalize(recognizedText),
-                decision: decision,
-                drawingData: drawingData
-            )
+    @discardableResult
+    func addAttempt(word: String, recognizedText: String, decision: GradeDecision, drawingData: Data? = nil) -> SpellingAttempt {
+        let attempt = SpellingAttempt(
+            word: normalize(word),
+            recognizedText: normalize(recognizedText),
+            decision: decision,
+            drawingData: drawingData
         )
+        attempts.append(attempt)
+        return attempt
     }
 
     func updateAttempt(_ attempt: SpellingAttempt, decision: GradeDecision) {
@@ -94,9 +95,6 @@ final class AppModel: ObservableObject {
 
     func addPracticeSample(_ sample: PracticeSample) {
         practiceSamples.append(sample)
-        if practiceSamples.count > 200 {
-            practiceSamples.removeFirst(practiceSamples.count - 200)
-        }
     }
 
     func resetPracticeSamples() {

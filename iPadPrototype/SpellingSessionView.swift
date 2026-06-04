@@ -24,6 +24,8 @@ struct SpellingSessionView: View {
     @State private var isAdvancing = false
     @State private var sessionPracticeSamples: [PracticeSample] = []
     @State private var showingPracticeReview = false
+    @State private var sessionAttempts: [SpellingAttempt] = []
+    @State private var showingTestResults = false
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -54,6 +56,18 @@ struct SpellingSessionView: View {
             if showingPracticeReview {
                 PracticeSessionReviewView(
                     samples: sessionPracticeSamples,
+                    language: language,
+                    onDone: {
+                        dismiss()
+                    }
+                )
+                .transition(.opacity)
+                .padding(.horizontal, 34)
+                .padding(.top, 24)
+                .padding(.bottom, 28)
+            } else if showingTestResults {
+                TestSessionResultsView(
+                    attempts: sessionAttempts,
                     language: language,
                     onDone: {
                         dismiss()
@@ -173,26 +187,7 @@ struct SpellingSessionView: View {
     private var controls: some View {
         HStack(spacing: 18) {
             if mode == .test {
-                if decision == nil {
-                    SessionControlButton(
-                        title: language.text(japanese: "パス", english: "Pass"),
-                        systemImage: "forward.fill",
-                        style: .secondary
-                    ) {
-                        passWord()
-                    }
-
-                    Spacer()
-
-                    SessionControlButton(
-                        title: isChecking ? language.text(japanese: "確認中", english: "Checking") : language.text(japanese: "こたえる", english: "Answer"),
-                        systemImage: isChecking ? "hourglass" : "checkmark",
-                        style: .primary
-                    ) {
-                        checkAnswer()
-                    }
-                    .disabled(isChecking)
-                } else {
+                if decision == .rewrite {
                     SessionControlButton(
                         title: language.text(japanese: "消す", english: "Clear"),
                         systemImage: "eraser.fill",
@@ -204,13 +199,51 @@ struct SpellingSessionView: View {
                     Spacer()
 
                     SessionControlButton(
-                        title: index == words.count - 1 ? language.text(japanese: "おわる", english: "Finish") : language.text(japanese: "つぎへ", english: "Next"),
-                        systemImage: index == words.count - 1 ? "flag.checkered" : "arrow.right",
+                        title: language.text(japanese: "書き直す", english: "Rewrite"),
+                        systemImage: "pencil.and.scribble",
                         style: .primary
                     ) {
-                        celebrateThenMoveNext()
+                        clearCanvas()
                     }
-                    .disabled(isAdvancing)
+                } else if decision == .timeExpired {
+                    Spacer()
+
+                    SessionControlButton(
+                        title: index == words.count - 1 ? language.text(japanese: "結果へ", english: "Results") : language.text(japanese: "つぎへ", english: "Next"),
+                        systemImage: index == words.count - 1 ? "chart.bar.xaxis" : "arrow.right",
+                        style: .primary
+                    ) {
+                        moveNext()
+                    }
+                } else {
+                    SessionControlButton(
+                        title: language.text(japanese: "消す", english: "Clear"),
+                        systemImage: "eraser.fill",
+                        style: .secondary
+                    ) {
+                        clearCanvas()
+                    }
+
+                    SessionControlButton(
+                        title: language.text(japanese: "パス", english: "Pass"),
+                        systemImage: "forward.fill",
+                        style: .secondary
+                    ) {
+                        passWord()
+                    }
+
+                    Spacer()
+
+                    SessionControlButton(
+                        title: isChecking
+                            ? language.text(japanese: "保存中", english: "Saving")
+                            : (index == words.count - 1 ? language.text(japanese: "結果へ", english: "Results") : language.text(japanese: "つぎへ", english: "Next")),
+                        systemImage: isChecking ? "hourglass" : (index == words.count - 1 ? "chart.bar.xaxis" : "arrow.right"),
+                        style: .primary
+                    ) {
+                        checkAnswer()
+                    }
+                    .disabled(isChecking)
                 }
             } else {
                 SessionControlButton(
@@ -238,7 +271,7 @@ struct SpellingSessionView: View {
 
     @ViewBuilder
     private var resultPanel: some View {
-        if let decision {
+        if let decision, mode != .test || decision == .rewrite || decision == .timeExpired {
             HStack(spacing: 14) {
                 Image(systemName: decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
                     .font(.title.weight(.bold))
@@ -254,9 +287,11 @@ struct SpellingSessionView: View {
 
                 Spacer()
 
-                Text(language.text(japanese: "OCR: ", english: "OCR: ") + (candidates.first?.text.isEmpty == false ? candidates.first?.text ?? "-" : "-"))
-                    .font(.subheadline.monospaced().weight(.semibold))
-                    .foregroundStyle(.secondary)
+                if mode != .test {
+                    Text(language.text(japanese: "OCR: ", english: "OCR: ") + (candidates.first?.text.isEmpty == false ? candidates.first?.text ?? "-" : "-"))
+                        .font(.subheadline.monospaced().weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
             }
             .frame(maxWidth: 760)
             .padding(14)
@@ -278,6 +313,9 @@ struct SpellingSessionView: View {
         case .needsReview:
             return language.text(japanese: "保護者メニューで確認できます。", english: "Saved for parent review.")
         case .rewrite:
+            if mode == .test {
+                return language.text(japanese: "読みにくいかも。大きく書き直そう。", english: "Hard to read. Write it larger.")
+            }
             return language.text(japanese: "大きく、はっきり書いてみよう。", english: "Write it again with larger letters.")
         case .timeExpired:
             return language.text(japanese: "時間切れです。つぎへ進めます。", english: "Time is up. You can move on.")
@@ -303,6 +341,10 @@ struct SpellingSessionView: View {
             if capturesPracticeSamples {
                 withAnimation(.easeInOut(duration: 0.18)) {
                     showingPracticeReview = true
+                }
+            } else if mode == .test {
+                withAnimation(.easeInOut(duration: 0.18)) {
+                    showingTestResults = true
                 }
             } else {
                 dismiss()
@@ -355,12 +397,13 @@ struct SpellingSessionView: View {
 
     private func passWord() {
         stopTimer()
-        model.addAttempt(
+        let attempt = model.addAttempt(
             word: currentWord.text,
             recognizedText: "",
             decision: .needsReview,
             drawingData: drawingCapture.latestDrawing.dataRepresentation()
         )
+        sessionAttempts.append(attempt)
         moveNext()
     }
 
@@ -401,12 +444,13 @@ struct SpellingSessionView: View {
         if remainingSeconds <= 0 {
             let latestDrawing = drawingCapture.latestDrawing
             decision = .timeExpired
-            model.addAttempt(
+            let attempt = model.addAttempt(
                 word: currentWord.text,
                 recognizedText: "",
                 decision: .timeExpired,
                 drawingData: latestDrawing.dataRepresentation()
             )
+            sessionAttempts.append(attempt)
             stopTimer()
         }
     }
@@ -427,24 +471,36 @@ struct SpellingSessionView: View {
                 let hasInk = !latestDrawing.bounds.isNull && !latestDrawing.bounds.isEmpty
                 let grade = OCRGrader(settings: model.settings).grade(candidates: recognized, expected: currentWord.text, hasInk: hasInk)
                 candidates = recognized
-                decision = grade
-                model.addAttempt(
+                if grade == .rewrite {
+                    decision = .rewrite
+                    return
+                }
+                let attempt = model.addAttempt(
                     word: currentWord.text,
                     recognizedText: recognized.first?.text ?? "",
                     decision: grade,
                     drawingData: latestDrawing.dataRepresentation()
                 )
+                sessionAttempts.append(attempt)
+                decision = nil
+                moveNext()
             } catch {
                 let hasInk = !latestDrawing.bounds.isNull && !latestDrawing.bounds.isEmpty
                 let fallbackDecision: GradeDecision = hasInk ? .needsReview : .rewrite
                 candidates = []
-                decision = fallbackDecision
-                model.addAttempt(
+                if fallbackDecision == .rewrite {
+                    decision = .rewrite
+                    return
+                }
+                let attempt = model.addAttempt(
                     word: currentWord.text,
                     recognizedText: "",
                     decision: fallbackDecision,
                     drawingData: latestDrawing.dataRepresentation()
                 )
+                sessionAttempts.append(attempt)
+                decision = nil
+                moveNext()
             }
         }
     }
@@ -641,6 +697,141 @@ private struct PracticeSessionReviewView: View {
             }
             .buttonStyle(.borderedProminent)
         }
+    }
+}
+
+private struct TestSessionResultsView: View {
+    var attempts: [SpellingAttempt]
+    var language: AppLanguage
+    var onDone: () -> Void
+
+    private var correctCount: Int {
+        attempts.filter { $0.decision == .autoCorrect }.count
+    }
+
+    private var columns: [GridItem] {
+        [
+            GridItem(.adaptive(minimum: 300), spacing: 14)
+        ]
+    }
+
+    var body: some View {
+        VStack(spacing: 18) {
+            HStack {
+                Label(language.text(japanese: "テスト結果", english: "Test Results"), systemImage: "checklist")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
+
+                Spacer()
+
+                Text("\(attempts.count) \(language.text(japanese: "こ回答", english: "answers"))")
+                    .font(.headline.monospacedDigit().weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(spacing: 10) {
+                Image(systemName: "trophy.fill")
+                    .font(.system(size: 58, weight: .bold))
+                    .foregroundStyle(Color(red: 0.96, green: 0.68, blue: 0.04))
+                Text(language.text(japanese: "よくできました！", english: "Great work!"))
+                    .font(.system(size: 30, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.80, green: 0.20, blue: 0.08))
+                Text("\(correctCount)/\(max(attempts.count, 1))  \(language.text(japanese: "正解", english: "correct"))")
+                    .font(.system(size: 28, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.13, green: 0.35, blue: 0.74))
+                    .padding(.vertical, 7)
+                    .padding(.horizontal, 24)
+                    .background(Color(red: 0.91, green: 0.96, blue: 1.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(18)
+            .background(.white.opacity(0.88))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color(red: 0.76, green: 0.84, blue: 0.96), lineWidth: 1)
+            )
+
+            if attempts.isEmpty {
+                ContentUnavailableView(
+                    language.text(japanese: "まだ結果がありません", english: "No results yet"),
+                    systemImage: "checklist",
+                    description: Text(language.text(japanese: "テストを進めるとここに表示されます。", english: "Test answers will appear here."))
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.white.opacity(0.72))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 14) {
+                        ForEach(attempts) { attempt in
+                            TestAttemptResultCard(attempt: attempt, language: language)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+
+            Button(action: onDone) {
+                Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
+                    .font(.title3.weight(.bold))
+                    .frame(minWidth: 240)
+                    .padding(.vertical, 14)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+}
+
+private struct TestAttemptResultCard: View {
+    var attempt: SpellingAttempt
+    var language: AppLanguage
+
+    private var isCorrect: Bool {
+        attempt.decision == .autoCorrect
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(attempt.word)
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                    Text("OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)")
+                        .font(.caption.monospaced().weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Label(
+                    attempt.decision.label(language: language),
+                    systemImage: isCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill"
+                )
+                .font(.caption.weight(.bold))
+                .foregroundStyle(isCorrect ? Color.green : Color.orange)
+            }
+
+            if let drawingData = attempt.drawingData {
+                PracticeDrawingPreview(drawingData: drawingData)
+                    .frame(height: 130)
+                    .background(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+                    )
+            }
+        }
+        .padding(12)
+        .background(.white.opacity(0.90))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
+        )
     }
 }
 

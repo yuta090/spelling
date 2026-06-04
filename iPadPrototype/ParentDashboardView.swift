@@ -21,15 +21,21 @@ struct ParentDashboardView: View {
                         ScrollView {
                             if proxy.size.width >= 980 {
                                 HStack(alignment: .top, spacing: 14) {
-                                    ParentWordListPanel(language: language)
-                                    TestSettingsPanel(language: language)
-                                    AnswerReviewPanel(language: language)
+                                    VStack(spacing: 14) {
+                                        ParentWordListPanel(language: language)
+                                        TestSettingsPanel(language: language)
+                                    }
+                                    VStack(spacing: 14) {
+                                        AnswerReviewPanel(language: language)
+                                        LearningHistoryPanel(language: language)
+                                    }
                                 }
                             } else {
                                 VStack(spacing: 14) {
                                     ParentWordListPanel(language: language)
                                     TestSettingsPanel(language: language)
                                     AnswerReviewPanel(language: language)
+                                    LearningHistoryPanel(language: language)
                                 }
                             }
                         }
@@ -421,6 +427,142 @@ private struct AnswerReviewPanel: View {
                 .frame(maxHeight: 430)
             }
         }
+    }
+}
+
+private struct LearningHistoryPanel: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    private var history: [LearningHistoryEntry] {
+        let testEntries = model.attempts.map { attempt in
+            LearningHistoryEntry(
+                id: "test-\(attempt.id.uuidString)",
+                date: attempt.date,
+                word: attempt.word,
+                modeLabel: language.text(japanese: "テスト", english: "Test"),
+                detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
+                systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
+                tint: attempt.decision == .autoCorrect ? Color.green : Color.orange,
+                drawingData: attempt.drawingData
+            )
+        }
+
+        let practiceEntries = model.practiceSamples.map { sample in
+            let modeLabel = sample.mode == SessionMode.review.rawValue
+                ? language.text(japanese: "ふくしゅう", english: "Review")
+                : language.text(japanese: "れんしゅう", english: "Practice")
+
+            return LearningHistoryEntry(
+                id: "practice-\(sample.id.uuidString)",
+                date: sample.date,
+                word: sample.word,
+                modeLabel: modeLabel,
+                detail: language.text(japanese: "手書き記録", english: "Handwriting saved"),
+                systemImage: "pencil.and.scribble",
+                tint: Color(red: 0.16, green: 0.42, blue: 0.78),
+                drawingData: sample.drawingData
+            )
+        }
+
+        return (testEntries + practiceEntries).sorted { $0.date > $1.date }
+    }
+
+    var body: some View {
+        ParentPanel(
+            title: language.text(japanese: "④ 学習履歴", english: "4. Learning History"),
+            systemImage: "clock.arrow.circlepath"
+        ) {
+            HStack(spacing: 12) {
+                SettingValueRow(
+                    title: language.text(japanese: "テスト回答", english: "Test answers"),
+                    value: "\(model.attempts.count)"
+                )
+                SettingValueRow(
+                    title: language.text(japanese: "手書き記録", english: "Handwriting"),
+                    value: "\(model.practiceSamples.count)"
+                )
+            }
+
+            Text(language.text(
+                japanese: "いつ、どのモードで、どの単語を書いたかを保存しています。",
+                english: "Saved records show when each word was practiced or tested."
+            ))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.secondary)
+
+            if history.isEmpty {
+                ContentUnavailableView(
+                    language.text(japanese: "まだ履歴がありません", english: "No history yet"),
+                    systemImage: "clock",
+                    description: Text(language.text(japanese: "練習やテストをするとここに残ります。", english: "Practice and test records will appear here."))
+                )
+                .frame(minHeight: 220)
+            } else {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(history) { entry in
+                            LearningHistoryCard(entry: entry, language: language)
+                        }
+                    }
+                }
+                .frame(maxHeight: 620)
+            }
+        }
+    }
+}
+
+private struct LearningHistoryEntry: Identifiable {
+    var id: String
+    var date: Date
+    var word: String
+    var modeLabel: String
+    var detail: String
+    var systemImage: String
+    var tint: Color
+    var drawingData: Data?
+}
+
+private struct LearningHistoryCard: View {
+    var entry: LearningHistoryEntry
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: entry.systemImage)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(entry.tint)
+                    .frame(width: 28, height: 28)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(entry.word)
+                        .font(.headline.weight(.bold))
+                    Text("\(entry.modeLabel) ・ \(entry.date.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(entry.detail)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+
+            if let drawingData = entry.drawingData {
+                DrawingPreview(drawingData: drawingData)
+                    .frame(height: 92)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+                    )
+            }
+        }
+        .padding(10)
+        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
