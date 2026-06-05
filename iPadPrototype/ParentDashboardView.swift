@@ -6,6 +6,7 @@ struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedSection: ParentSection = .grading
+    @State private var selectedActivitySection: ParentActivitySection = .grading
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -28,12 +29,13 @@ struct ParentDashboardView: View {
                                         ParentWordListPanel(language: language)
                                         TestSettingsPanel(language: language)
                                     }
-                                    VStack(spacing: 14) {
-                                        ParentGradingPanel(language: language)
-                                        HandwritingListPanel(language: language)
-                                        AnswerReviewPanel(language: language)
-                                        LearningHistoryPanel(language: language)
-                                    }
+                                    .frame(width: min(max(proxy.size.width * 0.38, 380), 470), alignment: .top)
+
+                                    ParentActivityWorkspace(
+                                        selectedSection: $selectedActivitySection,
+                                        language: language
+                                    )
+                                    .frame(maxWidth: .infinity, alignment: .top)
                                 }
                             }
                         } else {
@@ -134,11 +136,67 @@ private enum ParentSection: String, CaseIterable, Identifiable {
         case .grading:
             return language.text(japanese: "採点", english: "Grade")
         case .review:
-            return language.text(japanese: "確認", english: "Review")
+            return language.text(japanese: "成績", english: "Results")
         case .history:
             return language.text(japanese: "履歴", english: "History")
         case .handwriting:
             return language.text(japanese: "手書き", english: "Writing")
+        }
+    }
+}
+
+private enum ParentActivitySection: String, CaseIterable, Identifiable {
+    case grading
+    case handwriting
+    case results
+    case history
+
+    var id: String { rawValue }
+
+    func title(language: AppLanguage) -> String {
+        switch self {
+        case .grading:
+            return language.text(japanese: "採点", english: "Grade")
+        case .handwriting:
+            return language.text(japanese: "手書き", english: "Writing")
+        case .results:
+            return language.text(japanese: "成績", english: "Results")
+        case .history:
+            return language.text(japanese: "履歴", english: "History")
+        }
+    }
+}
+
+private struct ParentActivityWorkspace: View {
+    @Binding var selectedSection: ParentActivitySection
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Picker("", selection: $selectedSection) {
+                ForEach(ParentActivitySection.allCases) { section in
+                    Text(section.title(language: language)).tag(section)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.segmented)
+            .accessibilityLabel(language.text(japanese: "記録の表示切り替え", english: "Record view"))
+
+            selectedPanel
+        }
+    }
+
+    @ViewBuilder
+    private var selectedPanel: some View {
+        switch selectedSection {
+        case .grading:
+            ParentGradingPanel(language: language)
+        case .handwriting:
+            HandwritingListPanel(language: language)
+        case .results:
+            AnswerReviewPanel(language: language)
+        case .history:
+            LearningHistoryPanel(language: language)
         }
     }
 }
@@ -1609,7 +1667,7 @@ private struct AnswerReviewPanel: View {
 
     var body: some View {
         ParentPanel(
-            title: language.text(japanese: "③ 成績サマリー", english: "3. Results"),
+            title: language.text(japanese: "成績サマリー", english: "Results"),
             systemImage: "chart.pie.fill"
         ) {
             HStack(spacing: 16) {
@@ -1749,7 +1807,7 @@ private struct LearningHistoryPanel: View {
 
     var body: some View {
         ParentPanel(
-            title: language.text(japanese: "④ 学習履歴", english: "4. Learning History"),
+            title: language.text(japanese: "学習履歴", english: "Learning History"),
             systemImage: "clock.arrow.circlepath"
         ) {
             HStack(spacing: 12) {
