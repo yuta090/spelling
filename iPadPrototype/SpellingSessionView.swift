@@ -27,6 +27,7 @@ struct SpellingSessionView: View {
     @State private var sessionAttempts: [SpellingAttempt] = []
     @State private var showingTestResults = false
     @State private var practiceRepeatIndex = 0
+    @State private var sessionID = UUID()
 
     init(mode: SessionMode, words: [SpellingWord]) {
         self.mode = mode
@@ -439,7 +440,8 @@ struct SpellingSessionView: View {
         let sample = PracticeSample(
             word: normalize(currentWord.text),
             drawingData: latestDrawing.dataRepresentation(),
-            mode: mode.rawValue
+            mode: mode.rawValue,
+            sessionID: sessionID
         )
         model.addPracticeSample(sample)
         sessionPracticeSamples.append(sample)
@@ -451,7 +453,8 @@ struct SpellingSessionView: View {
             word: currentWord.text,
             recognizedText: "",
             decision: .needsReview,
-            drawingData: drawingCapture.latestDrawing.dataRepresentation()
+            drawingData: drawingCapture.latestDrawing.dataRepresentation(),
+            sessionID: sessionID
         )
         sessionAttempts.append(attempt)
         moveNext()
@@ -498,7 +501,8 @@ struct SpellingSessionView: View {
                 word: currentWord.text,
                 recognizedText: "",
                 decision: .timeExpired,
-                drawingData: latestDrawing.dataRepresentation()
+                drawingData: latestDrawing.dataRepresentation(),
+                sessionID: sessionID
             )
             sessionAttempts.append(attempt)
             stopTimer()
@@ -529,7 +533,8 @@ struct SpellingSessionView: View {
                     word: currentWord.text,
                     recognizedText: recognized.first?.text ?? "",
                     decision: grade,
-                    drawingData: latestDrawing.dataRepresentation()
+                    drawingData: latestDrawing.dataRepresentation(),
+                    sessionID: sessionID
                 )
                 sessionAttempts.append(attempt)
                 decision = nil
@@ -546,7 +551,8 @@ struct SpellingSessionView: View {
                     word: currentWord.text,
                     recognizedText: "",
                     decision: fallbackDecision,
-                    drawingData: latestDrawing.dataRepresentation()
+                    drawingData: latestDrawing.dataRepresentation(),
+                    sessionID: sessionID
                 )
                 sessionAttempts.append(attempt)
                 decision = nil

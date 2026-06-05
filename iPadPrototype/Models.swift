@@ -102,6 +102,23 @@ enum GradeDecision: String, Equatable, Codable {
     }
 }
 
+enum ParentReviewDecision: String, Equatable, Codable {
+    case unreviewed
+    case approved
+    case needsPractice
+
+    func label(language: AppLanguage) -> String {
+        switch self {
+        case .unreviewed:
+            return language.text(japanese: "未採点", english: "Not Graded")
+        case .approved:
+            return "OK"
+        case .needsPractice:
+            return language.text(japanese: "直そう", english: "Needs Fix")
+        }
+    }
+}
+
 struct SpellingAttempt: Identifiable, Equatable, Codable {
     var id = UUID()
     var word: String
@@ -109,6 +126,61 @@ struct SpellingAttempt: Identifiable, Equatable, Codable {
     var decision: GradeDecision
     var drawingData: Data?
     var date = Date()
+    var sessionID = UUID()
+    var parentReviewDecision: ParentReviewDecision = .unreviewed
+    var parentExampleDrawingData: Data?
+    var parentReviewedAt: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case word
+        case recognizedText
+        case decision
+        case drawingData
+        case date
+        case sessionID
+        case parentReviewDecision
+        case parentExampleDrawingData
+        case parentReviewedAt
+    }
+
+    init(
+        id: UUID = UUID(),
+        word: String,
+        recognizedText: String,
+        decision: GradeDecision,
+        drawingData: Data? = nil,
+        date: Date = Date(),
+        sessionID: UUID = UUID(),
+        parentReviewDecision: ParentReviewDecision = .unreviewed,
+        parentExampleDrawingData: Data? = nil,
+        parentReviewedAt: Date? = nil
+    ) {
+        self.id = id
+        self.word = word
+        self.recognizedText = recognizedText
+        self.decision = decision
+        self.drawingData = drawingData
+        self.date = date
+        self.sessionID = sessionID
+        self.parentReviewDecision = parentReviewDecision
+        self.parentExampleDrawingData = parentExampleDrawingData
+        self.parentReviewedAt = parentReviewedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        word = try container.decode(String.self, forKey: .word)
+        recognizedText = try container.decodeIfPresent(String.self, forKey: .recognizedText) ?? ""
+        decision = try container.decodeIfPresent(GradeDecision.self, forKey: .decision) ?? .needsReview
+        drawingData = try container.decodeIfPresent(Data.self, forKey: .drawingData)
+        date = try container.decodeIfPresent(Date.self, forKey: .date) ?? Date()
+        sessionID = try container.decodeIfPresent(UUID.self, forKey: .sessionID) ?? id
+        parentReviewDecision = try container.decodeIfPresent(ParentReviewDecision.self, forKey: .parentReviewDecision) ?? .unreviewed
+        parentExampleDrawingData = try container.decodeIfPresent(Data.self, forKey: .parentExampleDrawingData)
+        parentReviewedAt = try container.decodeIfPresent(Date.self, forKey: .parentReviewedAt)
+    }
 }
 
 struct PracticeSample: Identifiable, Equatable, Codable {
@@ -117,6 +189,57 @@ struct PracticeSample: Identifiable, Equatable, Codable {
     var drawingData: Data
     var mode: String
     var date = Date()
+    var sessionID = UUID()
+    var parentReviewDecision: ParentReviewDecision = .unreviewed
+    var parentExampleDrawingData: Data?
+    var parentReviewedAt: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case word
+        case drawingData
+        case mode
+        case date
+        case sessionID
+        case parentReviewDecision
+        case parentExampleDrawingData
+        case parentReviewedAt
+    }
+
+    init(
+        id: UUID = UUID(),
+        word: String,
+        drawingData: Data,
+        mode: String,
+        date: Date = Date(),
+        sessionID: UUID = UUID(),
+        parentReviewDecision: ParentReviewDecision = .unreviewed,
+        parentExampleDrawingData: Data? = nil,
+        parentReviewedAt: Date? = nil
+    ) {
+        self.id = id
+        self.word = word
+        self.drawingData = drawingData
+        self.mode = mode
+        self.date = date
+        self.sessionID = sessionID
+        self.parentReviewDecision = parentReviewDecision
+        self.parentExampleDrawingData = parentExampleDrawingData
+        self.parentReviewedAt = parentReviewedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        word = try container.decode(String.self, forKey: .word)
+        drawingData = try container.decode(Data.self, forKey: .drawingData)
+        mode = try container.decodeIfPresent(String.self, forKey: .mode) ?? SessionMode.practice.rawValue
+        date = try container.decodeIfPresent(Date.self, forKey: .date) ?? Date()
+        sessionID = try container.decodeIfPresent(UUID.self, forKey: .sessionID) ?? id
+        parentReviewDecision = try container.decodeIfPresent(ParentReviewDecision.self, forKey: .parentReviewDecision) ?? .unreviewed
+        parentExampleDrawingData = try container.decodeIfPresent(Data.self, forKey: .parentExampleDrawingData)
+        parentReviewedAt = try container.decodeIfPresent(Date.self, forKey: .parentReviewedAt)
+    }
 }
 
 struct TestSettings: Equatable, Codable {

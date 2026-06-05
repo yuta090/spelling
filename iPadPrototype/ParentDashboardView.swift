@@ -4,7 +4,7 @@ import SwiftUI
 struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedSection: ParentSection = .wordList
+    @State private var selectedSection: ParentSection = .grading
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -28,6 +28,7 @@ struct ParentDashboardView: View {
                                         TestSettingsPanel(language: language)
                                     }
                                     VStack(spacing: 14) {
+                                        ParentGradingPanel(language: language)
                                         HandwritingListPanel(language: language)
                                         AnswerReviewPanel(language: language)
                                         LearningHistoryPanel(language: language)
@@ -74,6 +75,8 @@ struct ParentDashboardView: View {
             }
         case .settings:
             TestSettingsPanel(language: language)
+        case .grading:
+            ParentGradingPanel(language: language)
         case .review:
             AnswerReviewPanel(language: language)
         case .history:
@@ -114,6 +117,7 @@ struct ParentDashboardView: View {
 private enum ParentSection: String, CaseIterable, Identifiable {
     case wordList
     case settings
+    case grading
     case review
     case history
     case handwriting
@@ -126,6 +130,8 @@ private enum ParentSection: String, CaseIterable, Identifiable {
             return language.text(japanese: "単語", english: "Words")
         case .settings:
             return language.text(japanese: "設定", english: "Settings")
+        case .grading:
+            return language.text(japanese: "採点", english: "Grade")
         case .review:
             return language.text(japanese: "確認", english: "Review")
         case .history:
@@ -488,6 +494,538 @@ private struct SliderSetting: View {
             }
             Slider(value: $value, in: range)
         }
+    }
+}
+
+private struct ParentGradingPanel: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    private var sessions: [ParentGradingSession] {
+        let testSessions = Dictionary(grouping: model.attempts, by: \.sessionID).map { sessionID, attempts in
+            let sortedAttempts = attempts.sorted { $0.date < $1.date }
+            return ParentGradingSession(
+                id: "test-\(sessionID.uuidString)",
+                title: language.text(japanese: "テスト", english: "Test"),
+                date: sortedAttempts.first?.date ?? Date(),
+                attempts: sortedAttempts,
+                samples: []
+            )
+        }
+
+        let practiceSessions = Dictionary(grouping: model.practiceSamples, by: \.sessionID).map { sessionID, samples in
+            let sortedSamples = samples.sorted { $0.date < $1.date }
+            let firstMode = sortedSamples.first?.mode
+            let title = firstMode == SessionMode.review.rawValue
+                ? language.text(japanese: "ふくしゅう", english: "Review")
+                : language.text(japanese: "れんしゅう", english: "Practice")
+
+            return ParentGradingSession(
+                id: "practice-\(sessionID.uuidString)",
+                title: title,
+                date: sortedSamples.first?.date ?? Date(),
+                attempts: [],
+                samples: sortedSamples
+            )
+        }
+
+        return (testSessions + practiceSessions).sorted { $0.date > $1.date }
+    }
+
+    var body: some View {
+        ParentPanel(
+            title: language.text(japanese: "採点モード", english: "Grading Mode"),
+            systemImage: "checkmark.seal.fill",
+            tint: Color(red: 0.12, green: 0.36, blue: 0.72)
+        ) {
+            HStack {
+                SettingValueRow(
+                    title: language.text(japanese: "1回ごとの記録", english: "Sessions"),
+                    value: "\(sessions.count)"
+                )
+
+                Spacer()
+            }
+
+            Text(language.text(
+                japanese: "練習・復習・テストを1回分ごとに見て、OKまたは直そうを付けられます。直そうには親のお手本を書けます。",
+                english: "Grade each practice, review, and test session. Mark OK or Needs Fix, and write a parent model for fixes."
+            ))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.secondary)
+
+            if sessions.isEmpty {
+                ContentUnavailableView(
+                    language.text(japanese: "まだ採点する記録がありません", english: "Nothing to grade yet"),
+                    systemImage: "checkmark.seal",
+                    description: Text(language.text(japanese: "練習やテストをするとここに表示されます。", english: "Practice and test sessions will appear here."))
+                )
+                .frame(minHeight: 240)
+            } else {
+                ScrollView {
+                    VStack(spacing: 14) {
+                        ForEach(sessions) { session in
+                            ParentGradingSessionCard(session: session, language: language)
+                                .environmentObject(model)
+                        }
+                    }
+                }
+                .frame(maxHeight: 840)
+            }
+        }
+    }
+}
+
+private struct ParentGradingSession: Identifiable {
+    var id: String
+    var title: String
+    var date: Date
+    var attempts: [SpellingAttempt]
+    var samples: [PracticeSample]
+
+    var itemCount: Int {
+        attempts.count + samples.count
+    }
+
+    var approvedCount: Int {
+        attempts.filter { $0.parentReviewDecision == .approved }.count
+            + samples.filter { $0.parentReviewDecision == .approved }.count
+    }
+
+    var needsPracticeCount: Int {
+        attempts.filter { $0.parentReviewDecision == .needsPractice }.count
+            + samples.filter { $0.parentReviewDecision == .needsPractice }.count
+    }
+}
+
+private struct ParentGradingSessionCard: View {
+    var session: ParentGradingSession
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: session.attempts.isEmpty ? "pencil.and.scribble" : "checklist.checked")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(Color(red: 0.15, green: 0.38, blue: 0.76))
+                    .frame(width: 34, height: 34)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(session.title)
+                        .font(.title3.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                    Text(session.date.formatted(date: .abbreviated, time: .shortened))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                HStack(spacing: 6) {
+                    GradingCountPill(
+                        title: language.text(japanese: "件", english: "Items"),
+                        value: session.itemCount,
+                        tint: Color(red: 0.16, green: 0.42, blue: 0.78)
+                    )
+                    GradingCountPill(
+                        title: "OK",
+                        value: session.approvedCount,
+                        tint: Color(red: 0.20, green: 0.62, blue: 0.24)
+                    )
+                    GradingCountPill(
+                        title: language.text(japanese: "直す", english: "Fix"),
+                        value: session.needsPracticeCount,
+                        tint: Color(red: 0.90, green: 0.45, blue: 0.12)
+                    )
+                }
+            }
+
+            VStack(spacing: 12) {
+                ForEach(session.attempts) { attempt in
+                    ParentAttemptGradingCard(attempt: attempt, language: language)
+                }
+
+                ForEach(session.samples) { sample in
+                    ParentPracticeGradingCard(sample: sample, language: language)
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
+        )
+    }
+}
+
+private struct GradingCountPill: View {
+    var title: String
+    var value: Int
+    var tint: Color
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text("\(value)")
+                .font(.headline.monospacedDigit().weight(.heavy))
+            Text(title)
+                .font(.caption2.weight(.bold))
+        }
+        .foregroundStyle(tint)
+        .frame(minWidth: 46)
+        .padding(.vertical, 6)
+        .background(tint.opacity(0.10))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct ParentAttemptGradingCard: View {
+    @EnvironmentObject private var model: AppModel
+    var attempt: SpellingAttempt
+    var language: AppLanguage
+
+    private var isApproved: Bool {
+        attempt.parentReviewDecision == .approved
+    }
+
+    private var needsPractice: Bool {
+        attempt.parentReviewDecision == .needsPractice
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            GradingItemHeader(
+                word: attempt.word,
+                detail: "\(language.text(japanese: "テスト", english: "Test")) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
+                decision: attempt.parentReviewDecision,
+                language: language
+            )
+
+            if let drawingData = attempt.drawingData {
+                DrawingPreview(drawingData: drawingData)
+                    .frame(height: 170)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+                    )
+            }
+
+            if isApproved {
+                ParentApprovedBanner(language: language)
+            }
+
+            ParentReviewButtons(
+                decision: attempt.parentReviewDecision,
+                language: language,
+                approve: {
+                    model.updateAttemptParentReview(attempt, decision: .approved)
+                },
+                needsPractice: {
+                    model.updateAttemptParentReview(attempt, decision: .needsPractice)
+                }
+            )
+
+            if needsPractice {
+                ParentExampleEditor(
+                    word: attempt.word,
+                    initialData: attempt.parentExampleDrawingData,
+                    language: language,
+                    save: { data in
+                        model.updateAttemptParentReview(attempt, decision: .needsPractice, exampleDrawingData: data)
+                    }
+                )
+            }
+        }
+        .padding(12)
+        .background(gradingBackground(for: attempt.parentReviewDecision))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(gradingBorder(for: attempt.parentReviewDecision), lineWidth: isApproved ? 2 : 1)
+        )
+    }
+}
+
+private struct ParentPracticeGradingCard: View {
+    @EnvironmentObject private var model: AppModel
+    var sample: PracticeSample
+    var language: AppLanguage
+
+    private var modeLabel: String {
+        if sample.mode == SessionMode.review.rawValue {
+            return language.text(japanese: "ふくしゅう", english: "Review")
+        }
+        return language.text(japanese: "れんしゅう", english: "Practice")
+    }
+
+    private var isApproved: Bool {
+        sample.parentReviewDecision == .approved
+    }
+
+    private var needsPractice: Bool {
+        sample.parentReviewDecision == .needsPractice
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            GradingItemHeader(
+                word: sample.word,
+                detail: "\(modeLabel) ・ \(sample.date.formatted(date: .omitted, time: .shortened))",
+                decision: sample.parentReviewDecision,
+                language: language
+            )
+
+            DrawingPreview(drawingData: sample.drawingData)
+                .frame(height: 170)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+                )
+
+            if isApproved {
+                ParentApprovedBanner(language: language)
+            }
+
+            ParentReviewButtons(
+                decision: sample.parentReviewDecision,
+                language: language,
+                approve: {
+                    model.updatePracticeSampleParentReview(sample, decision: .approved)
+                },
+                needsPractice: {
+                    model.updatePracticeSampleParentReview(sample, decision: .needsPractice)
+                }
+            )
+
+            if needsPractice {
+                ParentExampleEditor(
+                    word: sample.word,
+                    initialData: sample.parentExampleDrawingData,
+                    language: language,
+                    save: { data in
+                        model.updatePracticeSampleParentReview(sample, decision: .needsPractice, exampleDrawingData: data)
+                    }
+                )
+            }
+        }
+        .padding(12)
+        .background(gradingBackground(for: sample.parentReviewDecision))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(gradingBorder(for: sample.parentReviewDecision), lineWidth: isApproved ? 2 : 1)
+        )
+    }
+}
+
+private struct GradingItemHeader: View {
+    var word: String
+    var detail: String
+    var decision: ParentReviewDecision
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(word)
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.10, green: 0.27, blue: 0.62))
+                Text(detail)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Text(decision.label(language: language))
+                .font(.caption.weight(.heavy))
+                .foregroundStyle(reviewTint(for: decision))
+                .padding(.vertical, 6)
+                .padding(.horizontal, 9)
+                .background(reviewTint(for: decision).opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+}
+
+private struct ParentReviewButtons: View {
+    var decision: ParentReviewDecision
+    var language: AppLanguage
+    var approve: () -> Void
+    var needsPractice: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Button(action: approve) {
+                Label("OK", systemImage: decision == .approved ? "checkmark.seal.fill" : "checkmark.circle.fill")
+                    .font(.headline.weight(.bold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 9)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Color(red: 0.20, green: 0.62, blue: 0.24))
+
+            Button(action: needsPractice) {
+                Label(language.text(japanese: "直そう", english: "Needs Fix"), systemImage: "pencil.and.scribble")
+                    .font(.headline.weight(.bold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 9)
+            }
+            .buttonStyle(.bordered)
+            .tint(Color(red: 0.90, green: 0.45, blue: 0.12))
+        }
+    }
+}
+
+private struct ParentApprovedBanner: View {
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "sparkles")
+            Text(language.text(japanese: "OK! よく書けています", english: "OK! Nicely written"))
+            Image(systemName: "star.fill")
+        }
+        .font(.headline.weight(.heavy))
+        .foregroundStyle(Color(red: 0.52, green: 0.30, blue: 0.02))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 1.0, green: 0.88, blue: 0.28),
+                    Color(red: 0.74, green: 0.94, blue: 0.38)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct ParentExampleEditor: View {
+    var word: String
+    var initialData: Data?
+    var language: AppLanguage
+    var save: (Data) -> Void
+
+    @State private var drawing = PKDrawing()
+    @StateObject private var capture = DrawingCapture()
+    @State private var didLoad = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(language.text(japanese: "親のお手本", english: "Parent Model"), systemImage: "pencil.and.scribble")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(Color(red: 0.66, green: 0.30, blue: 0.04))
+
+            Text(language.text(
+                japanese: "\(word) の見本をここに書けます。",
+                english: "Write a model for \(word) here."
+            ))
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+
+            ZStack {
+                FourLineGuide(mode: .practice, labels: parentGuideLabels(language: language))
+                PencilCanvasView(drawing: $drawing, capture: capture)
+            }
+            .frame(height: 210)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color(red: 0.95, green: 0.75, blue: 0.32), lineWidth: 1)
+            )
+
+            HStack {
+                Button {
+                    drawing = PKDrawing()
+                    capture.latestDrawing = PKDrawing()
+                } label: {
+                    Label(language.text(japanese: "消す", english: "Clear"), systemImage: "eraser.fill")
+                }
+                .buttonStyle(.bordered)
+
+                Spacer()
+
+                Button {
+                    let latestDrawing = capture.latestDrawing
+                    guard !latestDrawing.bounds.isNull, !latestDrawing.bounds.isEmpty else {
+                        return
+                    }
+                    save(latestDrawing.dataRepresentation())
+                } label: {
+                    Label(language.text(japanese: "お手本を保存", english: "Save Model"), systemImage: "square.and.arrow.down.fill")
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .font(.subheadline.weight(.bold))
+        }
+        .padding(12)
+        .background(Color(red: 1.0, green: 0.97, blue: 0.88))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .onAppear {
+            loadInitialDrawingIfNeeded()
+        }
+    }
+
+    private func loadInitialDrawingIfNeeded() {
+        guard !didLoad else {
+            return
+        }
+        didLoad = true
+
+        if let initialData, let initialDrawing = try? PKDrawing(data: initialData) {
+            drawing = initialDrawing
+            capture.latestDrawing = initialDrawing
+        }
+    }
+}
+
+private func parentGuideLabels(language: AppLanguage) -> [String] {
+    if language == .japanese {
+        return ["トップライン", "ミッドライン", "ベースライン", "ディセンダーライン"]
+    }
+    return ["Top line", "Mid line", "Base line", "Descender"]
+}
+
+private func reviewTint(for decision: ParentReviewDecision) -> Color {
+    switch decision {
+    case .unreviewed:
+        return Color.gray
+    case .approved:
+        return Color(red: 0.20, green: 0.62, blue: 0.24)
+    case .needsPractice:
+        return Color(red: 0.90, green: 0.45, blue: 0.12)
+    }
+}
+
+private func gradingBackground(for decision: ParentReviewDecision) -> Color {
+    switch decision {
+    case .unreviewed:
+        return Color.white.opacity(0.92)
+    case .approved:
+        return Color(red: 1.0, green: 0.98, blue: 0.80)
+    case .needsPractice:
+        return Color(red: 1.0, green: 0.96, blue: 0.88)
+    }
+}
+
+private func gradingBorder(for decision: ParentReviewDecision) -> Color {
+    switch decision {
+    case .unreviewed:
+        return Color(red: 0.72, green: 0.82, blue: 0.96)
+    case .approved:
+        return Color(red: 0.95, green: 0.68, blue: 0.12)
+    case .needsPractice:
+        return Color(red: 0.95, green: 0.62, blue: 0.26)
     }
 }
 
@@ -913,14 +1451,14 @@ private struct ReviewAttemptCard: View {
 
             HStack {
                 Button {
-                    model.updateAttempt(attempt, decision: .autoCorrect)
+                    model.updateAttemptParentReview(attempt, decision: .approved)
                 } label: {
                     Label(language.text(japanese: "正解", english: "Correct"), systemImage: "checkmark.circle.fill")
                 }
                 .buttonStyle(.borderedProminent)
 
                 Button {
-                    model.updateAttempt(attempt, decision: .autoIncorrect)
+                    model.updateAttemptParentReview(attempt, decision: .needsPractice)
                 } label: {
                     Label(language.text(japanese: "もう一度", english: "Try Again"), systemImage: "xmark.circle")
                 }
