@@ -729,10 +729,13 @@ private struct ParentAttemptGradingCard: View {
             )
 
             if needsPractice {
+                ParentNeedsPracticeBanner(isTest: true, language: language)
+
                 ParentExampleEditor(
                     word: attempt.word,
                     initialData: attempt.parentExampleDrawingData,
                     language: language,
+                    affectsTestScore: true,
                     save: { data in
                         model.updateAttemptParentReview(attempt, decision: .needsPractice, exampleDrawingData: data)
                     }
@@ -803,10 +806,13 @@ private struct ParentPracticeGradingCard: View {
             )
 
             if needsPractice {
+                ParentNeedsPracticeBanner(isTest: false, language: language)
+
                 ParentExampleEditor(
                     word: sample.word,
                     initialData: sample.parentExampleDrawingData,
                     language: language,
+                    affectsTestScore: false,
                     save: { data in
                         model.updatePracticeSampleParentReview(sample, decision: .needsPractice, exampleDrawingData: data)
                     }
@@ -882,6 +888,40 @@ private struct ParentReviewButtons: View {
     }
 }
 
+private struct ParentNeedsPracticeBanner: View {
+    var isTest: Bool
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "exclamationmark.circle.fill")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(Color(red: 0.90, green: 0.45, blue: 0.12))
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(language.text(japanese: "直そうとして保存されています", english: "Saved as Needs Fix"))
+                    .font(.subheadline.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.58, green: 0.27, blue: 0.05))
+                Text(isTest
+                    ? language.text(japanese: "このテスト回答は不正解扱いになります。お手本を書くと、あとで子供に見せられます。", english: "This test answer counts as incorrect. Add a model so the child can review it later.")
+                    : language.text(japanese: "この練習記録は直すポイントとして残ります。お手本を書くと、あとで子供に見せられます。", english: "This practice entry is saved as a fix point. Add a model so the child can review it later.")
+                )
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(10)
+        .background(Color(red: 1.0, green: 0.93, blue: 0.82))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.95, green: 0.62, blue: 0.26), lineWidth: 1)
+        )
+    }
+}
+
 private struct ParentApprovedBanner: View {
     var language: AppLanguage
 
@@ -913,21 +953,41 @@ private struct ParentExampleEditor: View {
     var word: String
     var initialData: Data?
     var language: AppLanguage
+    var affectsTestScore: Bool
     var save: (Data) -> Void
 
     @State private var drawing = PKDrawing()
     @StateObject private var capture = DrawingCapture()
     @State private var didLoad = false
+    @State private var hasSavedModel = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label(language.text(japanese: "親のお手本", english: "Parent Model"), systemImage: "pencil.and.scribble")
-                .font(.headline.weight(.bold))
-                .foregroundStyle(Color(red: 0.66, green: 0.30, blue: 0.04))
+            HStack(spacing: 10) {
+                Label(language.text(japanese: "親のお手本", english: "Parent Model"), systemImage: "pencil.and.scribble")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(Color(red: 0.66, green: 0.30, blue: 0.04))
+
+                Spacer()
+
+                if hasSavedModel {
+                    Label(language.text(japanese: "保存済み", english: "Saved"), systemImage: "checkmark.circle.fill")
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.20, green: 0.58, blue: 0.24))
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 8)
+                        .background(Color(red: 0.89, green: 0.97, blue: 0.87))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
 
             Text(language.text(
-                japanese: "\(word) の見本をここに書けます。",
-                english: "Write a model for \(word) here."
+                japanese: affectsTestScore
+                    ? "\(word) の見本を保存すると、この回答は「直そう」のまま残り、不正解として集計されます。"
+                    : "\(word) の見本を保存すると、この練習は「直そう」のまま残ります。",
+                english: affectsTestScore
+                    ? "Saving a model keeps this answer marked Needs Fix and counted as incorrect."
+                    : "Saving a model keeps this practice entry marked Needs Fix."
             ))
             .font(.caption.weight(.semibold))
             .foregroundStyle(.secondary)
@@ -961,8 +1021,12 @@ private struct ParentExampleEditor: View {
                         return
                     }
                     save(latestDrawing.dataRepresentation())
+                    hasSavedModel = true
                 } label: {
-                    Label(language.text(japanese: "お手本を保存", english: "Save Model"), systemImage: "square.and.arrow.down.fill")
+                    Label(
+                        hasSavedModel ? language.text(japanese: "保存しなおす", english: "Save Again") : language.text(japanese: "お手本を保存", english: "Save Model"),
+                        systemImage: hasSavedModel ? "checkmark.circle.fill" : "square.and.arrow.down.fill"
+                    )
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -985,6 +1049,7 @@ private struct ParentExampleEditor: View {
         if let initialData, let initialDrawing = try? PKDrawing(data: initialData) {
             drawing = initialDrawing
             capture.latestDrawing = initialDrawing
+            hasSavedModel = true
         }
     }
 }
