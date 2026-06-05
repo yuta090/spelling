@@ -1,5 +1,6 @@
 import PencilKit
 import SwiftUI
+import UIKit
 
 struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
@@ -281,6 +282,10 @@ private struct ParentWordStepCard: View {
 private struct ParentWordListPanel: View {
     @EnvironmentObject private var model: AppModel
     @State private var rawWords = ""
+    @State private var showingWordCamera = false
+    @State private var isScanningWordImage = false
+    @State private var importMessage: String?
+    @State private var importSucceeded = false
     var language: AppLanguage
 
     var body: some View {
@@ -299,9 +304,30 @@ private struct ParentWordListPanel: View {
                         .stroke(Color.green.opacity(0.18), lineWidth: 1)
                 )
 
+            if let importMessage {
+                WordImportStatusBanner(
+                    message: importMessage,
+                    isSuccess: importSucceeded,
+                    isScanning: isScanningWordImage
+                )
+            }
+
             HStack {
                 Button {
+                    startCameraImport()
+                } label: {
+                    Label(
+                        isScanningWordImage ? language.text(japanese: "読み取り中", english: "Scanning") : language.text(japanese: "カメラで読み取り", english: "Scan Camera"),
+                        systemImage: "camera.fill"
+                    )
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color(red: 0.14, green: 0.42, blue: 0.78))
+                .disabled(isScanningWordImage)
+
+                Button {
                     rawWords = model.words.map(\.text).joined(separator: "\n")
+                    importMessage = nil
                 } label: {
                     Label(language.text(japanese: "読み直す", english: "Reload"), systemImage: "arrow.clockwise")
                 }
@@ -353,6 +379,169 @@ private struct ParentWordListPanel: View {
         }
         .onAppear {
             rawWords = model.words.map(\.text).joined(separator: "\n")
+        }
+        .sheet(isPresented: $showingWordCamera) {
+            WordCameraPicker { image in
+                scanWordImage(image)
+            }
+            .ignoresSafeArea()
+        }
+    }
+
+    private func startCameraImport() {
+        importSucceeded = false
+
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            importMessage = language.text(
+                japanese: "この端末ではカメラが使えません。iPad実機で試してください。",
+                english: "Camera is not available on this device. Try it on a real iPad."
+            )
+            return
+        }
+
+        showingWordCamera = true
+    }
+
+    private func scanWordImage(_ image: UIImage) {
+        isScanningWordImage = true
+        importSucceeded = false
+        importMessage = language.text(japanese: "宿題の文字を読み取っています。", english: "Scanning the homework text.")
+
+        Task {
+            do {
+                let importedWords = try await WordListImageTextRecognizer(language: model.settings.language).recognizeWords(in: image)
+                await MainActor.run {
+                    let addedCount = appendImportedWords(importedWords)
+                    isScanningWordImage = false
+
+                    if importedWords.isEmpty {
+                        importSucceeded = false
+                        importMessage = language.text(
+                            japanese: "英単語を見つけられませんでした。明るい場所で、紙全体が入るように撮り直してください。",
+                            english: "No English words were found. Retake it in good light with the whole page visible."
+                        )
+                    } else if addedCount == 0 {
+                        importSucceeded = true
+                        importMessage = language.text(
+                            japanese: "読み取った単語はすでにリストに入っています。",
+                            english: "The scanned words are already in the list."
+                        )
+                    } else {
+                        importSucceeded = true
+                        importMessage = language.text(
+                            japanese: "\(addedCount)単語を下に追加しました。保存前に余分な単語や読み間違いを直してください。",
+                            english: "Added \(addedCount) words below. Edit extra or misread words before saving."
+                        )
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    isScanningWordImage = false
+                    importSucceeded = false
+                    importMessage = language.text(
+                        japanese: "読み取りに失敗しました。もう一度撮り直してください。",
+                        english: "Scanning failed. Please retake the photo."
+                    )
+                }
+            }
+        }
+    }
+
+    private func appendImportedWords(_ importedWords: [String]) -> Int {
+        let existingWords = rawWords
+            .components(separatedBy: CharacterSet.newlines.union(.punctuationCharacters).union(.whitespaces))
+            .map { normalize($0) }
+            .filter { !$0.isEmpty }
+
+        var seen = Set(existingWords)
+        var additions: [String] = []
+
+        for word in importedWords {
+            let normalized = normalize(word)
+            guard !normalized.isEmpty, !seen.contains(normalized) else {
+                continue
+            }
+            seen.insert(normalized)
+            additions.append(normalized)
+        }
+
+        guard !additions.isEmpty else {
+            return 0
+        }
+
+        let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
+        rawWords = currentText.isEmpty
+            ? additions.joined(separator: "\n")
+            : currentText + "\n" + additions.joined(separator: "\n")
+
+        return additions.count
+    }
+}
+
+private struct WordImportStatusBanner: View {
+    var message: String
+    var isSuccess: Bool
+    var isScanning: Bool
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            if isScanning {
+                ProgressView()
+                    .controlSize(.small)
+            } else {
+                Image(systemName: isSuccess ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                    .font(.headline.weight(.bold))
+            }
+
+            Text(message)
+                .font(.caption.weight(.semibold))
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 0)
+        }
+        .foregroundStyle(isSuccess ? Color(red: 0.15, green: 0.48, blue: 0.22) : Color(red: 0.65, green: 0.34, blue: 0.05))
+        .padding(10)
+        .background(isSuccess ? Color(red: 0.90, green: 0.97, blue: 0.88) : Color(red: 1.0, green: 0.95, blue: 0.84))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct WordCameraPicker: UIViewControllerRepresentable {
+    var onImage: (UIImage) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onImage: onImage, dismiss: dismiss)
+    }
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.cameraCaptureMode = .photo
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        var onImage: (UIImage) -> Void
+        var dismiss: DismissAction
+
+        init(onImage: @escaping (UIImage) -> Void, dismiss: DismissAction) {
+            self.onImage = onImage
+            self.dismiss = dismiss
+        }
+
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                onImage(image)
+            }
+            dismiss()
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            dismiss()
         }
     }
 }

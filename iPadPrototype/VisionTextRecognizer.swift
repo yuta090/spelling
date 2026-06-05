@@ -1,6 +1,94 @@
 import UIKit
 import Vision
 
+struct WordListImageTextRecognizer {
+    var language = "en-US"
+
+    func recognizeWords(in image: UIImage) async throws -> [String] {
+        guard let cgImage = image.cgImage else {
+            return []
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let request = VNRecognizeTextRequest { request, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                let observations = (request.results as? [VNRecognizedTextObservation] ?? [])
+                    .sorted {
+                        if abs($0.boundingBox.origin.y - $1.boundingBox.origin.y) > 0.035 {
+                            return $0.boundingBox.origin.y > $1.boundingBox.origin.y
+                        }
+                        return $0.boundingBox.origin.x < $1.boundingBox.origin.x
+                    }
+
+                var words: [String] = []
+                for observation in observations {
+                    guard let recognized = observation.topCandidates(1).first else {
+                        continue
+                    }
+
+                    for word in extractEnglishWords(from: recognized.string) {
+                        if !words.contains(word) {
+                            words.append(word)
+                        }
+                    }
+                }
+
+                continuation.resume(returning: words)
+            }
+
+            request.recognitionLevel = .accurate
+            request.recognitionLanguages = [language]
+            request.usesLanguageCorrection = true
+            request.minimumTextHeight = 0.008
+
+            let handler = VNImageRequestHandler(cgImage: cgImage, orientation: image.cgImagePropertyOrientation, options: [:])
+            do {
+                try handler.perform([request])
+            } catch {
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+
+    private func extractEnglishWords(from text: String) -> [String] {
+        var words: [String] = []
+        var current = ""
+
+        func flushCurrent() {
+            let normalized = normalize(current)
+            current = ""
+
+            guard normalized.count <= 24 else {
+                return
+            }
+
+            if normalized.count >= 2 || normalized == "a" || normalized == "i" {
+                words.append(normalized)
+            }
+        }
+
+        for scalar in text.unicodeScalars {
+            let isUppercaseLetter = scalar.value >= 65 && scalar.value <= 90
+            let isLowercaseLetter = scalar.value >= 97 && scalar.value <= 122
+            if isUppercaseLetter || isLowercaseLetter {
+                current.append(Character(scalar))
+            } else if !current.isEmpty {
+                flushCurrent()
+            }
+        }
+
+        if !current.isEmpty {
+            flushCurrent()
+        }
+
+        return words
+    }
+}
+
 struct VisionSpellingOCR {
     var language = "en-US"
     var usesLanguageCorrection = false
@@ -210,5 +298,30 @@ struct VisionSpellingOCR {
         }
 
         return hasLetter
+    }
+}
+
+private extension UIImage {
+    var cgImagePropertyOrientation: CGImagePropertyOrientation {
+        switch imageOrientation {
+        case .up:
+            return .up
+        case .upMirrored:
+            return .upMirrored
+        case .down:
+            return .down
+        case .downMirrored:
+            return .downMirrored
+        case .left:
+            return .left
+        case .leftMirrored:
+            return .leftMirrored
+        case .right:
+            return .right
+        case .rightMirrored:
+            return .rightMirrored
+        @unknown default:
+            return .up
+        }
     }
 }
