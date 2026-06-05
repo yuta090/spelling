@@ -499,6 +499,7 @@ private struct SliderSetting: View {
 
 private struct ParentGradingPanel: View {
     @EnvironmentObject private var model: AppModel
+    @State private var selectedSessionID: String?
     var language: AppLanguage
 
     private var sessions: [ParentGradingSession] {
@@ -506,33 +507,53 @@ private struct ParentGradingPanel: View {
             let sortedAttempts = attempts.sorted { $0.date < $1.date }
             return ParentGradingSession(
                 id: "test-\(sessionID.uuidString)",
-                title: language.text(japanese: "テスト", english: "Test"),
+                kind: .test,
+                sequenceNumber: 0,
                 date: sortedAttempts.first?.date ?? Date(),
                 attempts: sortedAttempts,
                 samples: []
             )
         }
+        .sorted { $0.date < $1.date }
+        .enumerated()
+        .map { index, session in
+            session.numbered(index + 1)
+        }
 
         let practiceSessions = Dictionary(grouping: model.practiceSamples, by: \.sessionID).map { sessionID, samples in
             let sortedSamples = samples.sorted { $0.date < $1.date }
             let firstMode = sortedSamples.first?.mode
-            let title = firstMode == SessionMode.review.rawValue
-                ? language.text(japanese: "ふくしゅう", english: "Review")
-                : language.text(japanese: "れんしゅう", english: "Practice")
+            let kind: ParentGradingSessionKind = firstMode == SessionMode.review.rawValue ? .review : .practice
 
             return ParentGradingSession(
                 id: "practice-\(sessionID.uuidString)",
-                title: title,
+                kind: kind,
+                sequenceNumber: 0,
                 date: sortedSamples.first?.date ?? Date(),
                 attempts: [],
                 samples: sortedSamples
             )
         }
 
-        return (testSessions + practiceSessions).sorted { $0.date > $1.date }
+        let numberedPracticeSessions = numberSessions(practiceSessions, kind: .practice)
+            + numberSessions(practiceSessions, kind: .review)
+
+        return (testSessions + numberedPracticeSessions).sorted { $0.date > $1.date }
+    }
+
+    private func numberSessions(_ sessions: [ParentGradingSession], kind: ParentGradingSessionKind) -> [ParentGradingSession] {
+        sessions
+            .filter { $0.kind == kind }
+            .sorted { $0.date < $1.date }
+            .enumerated()
+            .map { index, session in
+                session.numbered(index + 1)
+            }
     }
 
     var body: some View {
+        let activeSession = sessions.first { $0.id == selectedSessionID } ?? sessions.first
+
         ParentPanel(
             title: language.text(japanese: "採点モード", english: "Grading Mode"),
             systemImage: "checkmark.seal.fill",
@@ -562,23 +583,85 @@ private struct ParentGradingPanel: View {
                 )
                 .frame(minHeight: 240)
             } else {
-                ScrollView {
-                    VStack(spacing: 14) {
-                        ForEach(sessions) { session in
-                            ParentGradingSessionCard(session: session, language: language)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(language.text(
+                        japanese: "上から採点したい1回分を選んでください。下には選んだテスト・練習だけを表示します。",
+                        english: "Choose one session above. Only that test or practice session is shown below."
+                    ))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                    ParentGradingSessionPicker(
+                        sessions: sessions,
+                        selectedID: activeSession?.id,
+                        language: language,
+                        select: { selectedSessionID = $0 }
+                    )
+
+                    if let activeSession {
+                        ScrollView {
+                            ParentGradingSessionCard(session: activeSession, language: language)
                                 .environmentObject(model)
                         }
+                        .frame(maxHeight: 760)
                     }
                 }
-                .frame(maxHeight: 840)
+                .onAppear {
+                    if selectedSessionID == nil {
+                        selectedSessionID = sessions.first?.id
+                    }
+                }
+                .onChange(of: sessions.map(\.id)) { _, ids in
+                    if selectedSessionID == nil || !(ids.contains(selectedSessionID ?? "")) {
+                        selectedSessionID = ids.first
+                    }
+                }
             }
+        }
+    }
+}
+
+private enum ParentGradingSessionKind: Equatable {
+    case test
+    case practice
+    case review
+
+    func title(number: Int, language: AppLanguage) -> String {
+        switch self {
+        case .test:
+            return language.text(japanese: "テスト \(number)回目", english: "Test #\(number)")
+        case .practice:
+            return language.text(japanese: "れんしゅう \(number)回目", english: "Practice #\(number)")
+        case .review:
+            return language.text(japanese: "ふくしゅう \(number)回目", english: "Review #\(number)")
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .test:
+            return "checklist.checked"
+        case .practice, .review:
+            return "pencil.and.scribble"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .test:
+            return Color(red: 0.15, green: 0.38, blue: 0.76)
+        case .practice:
+            return Color(red: 0.48, green: 0.28, blue: 0.72)
+        case .review:
+            return Color(red: 0.11, green: 0.48, blue: 0.34)
         }
     }
 }
 
 private struct ParentGradingSession: Identifiable {
     var id: String
-    var title: String
+    var kind: ParentGradingSessionKind
+    var sequenceNumber: Int
     var date: Date
     var attempts: [SpellingAttempt]
     var samples: [PracticeSample]
@@ -596,6 +679,90 @@ private struct ParentGradingSession: Identifiable {
         attempts.filter { $0.parentReviewDecision == .needsPractice }.count
             + samples.filter { $0.parentReviewDecision == .needsPractice }.count
     }
+
+    var unreviewedCount: Int {
+        itemCount - approvedCount - needsPracticeCount
+    }
+
+    func title(language: AppLanguage) -> String {
+        kind.title(number: sequenceNumber, language: language)
+    }
+
+    func numbered(_ number: Int) -> ParentGradingSession {
+        ParentGradingSession(
+            id: id,
+            kind: kind,
+            sequenceNumber: number,
+            date: date,
+            attempts: attempts,
+            samples: samples
+        )
+    }
+}
+
+private struct ParentGradingSessionPicker: View {
+    var sessions: [ParentGradingSession]
+    var selectedID: String?
+    var language: AppLanguage
+    var select: (String) -> Void
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(sessions) { session in
+                    Button {
+                        select(session.id)
+                    } label: {
+                        ParentGradingSessionChip(
+                            session: session,
+                            isSelected: session.id == selectedID,
+                            language: language
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.vertical, 2)
+        }
+    }
+}
+
+private struct ParentGradingSessionChip: View {
+    var session: ParentGradingSession
+    var isSelected: Bool
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 7) {
+                Image(systemName: session.kind.systemImage)
+                    .font(.subheadline.weight(.bold))
+                Text(session.title(language: language))
+                    .font(.subheadline.weight(.heavy))
+                    .lineLimit(1)
+            }
+
+            Text(session.date.formatted(date: .abbreviated, time: .shortened))
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
+
+            HStack(spacing: 6) {
+                Text("\(session.itemCount)\(language.text(japanese: "件", english: ""))")
+                Text("OK \(session.approvedCount)")
+                Text("\(language.text(japanese: "直す", english: "Fix")) \(session.needsPracticeCount)")
+            }
+            .font(.caption2.monospacedDigit().weight(.bold))
+        }
+        .foregroundStyle(isSelected ? .white : session.kind.tint)
+        .frame(width: 168, alignment: .leading)
+        .padding(10)
+        .background(isSelected ? session.kind.tint : session.kind.tint.opacity(0.10))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(session.kind.tint.opacity(isSelected ? 0 : 0.30), lineWidth: 1)
+        )
+    }
 }
 
 private struct ParentGradingSessionCard: View {
@@ -605,14 +772,14 @@ private struct ParentGradingSessionCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: session.attempts.isEmpty ? "pencil.and.scribble" : "checklist.checked")
+                Image(systemName: session.kind.systemImage)
                     .font(.title3.weight(.bold))
-                    .foregroundStyle(Color(red: 0.15, green: 0.38, blue: 0.76))
+                    .foregroundStyle(session.kind.tint)
                     .frame(width: 34, height: 34)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(session.title)
-                        .font(.title3.weight(.heavy))
+                    Text(session.title(language: language))
+                        .font(.title2.weight(.heavy))
                         .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
                     Text(session.date.formatted(date: .abbreviated, time: .shortened))
                         .font(.caption.weight(.semibold))
