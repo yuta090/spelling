@@ -8,6 +8,10 @@ struct ParentWordListView: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
+                Text("1行に1単語。意味や説明を出したい時は `cat | ねこ` のように書けます。")
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
                 TextEditor(text: $rawWords)
                     .font(.title3.monospaced())
                     .frame(minHeight: 260)
@@ -17,7 +21,7 @@ struct ParentWordListView: View {
 
                 HStack {
                     Button {
-                        rawWords = model.words.map(\.text).joined(separator: "\n")
+                        rawWords = wordListEditorText(model.words)
                     } label: {
                         Label("Reload", systemImage: "arrow.clockwise")
                     }
@@ -32,7 +36,7 @@ struct ParentWordListView: View {
                         Label("Save Words", systemImage: "square.and.arrow.down.fill")
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(normalize(rawWords).isEmpty)
+                    .disabled(parseWordListEntries(from: rawWords).isEmpty)
                 }
 
                 Text("Current: \(model.words.count) words")
@@ -43,6 +47,11 @@ struct ParentWordListView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(word.text)
                             .font(.title3)
+                        if !word.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("Hint: \(word.promptText)")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(Color(red: 0.20, green: 0.42, blue: 0.72))
+                        }
                         Text("Registered: \(word.registeredAt.formatted(date: .abbreviated, time: .omitted))")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
@@ -60,7 +69,7 @@ struct ParentWordListView: View {
                 }
             }
             .onAppear {
-                rawWords = model.words.map(\.text).joined(separator: "\n")
+                rawWords = wordListEditorText(model.words)
             }
         }
     }

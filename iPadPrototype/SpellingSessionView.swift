@@ -87,7 +87,7 @@ struct SpellingSessionView: View {
         case .practice:
             return language.text(japanese: "お手本を見ながら、この単語を\(practiceRepetitionCount)かい書こう。", english: "Look at the word and write it \(practiceRepetitionCount) times.")
         case .test:
-            return language.text(japanese: "音を聞いて、見ないで書こう。書けたらこたえるを押してね。", english: "Listen, write without looking, then submit.")
+            return model.settings.testPromptMode.description(language: language) + " " + language.text(japanese: "書けたらこたえるを押してね。", english: "Write it, then submit.")
         case .review:
             return language.text(japanese: "のこった単語をもう一度書いて、できるようにしよう。", english: "Write the remaining words again.")
         }
@@ -113,6 +113,44 @@ struct SpellingSessionView: View {
         case .review:
             return Color(red: 0.12, green: 0.50, blue: 0.34)
         }
+    }
+
+    private var currentPromptText: String {
+        currentWord.promptText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var shouldShowSpeakerButton: Bool {
+        if mode != .test {
+            return true
+        }
+        return model.settings.testPromptMode.includesAudio || currentPromptText.isEmpty
+    }
+
+    private var shouldShowTextPrompt: Bool {
+        mode == .test && model.settings.testPromptMode.showsPromptText
+    }
+
+    private var testPromptTitle: String {
+        switch model.settings.testPromptMode {
+        case .audioOnly:
+            return language.text(japanese: "音をきいて書こう", english: "Listen and Write")
+        case .textOnly:
+            return language.text(japanese: "もんだいを読んで書こう", english: "Read and Write")
+        case .audioAndText:
+            return language.text(japanese: "音とヒントで書こう", english: "Listen, Read, Write")
+        }
+    }
+
+    private var testPromptBody: String {
+        guard shouldShowTextPrompt else {
+            return language.text(japanese: "発音ボタンをおしてね。", english: "Tap the sound button.")
+        }
+
+        if currentPromptText.isEmpty {
+            return language.text(japanese: "ヒントがまだありません。音を聞いて書こう。", english: "No text hint yet. Listen to the word.")
+        }
+
+        return currentPromptText
     }
 
     var body: some View {
@@ -240,24 +278,20 @@ struct SpellingSessionView: View {
         .frame(minHeight: 46)
     }
 
+    @ViewBuilder
     private var wordHeader: some View {
+        if mode == .test {
+            testQuestionHeader
+        } else {
+            practiceWordHeader
+        }
+    }
+
+    private var practiceWordHeader: some View {
         HStack(spacing: 18) {
             Spacer()
 
-            Button {
-                playWord()
-            } label: {
-                Image(systemName: "speaker.wave.2.fill")
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(Color(red: 0.14, green: 0.34, blue: 0.76))
-                    .frame(width: 58, height: 58)
-                    .background(Color(red: 0.82, green: 0.90, blue: 1.0))
-                    .clipShape(Circle())
-            }
-            .buttonStyle(.plain)
-            .disabled(mode == .test && replayCount >= model.settings.maxReplays)
-            .opacity(mode == .test && replayCount >= model.settings.maxReplays ? 0.45 : 1)
-            .accessibilityLabel(language.text(japanese: "発音を聞く", english: "Play word"))
+            speakerButton
 
             if mode.showsWord {
                 Text(currentWord.text)
@@ -271,6 +305,54 @@ struct SpellingSessionView: View {
             Spacer()
         }
         .frame(height: 72)
+    }
+
+    private var testQuestionHeader: some View {
+        HStack(spacing: 16) {
+            if shouldShowSpeakerButton {
+                speakerButton
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Label(testPromptTitle, systemImage: shouldShowTextPrompt ? "text.bubble.fill" : "ear.and.waveform")
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.13, green: 0.31, blue: 0.70))
+
+                Text(testPromptBody)
+                    .font(.system(size: shouldShowTextPrompt && !currentPromptText.isEmpty ? 34 : 28, weight: .heavy, design: .rounded))
+                    .foregroundStyle(shouldShowTextPrompt && currentPromptText.isEmpty ? Color(red: 0.65, green: 0.34, blue: 0.05) : Color(red: 0.12, green: 0.20, blue: 0.34))
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.55)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: 760, minHeight: 86)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 16)
+        .background(.white.opacity(0.88))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.74, green: 0.83, blue: 0.96), lineWidth: 1)
+        )
+    }
+
+    private var speakerButton: some View {
+        Button {
+            playWord()
+        } label: {
+            Image(systemName: "speaker.wave.2.fill")
+                .font(.system(size: 26, weight: .bold))
+                .foregroundStyle(Color(red: 0.14, green: 0.34, blue: 0.76))
+                .frame(width: 58, height: 58)
+                .background(Color(red: 0.82, green: 0.90, blue: 1.0))
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .disabled(mode == .test && replayCount >= model.settings.maxReplays)
+        .opacity(mode == .test && replayCount >= model.settings.maxReplays ? 0.45 : 1)
+        .accessibilityLabel(language.text(japanese: "発音を聞く", english: "Play word"))
     }
 
     private var controls: some View {

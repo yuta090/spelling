@@ -293,6 +293,13 @@ private struct ParentWordListPanel: View {
             title: language.text(japanese: "① 単語リスト", english: "1. Word List"),
             systemImage: "list.bullet.rectangle"
         ) {
+            Text(language.text(
+                japanese: "1行に1単語。問題で日本語や説明を出す時は「cat | ねこ」のように書けます。",
+                english: "One word per line. Add a test hint like \"cat | cat in Japanese or a meaning.\""
+            ))
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+
             TextEditor(text: $rawWords)
                 .font(.title3.monospaced())
                 .frame(minHeight: 180, maxHeight: 210)
@@ -326,7 +333,7 @@ private struct ParentWordListPanel: View {
                 .disabled(isScanningWordImage)
 
                 Button {
-                    rawWords = model.words.map(\.text).joined(separator: "\n")
+                    rawWords = wordListEditorText(model.words)
                     importMessage = nil
                 } label: {
                     Label(language.text(japanese: "読み直す", english: "Reload"), systemImage: "arrow.clockwise")
@@ -341,7 +348,7 @@ private struct ParentWordListPanel: View {
                     Label(language.text(japanese: "単語を保存", english: "Save Words"), systemImage: "square.and.arrow.down.fill")
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(normalize(rawWords).isEmpty)
+                .disabled(parseWordListEntries(from: rawWords).isEmpty)
             }
             .font(.subheadline.weight(.bold))
 
@@ -356,6 +363,14 @@ private struct ParentWordListPanel: View {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(word.text)
                                     .font(.headline.weight(.semibold))
+                                if !word.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                    Text(language.text(
+                                        japanese: "出題ヒント: \(word.promptText)",
+                                        english: "Prompt: \(word.promptText)"
+                                    ))
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(Color(red: 0.18, green: 0.38, blue: 0.72))
+                                }
                                 Text(language.text(
                                     japanese: "登録日: \(formattedStepDate(word.registeredAt, language: language))",
                                     english: "Registered: \(formattedStepDate(word.registeredAt, language: language))"
@@ -378,7 +393,7 @@ private struct ParentWordListPanel: View {
             .frame(maxHeight: 210)
         }
         .onAppear {
-            rawWords = model.words.map(\.text).joined(separator: "\n")
+            rawWords = wordListEditorText(model.words)
         }
         .sheet(isPresented: $showingWordCamera) {
             WordCameraPicker { image in
@@ -448,10 +463,7 @@ private struct ParentWordListPanel: View {
     }
 
     private func appendImportedWords(_ importedWords: [String]) -> Int {
-        let existingWords = rawWords
-            .components(separatedBy: CharacterSet.newlines.union(.punctuationCharacters).union(.whitespaces))
-            .map { normalize($0) }
-            .filter { !$0.isEmpty }
+        let existingWords = parseWordListEntries(from: rawWords).map(\.text)
 
         var seen = Set(existingWords)
         var additions: [String] = []
@@ -585,6 +597,29 @@ private struct TestSettingsPanel: View {
                         value: "\(model.settings.maxReplays)"
                     )
                 }
+            }
+
+            SettingBlock(title: language.text(japanese: "出題の出し方", english: "Question Format")) {
+                Picker(language.text(japanese: "出題形式", english: "Prompt Mode"), selection: $model.settings.testPromptMode) {
+                    ForEach(TestPromptMode.allCases) { mode in
+                        Text(mode.shortLabel(language: language)).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel(language.text(japanese: "テストの出題形式", english: "Test question format"))
+
+                Text(model.settings.testPromptMode.description(language: language))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(language.text(
+                    japanese: "文字は単語リストの「cat | ねこ」の右側を表示します。",
+                    english: "Text prompts use the right side of entries like \"cat | cat meaning.\""
+                ))
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
             }
 
             SettingBlock(title: language.text(japanese: "テスト", english: "Test")) {

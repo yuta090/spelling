@@ -33,10 +33,10 @@ final class AppModel: ObservableObject {
 
     init() {
         let loadedWords = Self.load([SpellingWord].self, key: wordsKey) ?? [
-            SpellingWord(text: "cat"),
-            SpellingWord(text: "dog"),
-            SpellingWord(text: "friend"),
-            SpellingWord(text: "school")
+            SpellingWord(text: "cat", promptText: "ねこ"),
+            SpellingWord(text: "dog", promptText: "いぬ"),
+            SpellingWord(text: "friend", promptText: "友だち"),
+            SpellingWord(text: "school", promptText: "学校")
         ]
         words = loadedWords
         attempts = Self.load([SpellingAttempt].self, key: attemptsKey) ?? []
@@ -180,12 +180,7 @@ final class AppModel: ObservableObject {
     }
 
     func replaceWords(from rawText: String) {
-        let parsed = rawText
-            .components(separatedBy: CharacterSet.newlines.union(.punctuationCharacters).union(.whitespaces))
-            .map { normalize($0) }
-            .filter { !$0.isEmpty }
-
-        let unique = Array(NSOrderedSet(array: parsed)).compactMap { $0 as? String }
+        let entries = parseWordListEntries(from: rawText)
         let now = Date()
         var existingWordsByText: [String: SpellingWord] = [:]
         for word in words {
@@ -195,8 +190,14 @@ final class AppModel: ObservableObject {
             }
         }
 
-        let updatedWords = unique.map { text in
-            existingWordsByText[text] ?? SpellingWord(text: text, registeredAt: now)
+        let updatedWords = entries.map { entry in
+            let key = normalize(entry.text)
+            var word = existingWordsByText[key] ?? SpellingWord(text: key, registeredAt: now)
+            word.text = key
+            if let promptText = entry.promptText {
+                word.promptText = promptText
+            }
+            return word
         }
         let addedNewWords = updatedWords.contains { existingWordsByText[normalize($0.text)] == nil }
 

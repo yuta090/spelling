@@ -3,17 +3,20 @@ import Foundation
 struct SpellingWord: Identifiable, Equatable, Codable {
     var id = UUID()
     var text: String
+    var promptText = ""
     var registeredAt = Date()
 
     enum CodingKeys: String, CodingKey {
         case id
         case text
+        case promptText
         case registeredAt
     }
 
-    init(id: UUID = UUID(), text: String, registeredAt: Date = Date()) {
+    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date()) {
         self.id = id
         self.text = text
+        self.promptText = promptText
         self.registeredAt = registeredAt
     }
 
@@ -21,6 +24,7 @@ struct SpellingWord: Identifiable, Equatable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         text = try container.decode(String.self, forKey: .text)
+        promptText = try container.decodeIfPresent(String.self, forKey: .promptText) ?? ""
         registeredAt = try container.decodeIfPresent(Date.self, forKey: .registeredAt) ?? Date()
     }
 }
@@ -265,6 +269,7 @@ struct PracticeSample: Identifiable, Equatable, Codable {
 struct TestSettings: Equatable, Codable {
     var appLanguage: AppLanguage = .japanese
     var language = "en-US"
+    var testPromptMode: TestPromptMode = .audioOnly
     var speechRate: Float = 0.42
     var secondsPerWord = 30
     var maxReplays = 2
@@ -275,6 +280,7 @@ struct TestSettings: Equatable, Codable {
     enum CodingKeys: String, CodingKey {
         case appLanguage
         case language
+        case testPromptMode
         case speechRate
         case secondsPerWord
         case maxReplays
@@ -289,12 +295,61 @@ struct TestSettings: Equatable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         appLanguage = try container.decodeIfPresent(AppLanguage.self, forKey: .appLanguage) ?? .japanese
         language = try container.decodeIfPresent(String.self, forKey: .language) ?? "en-US"
+        testPromptMode = try container.decodeIfPresent(TestPromptMode.self, forKey: .testPromptMode) ?? .audioOnly
         speechRate = try container.decodeIfPresent(Float.self, forKey: .speechRate) ?? 0.42
         secondsPerWord = try container.decodeIfPresent(Int.self, forKey: .secondsPerWord) ?? 30
         maxReplays = try container.decodeIfPresent(Int.self, forKey: .maxReplays) ?? 2
         practiceRepetitions = try container.decodeIfPresent(Int.self, forKey: .practiceRepetitions) ?? 3
         autoCorrectConfidence = try container.decodeIfPresent(Float.self, forKey: .autoCorrectConfidence) ?? 0.80
         lowConfidence = try container.decodeIfPresent(Float.self, forKey: .lowConfidence) ?? 0.35
+    }
+}
+
+enum TestPromptMode: String, CaseIterable, Identifiable, Codable {
+    case audioOnly
+    case textOnly
+    case audioAndText
+
+    var id: String { rawValue }
+
+    var includesAudio: Bool {
+        switch self {
+        case .audioOnly, .audioAndText:
+            return true
+        case .textOnly:
+            return false
+        }
+    }
+
+    var showsPromptText: Bool {
+        switch self {
+        case .textOnly, .audioAndText:
+            return true
+        case .audioOnly:
+            return false
+        }
+    }
+
+    func shortLabel(language: AppLanguage) -> String {
+        switch self {
+        case .audioOnly:
+            return language.text(japanese: "音だけ", english: "Audio")
+        case .textOnly:
+            return language.text(japanese: "文字だけ", english: "Text")
+        case .audioAndText:
+            return language.text(japanese: "音+文字", english: "Audio+Text")
+        }
+    }
+
+    func description(language: AppLanguage) -> String {
+        switch self {
+        case .audioOnly:
+            return language.text(japanese: "英語の発音だけを聞いて書きます。", english: "The child hears only the English pronunciation.")
+        case .textOnly:
+            return language.text(japanese: "単語リストに入れた日本語や説明だけを見て書きます。", english: "The child sees only the Japanese hint or meaning from the word list.")
+        case .audioAndText:
+            return language.text(japanese: "英語の発音と、日本語や説明のヒントを見て書きます。", english: "The child hears the word and sees the Japanese hint or meaning.")
+        }
     }
 }
 
@@ -381,6 +436,99 @@ struct OCRGrader {
 func normalize(_ text: String) -> String {
     let allowed = Set("abcdefghijklmnopqrstuvwxyz")
     return String(text.lowercased().filter { allowed.contains($0) })
+}
+
+struct WordListEntry: Equatable {
+    var text: String
+    var promptText: String?
+}
+
+func wordListEditorText(_ words: [SpellingWord]) -> String {
+    words.map { word in
+        let prompt = word.promptText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !prompt.isEmpty else {
+            return word.text
+        }
+        return "\(word.text) | \(prompt)"
+    }
+    .joined(separator: "\n")
+}
+
+func parseWordListEntries(from rawText: String) -> [WordListEntry] {
+    var entriesByText: [String: WordListEntry] = [:]
+    var orderedTexts: [String] = []
+
+    func append(_ entry: WordListEntry) {
+        let text = normalize(entry.text)
+        guard !text.isEmpty else {
+            return
+        }
+
+        if var existing = entriesByText[text] {
+            if let promptText = entry.promptText {
+                existing.promptText = promptText.trimmingCharacters(in: .whitespacesAndNewlines)
+                entriesByText[text] = existing
+            }
+        } else {
+            orderedTexts.append(text)
+            entriesByText[text] = WordListEntry(
+                text: text,
+                promptText: entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+        }
+    }
+
+    for rawLine in rawText.components(separatedBy: .newlines) {
+        let line = rawLine.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !line.isEmpty else {
+            continue
+        }
+
+        if let entry = parsePromptLine(line) {
+            append(entry)
+            continue
+        }
+
+        let parts = line.components(separatedBy: CharacterSet.punctuationCharacters.union(.whitespaces))
+        for part in parts {
+            let text = normalize(part)
+            if !text.isEmpty {
+                append(WordListEntry(text: text, promptText: nil))
+            }
+        }
+    }
+
+    return orderedTexts.compactMap { entriesByText[$0] }
+}
+
+private func parsePromptLine(_ line: String) -> WordListEntry? {
+    for separator in ["|", "=", "：", ":"] {
+        if let range = line.range(of: separator) {
+            let text = normalize(String(line[..<range.lowerBound]))
+            let prompt = String(line[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else {
+                return nil
+            }
+            return WordListEntry(text: text, promptText: prompt)
+        }
+    }
+
+    let pieces = line.split(whereSeparator: { $0.isWhitespace })
+    guard pieces.count >= 2, let first = pieces.first else {
+        return nil
+    }
+
+    let text = normalize(String(first))
+    guard !text.isEmpty else {
+        return nil
+    }
+
+    let remaining = String(line.dropFirst(first.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+    guard remaining.unicodeScalars.contains(where: { !$0.properties.isWhitespace && $0.value > 127 }) else {
+        return nil
+    }
+
+    return WordListEntry(text: text, promptText: remaining)
 }
 
 func levenshtein(_ a: String, _ b: String) -> Int {
