@@ -35,8 +35,8 @@ final class AppModel: ObservableObject {
         let loadedWords = Self.load([SpellingWord].self, key: wordsKey) ?? [
             SpellingWord(text: "cat", promptText: "ねこ"),
             SpellingWord(text: "dog", promptText: "いぬ"),
-            SpellingWord(text: "friend", promptText: "友だち"),
-            SpellingWord(text: "school", promptText: "学校")
+            SpellingWord(text: "friend", promptText: "友[とも]だち"),
+            SpellingWord(text: "school", promptText: "学校[がっこう]")
         ]
         words = loadedWords
         attempts = Self.load([SpellingAttempt].self, key: attemptsKey) ?? []

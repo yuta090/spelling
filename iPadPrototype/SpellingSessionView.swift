@@ -318,11 +318,15 @@ struct SpellingSessionView: View {
                     .font(.title3.weight(.heavy))
                     .foregroundStyle(Color(red: 0.13, green: 0.31, blue: 0.70))
 
-                Text(testPromptBody)
-                    .font(.system(size: shouldShowTextPrompt && !currentPromptText.isEmpty ? 34 : 28, weight: .heavy, design: .rounded))
-                    .foregroundStyle(shouldShowTextPrompt && currentPromptText.isEmpty ? Color(red: 0.65, green: 0.34, blue: 0.05) : Color(red: 0.12, green: 0.20, blue: 0.34))
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.55)
+                RubyPromptText(
+                    text: testPromptBody,
+                    baseFontSize: shouldShowTextPrompt && !currentPromptText.isEmpty ? 34 : 28,
+                    rubyFontSize: 12,
+                    baseColor: shouldShowTextPrompt && currentPromptText.isEmpty ? Color(red: 0.65, green: 0.34, blue: 0.05) : Color(red: 0.12, green: 0.20, blue: 0.34),
+                    rubyColor: Color(red: 0.48, green: 0.32, blue: 0.65),
+                    maxLines: 2
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             Spacer(minLength: 0)
@@ -1362,6 +1366,210 @@ private struct TestAttemptResultCard: View {
                 .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
         )
     }
+}
+
+struct RubyPromptText: View {
+    var text: String
+    var baseFontSize: CGFloat
+    var rubyFontSize: CGFloat
+    var baseColor: Color
+    var rubyColor: Color
+    var maxLines: Int? = nil
+
+    private var segments: [RubyTextSegment] {
+        parseRubyTextSegments(text)
+    }
+
+    var body: some View {
+        RubyFlowLayout(horizontalSpacing: 0, verticalSpacing: 4, maxLines: maxLines) {
+            ForEach(segments) { segment in
+                RubyPromptSegmentView(
+                    segment: segment,
+                    baseFontSize: baseFontSize,
+                    rubyFontSize: rubyFontSize,
+                    baseColor: baseColor,
+                    rubyColor: rubyColor
+                )
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(rubyPromptAccessibilityText(text))
+    }
+}
+
+private struct RubyPromptSegmentView: View {
+    var segment: RubyTextSegment
+    var baseFontSize: CGFloat
+    var rubyFontSize: CGFloat
+    var baseColor: Color
+    var rubyColor: Color
+
+    var body: some View {
+        switch segment.kind {
+        case .plain:
+            Text(segment.base)
+                .font(.system(size: baseFontSize, weight: .heavy, design: .rounded))
+                .foregroundStyle(baseColor)
+                .fixedSize()
+        case .ruby:
+            VStack(spacing: -1) {
+                Text(segment.ruby)
+                    .font(.system(size: rubyFontSize, weight: .heavy, design: .rounded))
+                    .foregroundStyle(rubyColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
+                Text(segment.base)
+                    .font(.system(size: baseFontSize, weight: .heavy, design: .rounded))
+                    .foregroundStyle(baseColor)
+                    .lineLimit(1)
+            }
+            .fixedSize()
+        }
+    }
+}
+
+private struct RubyFlowLayout: Layout {
+    var horizontalSpacing: CGFloat
+    var verticalSpacing: CGFloat
+    var maxLines: Int?
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        layout(subviews: subviews, proposal: proposal).size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = layout(subviews: subviews, proposal: proposal)
+        for item in result.items {
+            subviews[item.index].place(
+                at: CGPoint(x: bounds.minX + item.origin.x, y: bounds.minY + item.origin.y),
+                proposal: ProposedViewSize(item.size)
+            )
+        }
+    }
+
+    private func layout(subviews: Subviews, proposal: ProposedViewSize) -> RubyFlowLayoutResult {
+        let availableWidth = proposal.width ?? .greatestFiniteMagnitude
+        var items: [RubyFlowLayoutItem] = []
+        var cursor = CGPoint.zero
+        var lineHeight: CGFloat = 0
+        var usedWidth: CGFloat = 0
+        var lineCount = 1
+
+        for index in subviews.indices {
+            let size = subviews[index].sizeThatFits(.unspecified)
+            let shouldWrap = cursor.x > 0 && cursor.x + size.width > availableWidth
+            if shouldWrap {
+                guard maxLines == nil || lineCount < maxLines! else {
+                    break
+                }
+                cursor.x = 0
+                cursor.y += lineHeight + verticalSpacing
+                lineHeight = 0
+                lineCount += 1
+            }
+
+            items.append(RubyFlowLayoutItem(index: index, origin: cursor, size: size))
+            cursor.x += size.width + horizontalSpacing
+            lineHeight = max(lineHeight, size.height)
+            usedWidth = max(usedWidth, cursor.x)
+        }
+
+        let width = proposal.width ?? max(usedWidth - horizontalSpacing, 0)
+        return RubyFlowLayoutResult(
+            size: CGSize(width: max(width, 0), height: cursor.y + lineHeight),
+            items: items
+        )
+    }
+}
+
+private struct RubyFlowLayoutResult {
+    var size: CGSize
+    var items: [RubyFlowLayoutItem]
+}
+
+private struct RubyFlowLayoutItem {
+    var index: Int
+    var origin: CGPoint
+    var size: CGSize
+}
+
+private struct RubyTextSegment: Identifiable {
+    enum Kind {
+        case plain
+        case ruby
+    }
+
+    var id = UUID()
+    var kind: Kind
+    var base: String
+    var ruby: String
+}
+
+private func parseRubyTextSegments(_ text: String) -> [RubyTextSegment] {
+    var segments: [RubyTextSegment] = []
+    var buffer = ""
+    var index = text.startIndex
+
+    func appendPlain(_ value: String) {
+        for character in value {
+            segments.append(RubyTextSegment(kind: .plain, base: String(character), ruby: ""))
+        }
+    }
+
+    while index < text.endIndex {
+        if text[index] == "[", let closing = text[index...].firstIndex(of: "]") {
+            let readingStart = text.index(after: index)
+            let reading = String(text[readingStart..<closing]).trimmingCharacters(in: .whitespacesAndNewlines)
+            if !reading.isEmpty, let split = splitRubyBase(from: buffer) {
+                appendPlain(split.prefix)
+                segments.append(RubyTextSegment(kind: .ruby, base: split.base, ruby: reading))
+                buffer = ""
+                index = text.index(after: closing)
+                continue
+            }
+        }
+
+        buffer.append(text[index])
+        index = text.index(after: index)
+    }
+
+    appendPlain(buffer)
+    return segments
+}
+
+private func splitRubyBase(from text: String) -> (prefix: String, base: String)? {
+    guard !text.isEmpty else {
+        return nil
+    }
+
+    var current = text.endIndex
+    while current > text.startIndex {
+        let previous = text.index(before: current)
+        let character = text[previous]
+        if character.isWhitespace || character.isASCII {
+            break
+        }
+        current = previous
+    }
+
+    let base = String(text[current...])
+    guard !base.isEmpty else {
+        return nil
+    }
+
+    return (String(text[..<current]), base)
+}
+
+func rubyPromptAccessibilityText(_ text: String) -> String {
+    parseRubyTextSegments(text).map { segment in
+        switch segment.kind {
+        case .plain:
+            return segment.base
+        case .ruby:
+            return "\(segment.base) \(segment.ruby)"
+        }
+    }
+    .joined()
 }
 
 private struct PracticeSampleGroup: Identifiable {

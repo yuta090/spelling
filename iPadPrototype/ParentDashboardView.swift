@@ -294,8 +294,8 @@ private struct ParentWordListPanel: View {
             systemImage: "list.bullet.rectangle"
         ) {
             Text(language.text(
-                japanese: "1行に1単語。問題で日本語や説明を出す時は「cat | ねこ」のように書けます。",
-                english: "One word per line. Add a test hint like \"cat | cat in Japanese or a meaning.\""
+                japanese: "1行に1単語。問題で日本語や説明を出す時は「friend | 友[とも]だち」のように書けます。",
+                english: "One word per line. Add a test hint like \"friend | friend meaning.\""
             ))
             .font(.caption.weight(.semibold))
             .foregroundStyle(.secondary)
@@ -364,12 +364,19 @@ private struct ParentWordListPanel: View {
                                 Text(word.text)
                                     .font(.headline.weight(.semibold))
                                 if !word.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                    Text(language.text(
-                                        japanese: "出題ヒント: \(word.promptText)",
-                                        english: "Prompt: \(word.promptText)"
-                                    ))
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(Color(red: 0.18, green: 0.38, blue: 0.72))
+                                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                        Text(language.text(japanese: "出題ヒント:", english: "Prompt:"))
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(.secondary)
+                                        RubyPromptText(
+                                            text: word.promptText,
+                                            baseFontSize: 13,
+                                            rubyFontSize: 7,
+                                            baseColor: Color(red: 0.18, green: 0.38, blue: 0.72),
+                                            rubyColor: Color(red: 0.46, green: 0.32, blue: 0.64),
+                                            maxLines: 1
+                                        )
+                                    }
                                 }
                                 Text(language.text(
                                     japanese: "登録日: \(formattedStepDate(word.registeredAt, language: language))",
@@ -614,8 +621,8 @@ private struct TestSettingsPanel: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text(language.text(
-                    japanese: "文字は単語リストの「cat | ねこ」の右側を表示します。",
-                    english: "Text prompts use the right side of entries like \"cat | cat meaning.\""
+                    japanese: "文字は単語リストの右側を表示します。漢字の読みは「学校[がっこう]」のように書けます。",
+                    english: "Text prompts use the right side of the word list. Add readings with brackets when needed."
                 ))
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
