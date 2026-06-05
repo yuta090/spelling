@@ -71,9 +71,13 @@ struct HomeView: View {
         }
         .onAppear {
             syncPracticeSelectionIfNeeded()
+            applyFocusedPracticeSelectionIfNeeded()
         }
         .onChange(of: model.activeWords.map(\.id)) { _, _ in
             syncPracticeSelectionIfNeeded()
+        }
+        .onChange(of: model.focusedPracticeWordIDs) { _, _ in
+            applyFocusedPracticeSelectionIfNeeded()
         }
     }
 
@@ -90,6 +94,10 @@ struct HomeView: View {
 
     private func syncPracticeSelectionIfNeeded() {
         let activeIDs = Set(model.activeWords.map(\.id))
+        if applyFocusedPracticeSelectionIfNeeded(activeIDs: activeIDs) {
+            return
+        }
+
         guard activeIDs != lastPracticeWordIDs else {
             selectedPracticeWordIDs = selectedPracticeWordIDs.intersection(activeIDs)
             return
@@ -97,6 +105,20 @@ struct HomeView: View {
 
         selectedPracticeWordIDs = activeIDs
         lastPracticeWordIDs = activeIDs
+    }
+
+    @discardableResult
+    private func applyFocusedPracticeSelectionIfNeeded(activeIDs: Set<UUID>? = nil) -> Bool {
+        let activeIDs = activeIDs ?? Set(model.activeWords.map(\.id))
+        let focusedIDs = model.focusedPracticeWordIDs.intersection(activeIDs)
+        guard !focusedIDs.isEmpty else {
+            return false
+        }
+
+        selectedPracticeWordIDs = focusedIDs
+        lastPracticeWordIDs = activeIDs
+        model.focusedPracticeWordIDs = []
+        return true
     }
 
     private var header: some View {

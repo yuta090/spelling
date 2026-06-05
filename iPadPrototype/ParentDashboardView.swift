@@ -638,6 +638,27 @@ private struct ParentStepRecordCard: View {
                             }
                         }
                     }
+
+                    HStack {
+                        Text(language.text(
+                            japanese: "ホームで、この候補だけを練習できます。",
+                            english: "Practice only these candidates from Home."
+                        ))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                        Spacer()
+
+                        Button {
+                            model.selectedWordStepID = step.id
+                            model.focusedPracticeWordIDs = Set(reviewWords.map(\.id))
+                        } label: {
+                            Label(language.text(japanese: "練習に出す", english: "Use for Practice"), systemImage: "play.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .font(.caption.weight(.bold))
+                        .tint(Color(red: 0.90, green: 0.45, blue: 0.12))
+                    }
                 }
             }
 

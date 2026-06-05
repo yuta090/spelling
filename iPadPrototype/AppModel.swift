@@ -29,6 +29,8 @@ final class AppModel: ObservableObject {
         didSet { saveSelectedWordStepID() }
     }
 
+    @Published var focusedPracticeWordIDs = Set<UUID>()
+
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
     private let practiceSamplesKey = "spellingTrainer.practiceSamples"
