@@ -71,6 +71,50 @@ struct SpellingSessionView: View {
         return ["Top line", "Mid line", "Base line", "Descender"]
     }
 
+    private var taskBannerTitle: String {
+        switch mode {
+        case .practice:
+            return language.text(japanese: "れんしゅう中", english: "Practice Time")
+        case .test:
+            return language.text(japanese: "テスト中", english: "Test Time")
+        case .review:
+            return language.text(japanese: "ふくしゅう中", english: "Review Time")
+        }
+    }
+
+    private var taskBannerMessage: String {
+        switch mode {
+        case .practice:
+            return language.text(japanese: "お手本を見ながら、この単語を\(practiceRepetitionCount)かい書こう。", english: "Look at the word and write it \(practiceRepetitionCount) times.")
+        case .test:
+            return language.text(japanese: "音を聞いて、見ないで書こう。書けたらこたえるを押してね。", english: "Listen, write without looking, then submit.")
+        case .review:
+            return language.text(japanese: "のこった単語をもう一度書いて、できるようにしよう。", english: "Write the remaining words again.")
+        }
+    }
+
+    private var taskBannerIcon: String {
+        switch mode {
+        case .practice:
+            return "pencil.and.scribble"
+        case .test:
+            return "ear.and.waveform"
+        case .review:
+            return "book.fill"
+        }
+    }
+
+    private var taskBannerTint: Color {
+        switch mode {
+        case .practice:
+            return Color(red: 0.49, green: 0.30, blue: 0.78)
+        case .test:
+            return Color(red: 0.14, green: 0.38, blue: 0.76)
+        case .review:
+            return Color(red: 0.12, green: 0.50, blue: 0.34)
+        }
+    }
+
     var body: some View {
         ZStack {
             SessionBackground()
@@ -102,6 +146,16 @@ struct SpellingSessionView: View {
             } else {
                 VStack(spacing: 18) {
                     header
+
+                    ChildTaskBanner(
+                        title: taskBannerTitle,
+                        message: taskBannerMessage,
+                        systemImage: taskBannerIcon,
+                        tint: taskBannerTint,
+                        compact: true
+                    )
+                    .frame(maxWidth: 760)
+
                     wordHeader
 
                     if capturesPracticeSamples && practiceRepetitionCount > 1 {
@@ -918,6 +972,14 @@ private struct PracticeSessionReviewView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                ChildTaskBanner(
+                    title: language.text(japanese: "書いたものを見てみよう", english: "Check Your Writing"),
+                    message: language.text(japanese: "自分が書いた単語を見て、できたところをたしかめよう。", english: "Look at the words you wrote and check your work."),
+                    systemImage: "eye.fill",
+                    tint: Color(red: 0.48, green: 0.30, blue: 0.76),
+                    compact: true
+                )
+
                 VStack(spacing: 8) {
                     HStack(spacing: 10) {
                         Image(systemName: "sparkles")
@@ -1036,6 +1098,14 @@ private struct TestSessionResultsView: View {
                         .font(.headline.monospacedDigit().weight(.bold))
                         .foregroundStyle(.secondary)
                 }
+
+                ChildTaskBanner(
+                    title: language.text(japanese: "結果を見よう", english: "Review Your Results"),
+                    message: language.text(japanese: "できた単語と、あとで直す単語をたしかめよう。", english: "Check the words you got and the words to fix later."),
+                    systemImage: "checklist.checked",
+                    tint: Color(red: 0.14, green: 0.38, blue: 0.76),
+                    compact: true
+                )
 
                 VStack(spacing: 10) {
                     if isPerfect {

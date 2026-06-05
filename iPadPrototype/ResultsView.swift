@@ -24,6 +24,14 @@ struct ResultsView: View {
                 VStack(spacing: 16) {
                     header
 
+                    ChildTaskBanner(
+                        title: language.text(japanese: "今日の結果を見よう", english: "Look at Today's Results"),
+                        message: language.text(japanese: "できた単語と、もう一度やる単語をたしかめよう。", english: "Check what you got and what to try again."),
+                        systemImage: "trophy.fill",
+                        tint: Color(red: 0.84, green: 0.36, blue: 0.08),
+                        compact: true
+                    )
+
                     ScrollView {
                         VStack(spacing: 16) {
                             trophyCard

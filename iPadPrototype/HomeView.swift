@@ -20,10 +20,13 @@ struct HomeView: View {
 
                     Spacer(minLength: 8)
 
-                    Text(language.text(japanese: "✨ 今日のスペリング ✨", english: "✨ Today's Spelling ✨"))
-                        .font(.system(size: 30, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
-                        .multilineTextAlignment(.center)
+                    ChildTaskBanner(
+                        title: language.text(japanese: "きょうは なにをする？", english: "What will you do today?"),
+                        message: language.text(japanese: "ステップをえらんで、れんしゅうかテストをおしてね。", english: "Choose a step, then pick practice or test."),
+                        systemImage: "sparkles",
+                        tint: Color(red: 0.12, green: 0.36, blue: 0.76)
+                    )
+                    .frame(maxWidth: 760)
 
                     StepSelectorPanel(language: language)
                         .environmentObject(model)
@@ -182,6 +185,59 @@ struct HomeView: View {
             .buttonStyle(HomeIconButtonStyle())
             .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
         }
+    }
+}
+
+struct ChildTaskBanner: View {
+    var title: String
+    var message: String
+    var systemImage: String
+    var tint: Color
+    var compact = false
+
+    var body: some View {
+        HStack(spacing: compact ? 14 : 18) {
+            Image(systemName: systemImage)
+                .font(compact ? .title.weight(.heavy) : .largeTitle.weight(.heavy))
+                .foregroundStyle(tint)
+                .frame(width: compact ? 54 : 66, height: compact ? 54 : 66)
+                .background(tint.opacity(0.14))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: compact ? 3 : 6) {
+                Text(title)
+                    .font(compact ? .title2.weight(.heavy) : .largeTitle.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.72)
+                Text(message)
+                    .font(compact ? .headline.weight(.bold) : .title3.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.78)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, compact ? 12 : 16)
+        .padding(.horizontal, compact ? 14 : 18)
+        .background(
+            LinearGradient(
+                colors: [
+                    tint.opacity(0.10),
+                    Color.white.opacity(0.92)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(tint.opacity(0.28), lineWidth: 1.5)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title)。\(message)")
     }
 }
 
