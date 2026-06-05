@@ -731,6 +731,7 @@ private struct SliderSetting: View {
 private struct ParentGradingPanel: View {
     @EnvironmentObject private var model: AppModel
     @State private var selectedSessionID: String?
+    @State private var sessionFilter: ParentGradingSessionFilter = .unreviewed
     var language: AppLanguage
 
     private var sessions: [ParentGradingSession] {
@@ -772,6 +773,10 @@ private struct ParentGradingPanel: View {
         return (testSessions + numberedPracticeSessions).sorted { $0.date > $1.date }
     }
 
+    private var filteredSessions: [ParentGradingSession] {
+        sessionFilter.apply(to: sessions)
+    }
+
     private func numberSessions(_ sessions: [ParentGradingSession], kind: ParentGradingSessionKind) -> [ParentGradingSession] {
         sessions
             .filter { $0.kind == kind }
@@ -783,7 +788,7 @@ private struct ParentGradingPanel: View {
     }
 
     var body: some View {
-        let activeSession = sessions.first { $0.id == selectedSessionID } ?? sessions.first
+        let activeSession = filteredSessions.first { $0.id == selectedSessionID } ?? filteredSessions.first
 
         ParentPanel(
             title: language.text(japanese: "採点モード", english: "Grading Mode"),
@@ -792,16 +797,16 @@ private struct ParentGradingPanel: View {
         ) {
             HStack {
                 SettingValueRow(
-                    title: language.text(japanese: "1回ごとの記録", english: "Sessions"),
-                    value: "\(sessions.count)"
+                    title: sessionFilter.title(language: language),
+                    value: "\(filteredSessions.count)/\(sessions.count)"
                 )
 
                 Spacer()
             }
 
             Text(language.text(
-                japanese: "練習・復習・テストを1回分ごとに見て、OKまたは直そうを付けられます。直そうには親のお手本を書けます。",
-                english: "Grade each practice, review, and test session. Mark OK or Needs Fix, and write a parent model for fixes."
+                japanese: "最初は未採点だけ表示します。過去分は「今日」「すべて」で見られます。",
+                english: "Only ungraded sessions show first. Use Today or All for older sessions."
             ))
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(.secondary)
@@ -815,39 +820,102 @@ private struct ParentGradingPanel: View {
                 .frame(minHeight: 240)
             } else {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(language.text(
-                        japanese: "上から採点したい1回分を選んでください。下には選んだテスト・練習だけを表示します。",
-                        english: "Choose one session above. Only that test or practice session is shown below."
-                    ))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    Picker("", selection: $sessionFilter) {
+                        ForEach(ParentGradingSessionFilter.allCases) { filter in
+                            Text(filter.title(language: language)).tag(filter)
+                        }
+                    }
+                    .labelsHidden()
+                    .pickerStyle(.segmented)
+                    .accessibilityLabel(language.text(japanese: "採点記録の表示", english: "Grading session filter"))
 
-                    ParentGradingSessionPicker(
-                        sessions: sessions,
-                        selectedID: activeSession?.id,
-                        language: language,
-                        select: { selectedSessionID = $0 }
-                    )
+                    if filteredSessions.isEmpty {
+                        ContentUnavailableView(
+                            sessionFilter.emptyTitle(language: language),
+                            systemImage: "checkmark.seal",
+                            description: Text(sessionFilter.emptyMessage(language: language))
+                        )
+                        .frame(minHeight: 260)
+                    } else {
+                        ParentGradingSessionPicker(
+                            sessions: filteredSessions,
+                            selectedID: activeSession?.id,
+                            language: language,
+                            select: { selectedSessionID = $0 }
+                        )
 
-                    if let activeSession {
                         ScrollView {
-                            ParentGradingSessionCard(session: activeSession, language: language)
-                                .environmentObject(model)
+                            if let activeSession {
+                                ParentGradingSessionCard(session: activeSession, language: language)
+                                    .environmentObject(model)
+                            }
                         }
                         .frame(maxHeight: 760)
                     }
                 }
                 .onAppear {
                     if selectedSessionID == nil {
-                        selectedSessionID = sessions.first?.id
+                        selectedSessionID = filteredSessions.first?.id
                     }
                 }
-                .onChange(of: sessions.map(\.id)) { _, ids in
+                .onChange(of: filteredSessions.map(\.id)) { _, ids in
                     if selectedSessionID == nil || !(ids.contains(selectedSessionID ?? "")) {
                         selectedSessionID = ids.first
                     }
                 }
             }
+        }
+    }
+}
+
+private enum ParentGradingSessionFilter: String, CaseIterable, Identifiable {
+    case unreviewed
+    case today
+    case all
+
+    var id: String { rawValue }
+
+    func title(language: AppLanguage) -> String {
+        switch self {
+        case .unreviewed:
+            return language.text(japanese: "未採点", english: "Ungraded")
+        case .today:
+            return language.text(japanese: "今日", english: "Today")
+        case .all:
+            return language.text(japanese: "すべて", english: "All")
+        }
+    }
+
+    func apply(to sessions: [ParentGradingSession]) -> [ParentGradingSession] {
+        switch self {
+        case .unreviewed:
+            return sessions.filter { $0.unreviewedCount > 0 }
+        case .today:
+            return sessions.filter { Calendar.current.isDateInToday($0.date) }
+        case .all:
+            return sessions
+        }
+    }
+
+    func emptyTitle(language: AppLanguage) -> String {
+        switch self {
+        case .unreviewed:
+            return language.text(japanese: "未採点はありません", english: "No ungraded sessions")
+        case .today:
+            return language.text(japanese: "今日の記録はありません", english: "No sessions today")
+        case .all:
+            return language.text(japanese: "記録がありません", english: "No sessions")
+        }
+    }
+
+    func emptyMessage(language: AppLanguage) -> String {
+        switch self {
+        case .unreviewed:
+            return language.text(japanese: "採点が必要なものだけ、ここに出ます。", english: "Only sessions that need grading appear here.")
+        case .today:
+            return language.text(japanese: "今日、練習かテストをすると表示されます。", english: "Practice or test today to show sessions here.")
+        case .all:
+            return language.text(japanese: "練習やテストをすると表示されます。", english: "Practice or test to show sessions here.")
         }
     }
 }
@@ -937,30 +1005,29 @@ private struct ParentGradingSessionPicker: View {
     var language: AppLanguage
     var select: (String) -> Void
 
-    private let columns = [
-        GridItem(.adaptive(minimum: 168, maximum: 220), spacing: 10, alignment: .topLeading)
-    ]
-
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
-            ForEach(sessions) { session in
-                Button {
-                    withAnimation(.easeInOut(duration: 0.12)) {
-                        select(session.id)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(sessions) { session in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.12)) {
+                            select(session.id)
+                        }
+                    } label: {
+                        ParentGradingSessionChip(
+                            session: session,
+                            isSelected: session.id == selectedID,
+                            language: language
+                        )
                     }
-                } label: {
-                    ParentGradingSessionChip(
-                        session: session,
-                        isSelected: session.id == selectedID,
-                        language: language
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .buttonStyle(.plain)
+                    .contentShape(RoundedRectangle(cornerRadius: 8))
+                    .accessibilityAddTraits(session.id == selectedID ? .isSelected : [])
                 }
-                .buttonStyle(.plain)
-                .contentShape(RoundedRectangle(cornerRadius: 8))
-                .accessibilityAddTraits(session.id == selectedID ? .isSelected : [])
             }
+            .padding(.vertical, 2)
         }
+        .frame(height: 88)
     }
 }
 
@@ -991,7 +1058,7 @@ private struct ParentGradingSessionChip: View {
             .font(.caption2.monospacedDigit().weight(.bold))
         }
         .foregroundStyle(isSelected ? .white : session.kind.tint)
-        .frame(minWidth: 168, maxWidth: .infinity, alignment: .leading)
+        .frame(width: 190, alignment: .leading)
         .padding(10)
         .background(isSelected ? session.kind.tint : session.kind.tint.opacity(0.10))
         .clipShape(RoundedRectangle(cornerRadius: 8))
