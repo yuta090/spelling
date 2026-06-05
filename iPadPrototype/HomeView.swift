@@ -187,7 +187,7 @@ private struct ChildMissionPanel: View {
                 .tint(Color(red: 0.32, green: 0.68, blue: 0.28))
                 .scaleEffect(x: 1, y: 1.8, anchor: .center)
                 .accessibilityLabel(language.text(
-                    japanese: "今日のクリア \(progress.clearedCount) / \(progress.totalWords)",
+                    japanese: "きょうできた \(progress.clearedCount) / \(progress.totalWords)",
                     english: "Today \(progress.clearedCount) of \(progress.totalWords)"
                 ))
 
@@ -795,10 +795,10 @@ private struct TodayProgressCard: View {
             return language.text(japanese: "単語がありません", english: "No words")
         }
         if progress.isComplete && progress.hasPerfectRun {
-            return language.text(japanese: "完全クリア", english: "Fully Cleared")
+            return language.text(japanese: "ぜんぶできた", english: "Fully Done")
         }
         if progress.isComplete {
-            return language.text(japanese: "今日クリア", english: "Cleared Today")
+            return language.text(japanese: "きょうはできた", english: "Done Today")
         }
         if progress.hasTestActivity {
             return language.text(japanese: "あと\(progress.remainingCount)こ", english: "\(progress.remainingCount) left")
@@ -828,7 +828,7 @@ private struct TodayProgressCard: View {
                 .frame(width: 96, height: 96)
 
             VStack(spacing: 6) {
-                Text(language.text(japanese: "今日のクリア", english: "Today"))
+                Text(language.text(japanese: "きょうできた", english: "Today"))
                     .font(.headline.weight(.bold))
                     .foregroundStyle(Color(red: 0.24, green: 0.18, blue: 0.12))
 
@@ -882,7 +882,7 @@ private struct HomeStatsRow: View {
                 systemImage: "rectangle.stack.fill"
             )
             HomeStatChip(
-                title: language.text(japanese: "クリア", english: "Clear"),
+                title: language.text(japanese: "できた", english: "Done"),
                 value: "\(progress.clearedCount)/\(progress.totalWords)",
                 systemImage: "target"
             )
