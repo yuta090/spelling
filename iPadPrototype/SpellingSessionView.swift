@@ -104,6 +104,14 @@ struct SpellingSessionView: View {
                     header
                     wordHeader
 
+                    if capturesPracticeSamples && practiceRepetitionCount > 1 {
+                        PracticeRepeatGuide(
+                            current: practiceRepeatIndex + 1,
+                            total: practiceRepetitionCount,
+                            language: language
+                        )
+                    }
+
                     GuidedWritingCanvas(
                         drawing: $drawing,
                         mode: mode.canvasMode,
@@ -112,7 +120,7 @@ struct SpellingSessionView: View {
                         capture: drawingCapture
                     )
                     .id(canvasResetID)
-                    .frame(maxHeight: 330)
+                    .frame(maxHeight: capturesPracticeSamples && practiceRepetitionCount > 1 ? 300 : 330)
 
                     if mode == .review {
                         ReviewHintPanel(word: currentWord.text, language: language)
@@ -394,19 +402,19 @@ struct SpellingSessionView: View {
 
     private var practiceNextButtonTitle: String {
         if capturesPracticeSamples, !isLastPracticeRepeat {
-            return language.text(japanese: "もう一回", english: "Again")
+            return language.text(japanese: "\(practiceRepeatIndex + 2)かいめを書く", english: "Write round \(practiceRepeatIndex + 2)")
         }
         if index == sessionWords.count - 1 {
-            return language.text(japanese: "おわる", english: "Finish")
+            return language.text(japanese: "チェックへ", english: "Review")
         }
-        return language.text(japanese: "つぎへ", english: "Next")
+        return language.text(japanese: "つぎの単語へ", english: "Next word")
     }
 
     private var practiceNextButtonIcon: String {
         if capturesPracticeSamples, !isLastPracticeRepeat {
-            return "arrow.counterclockwise"
+            return "pencil.line"
         }
-        return index == sessionWords.count - 1 ? "flag.checkered" : "arrow.right"
+        return index == sessionWords.count - 1 ? "checklist" : "arrow.right"
     }
 
     private func celebrateThenMoveNext() {
@@ -611,6 +619,97 @@ private struct TestProgressPill: View {
     }
 }
 
+private struct PracticeRepeatGuide: View {
+    var current: Int
+    var total: Int
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 22) {
+            Image(systemName: "pencil.and.scribble")
+                .font(.system(size: 34, weight: .bold))
+                .foregroundStyle(Color(red: 0.52, green: 0.31, blue: 0.78))
+                .frame(width: 68, height: 68)
+                .background(Color(red: 0.95, green: 0.90, blue: 1.0))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(language.text(japanese: "この単語は \(total) かい", english: "\(total) rounds for this word"))
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.44))
+                Text(language.text(japanese: "\(current)かいめ", english: "Round \(current)"))
+                    .font(.system(size: 42, weight: .heavy, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(Color(red: 0.50, green: 0.27, blue: 0.75))
+            }
+
+            Spacer(minLength: 8)
+
+            HStack(spacing: 10) {
+                ForEach(1...total, id: \.self) { step in
+                    Text("\(step)")
+                        .font(.title3.monospacedDigit().weight(.heavy))
+                        .foregroundStyle(stepForeground(step))
+                        .frame(width: 44, height: 44)
+                        .background(stepBackground(step))
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(stepBorder(step), lineWidth: step == current ? 3 : 1.5)
+                        )
+                }
+            }
+        }
+        .frame(maxWidth: 760)
+        .padding(.vertical, 14)
+        .padding(.horizontal, 18)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 1.0, green: 0.98, blue: 0.88),
+                    Color(red: 0.94, green: 0.98, blue: 1.0)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.82, green: 0.70, blue: 0.95), lineWidth: 2)
+        )
+        .shadow(color: Color.purple.opacity(0.08), radius: 10, x: 0, y: 5)
+        .accessibilityLabel(language.text(japanese: "この単語は\(total)回。今は\(current)回目です。", english: "This word has \(total) rounds. Current round \(current)."))
+    }
+
+    private func stepForeground(_ step: Int) -> Color {
+        if step < current {
+            return .white
+        }
+        if step == current {
+            return .white
+        }
+        return Color(red: 0.37, green: 0.32, blue: 0.47)
+    }
+
+    private func stepBackground(_ step: Int) -> Color {
+        if step < current {
+            return Color(red: 0.38, green: 0.70, blue: 0.32)
+        }
+        if step == current {
+            return Color(red: 0.51, green: 0.30, blue: 0.78)
+        }
+        return .white.opacity(0.92)
+    }
+
+    private func stepBorder(_ step: Int) -> Color {
+        if step <= current {
+            return Color(red: 0.51, green: 0.30, blue: 0.78)
+        }
+        return Color(red: 0.80, green: 0.75, blue: 0.88)
+    }
+}
+
 private struct RepeatPill: View {
     var current: Int
     var total: Int
@@ -619,6 +718,8 @@ private struct RepeatPill: View {
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: "repeat")
+                .font(.subheadline.weight(.bold))
+            Text(language.text(japanese: "れんしゅう", english: "Practice"))
                 .font(.subheadline.weight(.bold))
             Text("\(current) / \(total)")
                 .font(.headline.monospacedDigit().weight(.bold))
