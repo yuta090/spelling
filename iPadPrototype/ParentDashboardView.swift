@@ -895,23 +895,29 @@ private struct ParentGradingSessionPicker: View {
     var language: AppLanguage
     var select: (String) -> Void
 
+    private let columns = [
+        GridItem(.adaptive(minimum: 168, maximum: 220), spacing: 10, alignment: .topLeading)
+    ]
+
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                ForEach(sessions) { session in
-                    Button {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
+            ForEach(sessions) { session in
+                Button {
+                    withAnimation(.easeInOut(duration: 0.12)) {
                         select(session.id)
-                    } label: {
-                        ParentGradingSessionChip(
-                            session: session,
-                            isSelected: session.id == selectedID,
-                            language: language
-                        )
                     }
-                    .buttonStyle(.plain)
+                } label: {
+                    ParentGradingSessionChip(
+                        session: session,
+                        isSelected: session.id == selectedID,
+                        language: language
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .buttonStyle(.plain)
+                .contentShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityAddTraits(session.id == selectedID ? .isSelected : [])
             }
-            .padding(.vertical, 2)
         }
     }
 }
@@ -943,7 +949,7 @@ private struct ParentGradingSessionChip: View {
             .font(.caption2.monospacedDigit().weight(.bold))
         }
         .foregroundStyle(isSelected ? .white : session.kind.tint)
-        .frame(width: 168, alignment: .leading)
+        .frame(minWidth: 168, maxWidth: .infinity, alignment: .leading)
         .padding(10)
         .background(isSelected ? session.kind.tint : session.kind.tint.opacity(0.10))
         .clipShape(RoundedRectangle(cornerRadius: 8))
