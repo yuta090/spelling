@@ -7,8 +7,8 @@ struct SpellingSessionView: View {
     @StateObject private var speech = SpeechPlayer()
     @StateObject private var drawingCapture = DrawingCapture()
 
-    var mode: SessionMode
-    var words: [SpellingWord]
+    let mode: SessionMode
+    @State private var sessionWords: [SpellingWord]
 
     @State private var index = 0
     @State private var drawing = PKDrawing()
@@ -28,6 +28,11 @@ struct SpellingSessionView: View {
     @State private var showingTestResults = false
     @State private var practiceRepeatIndex = 0
 
+    init(mode: SessionMode, words: [SpellingWord]) {
+        self.mode = mode
+        _sessionWords = State(initialValue: mode == .test ? words.shuffled() : words)
+    }
+
     private var language: AppLanguage {
         model.settings.appLanguage
     }
@@ -37,10 +42,10 @@ struct SpellingSessionView: View {
     }
 
     private var currentWord: SpellingWord {
-        guard !words.isEmpty else {
+        guard !sessionWords.isEmpty else {
             return SpellingWord(text: "")
         }
-        return words[min(index, max(words.count - 1, 0))]
+        return sessionWords[min(index, max(sessionWords.count - 1, 0))]
     }
 
     private var practiceRepetitionCount: Int {
@@ -161,7 +166,7 @@ struct SpellingSessionView: View {
                 if mode == .test {
                     TimerPill(seconds: remainingSeconds, language: language)
                 }
-                ProgressPill(current: index + 1, total: max(words.count, 1))
+                ProgressPill(current: index + 1, total: max(sessionWords.count, 1))
                 if capturesPracticeSamples && practiceRepetitionCount > 1 {
                     RepeatPill(current: practiceRepeatIndex + 1, total: practiceRepetitionCount, language: language)
                 }
@@ -228,8 +233,8 @@ struct SpellingSessionView: View {
                     Spacer()
 
                     SessionControlButton(
-                        title: index == words.count - 1 ? language.text(japanese: "結果へ", english: "Results") : language.text(japanese: "つぎへ", english: "Next"),
-                        systemImage: index == words.count - 1 ? "chart.bar.xaxis" : "arrow.right",
+                        title: index == sessionWords.count - 1 ? language.text(japanese: "結果へ", english: "Results") : language.text(japanese: "つぎへ", english: "Next"),
+                        systemImage: index == sessionWords.count - 1 ? "chart.bar.xaxis" : "arrow.right",
                         style: .primary
                     ) {
                         moveNext()
@@ -256,8 +261,8 @@ struct SpellingSessionView: View {
                     SessionControlButton(
                         title: isChecking
                             ? language.text(japanese: "保存中", english: "Saving")
-                            : (index == words.count - 1 ? language.text(japanese: "結果へ", english: "Results") : language.text(japanese: "つぎへ", english: "Next")),
-                        systemImage: isChecking ? "hourglass" : (index == words.count - 1 ? "chart.bar.xaxis" : "arrow.right"),
+                            : (index == sessionWords.count - 1 ? language.text(japanese: "結果へ", english: "Results") : language.text(japanese: "つぎへ", english: "Next")),
+                        systemImage: isChecking ? "hourglass" : (index == sessionWords.count - 1 ? "chart.bar.xaxis" : "arrow.right"),
                         style: .primary
                     ) {
                         checkAnswer()
@@ -362,7 +367,7 @@ struct SpellingSessionView: View {
             return
         }
 
-        if index == words.count - 1 {
+        if index == sessionWords.count - 1 {
             if capturesPracticeSamples {
                 withAnimation(.easeInOut(duration: 0.18)) {
                     showingPracticeReview = true
@@ -388,7 +393,7 @@ struct SpellingSessionView: View {
         if capturesPracticeSamples, !isLastPracticeRepeat {
             return language.text(japanese: "もう一回", english: "Again")
         }
-        if index == words.count - 1 {
+        if index == sessionWords.count - 1 {
             return language.text(japanese: "おわる", english: "Finish")
         }
         return language.text(japanese: "つぎへ", english: "Next")
@@ -398,7 +403,7 @@ struct SpellingSessionView: View {
         if capturesPracticeSamples, !isLastPracticeRepeat {
             return "arrow.counterclockwise"
         }
-        return index == words.count - 1 ? "flag.checkered" : "arrow.right"
+        return index == sessionWords.count - 1 ? "flag.checkered" : "arrow.right"
     }
 
     private func celebrateThenMoveNext() {
