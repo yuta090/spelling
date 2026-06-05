@@ -60,12 +60,22 @@ extension PKDrawing {
         }
     }
 
-    func previewImage(scale: CGFloat = 2) -> UIImage? {
+    func previewImage(
+        scale: CGFloat = 2,
+        horizontalPadding: CGFloat = 80,
+        topPadding: CGFloat = 90,
+        bottomPadding: CGFloat = 150
+    ) -> UIImage? {
         guard !bounds.isNull, !bounds.isEmpty else {
             return nil
         }
 
-        let drawingBounds = bounds.insetBy(dx: -80, dy: -90)
+        let drawingBounds = CGRect(
+            x: bounds.minX - horizontalPadding,
+            y: bounds.minY - topPadding,
+            width: bounds.width + horizontalPadding * 2,
+            height: bounds.height + topPadding + bottomPadding
+        )
         let strokeImage = image(from: drawingBounds, scale: scale)
         let renderer = UIGraphicsImageRenderer(size: strokeImage.size)
 

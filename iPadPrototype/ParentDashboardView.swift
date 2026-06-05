@@ -703,8 +703,8 @@ private struct ParentAttemptGradingCard: View {
             )
 
             if let drawingData = attempt.drawingData {
-                DrawingPreview(drawingData: drawingData)
-                    .frame(height: 170)
+                DrawingPreview(drawingData: drawingData, topPadding: 100, bottomPadding: 190)
+                    .frame(height: 220)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
@@ -781,8 +781,8 @@ private struct ParentPracticeGradingCard: View {
                 language: language
             )
 
-            DrawingPreview(drawingData: sample.drawingData)
-                .frame(height: 170)
+            DrawingPreview(drawingData: sample.drawingData, topPadding: 100, bottomPadding: 190)
+                .frame(height: 220)
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
@@ -1601,6 +1601,9 @@ private struct ProgressRing: View {
 
 private struct DrawingPreview: UIViewRepresentable {
     var drawingData: Data
+    var horizontalPadding: CGFloat = 80
+    var topPadding: CGFloat = 90
+    var bottomPadding: CGFloat = 150
 
     func makeUIView(context: Context) -> UIImageView {
         let imageView = UIImageView()
@@ -1611,7 +1614,11 @@ private struct DrawingPreview: UIViewRepresentable {
 
     func updateUIView(_ imageView: UIImageView, context: Context) {
         if let drawing = try? PKDrawing(data: drawingData) {
-            imageView.image = drawing.previewImage()
+            imageView.image = drawing.previewImage(
+                horizontalPadding: horizontalPadding,
+                topPadding: topPadding,
+                bottomPadding: bottomPadding
+            )
         } else {
             imageView.image = nil
         }
