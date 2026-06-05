@@ -5,9 +5,15 @@ struct HomeView: View {
     @State private var activeMode: SessionMode?
     @State private var showingParent = false
     @State private var showingResults = false
+    @State private var selectedPracticeWordIDs = Set<UUID>()
+    @State private var lastPracticeWordIDs = Set<UUID>()
 
     private var language: AppLanguage {
         model.settings.appLanguage
+    }
+
+    private var selectedPracticeWords: [SpellingWord] {
+        model.activeWords.filter { selectedPracticeWordIDs.contains($0.id) }
     }
 
     var body: some View {
@@ -32,14 +38,21 @@ struct HomeView: View {
                         .environmentObject(model)
                         .frame(maxWidth: 760)
 
+                    PracticeWordPickerPanel(
+                        words: model.activeWords,
+                        selectedIDs: $selectedPracticeWordIDs,
+                        language: language
+                    )
+                    .frame(maxWidth: 760)
+
                     HStack(alignment: .center, spacing: 24) {
                         VStack(spacing: 18) {
                             HomeActionCard(
-                                title: language.text(japanese: "れんしゅうする", english: "Practice"),
-                                subtitle: language.text(japanese: "書いておぼえる", english: "Look, listen, and write"),
+                                title: practiceButtonTitle,
+                                subtitle: practiceButtonSubtitle,
                                 systemImage: "pencil",
                                 colors: [Color(red: 0.35, green: 0.64, blue: 0.96), Color(red: 0.10, green: 0.35, blue: 0.78)],
-                                disabled: model.activeWords.isEmpty
+                                disabled: selectedPracticeWords.isEmpty
                             ) {
                                 activeMode = .practice
                             }
@@ -87,6 +100,27 @@ struct HomeView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
         }
+        .onAppear {
+            syncPracticeSelectionIfNeeded()
+        }
+        .onChange(of: model.activeWords.map(\.id)) { _, _ in
+            syncPracticeSelectionIfNeeded()
+        }
+    }
+
+    private var practiceButtonTitle: String {
+        let count = selectedPracticeWords.count
+        if count == 0 {
+            return language.text(japanese: "たんごをえらんで", english: "Choose Words")
+        }
+        return language.text(japanese: "えらんだ\(count)こをれんしゅう", english: "Practice \(count) selected")
+    }
+
+    private var practiceButtonSubtitle: String {
+        if selectedPracticeWords.isEmpty {
+            return language.text(japanese: "チェックをつけてね", english: "Check words first")
+        }
+        return language.text(japanese: "チェックした単語だけやる", english: "Only checked words")
     }
 
     private var testButtonTitle: String {
@@ -149,12 +183,23 @@ struct HomeView: View {
     private func sessionWords(for mode: SessionMode) -> [SpellingWord] {
         switch mode {
         case .practice:
-            return model.activeWords
+            return selectedPracticeWords
         case .test:
             return model.nextTestWords
         case .review:
             return model.todayStepProgress.remainingWords
         }
+    }
+
+    private func syncPracticeSelectionIfNeeded() {
+        let activeIDs = Set(model.activeWords.map(\.id))
+        guard activeIDs != lastPracticeWordIDs else {
+            selectedPracticeWordIDs = selectedPracticeWordIDs.intersection(activeIDs)
+            return
+        }
+
+        selectedPracticeWordIDs = activeIDs
+        lastPracticeWordIDs = activeIDs
     }
 
     private var header: some View {
@@ -185,6 +230,138 @@ struct HomeView: View {
             .buttonStyle(HomeIconButtonStyle())
             .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
         }
+    }
+}
+
+private struct PracticeWordPickerPanel: View {
+    var words: [SpellingWord]
+    @Binding var selectedIDs: Set<UUID>
+    var language: AppLanguage
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 138, maximum: 210), spacing: 10)
+    ]
+
+    private var selectedCount: Int {
+        words.filter { selectedIDs.contains($0.id) }.count
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Label(language.text(japanese: "れんしゅうする単語をえらぼう", english: "Choose Practice Words"), systemImage: "checkmark.square.fill")
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78))
+                    Text(language.text(japanese: "チェックした単語だけ、まとめてれんしゅうします。", english: "Only checked words will be practiced together."))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Text(language.text(japanese: "\(selectedCount)/\(words.count) こ", english: "\(selectedCount)/\(words.count)"))
+                    .font(.headline.monospacedDigit().weight(.heavy))
+                    .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78))
+                    .padding(.vertical, 7)
+                    .padding(.horizontal, 10)
+                    .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+
+            if words.isEmpty {
+                Text(language.text(japanese: "単語がまだありません", english: "No words yet"))
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, minHeight: 72, alignment: .center)
+            } else {
+                ScrollView {
+                    LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
+                        ForEach(words) { word in
+                            PracticeWordToggleChip(
+                                word: word,
+                                isSelected: selectedIDs.contains(word.id),
+                                language: language
+                            ) {
+                                toggle(word.id)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 1)
+                }
+                .frame(maxHeight: 178)
+
+                HStack(spacing: 10) {
+                    Button {
+                        selectedIDs = Set(words.map(\.id))
+                    } label: {
+                        Label(language.text(japanese: "ぜんぶチェック", english: "Select All"), systemImage: "checkmark.square.fill")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button {
+                        selectedIDs = []
+                    } label: {
+                        Label(language.text(japanese: "チェックをはずす", english: "Clear"), systemImage: "square")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Spacer()
+                }
+                .font(.subheadline.weight(.bold))
+            }
+        }
+        .padding(14)
+        .background(.white.opacity(0.88))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.78, green: 0.68, blue: 0.94), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 6)
+    }
+
+    private func toggle(_ id: UUID) {
+        if selectedIDs.contains(id) {
+            selectedIDs.remove(id)
+        } else {
+            selectedIDs.insert(id)
+        }
+    }
+}
+
+private struct PracticeWordToggleChip: View {
+    var word: SpellingWord
+    var isSelected: Bool
+    var language: AppLanguage
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 9) {
+                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(isSelected ? Color(red: 0.49, green: 0.30, blue: 0.78) : Color(red: 0.48, green: 0.50, blue: 0.56))
+
+                Text(word.text)
+                    .font(.headline.weight(.heavy))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, minHeight: 42)
+            .padding(.horizontal, 10)
+            .background(isSelected ? Color(red: 0.96, green: 0.91, blue: 1.0) : Color(red: 0.97, green: 0.98, blue: 1.0))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? Color(red: 0.57, green: 0.38, blue: 0.82) : Color(red: 0.78, green: 0.82, blue: 0.90), lineWidth: isSelected ? 2 : 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(language.text(japanese: "\(word.text)を\(isSelected ? "えらんでいます" : "えらんでいません")", english: "\(word.text) is \(isSelected ? "selected" : "not selected")"))
     }
 }
 
