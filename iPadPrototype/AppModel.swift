@@ -229,7 +229,9 @@ final class AppModel: ObservableObject {
         guard let index = attempts.firstIndex(where: { $0.id == attempt.id }) else {
             return
         }
-        attempts[index].decision = decision
+        var updatedAttempts = attempts
+        updatedAttempts[index].decision = decision
+        attempts = updatedAttempts
     }
 
     func updateAttemptParentReview(_ attempt: SpellingAttempt, decision parentDecision: ParentReviewDecision, exampleDrawingData: Data? = nil) {
@@ -237,22 +239,25 @@ final class AppModel: ObservableObject {
             return
         }
 
-        attempts[index].parentReviewDecision = parentDecision
+        var updatedAttempts = attempts
+        updatedAttempts[index].parentReviewDecision = parentDecision
         if let exampleDrawingData {
-            attempts[index].parentExampleDrawingData = exampleDrawingData
+            updatedAttempts[index].parentExampleDrawingData = exampleDrawingData
         } else if parentDecision == .approved {
-            attempts[index].parentExampleDrawingData = nil
+            updatedAttempts[index].parentExampleDrawingData = nil
         }
-        attempts[index].parentReviewedAt = Date()
+        updatedAttempts[index].parentReviewedAt = Date()
 
         switch parentDecision {
         case .approved:
-            attempts[index].decision = .autoCorrect
+            updatedAttempts[index].decision = .autoCorrect
         case .needsPractice:
-            attempts[index].decision = .autoIncorrect
+            updatedAttempts[index].decision = .autoIncorrect
         case .unreviewed:
             break
         }
+
+        attempts = updatedAttempts
     }
 
     func updatePracticeSampleParentReview(_ sample: PracticeSample, decision parentDecision: ParentReviewDecision, exampleDrawingData: Data? = nil) {
@@ -260,13 +265,15 @@ final class AppModel: ObservableObject {
             return
         }
 
-        practiceSamples[index].parentReviewDecision = parentDecision
+        var updatedSamples = practiceSamples
+        updatedSamples[index].parentReviewDecision = parentDecision
         if let exampleDrawingData {
-            practiceSamples[index].parentExampleDrawingData = exampleDrawingData
+            updatedSamples[index].parentExampleDrawingData = exampleDrawingData
         } else if parentDecision == .approved {
-            practiceSamples[index].parentExampleDrawingData = nil
+            updatedSamples[index].parentExampleDrawingData = nil
         }
-        practiceSamples[index].parentReviewedAt = Date()
+        updatedSamples[index].parentReviewedAt = Date()
+        practiceSamples = updatedSamples
     }
 
     func resetResults() {
