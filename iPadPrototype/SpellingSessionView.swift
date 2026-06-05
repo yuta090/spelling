@@ -236,9 +236,9 @@ struct SpellingSessionView: View {
                     Spacer()
 
                     SessionControlButton(
-                        title: index == sessionWords.count - 1 ? language.text(japanese: "結果へ", english: "Results") : language.text(japanese: "つぎへ", english: "Next"),
-                        systemImage: index == sessionWords.count - 1 ? "chart.bar.xaxis" : "arrow.right",
-                        style: .primary
+                        title: index == sessionWords.count - 1 ? language.text(japanese: "できた!", english: "Results") : language.text(japanese: "つぎへ", english: "Next"),
+                        systemImage: index == sessionWords.count - 1 ? "star.fill" : "arrow.right",
+                        style: index == sessionWords.count - 1 ? .finish : .primary
                     ) {
                         moveNext()
                     }
@@ -264,9 +264,9 @@ struct SpellingSessionView: View {
                     SessionControlButton(
                         title: isChecking
                             ? language.text(japanese: "保存中", english: "Saving")
-                            : (index == sessionWords.count - 1 ? language.text(japanese: "結果へ", english: "Results") : language.text(japanese: "つぎへ", english: "Next")),
-                        systemImage: isChecking ? "hourglass" : (index == sessionWords.count - 1 ? "chart.bar.xaxis" : "arrow.right"),
-                        style: .primary
+                            : (index == sessionWords.count - 1 ? language.text(japanese: "できた!", english: "Results") : language.text(japanese: "つぎへ", english: "Next")),
+                        systemImage: isChecking ? "hourglass" : (index == sessionWords.count - 1 ? "star.fill" : "arrow.right"),
+                        style: index == sessionWords.count - 1 && !isChecking ? .finish : .primary
                     ) {
                         checkAnswer()
                     }
@@ -665,6 +665,7 @@ private struct TimerPill: View {
 private enum SessionButtonStyleKind {
     case primary
     case secondary
+    case finish
 }
 
 private struct SessionControlButton: View {
@@ -672,6 +673,62 @@ private struct SessionControlButton: View {
     var systemImage: String
     var style: SessionButtonStyleKind
     var action: () -> Void
+
+    private var foregroundColor: Color {
+        switch style {
+        case .primary:
+            return .white
+        case .secondary:
+            return Color(red: 0.13, green: 0.34, blue: 0.75)
+        case .finish:
+            return Color(red: 0.34, green: 0.18, blue: 0.02)
+        }
+    }
+
+    private var background: LinearGradient {
+        switch style {
+        case .primary:
+            return LinearGradient(
+                colors: [Color(red: 0.14, green: 0.41, blue: 0.84), Color(red: 0.10, green: 0.32, blue: 0.72)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .secondary:
+            return LinearGradient(
+                colors: [Color(red: 0.91, green: 0.96, blue: 1.0), Color(red: 0.91, green: 0.96, blue: 1.0)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        case .finish:
+            return LinearGradient(
+                colors: [Color(red: 1.0, green: 0.86, blue: 0.22), Color(red: 0.98, green: 0.55, blue: 0.10)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+    }
+
+    private var borderColor: Color {
+        switch style {
+        case .finish:
+            return Color(red: 0.94, green: 0.48, blue: 0.05)
+        case .primary:
+            return .clear
+        case .secondary:
+            return Color(red: 0.60, green: 0.76, blue: 0.96)
+        }
+    }
+
+    private var shadowColor: Color {
+        switch style {
+        case .finish:
+            return Color.orange.opacity(0.30)
+        case .primary:
+            return Color.blue.opacity(0.18)
+        case .secondary:
+            return .clear
+        }
+    }
 
     var body: some View {
         Button(action: action) {
@@ -682,14 +739,14 @@ private struct SessionControlButton: View {
                 .padding(.horizontal, 24)
         }
         .buttonStyle(.plain)
-        .foregroundStyle(style == .primary ? .white : Color(red: 0.13, green: 0.34, blue: 0.75))
-        .background(style == .primary ? Color(red: 0.14, green: 0.41, blue: 0.84) : Color(red: 0.91, green: 0.96, blue: 1.0))
+        .foregroundStyle(foregroundColor)
+        .background(background)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.60, green: 0.76, blue: 0.96), lineWidth: style == .primary ? 0 : 1)
+                .stroke(borderColor, lineWidth: style == .primary ? 0 : 2)
         )
-        .shadow(color: style == .primary ? Color.blue.opacity(0.18) : .clear, radius: 8, x: 0, y: 5)
+        .shadow(color: shadowColor, radius: style == .finish ? 12 : 8, x: 0, y: 5)
     }
 }
 
