@@ -4,7 +4,7 @@ import SwiftUI
 struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedSection: ParentSection = .history
+    @State private var selectedSection: ParentSection = .handwriting
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -27,6 +27,7 @@ struct ParentDashboardView: View {
                                         TestSettingsPanel(language: language)
                                     }
                                     VStack(spacing: 14) {
+                                        HandwritingListPanel(language: language)
                                         AnswerReviewPanel(language: language)
                                         LearningHistoryPanel(language: language)
                                     }
@@ -73,6 +74,8 @@ struct ParentDashboardView: View {
             AnswerReviewPanel(language: language)
         case .history:
             LearningHistoryPanel(language: language)
+        case .handwriting:
+            HandwritingListPanel(language: language)
         }
     }
 
@@ -109,6 +112,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
     case settings
     case review
     case history
+    case handwriting
 
     var id: String { rawValue }
 
@@ -122,6 +126,8 @@ private enum ParentSection: String, CaseIterable, Identifiable {
             return language.text(japanese: "確認", english: "Review")
         case .history:
             return language.text(japanese: "履歴", english: "History")
+        case .handwriting:
+            return language.text(japanese: "手書き", english: "Writing")
         }
     }
 }
@@ -574,6 +580,137 @@ private struct LearningHistoryEntry: Identifiable {
     var systemImage: String
     var tint: Color
     var drawingData: Data?
+}
+
+private struct HandwritingListPanel: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    private var handwritingEntries: [LearningHistoryEntry] {
+        let testEntries = model.attempts.compactMap { attempt -> LearningHistoryEntry? in
+            guard let drawingData = attempt.drawingData else {
+                return nil
+            }
+            return LearningHistoryEntry(
+                id: "test-writing-\(attempt.id.uuidString)",
+                date: attempt.date,
+                word: attempt.word,
+                modeLabel: language.text(japanese: "テスト", english: "Test"),
+                detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
+                systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
+                tint: attempt.decision == .autoCorrect ? Color.green : Color.orange,
+                drawingData: drawingData
+            )
+        }
+
+        let practiceEntries = model.practiceSamples.map { sample in
+            let modeLabel = sample.mode == SessionMode.review.rawValue
+                ? language.text(japanese: "ふくしゅう", english: "Review")
+                : language.text(japanese: "れんしゅう", english: "Practice")
+
+            return LearningHistoryEntry(
+                id: "practice-writing-\(sample.id.uuidString)",
+                date: sample.date,
+                word: sample.word,
+                modeLabel: modeLabel,
+                detail: language.text(japanese: "手書き記録", english: "Handwriting saved"),
+                systemImage: "pencil.and.scribble",
+                tint: Color(red: 0.16, green: 0.42, blue: 0.78),
+                drawingData: sample.drawingData
+            )
+        }
+
+        return (testEntries + practiceEntries).sorted { $0.date > $1.date }
+    }
+
+    var body: some View {
+        ParentPanel(
+            title: language.text(japanese: "手書き一覧", english: "Handwriting List"),
+            systemImage: "rectangle.stack.fill"
+        ) {
+            HStack {
+                SettingValueRow(
+                    title: language.text(japanese: "保存された手書き", english: "Saved handwriting"),
+                    value: "\(handwritingEntries.count)"
+                )
+
+                Spacer()
+            }
+
+            Text(language.text(
+                japanese: "練習・復習・テストで書いた内容を、親が確認しやすい大きさで表示します。",
+                english: "Review all practice, review, and test handwriting at a larger size."
+            ))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.secondary)
+
+            if handwritingEntries.isEmpty {
+                ContentUnavailableView(
+                    language.text(japanese: "まだ手書きがありません", english: "No handwriting yet"),
+                    systemImage: "pencil.and.scribble",
+                    description: Text(language.text(japanese: "練習やテストをするとここに残ります。", english: "Practice and test handwriting will appear here."))
+                )
+                .frame(minHeight: 260)
+            } else {
+                ScrollView {
+                    VStack(spacing: 14) {
+                        ForEach(handwritingEntries) { entry in
+                            ParentHandwritingListCard(entry: entry, language: language)
+                        }
+                    }
+                }
+                .frame(maxHeight: 760)
+            }
+        }
+    }
+}
+
+private struct ParentHandwritingListCard: View {
+    var entry: LearningHistoryEntry
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: entry.systemImage)
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(entry.tint)
+                    .frame(width: 34, height: 34)
+
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(entry.word)
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                    Text("\(entry.modeLabel) ・ \(entry.date.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(entry.detail)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+
+            if let drawingData = entry.drawingData {
+                DrawingPreview(drawingData: drawingData)
+                    .frame(height: 220)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.24), lineWidth: 1)
+                    )
+            }
+        }
+        .padding(12)
+        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.77, green: 0.86, blue: 0.72), lineWidth: 1)
+        )
+    }
 }
 
 private struct LearningHistoryCard: View {

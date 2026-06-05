@@ -730,12 +730,6 @@ private struct PracticeSessionReviewView: View {
     var language: AppLanguage
     var onDone: () -> Void
 
-    private var columns: [GridItem] {
-        [
-            GridItem(.adaptive(minimum: 310), spacing: 14)
-        ]
-    }
-
     var body: some View {
         VStack(spacing: 18) {
             HStack {
@@ -785,7 +779,7 @@ private struct PracticeSessionReviewView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 ScrollView {
-                    LazyVGrid(columns: columns, spacing: 14) {
+                    VStack(spacing: 14) {
                         ForEach(samples) { sample in
                             PracticeSampleReviewCard(sample: sample, language: language)
                         }
@@ -812,12 +806,6 @@ private struct TestSessionResultsView: View {
 
     private var correctCount: Int {
         attempts.filter { $0.decision == .autoCorrect }.count
-    }
-
-    private var columns: [GridItem] {
-        [
-            GridItem(.adaptive(minimum: 300), spacing: 14)
-        ]
     }
 
     var body: some View {
@@ -869,7 +857,7 @@ private struct TestSessionResultsView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 ScrollView {
-                    LazyVGrid(columns: columns, spacing: 14) {
+                    VStack(spacing: 14) {
                         ForEach(attempts) { attempt in
                             TestAttemptResultCard(attempt: attempt, language: language)
                         }
@@ -921,7 +909,7 @@ private struct TestAttemptResultCard: View {
 
             if let drawingData = attempt.drawingData {
                 PracticeDrawingPreview(drawingData: drawingData)
-                    .frame(height: 130)
+                    .frame(height: 210)
                     .background(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
@@ -957,7 +945,7 @@ private struct PracticeSampleReviewCard: View {
             }
 
             PracticeDrawingPreview(drawingData: sample.drawingData)
-                .frame(height: 150)
+                .frame(height: 210)
                 .background(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
