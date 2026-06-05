@@ -185,14 +185,16 @@ struct SpellingSessionView: View {
                 VStack(spacing: 18) {
                     header
 
-                    ChildTaskBanner(
-                        title: taskBannerTitle,
-                        message: taskBannerMessage,
-                        systemImage: taskBannerIcon,
-                        tint: taskBannerTint,
-                        compact: true
-                    )
-                    .frame(maxWidth: 760)
+                    if mode != .practice {
+                        ChildTaskBanner(
+                            title: taskBannerTitle,
+                            message: taskBannerMessage,
+                            systemImage: taskBannerIcon,
+                            tint: taskBannerTint,
+                            compact: true
+                        )
+                        .frame(maxWidth: 760)
+                    }
 
                     wordHeader
 
