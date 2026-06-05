@@ -867,75 +867,126 @@ private struct TestSessionResultsView: View {
     var language: AppLanguage
     var onDone: () -> Void
 
+    @State private var showingPerfectCelebration = false
+    @State private var celebrationSeed = 0
+
     private var correctCount: Int {
         attempts.filter { $0.decision == .autoCorrect }.count
     }
 
+    private var isPerfect: Bool {
+        !attempts.isEmpty && correctCount == attempts.count
+    }
+
     var body: some View {
-        VStack(spacing: 18) {
-            HStack {
-                Label(language.text(japanese: "テスト結果", english: "Test Results"), systemImage: "checklist")
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
-
-                Spacer()
-
-                Text("\(attempts.count) \(language.text(japanese: "こ回答", english: "answers"))")
-                    .font(.headline.monospacedDigit().weight(.bold))
-                    .foregroundStyle(.secondary)
+        ZStack {
+            if showingPerfectCelebration {
+                SparkleBurst(seed: celebrationSeed)
+                    .transition(.opacity)
+                    .zIndex(2)
             }
 
-            VStack(spacing: 10) {
-                Image(systemName: "trophy.fill")
-                    .font(.system(size: 58, weight: .bold))
-                    .foregroundStyle(Color(red: 0.96, green: 0.68, blue: 0.04))
-                Text(language.text(japanese: "よくできました！", english: "Great work!"))
-                    .font(.system(size: 30, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Color(red: 0.80, green: 0.20, blue: 0.08))
-                Text("\(correctCount)/\(max(attempts.count, 1))  \(language.text(japanese: "正解", english: "correct"))")
-                    .font(.system(size: 28, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Color(red: 0.13, green: 0.35, blue: 0.74))
-                    .padding(.vertical, 7)
-                    .padding(.horizontal, 24)
-                    .background(Color(red: 0.91, green: 0.96, blue: 1.0))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .frame(maxWidth: .infinity)
-            .padding(18)
-            .background(.white.opacity(0.88))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(red: 0.76, green: 0.84, blue: 0.96), lineWidth: 1)
-            )
+            VStack(spacing: 18) {
+                HStack {
+                    Label(language.text(japanese: "テスト結果", english: "Test Results"), systemImage: "checklist")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
 
-            if attempts.isEmpty {
-                ContentUnavailableView(
-                    language.text(japanese: "まだ結果がありません", english: "No results yet"),
-                    systemImage: "checklist",
-                    description: Text(language.text(japanese: "テストを進めるとここに表示されます。", english: "Test answers will appear here."))
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.white.opacity(0.72))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            } else {
-                ScrollView {
-                    VStack(spacing: 14) {
-                        ForEach(attempts) { attempt in
-                            TestAttemptResultCard(attempt: attempt, language: language)
+                    Spacer()
+
+                    Text("\(attempts.count) \(language.text(japanese: "こ回答", english: "answers"))")
+                        .font(.headline.monospacedDigit().weight(.bold))
+                        .foregroundStyle(.secondary)
+                }
+
+                VStack(spacing: 10) {
+                    if isPerfect {
+                        HStack(spacing: 12) {
+                            Image(systemName: "sparkles")
+                            Image(systemName: "crown.fill")
+                            Image(systemName: "sparkles")
+                        }
+                        .font(.system(size: 38, weight: .heavy))
+                        .foregroundStyle(Color(red: 0.98, green: 0.80, blue: 0.10))
+                    }
+
+                    Image(systemName: isPerfect ? "crown.fill" : "trophy.fill")
+                        .font(.system(size: isPerfect ? 72 : 58, weight: .bold))
+                        .foregroundStyle(isPerfect ? Color(red: 1.0, green: 0.72, blue: 0.08) : Color(red: 0.96, green: 0.68, blue: 0.04))
+                    Text(isPerfect ? language.text(japanese: "ぜんぶできた！", english: "Perfect!") : language.text(japanese: "よくできました！", english: "Great work!"))
+                        .font(.system(size: isPerfect ? 40 : 30, weight: .heavy, design: .rounded))
+                        .foregroundStyle(isPerfect ? Color(red: 0.78, green: 0.22, blue: 0.05) : Color(red: 0.80, green: 0.20, blue: 0.08))
+                    Text("\(correctCount)/\(max(attempts.count, 1))  \(language.text(japanese: "正解", english: "correct"))")
+                        .font(.system(size: 28, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Color(red: 0.13, green: 0.35, blue: 0.74))
+                        .padding(.vertical, 7)
+                        .padding(.horizontal, 24)
+                        .background(Color(red: 0.91, green: 0.96, blue: 1.0))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(isPerfect ? 24 : 18)
+                .background(
+                    Group {
+                        if isPerfect {
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 1.0, green: 0.95, blue: 0.62),
+                                    Color(red: 0.78, green: 0.96, blue: 0.55),
+                                    Color(red: 0.78, green: 0.90, blue: 1.0)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        } else {
+                            Color.white.opacity(0.88)
                         }
                     }
-                    .padding(.vertical, 4)
-                }
-            }
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(isPerfect ? Color(red: 0.98, green: 0.64, blue: 0.08) : Color(red: 0.76, green: 0.84, blue: 0.96), lineWidth: isPerfect ? 3 : 1)
+                )
+                .shadow(color: isPerfect ? Color.orange.opacity(0.28) : .clear, radius: 16, x: 0, y: 8)
 
-            Button(action: onDone) {
-                Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
-                    .font(.title3.weight(.bold))
-                    .frame(minWidth: 240)
-                    .padding(.vertical, 14)
+                if attempts.isEmpty {
+                    ContentUnavailableView(
+                        language.text(japanese: "まだ結果がありません", english: "No results yet"),
+                        systemImage: "checklist",
+                        description: Text(language.text(japanese: "テストを進めるとここに表示されます。", english: "Test answers will appear here."))
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.white.opacity(0.72))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else {
+                    ScrollView {
+                        VStack(spacing: 14) {
+                            ForEach(attempts) { attempt in
+                                TestAttemptResultCard(attempt: attempt, language: language)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+
+                Button(action: onDone) {
+                    Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
+                        .font(.title3.weight(.bold))
+                        .frame(minWidth: 240)
+                        .padding(.vertical, 14)
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
+        }
+        .onAppear {
+            guard isPerfect else {
+                return
+            }
+            celebrationSeed += 1
+            withAnimation(.easeOut(duration: 0.12)) {
+                showingPerfectCelebration = true
+            }
         }
     }
 }
