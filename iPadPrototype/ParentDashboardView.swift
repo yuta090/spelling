@@ -6,7 +6,6 @@ struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedSection: ParentSection = .grading
-    @State private var selectedActivitySection: ParentActivitySection = .grading
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -19,41 +18,18 @@ struct ParentDashboardView: View {
 
                 VStack(spacing: 18) {
                     header
+                    ParentSectionSwitcher(selectedSection: $selectedSection, language: language)
+                    ParentStatusStrip(language: language)
 
                     GeometryReader { proxy in
-                        if proxy.size.width >= 980 {
-                            ScrollView {
-                                HStack(alignment: .top, spacing: 14) {
-                                    VStack(spacing: 14) {
-                                        ParentWordStepPanel(language: language)
-                                        ParentWordListPanel(language: language)
-                                        TestSettingsPanel(language: language)
-                                    }
-                                    .frame(width: min(max(proxy.size.width * 0.38, 380), 470), alignment: .top)
-
-                                    ParentActivityWorkspace(
-                                        selectedSection: $selectedActivitySection,
-                                        language: language
-                                    )
-                                    .frame(maxWidth: .infinity, alignment: .top)
-                                }
-                            }
-                        } else {
-                            VStack(spacing: 12) {
-                                Picker("", selection: $selectedSection) {
-                                    ForEach(ParentSection.allCases) { section in
-                                        Text(section.title(language: language)).tag(section)
-                                    }
-                                }
-                                .labelsHidden()
-                                .pickerStyle(.segmented)
-
-                                ScrollView {
-                                    selectedPanel
-                                }
-                            }
+                        ScrollView {
+                            selectedPanel(width: proxy.size.width)
+                                .frame(maxWidth: .infinity, alignment: .top)
+                                .padding(.bottom, 8)
                         }
                     }
+                    .animation(.easeInOut(duration: 0.16), value: selectedSection)
+                    .frame(maxHeight: .infinity)
 
                     Text(language.text(
                         japanese: "※ データは端末内に保存されます。iCloud同期にはまだ対応していません。",
@@ -69,23 +45,30 @@ struct ParentDashboardView: View {
     }
 
     @ViewBuilder
-    private var selectedPanel: some View {
+    private func selectedPanel(width: CGFloat) -> some View {
         switch selectedSection {
-        case .wordList:
-            VStack(spacing: 14) {
-                ParentWordStepPanel(language: language)
-                ParentWordListPanel(language: language)
-            }
-        case .settings:
-            TestSettingsPanel(language: language)
         case .grading:
             ParentGradingPanel(language: language)
-        case .review:
-            AnswerReviewPanel(language: language)
-        case .history:
-            LearningHistoryPanel(language: language)
-        case .handwriting:
-            HandwritingListPanel(language: language)
+        case .words:
+            if width >= 900 {
+                HStack(alignment: .top, spacing: 14) {
+                    ParentWordStepPanel(language: language)
+                        .frame(width: min(max(width * 0.34, 330), 430), alignment: .top)
+
+                    ParentWordListPanel(language: language)
+                        .frame(maxWidth: .infinity, alignment: .top)
+                }
+            } else {
+                VStack(spacing: 14) {
+                    ParentWordStepPanel(language: language)
+                    ParentWordListPanel(language: language)
+                }
+            }
+        case .records:
+            ParentRecordsWorkspace(language: language)
+        case .settings:
+            TestSettingsPanel(language: language)
+                .frame(maxWidth: 820, alignment: .topLeading)
         }
     }
 
@@ -118,63 +101,268 @@ struct ParentDashboardView: View {
 }
 
 private enum ParentSection: String, CaseIterable, Identifiable {
-    case wordList
-    case settings
     case grading
-    case review
-    case history
-    case handwriting
+    case words
+    case records
+    case settings
 
     var id: String { rawValue }
 
     func title(language: AppLanguage) -> String {
         switch self {
-        case .wordList:
-            return language.text(japanese: "単語", english: "Words")
+        case .grading:
+            return language.text(japanese: "採点", english: "Grade")
+        case .words:
+            return language.text(japanese: "単語登録", english: "Words")
+        case .records:
+            return language.text(japanese: "記録", english: "Records")
         case .settings:
             return language.text(japanese: "設定", english: "Settings")
+        }
+    }
+
+    func subtitle(language: AppLanguage) -> String {
+        switch self {
         case .grading:
-            return language.text(japanese: "採点", english: "Grade")
-        case .review:
-            return language.text(japanese: "成績", english: "Results")
-        case .history:
-            return language.text(japanese: "履歴", english: "History")
-        case .handwriting:
-            return language.text(japanese: "手書き", english: "Writing")
+            return language.text(japanese: "大きく見てOK", english: "Review clearly")
+        case .words:
+            return language.text(japanese: "ステップを準備", english: "Prepare steps")
+        case .records:
+            return language.text(japanese: "成績と履歴", english: "Results & history")
+        case .settings:
+            return language.text(japanese: "出題と音声", english: "Prompts & voice")
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .grading:
+            return "checkmark.seal.fill"
+        case .words:
+            return "text.book.closed.fill"
+        case .records:
+            return "chart.bar.xaxis"
+        case .settings:
+            return "slider.horizontal.3"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .grading:
+            return Color(red: 0.13, green: 0.40, blue: 0.78)
+        case .words:
+            return Color(red: 0.17, green: 0.56, blue: 0.24)
+        case .records:
+            return Color(red: 0.56, green: 0.34, blue: 0.78)
+        case .settings:
+            return Color(red: 0.42, green: 0.48, blue: 0.56)
         }
     }
 }
 
-private enum ParentActivitySection: String, CaseIterable, Identifiable {
-    case grading
-    case handwriting
+private struct ParentSectionSwitcher: View {
+    @Binding var selectedSection: ParentSection
+    var language: AppLanguage
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 10) {
+                sectionButtons
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    sectionButtons
+                }
+                .padding(.vertical, 1)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private var sectionButtons: some View {
+        ForEach(ParentSection.allCases) { section in
+            ParentSectionButton(
+                section: section,
+                isSelected: section == selectedSection,
+                language: language
+            ) {
+                selectedSection = section
+            }
+        }
+    }
+}
+
+private struct ParentSectionButton: View {
+    var section: ParentSection
+    var isSelected: Bool
+    var language: AppLanguage
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: section.systemImage)
+                    .font(.title3.weight(.bold))
+                    .frame(width: 34, height: 34)
+                    .background(isSelected ? .white.opacity(0.22) : section.tint.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(section.title(language: language))
+                        .font(.headline.weight(.heavy))
+                        .lineLimit(1)
+                    Text(section.subtitle(language: language))
+                        .font(.caption.weight(.bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                        .opacity(isSelected ? 0.92 : 0.72)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .foregroundStyle(isSelected ? .white : section.tint)
+            .frame(width: 172, height: 64, alignment: .leading)
+            .padding(.horizontal, 12)
+            .background(isSelected ? section.tint : .white.opacity(0.92))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? section.tint : section.tint.opacity(0.22), lineWidth: isSelected ? 0 : 1)
+            )
+            .shadow(color: isSelected ? section.tint.opacity(0.20) : .black.opacity(0.05), radius: isSelected ? 12 : 7, x: 0, y: 5)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+private struct ParentStatusStrip: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    private var unreviewedCount: Int {
+        model.attempts.filter { $0.parentReviewDecision == .unreviewed }.count
+            + model.practiceSamples.filter { $0.parentReviewDecision == .unreviewed }.count
+    }
+
+    var body: some View {
+        let progress = model.todayStepProgress
+        let stepTitle = model.selectedWordStep?.title(language: language)
+            ?? language.text(japanese: "ステップなし", english: "No step")
+
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 10) {
+                statusTiles(stepTitle: stepTitle, progress: progress)
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    statusTiles(stepTitle: stepTitle, progress: progress)
+                }
+                .padding(.vertical, 1)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func statusTiles(stepTitle: String, progress: TodayStepProgress) -> some View {
+        ParentStatusTile(
+            title: language.text(japanese: "今の単語集", english: "Current Step"),
+            value: stepTitle,
+            systemImage: "rectangle.stack.fill",
+            tint: Color(red: 0.16, green: 0.42, blue: 0.78)
+        )
+        ParentStatusTile(
+            title: language.text(japanese: "単語", english: "Words"),
+            value: "\(model.activeWords.count)",
+            systemImage: "textformat.abc",
+            tint: Color(red: 0.17, green: 0.56, blue: 0.24)
+        )
+        ParentStatusTile(
+            title: language.text(japanese: "未採点", english: "Ungraded"),
+            value: "\(unreviewedCount)",
+            systemImage: "exclamationmark.circle.fill",
+            tint: unreviewedCount > 0 ? Color(red: 0.90, green: 0.46, blue: 0.13) : Color(red: 0.30, green: 0.60, blue: 0.28)
+        )
+        ParentStatusTile(
+            title: language.text(japanese: "今日のクリア", english: "Today"),
+            value: progress.totalWords == 0 ? "0/0" : "\(progress.clearedCount)/\(progress.totalWords)",
+            systemImage: "checkmark.circle.fill",
+            tint: Color(red: 0.56, green: 0.34, blue: 0.78)
+        )
+    }
+}
+
+private struct ParentStatusTile: View {
+    var title: String
+    var value: String
+    var systemImage: String
+    var tint: Color
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(tint)
+                .frame(width: 34, height: 34)
+                .background(tint.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Text(value)
+                    .font(.headline.monospacedDigit().weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .frame(width: 170, height: 54)
+        .padding(.horizontal, 12)
+        .background(.white.opacity(0.86))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(tint.opacity(0.16), lineWidth: 1)
+        )
+    }
+}
+
+private enum ParentRecordSection: String, CaseIterable, Identifiable {
     case results
+    case handwriting
     case history
 
     var id: String { rawValue }
 
     func title(language: AppLanguage) -> String {
         switch self {
-        case .grading:
-            return language.text(japanese: "採点", english: "Grade")
-        case .handwriting:
-            return language.text(japanese: "手書き", english: "Writing")
         case .results:
             return language.text(japanese: "成績", english: "Results")
+        case .handwriting:
+            return language.text(japanese: "手書き", english: "Writing")
         case .history:
             return language.text(japanese: "履歴", english: "History")
         }
     }
 }
 
-private struct ParentActivityWorkspace: View {
-    @Binding var selectedSection: ParentActivitySection
+private struct ParentRecordsWorkspace: View {
+    @State private var selectedRecordSection: ParentRecordSection = .results
     var language: AppLanguage
 
     var body: some View {
         VStack(spacing: 12) {
-            Picker("", selection: $selectedSection) {
-                ForEach(ParentActivitySection.allCases) { section in
+            Picker("", selection: $selectedRecordSection) {
+                ForEach(ParentRecordSection.allCases) { section in
                     Text(section.title(language: language)).tag(section)
                 }
             }
@@ -188,13 +376,11 @@ private struct ParentActivityWorkspace: View {
 
     @ViewBuilder
     private var selectedPanel: some View {
-        switch selectedSection {
-        case .grading:
-            ParentGradingPanel(language: language)
-        case .handwriting:
-            HandwritingListPanel(language: language)
+        switch selectedRecordSection {
         case .results:
             AnswerReviewPanel(language: language)
+        case .handwriting:
+            HandwritingListPanel(language: language)
         case .history:
             LearningHistoryPanel(language: language)
         }
@@ -348,7 +534,7 @@ private struct ParentWordListPanel: View {
 
     var body: some View {
         ParentPanel(
-            title: language.text(japanese: "① 単語リスト", english: "1. Word List"),
+            title: language.text(japanese: "単語リスト", english: "Word List"),
             systemImage: "list.bullet.rectangle"
         ) {
             Text(language.text(
@@ -629,7 +815,7 @@ private struct TestSettingsPanel: View {
 
     var body: some View {
         ParentPanel(
-            title: language.text(japanese: "② テスト設定", english: "2. Test Settings"),
+            title: language.text(japanese: "テスト設定", english: "Test Settings"),
             systemImage: "slider.horizontal.3"
         ) {
             SettingBlock(title: language.text(japanese: "表示言語", english: "Screen Language")) {
