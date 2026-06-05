@@ -336,58 +336,69 @@ private struct ParentStatusTile: View {
     }
 }
 
-private enum ParentRecordSection: String, CaseIterable, Identifiable {
-    case results
-    case school
-    case handwriting
-    case history
+private struct ParentRecordsWorkspace: View {
+    @State private var showingAppRecords = false
+    var language: AppLanguage
 
-    var id: String { rawValue }
+    var body: some View {
+        VStack(spacing: 14) {
+            SchoolTestResultPanel(language: language)
 
-    func title(language: AppLanguage) -> String {
-        switch self {
-        case .results:
-            return language.text(japanese: "成績", english: "Results")
-        case .school:
-            return language.text(japanese: "学校テスト", english: "School")
-        case .handwriting:
-            return language.text(japanese: "手書き", english: "Writing")
-        case .history:
-            return language.text(japanese: "履歴", english: "History")
+            DisclosureGroup(isExpanded: $showingAppRecords) {
+                VStack(spacing: 14) {
+                    AnswerReviewPanel(language: language)
+                    LearningHistoryPanel(language: language)
+                    HandwritingListPanel(language: language)
+                }
+                .padding(.top, 8)
+            } label: {
+                ParentAppRecordDisclosureHeader(language: language)
+            }
+            .padding(14)
+            .background(.white.opacity(0.88))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
+            )
         }
     }
 }
 
-private struct ParentRecordsWorkspace: View {
-    @State private var selectedRecordSection: ParentRecordSection = .results
+private struct ParentAppRecordDisclosureHeader: View {
+    @EnvironmentObject private var model: AppModel
     var language: AppLanguage
 
     var body: some View {
-        VStack(spacing: 12) {
-            Picker("", selection: $selectedRecordSection) {
-                ForEach(ParentRecordSection.allCases) { section in
-                    Text(section.title(language: language)).tag(section)
-                }
+        HStack(spacing: 12) {
+            Image(systemName: "chart.bar.xaxis")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .frame(width: 38, height: 38)
+                .background(Color(red: 0.88, green: 0.94, blue: 1.0))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(language.text(japanese: "アプリの記録を見る", english: "View App Records"))
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                Text(language.text(
+                    japanese: "成績・手書き・学習履歴は必要な時だけ開きます。",
+                    english: "Open results, handwriting, and history only when needed."
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
             }
-            .labelsHidden()
-            .pickerStyle(.segmented)
-            .accessibilityLabel(language.text(japanese: "記録の表示切り替え", english: "Record view"))
 
-            selectedPanel
-        }
-    }
+            Spacer()
 
-    @ViewBuilder
-    private var selectedPanel: some View {
-        switch selectedRecordSection {
-        case .results:
-            AnswerReviewPanel(language: language)
-        case .school:
-            SchoolTestResultPanel(language: language)
-        case .handwriting:
-            HandwritingListPanel(language: language)
-        case .history:
-            LearningHistoryPanel(language: language)
+            Text("\(model.attempts.count + model.practiceSamples.count)")
+                .font(.headline.monospacedDigit().weight(.heavy))
+                .foregroundStyle(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
+                .background(Color(red: 0.90, green: 0.96, blue: 1.0))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
 }
@@ -398,6 +409,7 @@ private struct SchoolTestResultPanel: View {
     @State private var selectedStepID = ""
     @State private var score = 0
     @State private var total = 0
+    @State private var showingOptionalDetails = false
     @State private var missedWords = ""
     @State private var note = ""
     var language: AppLanguage
@@ -465,36 +477,45 @@ private struct SchoolTestResultPanel: View {
                     }
                 }
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Label(language.text(japanese: "間違えた単語", english: "Missed Words"), systemImage: "text.badge.xmark")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.secondary)
-                    TextEditor(text: $missedWords)
-                        .font(.body.monospaced())
-                        .frame(height: 70)
-                        .padding(8)
-                        .background(Color(red: 0.98, green: 0.97, blue: 1.0))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.purple.opacity(0.16), lineWidth: 1)
-                        )
-                }
+                DisclosureGroup(isExpanded: $showingOptionalDetails) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label(language.text(japanese: "間違えた単語", english: "Missed Words"), systemImage: "text.badge.xmark")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.secondary)
+                            TextEditor(text: $missedWords)
+                                .font(.body.monospaced())
+                                .frame(height: 70)
+                                .padding(8)
+                                .background(Color(red: 0.98, green: 0.97, blue: 1.0))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+                                )
+                        }
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Label(language.text(japanese: "メモ", english: "Note"), systemImage: "note.text")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.secondary)
-                    TextEditor(text: $note)
-                        .font(.body)
-                        .frame(height: 64)
-                        .padding(8)
-                        .background(Color(red: 0.98, green: 0.97, blue: 1.0))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.purple.opacity(0.16), lineWidth: 1)
-                        )
+                        VStack(alignment: .leading, spacing: 6) {
+                            Label(language.text(japanese: "メモ", english: "Note"), systemImage: "note.text")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.secondary)
+                            TextEditor(text: $note)
+                                .font(.body)
+                                .frame(height: 64)
+                                .padding(8)
+                                .background(Color(red: 0.98, green: 0.97, blue: 1.0))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+                                )
+                        }
+                    }
+                    .padding(.top, 8)
+                } label: {
+                    Label(language.text(japanese: "間違えた単語・メモを追加", english: "Add missed words or note"), systemImage: "plus.circle.fill")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
                 }
 
                 HStack {
