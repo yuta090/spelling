@@ -423,18 +423,16 @@ private struct ParentStepRecordCard: View {
         model.attempts.filter { stepWordKeys.contains(normalize($0.word)) }
     }
 
-    private var stepPracticeSamples: [PracticeSample] {
-        model.practiceSamples.filter { stepWordKeys.contains(normalize($0.word)) }
-    }
-
     private var schoolResults: [SchoolTestResult] {
-        model.schoolTestResults
-            .filter { schoolResult($0, belongsTo: step) }
-            .sorted { $0.date > $1.date }
+        model.schoolTestResults(for: step)
     }
 
     private var latestSchoolResult: SchoolTestResult? {
         schoolResults.first
+    }
+
+    private var carryOverReviewWords: [SpellingWord] {
+        model.carryOverReviewWords(for: step)
     }
 
     private var latestAttemptsByWord: [String: SpellingAttempt] {
@@ -459,30 +457,8 @@ private struct ParentStepRecordCard: View {
         Set(stepAttempts.map(\.sessionID)).count
     }
 
-    private var schoolMissedWords: [SpellingWord] {
-        let missedKeys = Set(schoolResults.flatMap { parseWordListEntries(from: $0.missedWords).map(\.text) })
-        return step.words.filter { missedKeys.contains(normalize($0.text)) }
-    }
-
-    private var appReviewWords: [SpellingWord] {
-        step.words.filter { word in
-            guard let attempt = latestAttemptsByWord[normalize(word.text)] else {
-                return false
-            }
-            return !attemptIsCleared(attempt)
-        }
-    }
-
     private var reviewWords: [SpellingWord] {
-        var seen = Set<String>()
-        return (schoolMissedWords + appReviewWords).filter { word in
-            let key = normalize(word.text)
-            guard !seen.contains(key) else {
-                return false
-            }
-            seen.insert(key)
-            return true
-        }
+        model.unresolvedReviewWords(for: step)
     }
 
     private var schoolScoreText: String {
@@ -618,6 +594,38 @@ private struct ParentStepRecordCard: View {
             .padding(10)
             .background(recommendation.tint.opacity(0.10))
             .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            if !carryOverReviewWords.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label(language.text(japanese: "前ステップから自動で出る", english: "Auto-added from previous step"), systemImage: "arrow.forward.circle.fill")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(carryOverReviewWords) { word in
+                                Text(word.text)
+                                    .font(.headline.weight(.heavy))
+                                    .foregroundStyle(Color(red: 0.46, green: 0.26, blue: 0.68))
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 10)
+                                    .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                    }
+
+                    Text(language.text(
+                        japanese: "このステップのテストに、復習として自動で混ざります。",
+                        english: "These words are automatically included in this step's test."
+                    ))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                }
+                .padding(10)
+                .background(Color(red: 0.98, green: 0.95, blue: 1.0))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
 
             if !reviewWords.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
@@ -783,18 +791,6 @@ private struct ParentStepRecordCard: View {
         .padding(12)
         .background(Color(red: 0.99, green: 0.98, blue: 1.0))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-
-    private func schoolResult(_ result: SchoolTestResult, belongsTo step: WordStep) -> Bool {
-        if result.stepID == step.id {
-            return true
-        }
-
-        let stepTitles = [
-            step.title(language: .japanese),
-            step.title(language: .english)
-        ]
-        return result.stepID == nil && stepTitles.contains(result.stepTitle)
     }
 
     private func attemptIsCleared(_ attempt: SpellingAttempt) -> Bool {

@@ -66,12 +66,27 @@ final class AppModel: ObservableObject {
         selectedWordStep?.words ?? words
     }
 
+    var testWordsForSelectedStep: [SpellingWord] {
+        guard let selectedWordStep else {
+            return words
+        }
+        return testWords(for: selectedWordStep)
+    }
+
+    var carryOverReviewWordsForSelectedStep: [SpellingWord] {
+        guard let selectedWordStep else {
+            return []
+        }
+        return carryOverReviewWords(for: selectedWordStep)
+    }
+
     var todayStepProgress: TodayStepProgress {
-        todayStepProgress(for: activeWords)
+        todayStepProgress(for: testWordsForSelectedStep)
     }
 
     var nextTestWords: [SpellingWord] {
-        let progress = todayStepProgress
+        let testWords = testWordsForSelectedStep
+        let progress = todayStepProgress(for: testWords)
         guard progress.totalWords > 0 else {
             return []
         }
@@ -80,24 +95,109 @@ final class AppModel: ObservableObject {
             return progress.remainingWords
         }
 
-        return activeWords
+        return testWords
     }
 
     var reviewWords: [SpellingWord] {
-        reviewWords(for: words)
+        uniqueWords(wordSteps.flatMap { unresolvedReviewWords(for: $0) })
     }
 
     var selectedReviewWords: [SpellingWord] {
-        reviewWords(for: activeWords)
+        guard let selectedWordStep else {
+            return []
+        }
+        return unresolvedReviewWords(for: selectedWordStep)
     }
 
-    private func reviewWords(for sourceWords: [SpellingWord]) -> [SpellingWord] {
-        let latestAttempts = latestAttemptsByWord(for: sourceWords, in: attempts)
+    func testWords(for step: WordStep) -> [SpellingWord] {
+        uniqueWords(step.words + carryOverReviewWords(for: step))
+    }
+
+    func carryOverReviewWords(for step: WordStep) -> [SpellingWord] {
+        guard let previousStep = previousWordStep(before: step) else {
+            return []
+        }
+        return unresolvedReviewWords(for: previousStep)
+    }
+
+    func unresolvedReviewWords(for step: WordStep) -> [SpellingWord] {
+        let latestAttempts = latestAttemptsByWord(for: step.words, in: attempts)
+        let latestSchoolMissDates = latestSchoolMissDatesByWord(for: step)
+
+        return step.words.filter { word in
+            let key = normalize(word.text)
+            let latestAttempt = latestAttempts[key]
+            let appNeedsReview = latestAttempt.map { !isCleared($0) } ?? false
+
+            let schoolNeedsReview: Bool
+            if let schoolMissDate = latestSchoolMissDates[key] {
+                if let latestAttempt, latestAttempt.date > schoolMissDate, isCleared(latestAttempt) {
+                    schoolNeedsReview = false
+                } else {
+                    schoolNeedsReview = true
+                }
+            } else {
+                schoolNeedsReview = false
+            }
+
+            return appNeedsReview || schoolNeedsReview
+        }
+    }
+
+    func schoolTestResults(for step: WordStep) -> [SchoolTestResult] {
+        schoolTestResults
+            .filter { schoolTestResult($0, belongsTo: step) }
+            .sorted { $0.date > $1.date }
+    }
+
+    private func previousWordStep(before step: WordStep) -> WordStep? {
+        let steps = wordSteps
+        guard let index = steps.firstIndex(where: { $0.id == step.id }), index > 0 else {
+            return nil
+        }
+        return steps[index - 1]
+    }
+
+    private func latestSchoolMissDatesByWord(for step: WordStep) -> [String: Date] {
+        let stepTexts = Set(step.words.map { normalize($0.text) })
+        var datesByWord: [String: Date] = [:]
+
+        for result in schoolTestResults(for: step) {
+            for entry in parseWordListEntries(from: result.missedWords) {
+                let key = normalize(entry.text)
+                guard stepTexts.contains(key) else {
+                    continue
+                }
+                if datesByWord[key] == nil || result.date > datesByWord[key]! {
+                    datesByWord[key] = result.date
+                }
+            }
+        }
+
+        return datesByWord
+    }
+
+    private func schoolTestResult(_ result: SchoolTestResult, belongsTo step: WordStep) -> Bool {
+        if result.stepID == step.id {
+            return true
+        }
+
+        let stepTitles = [
+            step.title(language: .japanese),
+            step.title(language: .english)
+        ]
+        return result.stepID == nil && stepTitles.contains(result.stepTitle)
+    }
+
+    private func uniqueWords(_ sourceWords: [SpellingWord]) -> [SpellingWord] {
+        var seen = Set<String>()
         return sourceWords.filter { word in
-            guard let attempt = latestAttempts[normalize(word.text)] else {
+            let key = normalize(word.text)
+            guard !seen.contains(key) else {
                 return false
             }
-            return !isCleared(attempt)
+            seen.insert(key)
+            return true
         }
     }
 

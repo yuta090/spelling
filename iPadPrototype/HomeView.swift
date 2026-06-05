@@ -30,6 +30,7 @@ struct HomeView: View {
                     ChildMissionPanel(
                         stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
                         practiceCount: selectedPracticeWords.count,
+                        carryOverCount: model.carryOverReviewWordsForSelectedStep.count,
                         progress: model.todayStepProgress,
                         language: language,
                         canPractice: !selectedPracticeWords.isEmpty,
@@ -155,6 +156,7 @@ struct HomeView: View {
 private struct ChildMissionPanel: View {
     var stepTitle: String
     var practiceCount: Int
+    var carryOverCount: Int
     var progress: TodayStepProgress
     var language: AppLanguage
     var canPractice: Bool
@@ -166,6 +168,9 @@ private struct ChildMissionPanel: View {
     private var missionText: String {
         if practiceCount == 0 {
             return language.text(japanese: "たんごがない", english: "No words")
+        }
+        if carryOverCount > 0 {
+            return language.text(japanese: "\(practiceCount)こ + ふくしゅう\(carryOverCount)こ", english: "\(practiceCount) + \(carryOverCount) review")
         }
         return language.text(japanese: "\(practiceCount)こ れんしゅう", english: "\(practiceCount) words")
     }
@@ -212,6 +217,23 @@ private struct ChildMissionPanel: View {
                     japanese: "きょうできた \(progress.clearedCount) / \(progress.totalWords)",
                     english: "Today \(progress.clearedCount) of \(progress.totalWords)"
                 ))
+
+            if carryOverCount > 0 {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.counterclockwise.circle.fill")
+                        .font(.headline.weight(.bold))
+                    Text(language.text(japanese: "まえのステップから \(carryOverCount)こ", english: "\(carryOverCount) from the last step"))
+                        .font(.headline.monospacedDigit().weight(.heavy))
+                    Text(language.text(japanese: "テストにでる", english: "in the test"))
+                        .font(.subheadline.weight(.bold))
+                }
+                .foregroundStyle(Color(red: 0.74, green: 0.34, blue: 0.06))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(Color(red: 1.0, green: 0.94, blue: 0.84))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
 
             Button(action: startPractice) {
                 Label(language.text(japanese: "はじめる", english: "Start"), systemImage: "play.fill")
