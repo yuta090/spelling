@@ -236,7 +236,7 @@ struct SpellingSessionView: View {
                     Spacer()
 
                     SessionControlButton(
-                        title: index == sessionWords.count - 1 ? language.text(japanese: "できた!", english: "Results") : language.text(japanese: "つぎへ", english: "Next"),
+                        title: index == sessionWords.count - 1 ? language.text(japanese: "おわる", english: "Finish") : language.text(japanese: "つぎへ", english: "Next"),
                         systemImage: index == sessionWords.count - 1 ? "star.fill" : "arrow.right",
                         style: index == sessionWords.count - 1 ? .finish : .primary
                     ) {
@@ -263,10 +263,10 @@ struct SpellingSessionView: View {
 
                     SessionControlButton(
                         title: isChecking
-                            ? language.text(japanese: "保存中", english: "Saving")
-                            : (index == sessionWords.count - 1 ? language.text(japanese: "できた!", english: "Results") : language.text(japanese: "つぎへ", english: "Next")),
-                        systemImage: isChecking ? "hourglass" : (index == sessionWords.count - 1 ? "star.fill" : "arrow.right"),
-                        style: index == sessionWords.count - 1 && !isChecking ? .finish : .primary
+                            ? language.text(japanese: "まってね", english: "Saving")
+                            : (index == sessionWords.count - 1 ? language.text(japanese: "こたえる", english: "Submit") : language.text(japanese: "つぎへ", english: "Next")),
+                        systemImage: isChecking ? "hourglass" : (index == sessionWords.count - 1 ? "checkmark" : "arrow.right"),
+                        style: .primary
                     ) {
                         checkAnswer()
                     }
