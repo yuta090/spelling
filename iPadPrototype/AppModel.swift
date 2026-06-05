@@ -3,7 +3,10 @@ import Foundation
 @MainActor
 final class AppModel: ObservableObject {
     @Published var words: [SpellingWord] {
-        didSet { saveWords() }
+        didSet {
+            saveWords()
+            ensureSelectedWordStepStillExists()
+        }
     }
 
     @Published var attempts: [SpellingAttempt] {
@@ -18,31 +21,61 @@ final class AppModel: ObservableObject {
         didSet { saveSettings() }
     }
 
+    @Published var selectedWordStepID: String {
+        didSet { saveSelectedWordStepID() }
+    }
+
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
     private let practiceSamplesKey = "spellingTrainer.practiceSamples"
     private let settingsKey = "spellingTrainer.settings"
+    private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"
 
     init() {
-        words = Self.load([SpellingWord].self, key: wordsKey) ?? [
+        let loadedWords = Self.load([SpellingWord].self, key: wordsKey) ?? [
             SpellingWord(text: "cat"),
             SpellingWord(text: "dog"),
             SpellingWord(text: "friend"),
             SpellingWord(text: "school")
         ]
+        words = loadedWords
         attempts = Self.load([SpellingAttempt].self, key: attemptsKey) ?? []
         practiceSamples = Self.load([PracticeSample].self, key: practiceSamplesKey) ?? []
         settings = Self.load(TestSettings.self, key: settingsKey) ?? TestSettings()
+        selectedWordStepID = UserDefaults.standard.string(forKey: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
+        ensureSelectedWordStepStillExists()
+    }
+
+    var wordSteps: [WordStep] {
+        Self.makeWordSteps(from: words)
+    }
+
+    var selectedWordStep: WordStep? {
+        wordSteps.first { $0.id == selectedWordStepID } ?? wordSteps.last
+    }
+
+    var activeWords: [SpellingWord] {
+        selectedWordStep?.words ?? words
     }
 
     var reviewWords: [SpellingWord] {
+        reviewWords(for: words)
+    }
+
+    var selectedReviewWords: [SpellingWord] {
+        reviewWords(for: activeWords)
+    }
+
+    private func reviewWords(for sourceWords: [SpellingWord]) -> [SpellingWord] {
+        let sourceTexts = Set(sourceWords.map { normalize($0.text) })
         let reviewTexts = attempts
             .filter { $0.decision != .autoCorrect }
             .map { normalize($0.word) }
+            .filter { sourceTexts.contains($0) }
 
         let unique = Array(NSOrderedSet(array: reviewTexts)).compactMap { $0 as? String }
         let mapped = unique.compactMap { reviewText in
-            words.first { normalize($0.text) == reviewText }
+            sourceWords.first { normalize($0.text) == reviewText }
         }
 
         return mapped
@@ -76,8 +109,14 @@ final class AppModel: ObservableObject {
             }
         }
 
-        words = unique.map { text in
+        let updatedWords = unique.map { text in
             existingWordsByText[text] ?? SpellingWord(text: text, registeredAt: now)
+        }
+        let addedNewWords = updatedWords.contains { existingWordsByText[normalize($0.text)] == nil }
+
+        words = updatedWords
+        if addedNewWords {
+            selectedWordStepID = Self.defaultWordStepID(for: updatedWords)
         }
     }
 
@@ -126,6 +165,65 @@ final class AppModel: ObservableObject {
 
     private func saveSettings() {
         Self.save(settings, key: settingsKey)
+    }
+
+    private func saveSelectedWordStepID() {
+        UserDefaults.standard.set(selectedWordStepID, forKey: selectedWordStepIDKey)
+    }
+
+    private func ensureSelectedWordStepStillExists() {
+        let steps = wordSteps
+        guard !steps.isEmpty else {
+            if !selectedWordStepID.isEmpty {
+                selectedWordStepID = ""
+            }
+            return
+        }
+
+        if !steps.contains(where: { $0.id == selectedWordStepID }) {
+            selectedWordStepID = steps.last?.id ?? ""
+        }
+    }
+
+    private static func makeWordSteps(from words: [SpellingWord], calendar: Calendar = .current) -> [WordStep] {
+        var groups: [String: (date: Date, words: [SpellingWord])] = [:]
+
+        for word in words {
+            let date = calendar.startOfDay(for: word.registeredAt)
+            let id = stepID(for: date, calendar: calendar)
+            if groups[id] == nil {
+                groups[id] = (date: date, words: [])
+            }
+            groups[id]?.words.append(word)
+        }
+
+        let sortedIDs = groups.keys.sorted {
+            guard let left = groups[$0]?.date, let right = groups[$1]?.date else {
+                return $0 < $1
+            }
+            return left < right
+        }
+
+        return sortedIDs.enumerated().compactMap { index, id in
+            guard let group = groups[id] else {
+                return nil
+            }
+            return WordStep(id: id, number: index + 1, registeredDate: group.date, words: group.words)
+        }
+    }
+
+    private static func defaultWordStepID(for words: [SpellingWord]) -> String {
+        makeWordSteps(from: words).last?.id ?? ""
+    }
+
+    private static func stepID(for date: Date, calendar: Calendar) -> String {
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+        return String(
+            format: "%04d-%02d-%02d",
+            components.year ?? 0,
+            components.month ?? 0,
+            components.day ?? 0
+        )
     }
 
     private static func load<T: Decodable>(_ type: T.Type, key: String) -> T? {

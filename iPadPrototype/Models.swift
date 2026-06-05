@@ -25,6 +25,17 @@ struct SpellingWord: Identifiable, Equatable, Codable {
     }
 }
 
+struct WordStep: Identifiable, Equatable {
+    var id: String
+    var number: Int
+    var registeredDate: Date
+    var words: [SpellingWord]
+
+    func title(language: AppLanguage) -> String {
+        language.text(japanese: "ステップ \(number)", english: "Step \(number)")
+    }
+}
+
 struct OCRCandidate: Equatable {
     var text: String
     var normalizedText: String
@@ -55,6 +66,13 @@ enum AppLanguage: String, CaseIterable, Identifiable, Codable {
             return english
         }
     }
+}
+
+func formattedStepDate(_ date: Date, language: AppLanguage) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = language == .japanese ? Locale(identifier: "ja_JP") : Locale(identifier: "en_US")
+    formatter.dateFormat = language == .japanese ? "yyyy年M月d日" : "MMM d, yyyy"
+    return formatter.string(from: date)
 }
 
 enum GradeDecision: String, Equatable, Codable {

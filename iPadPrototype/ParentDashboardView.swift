@@ -4,7 +4,7 @@ import SwiftUI
 struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedSection: ParentSection = .handwriting
+    @State private var selectedSection: ParentSection = .wordList
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -23,6 +23,7 @@ struct ParentDashboardView: View {
                             ScrollView {
                                 HStack(alignment: .top, spacing: 14) {
                                     VStack(spacing: 14) {
+                                        ParentWordStepPanel(language: language)
                                         ParentWordListPanel(language: language)
                                         TestSettingsPanel(language: language)
                                     }
@@ -67,7 +68,10 @@ struct ParentDashboardView: View {
     private var selectedPanel: some View {
         switch selectedSection {
         case .wordList:
-            ParentWordListPanel(language: language)
+            VStack(spacing: 14) {
+                ParentWordStepPanel(language: language)
+                ParentWordListPanel(language: language)
+            }
         case .settings:
             TestSettingsPanel(language: language)
         case .review:
@@ -165,6 +169,109 @@ private struct ParentPanel<Content: View>: View {
     }
 }
 
+private struct ParentWordStepPanel: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    private var orderedSteps: [WordStep] {
+        Array(model.wordSteps.reversed())
+    }
+
+    var body: some View {
+        ParentPanel(
+            title: language.text(japanese: "ステップ一覧", english: "Word Steps"),
+            systemImage: "rectangle.stack.fill"
+        ) {
+            HStack {
+                SettingValueRow(
+                    title: language.text(japanese: "登録日ごとの単語集", english: "Word sets by date"),
+                    value: "\(model.wordSteps.count)"
+                )
+
+                Spacer()
+            }
+
+            if orderedSteps.isEmpty {
+                ContentUnavailableView(
+                    language.text(japanese: "ステップがありません", english: "No steps yet"),
+                    systemImage: "rectangle.stack.fill",
+                    description: Text(language.text(japanese: "単語を登録するとここに表示されます。", english: "Registered words will appear here."))
+                )
+                .frame(minHeight: 180)
+            } else {
+                ScrollView {
+                    VStack(spacing: 10) {
+                        ForEach(orderedSteps) { step in
+                            ParentWordStepCard(
+                                step: step,
+                                language: language,
+                                isSelected: step.id == model.selectedWordStepID
+                            ) {
+                                model.selectedWordStepID = step.id
+                            }
+                        }
+                    }
+                }
+                .frame(maxHeight: 360)
+            }
+        }
+    }
+}
+
+private struct ParentWordStepCard: View {
+    var step: WordStep
+    var language: AppLanguage
+    var isSelected: Bool
+    var action: () -> Void
+
+    private var wordSummary: String {
+        step.words.map(\.text).joined(separator: ", ")
+    }
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(step.title(language: language))
+                            .font(.title3.monospacedDigit().weight(.heavy))
+                            .foregroundStyle(isSelected ? Color(red: 0.10, green: 0.30, blue: 0.70) : Color(red: 0.12, green: 0.22, blue: 0.38))
+                        Text("\(formattedStepDate(step.registeredDate, language: language)) ・ \(step.words.count) \(language.text(japanese: "単語", english: "words"))")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    if isSelected {
+                        Label(language.text(japanese: "選択中", english: "Selected"), systemImage: "checkmark.circle.fill")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(Color(red: 0.14, green: 0.42, blue: 0.78))
+                            .padding(.vertical, 5)
+                            .padding(.horizontal, 8)
+                            .background(Color(red: 0.90, green: 0.96, blue: 1.0))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+
+                Text(wordSummary)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color(red: 0.18, green: 0.24, blue: 0.34))
+                    .lineLimit(3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(12)
+            .background(isSelected ? Color(red: 0.92, green: 0.97, blue: 1.0) : Color(red: 0.98, green: 0.99, blue: 0.97))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? Color(red: 0.42, green: 0.63, blue: 0.92) : Color(red: 0.77, green: 0.86, blue: 0.72), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 private struct ParentWordListPanel: View {
     @EnvironmentObject private var model: AppModel
     @State private var rawWords = ""
@@ -218,8 +325,8 @@ private struct ParentWordListPanel: View {
                                 Text(word.text)
                                     .font(.headline.weight(.semibold))
                                 Text(language.text(
-                                    japanese: "登録日: \(formattedRegistrationDate(word.registeredAt, language: language))",
-                                    english: "Registered: \(formattedRegistrationDate(word.registeredAt, language: language))"
+                                    japanese: "登録日: \(formattedStepDate(word.registeredAt, language: language))",
+                                    english: "Registered: \(formattedStepDate(word.registeredAt, language: language))"
                                 ))
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
@@ -906,13 +1013,6 @@ private struct DrawingPreview: UIViewRepresentable {
             imageView.image = nil
         }
     }
-}
-
-private func formattedRegistrationDate(_ date: Date, language: AppLanguage) -> String {
-    let formatter = DateFormatter()
-    formatter.locale = language == .japanese ? Locale(identifier: "ja_JP") : Locale(identifier: "en_US")
-    formatter.dateFormat = language == .japanese ? "yyyy年M月d日" : "MMM d, yyyy"
-    return formatter.string(from: date)
 }
 
 private struct ParentBackground: View {

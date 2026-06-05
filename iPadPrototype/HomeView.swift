@@ -25,13 +25,18 @@ struct HomeView: View {
                         .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
                         .multilineTextAlignment(.center)
 
+                    StepSelectorPanel(language: language)
+                        .environmentObject(model)
+                        .frame(maxWidth: 760)
+
                     HStack(alignment: .center, spacing: 24) {
                         VStack(spacing: 18) {
                             HomeActionCard(
                                 title: language.text(japanese: "れんしゅうする", english: "Practice"),
                                 subtitle: language.text(japanese: "書いておぼえる", english: "Look, listen, and write"),
                                 systemImage: "pencil",
-                                colors: [Color(red: 0.35, green: 0.64, blue: 0.96), Color(red: 0.10, green: 0.35, blue: 0.78)]
+                                colors: [Color(red: 0.35, green: 0.64, blue: 0.96), Color(red: 0.10, green: 0.35, blue: 0.78)],
+                                disabled: model.activeWords.isEmpty
                             ) {
                                 activeMode = .practice
                             }
@@ -40,14 +45,15 @@ struct HomeView: View {
                                 title: language.text(japanese: "テストする", english: "Take Test"),
                                 subtitle: language.text(japanese: "力をためそう", english: "Check today's words"),
                                 systemImage: "checkmark.clipboard.fill",
-                                colors: [Color(red: 0.50, green: 0.78, blue: 0.34), Color(red: 0.18, green: 0.58, blue: 0.20)]
+                                colors: [Color(red: 0.50, green: 0.78, blue: 0.34), Color(red: 0.18, green: 0.58, blue: 0.20)],
+                                disabled: model.activeWords.isEmpty
                             ) {
                                 activeMode = .test
                             }
                         }
                         .frame(maxWidth: 440)
 
-                        ReviewHomeCard(language: language, reviewCount: model.reviewWords.count) {
+                        ReviewHomeCard(language: language, reviewCount: model.selectedReviewWords.count) {
                             activeMode = .review
                         }
                         .frame(width: 270)
@@ -65,7 +71,7 @@ struct HomeView: View {
             .navigationDestination(item: $activeMode) { mode in
                 SpellingSessionView(
                     mode: mode,
-                    words: mode == .review ? model.reviewWords : model.words
+                    words: mode == .review ? model.selectedReviewWords : model.activeWords
                 )
             }
             .fullScreenCover(isPresented: $showingParent) {
@@ -108,6 +114,98 @@ struct HomeView: View {
             .buttonStyle(HomeIconButtonStyle())
             .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
         }
+    }
+}
+
+private struct StepSelectorPanel: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    private var orderedSteps: [WordStep] {
+        Array(model.wordSteps.reversed())
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                Label(language.text(japanese: "単語セット", english: "Word Set"), systemImage: "rectangle.stack.fill")
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(Color(red: 0.11, green: 0.30, blue: 0.70))
+
+                Spacer()
+
+                if let step = model.selectedWordStep {
+                    Text("\(step.title(language: language)) ・ \(step.words.count)")
+                        .font(.headline.monospacedDigit().weight(.bold))
+                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                }
+            }
+
+            if orderedSteps.isEmpty {
+                Text(language.text(japanese: "単語がまだありません", english: "No words yet"))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(orderedSteps) { step in
+                            StepSelectorChip(
+                                step: step,
+                                language: language,
+                                isSelected: step.id == model.selectedWordStepID
+                            ) {
+                                model.selectedWordStepID = step.id
+                            }
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+        }
+        .padding(14)
+        .background(.white.opacity(0.86))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.68, green: 0.80, blue: 0.96), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 6)
+    }
+}
+
+private struct StepSelectorChip: View {
+    var step: WordStep
+    var language: AppLanguage
+    var isSelected: Bool
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text(step.title(language: language))
+                    .font(.headline.monospacedDigit().weight(.heavy))
+                    .lineLimit(1)
+                Text(formattedStepDate(step.registeredDate, language: language))
+                    .font(.caption.weight(.bold))
+                    .lineLimit(1)
+                Text(language.text(japanese: "\(step.words.count)単語", english: "\(step.words.count) words"))
+                    .font(.caption.monospacedDigit().weight(.bold))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(isSelected ? .white : Color(red: 0.11, green: 0.30, blue: 0.70))
+            .frame(width: 142, alignment: .leading)
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+            .background(isSelected ? Color(red: 0.16, green: 0.40, blue: 0.82) : Color(red: 0.94, green: 0.98, blue: 1.0))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? Color(red: 0.16, green: 0.40, blue: 0.82) : Color(red: 0.65, green: 0.78, blue: 0.95), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(step.title(language: language)), \(formattedStepDate(step.registeredDate, language: language))")
     }
 }
 
@@ -211,18 +309,23 @@ private struct HomeStatsRow: View {
     var body: some View {
         HStack(spacing: 12) {
             HomeStatChip(
+                title: language.text(japanese: "ステップ", english: "Step"),
+                value: model.selectedWordStep.map { "\($0.number)" } ?? "-",
+                systemImage: "rectangle.stack.fill"
+            )
+            HomeStatChip(
                 title: language.text(japanese: "今日", english: "Today"),
                 value: "\(model.todaysCorrectCount)/\(model.todaysAttempts.count)",
                 systemImage: "target"
             )
             HomeStatChip(
                 title: language.text(japanese: "単語", english: "Words"),
-                value: "\(model.words.count)",
+                value: "\(model.activeWords.count)",
                 systemImage: "list.bullet"
             )
             HomeStatChip(
                 title: language.text(japanese: "ふくしゅう", english: "Review"),
-                value: "\(model.reviewWords.count)",
+                value: "\(model.selectedReviewWords.count)",
                 systemImage: "arrow.counterclockwise"
             )
         }
