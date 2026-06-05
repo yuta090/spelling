@@ -604,7 +604,7 @@ private struct LearningHistoryCard: View {
 
             if let drawingData = entry.drawingData {
                 DrawingPreview(drawingData: drawingData)
-                    .frame(height: 92)
+                    .frame(height: 140)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
@@ -648,7 +648,7 @@ private struct ReviewAttemptCard: View {
 
             if let drawingData = attempt.drawingData {
                 DrawingPreview(drawingData: drawingData)
-                    .frame(height: 86)
+                    .frame(height: 140)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
@@ -710,7 +710,7 @@ private struct ParentPracticeSampleCard: View {
             }
 
             DrawingPreview(drawingData: sample.drawingData)
-                .frame(height: 100)
+                .frame(height: 150)
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(

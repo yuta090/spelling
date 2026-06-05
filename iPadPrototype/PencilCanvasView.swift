@@ -65,7 +65,7 @@ extension PKDrawing {
             return nil
         }
 
-        let drawingBounds = bounds.insetBy(dx: -50, dy: -36)
+        let drawingBounds = bounds.insetBy(dx: -80, dy: -90)
         let strokeImage = image(from: drawingBounds, scale: scale)
         let renderer = UIGraphicsImageRenderer(size: strokeImage.size)
 
