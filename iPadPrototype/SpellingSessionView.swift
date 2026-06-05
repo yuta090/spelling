@@ -165,8 +165,10 @@ struct SpellingSessionView: View {
             HStack(spacing: 10) {
                 if mode == .test {
                     TimerPill(seconds: remainingSeconds, language: language)
+                    TestProgressPill(current: index + 1, total: max(sessionWords.count, 1), language: language)
+                } else {
+                    ProgressPill(current: index + 1, total: max(sessionWords.count, 1))
                 }
-                ProgressPill(current: index + 1, total: max(sessionWords.count, 1))
                 if capturesPracticeSamples && practiceRepetitionCount > 1 {
                     RepeatPill(current: practiceRepeatIndex + 1, total: practiceRepetitionCount, language: language)
                 }
@@ -571,6 +573,35 @@ private struct ProgressPill: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color(red: 0.65, green: 0.78, blue: 0.97), lineWidth: 1)
             )
+    }
+}
+
+private struct TestProgressPill: View {
+    var current: Int
+    var total: Int
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text("\(current)")
+                .font(.system(size: 30, weight: .heavy, design: .rounded))
+                .monospacedDigit()
+            Text(language.text(japanese: "もんめ", english: "of"))
+                .font(.headline.weight(.bold))
+            Text("/ \(total)")
+                .font(.title3.monospacedDigit().weight(.heavy))
+        }
+        .foregroundStyle(Color(red: 0.13, green: 0.32, blue: 0.73))
+        .frame(minWidth: 130)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .background(.white.opacity(0.92))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.48, green: 0.67, blue: 0.96), lineWidth: 1.5)
+        )
+        .accessibilityLabel(language.text(japanese: "\(current)問目 / \(total)問", english: "Question \(current) of \(total)"))
     }
 }
 
