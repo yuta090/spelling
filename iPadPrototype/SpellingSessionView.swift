@@ -272,9 +272,6 @@ struct SpellingSessionView: View {
                 } else {
                     ProgressPill(current: index + 1, total: max(sessionWords.count, 1))
                 }
-                if capturesPracticeSamples && practiceRepetitionCount > 1 {
-                    RepeatPill(current: practiceRepeatIndex + 1, total: practiceRepetitionCount, language: language)
-                }
             }
         }
         .frame(minHeight: 46)
@@ -849,34 +846,6 @@ private struct PracticeRepeatGuide: View {
             return Color(red: 0.51, green: 0.30, blue: 0.78)
         }
         return Color(red: 0.80, green: 0.75, blue: 0.88)
-    }
-}
-
-private struct RepeatPill: View {
-    var current: Int
-    var total: Int
-    var language: AppLanguage
-
-    var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: "repeat")
-                .font(.subheadline.weight(.bold))
-            Text(language.text(japanese: "れんしゅう", english: "Practice"))
-                .font(.subheadline.weight(.bold))
-            Text("\(current) / \(total)")
-                .font(.headline.monospacedDigit().weight(.bold))
-        }
-        .foregroundStyle(Color(red: 0.48, green: 0.28, blue: 0.72))
-        .accessibilityLabel(language.text(japanese: "練習 \(current) 回目 / \(total) 回", english: "Practice \(current) of \(total)"))
-        .frame(minWidth: 76)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .background(.white.opacity(0.86))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.78, green: 0.68, blue: 0.94), lineWidth: 1)
-        )
     }
 }
 
