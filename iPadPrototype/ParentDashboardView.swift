@@ -1460,6 +1460,26 @@ private struct AnswerReviewPanel: View {
             .reversed())
     }
 
+    private var reviewSummaries: [ReviewAttemptSummary] {
+        Dictionary(grouping: reviewAttempts, by: { normalize($0.word) })
+            .compactMap { word, attempts in
+                let sortedAttempts = attempts.sorted { $0.date > $1.date }
+                guard let latestAttempt = sortedAttempts.first else {
+                    return nil
+                }
+
+                return ReviewAttemptSummary(
+                    id: word,
+                    word: latestAttempt.word,
+                    latestAttempt: latestAttempt,
+                    attemptCount: sortedAttempts.count,
+                    needsReviewCount: sortedAttempts.filter { $0.decision == .needsReview }.count,
+                    needsPracticeCount: sortedAttempts.filter { $0.parentReviewDecision == .needsPractice }.count
+                )
+            }
+            .sorted { $0.latestAttempt.date > $1.latestAttempt.date }
+    }
+
     private var latestPracticeSamples: [PracticeSample] {
         Array(model.practiceSamples.reversed().prefix(8))
     }
@@ -1502,7 +1522,7 @@ private struct AnswerReviewPanel: View {
 
             Divider()
 
-            if reviewAttempts.isEmpty {
+            if reviewSummaries.isEmpty {
                 ContentUnavailableView(
                     language.text(japanese: "確認待ちはありません", english: "No answers need review"),
                     systemImage: "checkmark.circle.fill",
@@ -1512,8 +1532,8 @@ private struct AnswerReviewPanel: View {
             } else {
                 ScrollView {
                     VStack(spacing: 12) {
-                        ForEach(reviewAttempts.prefix(8)) { attempt in
-                            ReviewAttemptCard(attempt: attempt, language: language)
+                        ForEach(reviewSummaries.prefix(8)) { summary in
+                            ReviewAttemptSummaryCard(summary: summary, language: language)
                                 .environmentObject(model)
                         }
                     }
@@ -1563,6 +1583,15 @@ private struct AnswerReviewPanel: View {
             }
         }
     }
+}
+
+private struct ReviewAttemptSummary: Identifiable {
+    var id: String
+    var word: String
+    var latestAttempt: SpellingAttempt
+    var attemptCount: Int
+    var needsReviewCount: Int
+    var needsPracticeCount: Int
 }
 
 private struct LearningHistoryPanel: View {
@@ -1832,19 +1861,29 @@ private struct LearningHistoryCard: View {
     }
 }
 
-private struct ReviewAttemptCard: View {
+private struct ReviewAttemptSummaryCard: View {
     @EnvironmentObject private var model: AppModel
-    var attempt: SpellingAttempt
+    var summary: ReviewAttemptSummary
     var language: AppLanguage
+
+    private var attempt: SpellingAttempt {
+        summary.latestAttempt
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(attempt.word)
+                    Text(summary.word)
                         .font(.headline.weight(.bold))
-                    Text("OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)")
-                        .font(.caption.monospaced().weight(.semibold))
+                    Text(language.text(
+                        japanese: "最新: \(attempt.date.formatted(date: .omitted, time: .shortened)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
+                        english: "Latest: \(attempt.date.formatted(date: .omitted, time: .shortened)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)"
+                    ))
+                    .font(.caption.monospaced().weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    Text(summaryDetail)
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
 
@@ -1890,6 +1929,15 @@ private struct ReviewAttemptCard: View {
         .padding(10)
         .background(Color(red: 0.98, green: 0.99, blue: 0.97))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private extension ReviewAttemptSummaryCard {
+    var summaryDetail: String {
+        language.text(
+            japanese: "同じ単語の記録 \(summary.attemptCount)回 ・ 確認待ち \(summary.needsReviewCount)回 ・ 直そう \(summary.needsPracticeCount)回",
+            english: "\(summary.attemptCount) records for this word ・ \(summary.needsReviewCount) need review ・ \(summary.needsPracticeCount) need fix"
+        )
     }
 }
 
