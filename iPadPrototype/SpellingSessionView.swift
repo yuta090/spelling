@@ -793,71 +793,108 @@ private struct PracticeSessionReviewView: View {
     var language: AppLanguage
     var onDone: () -> Void
 
+    @State private var showingCelebration = false
+    @State private var celebrationSeed = 0
+
     var body: some View {
-        VStack(spacing: 18) {
-            HStack {
-                Label(language.text(japanese: "れんしゅうチェック", english: "Practice Check"), systemImage: "checklist")
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
-
-                Spacer()
-
-                Text(language.text(japanese: "\(samples.count) こ書きました", english: "\(samples.count) words written"))
-                    .font(.headline.monospacedDigit().weight(.bold))
-                    .foregroundStyle(.secondary)
+        ZStack {
+            if showingCelebration {
+                SparkleBurst(seed: celebrationSeed)
+                    .transition(.opacity)
+                    .zIndex(2)
             }
 
-            VStack(spacing: 8) {
-                Image(systemName: "sparkles")
-                    .font(.system(size: 42, weight: .bold))
-                    .foregroundStyle(Color(red: 0.96, green: 0.68, blue: 0.06))
-                Text(language.text(japanese: "自分が書いた単語を見てみよう", english: "Look over the words you wrote"))
-                    .font(.system(size: 28, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
-                Text(language.text(
-                    japanese: "あとで保護者メニューでも見られるので、アドバイスをもらえます。",
-                    english: "Parents can see these later and give advice."
-                ))
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(18)
-            .background(.white.opacity(0.86))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(red: 0.76, green: 0.84, blue: 0.96), lineWidth: 1)
-            )
+            VStack(spacing: 18) {
+                HStack {
+                    Label(language.text(japanese: "れんしゅうチェック", english: "Practice Check"), systemImage: "checklist")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
 
-            if samples.isEmpty {
-                ContentUnavailableView(
-                    language.text(japanese: "まだ手書きがありません", english: "No handwriting saved"),
-                    systemImage: "pencil.and.scribble",
-                    description: Text(language.text(japanese: "単語を書いてから「つぎへ」を押すと保存されます。", english: "Write a word, then tap Next to save it."))
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.white.opacity(0.72))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            } else {
-                ScrollView {
-                    VStack(spacing: 14) {
-                        ForEach(samples) { sample in
-                            PracticeSampleReviewCard(sample: sample, language: language)
-                        }
-                    }
-                    .padding(.vertical, 4)
+                    Spacer()
+
+                    Text(language.text(japanese: "\(samples.count) こ書きました", english: "\(samples.count) words written"))
+                        .font(.headline.monospacedDigit().weight(.bold))
+                        .foregroundStyle(.secondary)
                 }
-            }
 
-            Button(action: onDone) {
-                Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
-                    .font(.title3.weight(.bold))
-                    .frame(minWidth: 240)
-                    .padding(.vertical, 14)
+                VStack(spacing: 8) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "sparkles")
+                        Image(systemName: "star.fill")
+                        Image(systemName: "sparkles")
+                    }
+                    .font(.system(size: 34, weight: .bold))
+                    .foregroundStyle(Color(red: 0.96, green: 0.68, blue: 0.06))
+                    Text(language.text(japanese: "がんばったね！", english: "Great effort!"))
+                        .font(.system(size: 34, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Color(red: 0.82, green: 0.22, blue: 0.07))
+                    Text(language.text(japanese: "自分が書いた単語を見てみよう", english: "Look over the words you wrote"))
+                        .font(.system(size: 24, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                    Text(language.text(
+                        japanese: "あとで保護者メニューでも見られるので、アドバイスをもらえます。",
+                        english: "Parents can see these later and give advice."
+                    ))
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(20)
+                .background(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 1.0, green: 0.95, blue: 0.72),
+                            Color(red: 0.86, green: 0.98, blue: 0.70),
+                            Color(red: 0.84, green: 0.93, blue: 1.0)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color(red: 0.96, green: 0.70, blue: 0.16), lineWidth: 2)
+                )
+
+                if samples.isEmpty {
+                    ContentUnavailableView(
+                        language.text(japanese: "まだ手書きがありません", english: "No handwriting saved"),
+                        systemImage: "pencil.and.scribble",
+                        description: Text(language.text(japanese: "単語を書いてから「つぎへ」を押すと保存されます。", english: "Write a word, then tap Next to save it."))
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.white.opacity(0.72))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else {
+                    ScrollView {
+                        VStack(spacing: 14) {
+                            ForEach(samples) { sample in
+                                PracticeSampleReviewCard(sample: sample, language: language)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+
+                Button(action: onDone) {
+                    Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
+                        .font(.title3.weight(.bold))
+                        .frame(minWidth: 240)
+                        .padding(.vertical, 14)
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
+        }
+        .onAppear {
+            guard !samples.isEmpty else {
+                return
+            }
+            celebrationSeed += 1
+            withAnimation(.easeOut(duration: 0.12)) {
+                showingCelebration = true
+            }
         }
     }
 }
@@ -867,7 +904,7 @@ private struct TestSessionResultsView: View {
     var language: AppLanguage
     var onDone: () -> Void
 
-    @State private var showingPerfectCelebration = false
+    @State private var showingCompletionCelebration = false
     @State private var celebrationSeed = 0
 
     private var correctCount: Int {
@@ -880,7 +917,7 @@ private struct TestSessionResultsView: View {
 
     var body: some View {
         ZStack {
-            if showingPerfectCelebration {
+            if showingCompletionCelebration {
                 SparkleBurst(seed: celebrationSeed)
                     .transition(.opacity)
                     .zIndex(2)
@@ -913,9 +950,16 @@ private struct TestSessionResultsView: View {
                     Image(systemName: isPerfect ? "crown.fill" : "trophy.fill")
                         .font(.system(size: isPerfect ? 72 : 58, weight: .bold))
                         .foregroundStyle(isPerfect ? Color(red: 1.0, green: 0.72, blue: 0.08) : Color(red: 0.96, green: 0.68, blue: 0.04))
-                    Text(isPerfect ? language.text(japanese: "ぜんぶできた！", english: "Perfect!") : language.text(japanese: "よくできました！", english: "Great work!"))
+                    Text(isPerfect ? language.text(japanese: "ぜんぶできた！", english: "Perfect!") : language.text(japanese: "がんばったね！", english: "Great effort!"))
                         .font(.system(size: isPerfect ? 40 : 30, weight: .heavy, design: .rounded))
                         .foregroundStyle(isPerfect ? Color(red: 0.78, green: 0.22, blue: 0.05) : Color(red: 0.80, green: 0.20, blue: 0.08))
+                    Text(isPerfect
+                        ? language.text(japanese: "最後までぜんぶ正解です。", english: "Every word was correct.")
+                        : language.text(japanese: "最後までやりきりました。直すところはあとで見よう。", english: "You finished the test. Review fixes later.")
+                    )
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
                     Text("\(correctCount)/\(max(attempts.count, 1))  \(language.text(japanese: "正解", english: "correct"))")
                         .font(.system(size: 28, weight: .heavy, design: .rounded))
                         .foregroundStyle(Color(red: 0.13, green: 0.35, blue: 0.74))
@@ -980,12 +1024,12 @@ private struct TestSessionResultsView: View {
             }
         }
         .onAppear {
-            guard isPerfect else {
+            guard !attempts.isEmpty else {
                 return
             }
             celebrationSeed += 1
             withAnimation(.easeOut(duration: 0.12)) {
-                showingPerfectCelebration = true
+                showingCompletionCelebration = true
             }
         }
     }
