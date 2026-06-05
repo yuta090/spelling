@@ -5,7 +5,7 @@ struct HomeView: View {
     @State private var activeMode: SessionMode?
     @State private var showingParent = false
     @State private var showingResults = false
-    @State private var showingPracticeWordPicker = false
+    @State private var showingWordPreview = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
     @State private var lastPracticeWordIDs = Set<UUID>()
 
@@ -25,64 +25,24 @@ struct HomeView: View {
                 VStack(spacing: 20) {
                     header
 
-                    Spacer(minLength: 8)
+                    Spacer(minLength: 22)
 
-                    ChildTaskBanner(
-                        title: language.text(japanese: "きょうは なにをする？", english: "What will you do today?"),
-                        message: language.text(japanese: "ステップをえらんで、れんしゅうかテストをおしてね。", english: "Choose a step, then pick practice or test."),
-                        systemImage: "sparkles",
-                        tint: Color(red: 0.12, green: 0.36, blue: 0.76)
+                    ChildMissionPanel(
+                        stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
+                        practiceCount: selectedPracticeWords.count,
+                        progress: model.todayStepProgress,
+                        language: language,
+                        canPractice: !selectedPracticeWords.isEmpty,
+                        canTest: !model.nextTestWords.isEmpty,
+                        canReview: model.todayStepProgress.hasTestActivity && model.todayStepProgress.remainingCount > 0,
+                        startPractice: { activeMode = .practice },
+                        showWords: { showingWordPreview = true },
+                        startTest: { activeMode = .test },
+                        startReview: { activeMode = .review }
                     )
                     .frame(maxWidth: 760)
 
-                    StepSelectorPanel(language: language)
-                        .environmentObject(model)
-                        .frame(maxWidth: 760)
-
-                    PracticeWordSelectionSummaryPanel(
-                        words: model.activeWords,
-                        selectedIDs: selectedPracticeWordIDs,
-                        stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
-                        language: language
-                    ) {
-                        showingPracticeWordPicker = true
-                    }
-                    .frame(maxWidth: 760)
-
-                    HStack(alignment: .center, spacing: 24) {
-                        VStack(spacing: 18) {
-                            HomeActionCard(
-                                title: practiceButtonTitle,
-                                subtitle: practiceButtonSubtitle,
-                                systemImage: "pencil",
-                                colors: [Color(red: 0.35, green: 0.64, blue: 0.96), Color(red: 0.10, green: 0.35, blue: 0.78)],
-                                disabled: selectedPracticeWords.isEmpty
-                            ) {
-                                activeMode = .practice
-                            }
-
-                            HomeActionCard(
-                                title: testButtonTitle,
-                                subtitle: testButtonSubtitle,
-                                systemImage: testButtonIcon,
-                                colors: testButtonColors,
-                                disabled: model.nextTestWords.isEmpty
-                            ) {
-                                activeMode = .test
-                            }
-                        }
-                        .frame(maxWidth: 440)
-
-                        TodayProgressCard(language: language, progress: model.todayStepProgress) {
-                            activeMode = .review
-                        }
-                        .frame(width: 270)
-                    }
-
-                    HomeStatsRow(language: language)
-                        .environmentObject(model)
-
-                    Spacer(minLength: 64)
+                    Spacer(minLength: 100)
                 }
                 .padding(.horizontal, 36)
                 .padding(.top, 24)
@@ -102,10 +62,9 @@ struct HomeView: View {
                 ResultsView()
                     .environmentObject(model)
             }
-            .sheet(isPresented: $showingPracticeWordPicker) {
-                PracticeWordPickerSheet(
-                    words: model.activeWords,
-                    selectedIDs: $selectedPracticeWordIDs,
+            .sheet(isPresented: $showingWordPreview) {
+                PracticeWordPreviewSheet(
+                    words: selectedPracticeWords,
                     stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
                     language: language
                 )
@@ -118,78 +77,6 @@ struct HomeView: View {
         .onChange(of: model.activeWords.map(\.id)) { _, _ in
             syncPracticeSelectionIfNeeded()
         }
-    }
-
-    private var practiceButtonTitle: String {
-        let count = selectedPracticeWords.count
-        if count == 0 {
-            return language.text(japanese: "たんごをえらんで", english: "Choose Words")
-        }
-        return language.text(japanese: "えらんだ\(count)こをれんしゅう", english: "Practice \(count) selected")
-    }
-
-    private var practiceButtonSubtitle: String {
-        if selectedPracticeWords.isEmpty {
-            return language.text(japanese: "チェックをつけてね", english: "Check words first")
-        }
-        return language.text(japanese: "チェックした単語だけやる", english: "Only checked words")
-    }
-
-    private var testButtonTitle: String {
-        let progress = model.todayStepProgress
-        if progress.isComplete {
-            return progress.hasPerfectRun
-                ? language.text(japanese: "もう一回通し", english: "Run Again")
-                : language.text(japanese: "しあげテスト", english: "Final Test")
-        }
-        if progress.hasTestActivity {
-            return language.text(japanese: "あと\(progress.remainingCount)こだけ", english: "\(progress.remainingCount) left")
-        }
-        return language.text(japanese: "テストする", english: "Take Test")
-    }
-
-    private var testButtonSubtitle: String {
-        let progress = model.todayStepProgress
-        if progress.isComplete {
-            return progress.hasPerfectRun
-                ? language.text(japanese: "完全クリア済み", english: "Fully cleared")
-                : language.text(japanese: "全部通しでもう一回", english: "Try the full set")
-        }
-        if progress.hasTestActivity {
-            return language.text(japanese: "残りだけチャレンジ", english: "Only the remaining words")
-        }
-        return language.text(japanese: "まずは全部やってみよう", english: "Start with the full set")
-    }
-
-    private var testButtonIcon: String {
-        let progress = model.todayStepProgress
-        if progress.isComplete {
-            return progress.hasPerfectRun ? "checkmark.seal.fill" : "flag.checkered"
-        }
-        if progress.hasTestActivity {
-            return "arrow.counterclockwise.circle.fill"
-        }
-        return "checkmark.clipboard.fill"
-    }
-
-    private var testButtonColors: [Color] {
-        let progress = model.todayStepProgress
-        if progress.isComplete {
-            return [
-                Color(red: 0.96, green: 0.66, blue: 0.14),
-                Color(red: 0.78, green: 0.45, blue: 0.10)
-            ]
-        }
-        if progress.hasTestActivity {
-            return [
-                Color(red: 0.38, green: 0.72, blue: 0.96),
-                Color(red: 0.14, green: 0.42, blue: 0.78)
-            ]
-        }
-        return [
-            Color(red: 0.50, green: 0.78, blue: 0.34),
-            Color(red: 0.18, green: 0.58, blue: 0.20)
-        ]
     }
 
     private func sessionWords(for mode: SessionMode) -> [SpellingWord] {
@@ -242,6 +129,238 @@ struct HomeView: View {
             .buttonStyle(HomeIconButtonStyle())
             .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
         }
+    }
+}
+
+private struct ChildMissionPanel: View {
+    var stepTitle: String
+    var practiceCount: Int
+    var progress: TodayStepProgress
+    var language: AppLanguage
+    var canPractice: Bool
+    var canTest: Bool
+    var canReview: Bool
+    var startPractice: () -> Void
+    var showWords: () -> Void
+    var startTest: () -> Void
+    var startReview: () -> Void
+
+    private var missionText: String {
+        if practiceCount == 0 {
+            return language.text(japanese: "たんごがない", english: "No words")
+        }
+        return language.text(japanese: "\(practiceCount)こ れんしゅう", english: "\(practiceCount) words")
+    }
+
+    private var progressValue: Double {
+        guard progress.totalWords > 0 else {
+            return 0
+        }
+        return Double(progress.clearedCount) / Double(progress.totalWords)
+    }
+
+    var body: some View {
+        VStack(spacing: 22) {
+            HStack(spacing: 22) {
+                BearMascot()
+                    .frame(width: 118, height: 118)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(language.text(japanese: "きょうのミッション", english: "Today"))
+                        .font(.system(size: 38, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+
+                    Text(stepTitle)
+                        .font(.title2.monospacedDigit().weight(.heavy))
+                        .foregroundStyle(Color(red: 0.14, green: 0.35, blue: 0.76))
+                        .lineLimit(1)
+
+                    Text(missionText)
+                        .font(.system(size: 48, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.64)
+                }
+
+                Spacer(minLength: 0)
+            }
+
+            ProgressView(value: progressValue)
+                .tint(Color(red: 0.32, green: 0.68, blue: 0.28))
+                .scaleEffect(x: 1, y: 1.8, anchor: .center)
+                .accessibilityLabel(language.text(
+                    japanese: "今日のクリア \(progress.clearedCount) / \(progress.totalWords)",
+                    english: "Today \(progress.clearedCount) of \(progress.totalWords)"
+                ))
+
+            Button(action: startPractice) {
+                Label(language.text(japanese: "はじめる", english: "Start"), systemImage: "play.fill")
+                    .font(.system(size: 34, weight: .heavy, design: .rounded))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 18)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Color(red: 0.16, green: 0.42, blue: 0.84))
+            .disabled(!canPractice)
+
+            HStack(spacing: 12) {
+                MissionSmallButton(
+                    title: language.text(japanese: "たんご", english: "Words"),
+                    systemImage: "list.bullet",
+                    tint: Color(red: 0.49, green: 0.30, blue: 0.78),
+                    disabled: practiceCount == 0,
+                    action: showWords
+                )
+
+                MissionSmallButton(
+                    title: language.text(japanese: "テスト", english: "Test"),
+                    systemImage: "checkmark.clipboard.fill",
+                    tint: Color(red: 0.20, green: 0.58, blue: 0.24),
+                    disabled: !canTest,
+                    action: startTest
+                )
+
+                if canReview {
+                    MissionSmallButton(
+                        title: language.text(japanese: "なおす", english: "Fix"),
+                        systemImage: "arrow.counterclockwise",
+                        tint: Color(red: 0.90, green: 0.45, blue: 0.12),
+                        disabled: false,
+                        action: startReview
+                    )
+                }
+            }
+        }
+        .padding(24)
+        .background(.white.opacity(0.92))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1.5)
+        )
+        .shadow(color: .black.opacity(0.08), radius: 16, x: 0, y: 10)
+    }
+}
+
+private struct MissionSmallButton: View {
+    var title: String
+    var systemImage: String
+    var tint: Color
+    var disabled: Bool
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .font(.title3.weight(.heavy))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+        }
+        .buttonStyle(.bordered)
+        .tint(tint)
+        .disabled(disabled)
+    }
+}
+
+private struct PracticeWordPreviewSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    var words: [SpellingWord]
+    var stepTitle: String
+    var language: AppLanguage
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 170, maximum: 240), spacing: 12)
+    ]
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                HomeBackground()
+
+                VStack(spacing: 18) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(language.text(japanese: "きょうのたんご", english: "Words"))
+                                .font(.system(size: 34, weight: .heavy, design: .rounded))
+                                .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
+                            Text(stepTitle)
+                                .font(.title3.monospacedDigit().weight(.heavy))
+                                .foregroundStyle(Color(red: 0.14, green: 0.35, blue: 0.76))
+                        }
+
+                        Spacer()
+                    }
+
+                    if words.isEmpty {
+                        ContentUnavailableView(
+                            language.text(japanese: "たんごがありません", english: "No words"),
+                            systemImage: "list.bullet",
+                            description: Text(language.text(japanese: "保護者メニューで単語を入れてください。", english: "Add words in the parent menu."))
+                        )
+                    } else {
+                        ScrollView {
+                            LazyVGrid(columns: columns, spacing: 12) {
+                                ForEach(words) { word in
+                                    PracticeWordPreviewChip(word: word)
+                                }
+                            }
+                            .padding(.vertical, 2)
+                        }
+                    }
+                }
+                .frame(maxWidth: 760)
+                .padding(28)
+            }
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                }
+            }
+        }
+    }
+}
+
+private struct PracticeWordPreviewChip: View {
+    var word: SpellingWord
+
+    private var prompt: String {
+        word.promptText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(word.text)
+                .font(.system(size: 30, weight: .heavy, design: .rounded))
+                .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                .lineLimit(1)
+                .minimumScaleFactor(0.62)
+
+            if !prompt.isEmpty {
+                RubyPromptText(
+                    text: prompt,
+                    baseFontSize: 18,
+                    rubyFontSize: 8,
+                    baseColor: Color(red: 0.18, green: 0.38, blue: 0.72),
+                    rubyColor: Color(red: 0.46, green: 0.32, blue: 0.64),
+                    maxLines: 1
+                )
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: 86, alignment: .leading)
+        .padding(14)
+        .background(.white.opacity(0.90))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
+        )
     }
 }
 
