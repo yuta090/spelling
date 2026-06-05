@@ -42,18 +42,18 @@ struct HomeView: View {
                             }
 
                             HomeActionCard(
-                                title: language.text(japanese: "テストする", english: "Take Test"),
-                                subtitle: language.text(japanese: "力をためそう", english: "Check today's words"),
-                                systemImage: "checkmark.clipboard.fill",
-                                colors: [Color(red: 0.50, green: 0.78, blue: 0.34), Color(red: 0.18, green: 0.58, blue: 0.20)],
-                                disabled: model.activeWords.isEmpty
+                                title: testButtonTitle,
+                                subtitle: testButtonSubtitle,
+                                systemImage: testButtonIcon,
+                                colors: testButtonColors,
+                                disabled: model.nextTestWords.isEmpty
                             ) {
                                 activeMode = .test
                             }
                         }
                         .frame(maxWidth: 440)
 
-                        ReviewHomeCard(language: language, reviewCount: model.selectedReviewWords.count) {
+                        TodayProgressCard(language: language, progress: model.todayStepProgress) {
                             activeMode = .review
                         }
                         .frame(width: 270)
@@ -71,7 +71,7 @@ struct HomeView: View {
             .navigationDestination(item: $activeMode) { mode in
                 SpellingSessionView(
                     mode: mode,
-                    words: mode == .review ? model.selectedReviewWords : model.activeWords
+                    words: sessionWords(for: mode)
                 )
             }
             .fullScreenCover(isPresented: $showingParent) {
@@ -83,6 +83,74 @@ struct HomeView: View {
                     .environmentObject(model)
             }
             .toolbar(.hidden, for: .navigationBar)
+        }
+    }
+
+    private var testButtonTitle: String {
+        let progress = model.todayStepProgress
+        if progress.isComplete {
+            return progress.hasPerfectRun
+                ? language.text(japanese: "もう一回通し", english: "Run Again")
+                : language.text(japanese: "しあげテスト", english: "Final Test")
+        }
+        if progress.hasTestActivity {
+            return language.text(japanese: "あと\(progress.remainingCount)こだけ", english: "\(progress.remainingCount) left")
+        }
+        return language.text(japanese: "テストする", english: "Take Test")
+    }
+
+    private var testButtonSubtitle: String {
+        let progress = model.todayStepProgress
+        if progress.isComplete {
+            return progress.hasPerfectRun
+                ? language.text(japanese: "完全クリア済み", english: "Fully cleared")
+                : language.text(japanese: "全部通しでもう一回", english: "Try the full set")
+        }
+        if progress.hasTestActivity {
+            return language.text(japanese: "残りだけチャレンジ", english: "Only the remaining words")
+        }
+        return language.text(japanese: "まずは全部やってみよう", english: "Start with the full set")
+    }
+
+    private var testButtonIcon: String {
+        let progress = model.todayStepProgress
+        if progress.isComplete {
+            return progress.hasPerfectRun ? "checkmark.seal.fill" : "flag.checkered"
+        }
+        if progress.hasTestActivity {
+            return "arrow.counterclockwise.circle.fill"
+        }
+        return "checkmark.clipboard.fill"
+    }
+
+    private var testButtonColors: [Color] {
+        let progress = model.todayStepProgress
+        if progress.isComplete {
+            return [
+                Color(red: 0.96, green: 0.66, blue: 0.14),
+                Color(red: 0.78, green: 0.45, blue: 0.10)
+            ]
+        }
+        if progress.hasTestActivity {
+            return [
+                Color(red: 0.38, green: 0.72, blue: 0.96),
+                Color(red: 0.14, green: 0.42, blue: 0.78)
+            ]
+        }
+        return [
+            Color(red: 0.50, green: 0.78, blue: 0.34),
+            Color(red: 0.18, green: 0.58, blue: 0.20)
+        ]
+    }
+
+    private func sessionWords(for mode: SessionMode) -> [SpellingWord] {
+        switch mode {
+        case .practice:
+            return model.activeWords
+        case .test:
+            return model.nextTestWords
+        case .review:
+            return model.todayStepProgress.remainingWords
         }
     }
 
@@ -252,13 +320,45 @@ private struct HomeActionCard: View {
     }
 }
 
-private struct ReviewHomeCard: View {
+private struct TodayProgressCard: View {
     var language: AppLanguage
-    var reviewCount: Int
+    var progress: TodayStepProgress
     var action: () -> Void
 
-    private var hasReviewWords: Bool {
-        reviewCount > 0
+    private var canReviewRemaining: Bool {
+        progress.hasTestActivity && progress.remainingCount > 0
+    }
+
+    private var statusTitle: String {
+        if progress.totalWords == 0 {
+            return language.text(japanese: "単語がありません", english: "No words")
+        }
+        if progress.isComplete && progress.hasPerfectRun {
+            return language.text(japanese: "完全クリア", english: "Fully Cleared")
+        }
+        if progress.isComplete {
+            return language.text(japanese: "今日クリア", english: "Cleared Today")
+        }
+        if progress.hasTestActivity {
+            return language.text(japanese: "あと\(progress.remainingCount)こ", english: "\(progress.remainingCount) left")
+        }
+        return language.text(japanese: "まずはテスト", english: "Start Test")
+    }
+
+    private var statusMessage: String {
+        if progress.totalWords == 0 {
+            return language.text(japanese: "親メニューで単語を入れてください", english: "Add words in the parent menu")
+        }
+        if progress.isComplete && progress.hasPerfectRun {
+            return language.text(japanese: "全部通しでできました", english: "Full set completed")
+        }
+        if progress.isComplete {
+            return language.text(japanese: "しあげテストに進めます", english: "Ready for the final test")
+        }
+        if progress.hasTestActivity {
+            return language.text(japanese: "残りだけやればOK", english: "Only the remaining words")
+        }
+        return language.text(japanese: "全部を一回やってみよう", english: "Try all words once")
     }
 
     var body: some View {
@@ -267,32 +367,37 @@ private struct ReviewHomeCard: View {
                 .frame(width: 96, height: 96)
 
             VStack(spacing: 6) {
-                Text(language.text(japanese: "まちがえた単語が", english: "Words to review"))
+                Text(language.text(japanese: "今日のクリア", english: "Today"))
                     .font(.headline.weight(.bold))
                     .foregroundStyle(Color(red: 0.24, green: 0.18, blue: 0.12))
 
-                Text(hasReviewWords ? "\(reviewCount)" : "0")
+                Text(progress.totalWords == 0 ? "0/0" : "\(progress.clearedCount)/\(progress.totalWords)")
                     .font(.system(size: 27, weight: .heavy, design: .rounded))
-                    .foregroundStyle(hasReviewWords ? .red : .secondary)
+                    .foregroundStyle(progress.isComplete ? Color(red: 0.18, green: 0.58, blue: 0.20) : Color(red: 0.13, green: 0.35, blue: 0.76))
 
-                Text(language.text(japanese: hasReviewWords ? "こあります" : "ありません", english: hasReviewWords ? "need practice" : "none yet"))
+                Text(statusTitle)
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(progress.isComplete && progress.hasPerfectRun ? Color(red: 0.78, green: 0.42, blue: 0.06) : Color(red: 0.12, green: 0.22, blue: 0.38))
+
+                Text(statusMessage)
                     .font(.subheadline.weight(.bold))
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
             }
 
             Button(action: action) {
-                Label(language.text(japanese: "ふくしゅうする", english: "Review"), systemImage: "book.fill")
+                Label(language.text(japanese: "残りをれんしゅう", english: "Practice Left"), systemImage: "book.fill")
                     .font(.headline.weight(.bold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
             }
             .buttonStyle(.borderedProminent)
             .tint(Color(red: 0.52, green: 0.35, blue: 0.76))
-            .disabled(!hasReviewWords)
+            .disabled(!canReviewRemaining)
         }
         .padding(18)
         .frame(maxWidth: .infinity, minHeight: 258)
-        .background(Color(red: 1.0, green: 0.95, blue: 0.84).opacity(0.92))
+        .background((progress.isComplete ? Color(red: 0.92, green: 1.0, blue: 0.84) : Color(red: 1.0, green: 0.95, blue: 0.84)).opacity(0.92))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
@@ -307,6 +412,8 @@ private struct HomeStatsRow: View {
     var language: AppLanguage
 
     var body: some View {
+        let progress = model.todayStepProgress
+
         HStack(spacing: 12) {
             HomeStatChip(
                 title: language.text(japanese: "ステップ", english: "Step"),
@@ -314,8 +421,8 @@ private struct HomeStatsRow: View {
                 systemImage: "rectangle.stack.fill"
             )
             HomeStatChip(
-                title: language.text(japanese: "今日", english: "Today"),
-                value: "\(model.todaysCorrectCount)/\(model.todaysAttempts.count)",
+                title: language.text(japanese: "クリア", english: "Clear"),
+                value: "\(progress.clearedCount)/\(progress.totalWords)",
                 systemImage: "target"
             )
             HomeStatChip(
@@ -324,8 +431,8 @@ private struct HomeStatsRow: View {
                 systemImage: "list.bullet"
             )
             HomeStatChip(
-                title: language.text(japanese: "ふくしゅう", english: "Review"),
-                value: "\(model.selectedReviewWords.count)",
+                title: language.text(japanese: "残り", english: "Left"),
+                value: "\(progress.remainingCount)",
                 systemImage: "arrow.counterclockwise"
             )
         }

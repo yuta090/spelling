@@ -36,6 +36,26 @@ struct WordStep: Identifiable, Equatable {
     }
 }
 
+struct TodayStepProgress: Equatable {
+    var totalWords: Int
+    var clearedWords: [SpellingWord]
+    var remainingWords: [SpellingWord]
+    var hasTestActivity: Bool
+    var hasPerfectRun: Bool
+
+    var clearedCount: Int {
+        clearedWords.count
+    }
+
+    var remainingCount: Int {
+        remainingWords.count
+    }
+
+    var isComplete: Bool {
+        totalWords > 0 && remainingWords.isEmpty
+    }
+}
+
 struct OCRCandidate: Equatable {
     var text: String
     var normalizedText: String

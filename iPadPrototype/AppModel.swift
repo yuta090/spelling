@@ -58,6 +58,23 @@ final class AppModel: ObservableObject {
         selectedWordStep?.words ?? words
     }
 
+    var todayStepProgress: TodayStepProgress {
+        todayStepProgress(for: activeWords)
+    }
+
+    var nextTestWords: [SpellingWord] {
+        let progress = todayStepProgress
+        guard progress.totalWords > 0 else {
+            return []
+        }
+
+        if progress.hasTestActivity && !progress.isComplete {
+            return progress.remainingWords
+        }
+
+        return activeWords
+    }
+
     var reviewWords: [SpellingWord] {
         reviewWords(for: words)
     }
@@ -67,18 +84,87 @@ final class AppModel: ObservableObject {
     }
 
     private func reviewWords(for sourceWords: [SpellingWord]) -> [SpellingWord] {
-        let sourceTexts = Set(sourceWords.map { normalize($0.text) })
-        let reviewTexts = attempts
-            .filter { $0.decision != .autoCorrect }
-            .map { normalize($0.word) }
-            .filter { sourceTexts.contains($0) }
+        let latestAttempts = latestAttemptsByWord(for: sourceWords, in: attempts)
+        return sourceWords.filter { word in
+            guard let attempt = latestAttempts[normalize(word.text)] else {
+                return false
+            }
+            return !isCleared(attempt)
+        }
+    }
 
-        let unique = Array(NSOrderedSet(array: reviewTexts)).compactMap { $0 as? String }
-        let mapped = unique.compactMap { reviewText in
-            sourceWords.first { normalize($0.text) == reviewText }
+    private func todayStepProgress(for sourceWords: [SpellingWord]) -> TodayStepProgress {
+        let todayAttempts = attempts.filter { Calendar.current.isDateInToday($0.date) }
+        let latestAttempts = latestAttemptsByWord(for: sourceWords, in: todayAttempts)
+        let clearedWords = sourceWords.filter { word in
+            guard let attempt = latestAttempts[normalize(word.text)] else {
+                return false
+            }
+            return isCleared(attempt)
+        }
+        let remainingWords = sourceWords.filter { word in
+            !clearedWords.contains { normalize($0.text) == normalize(word.text) }
+        }
+        let sourceTexts = Set(sourceWords.map { normalize($0.text) })
+        let hasTestActivity = todayAttempts.contains { sourceTexts.contains(normalize($0.word)) }
+
+        return TodayStepProgress(
+            totalWords: sourceWords.count,
+            clearedWords: clearedWords,
+            remainingWords: remainingWords,
+            hasTestActivity: hasTestActivity,
+            hasPerfectRun: hasPerfectRunToday(for: sourceWords, in: todayAttempts)
+        )
+    }
+
+    private func latestAttemptsByWord(for sourceWords: [SpellingWord], in sourceAttempts: [SpellingAttempt]) -> [String: SpellingAttempt] {
+        let sourceTexts = Set(sourceWords.map { normalize($0.text) })
+        var latest: [String: SpellingAttempt] = [:]
+
+        for attempt in sourceAttempts.sorted(by: { $0.date < $1.date }) {
+            let key = normalize(attempt.word)
+            guard sourceTexts.contains(key) else {
+                continue
+            }
+            latest[key] = attempt
         }
 
-        return mapped
+        return latest
+    }
+
+    private func hasPerfectRunToday(for sourceWords: [SpellingWord], in todayAttempts: [SpellingAttempt]) -> Bool {
+        let sourceTexts = Set(sourceWords.map { normalize($0.text) })
+        guard !sourceTexts.isEmpty else {
+            return false
+        }
+
+        let sessions = Dictionary(grouping: todayAttempts) { $0.sessionID }
+        return sessions.values.contains { sessionAttempts in
+            var latestInSession: [String: SpellingAttempt] = [:]
+            for attempt in sessionAttempts.sorted(by: { $0.date < $1.date }) {
+                let key = normalize(attempt.word)
+                guard sourceTexts.contains(key) else {
+                    continue
+                }
+                latestInSession[key] = attempt
+            }
+
+            guard Set(latestInSession.keys) == sourceTexts else {
+                return false
+            }
+
+            return latestInSession.values.allSatisfy { isCleared($0) }
+        }
+    }
+
+    private func isCleared(_ attempt: SpellingAttempt) -> Bool {
+        if attempt.parentReviewDecision == .approved {
+            return true
+        }
+        if attempt.parentReviewDecision == .needsPractice {
+            return false
+        }
+        return attempt.decision == .autoCorrect
     }
 
     var todaysAttempts: [SpellingAttempt] {
