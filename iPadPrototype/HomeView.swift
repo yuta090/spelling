@@ -34,11 +34,9 @@ struct HomeView: View {
                         language: language,
                         canPractice: !selectedPracticeWords.isEmpty,
                         canTest: !model.nextTestWords.isEmpty,
-                        canReview: model.todayStepProgress.hasTestActivity && model.todayStepProgress.remainingCount > 0,
                         startPractice: { activeMode = .practice },
                         showWords: { showingWordPreview = true },
-                        startTest: { activeMode = .test },
-                        startReview: { activeMode = .review }
+                        startTest: { activeMode = .test }
                     )
                     .frame(maxWidth: 760)
 
@@ -139,11 +137,9 @@ private struct ChildMissionPanel: View {
     var language: AppLanguage
     var canPractice: Bool
     var canTest: Bool
-    var canReview: Bool
     var startPractice: () -> Void
     var showWords: () -> Void
     var startTest: () -> Void
-    var startReview: () -> Void
 
     private var missionText: String {
         if practiceCount == 0 {
@@ -221,16 +217,6 @@ private struct ChildMissionPanel: View {
                     disabled: !canTest,
                     action: startTest
                 )
-
-                if canReview {
-                    MissionSmallButton(
-                        title: language.text(japanese: "なおす", english: "Fix"),
-                        systemImage: "arrow.counterclockwise",
-                        tint: Color(red: 0.90, green: 0.45, blue: 0.12),
-                        disabled: false,
-                        action: startReview
-                    )
-                }
             }
         }
         .padding(24)
