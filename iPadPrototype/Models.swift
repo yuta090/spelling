@@ -60,6 +60,60 @@ struct TodayStepProgress: Equatable {
     }
 }
 
+struct SchoolTestResult: Identifiable, Equatable, Codable {
+    var id = UUID()
+    var date = Date()
+    var stepID: String?
+    var stepTitle: String
+    var score: Int
+    var total: Int
+    var missedWords: String
+    var note: String
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case date
+        case stepID
+        case stepTitle
+        case score
+        case total
+        case missedWords
+        case note
+    }
+
+    init(
+        id: UUID = UUID(),
+        date: Date = Date(),
+        stepID: String? = nil,
+        stepTitle: String,
+        score: Int,
+        total: Int,
+        missedWords: String = "",
+        note: String = ""
+    ) {
+        self.id = id
+        self.date = date
+        self.stepID = stepID
+        self.stepTitle = stepTitle
+        self.score = max(score, 0)
+        self.total = max(total, 1)
+        self.missedWords = missedWords
+        self.note = note
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        date = try container.decodeIfPresent(Date.self, forKey: .date) ?? Date()
+        stepID = try container.decodeIfPresent(String.self, forKey: .stepID)
+        stepTitle = try container.decodeIfPresent(String.self, forKey: .stepTitle) ?? ""
+        score = try container.decodeIfPresent(Int.self, forKey: .score) ?? 0
+        total = max(try container.decodeIfPresent(Int.self, forKey: .total) ?? 1, 1)
+        missedWords = try container.decodeIfPresent(String.self, forKey: .missedWords) ?? ""
+        note = try container.decodeIfPresent(String.self, forKey: .note) ?? ""
+    }
+}
+
 struct OCRCandidate: Equatable {
     var text: String
     var normalizedText: String

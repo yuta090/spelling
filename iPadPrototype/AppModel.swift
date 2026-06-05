@@ -17,6 +17,10 @@ final class AppModel: ObservableObject {
         didSet { savePracticeSamples() }
     }
 
+    @Published var schoolTestResults: [SchoolTestResult] {
+        didSet { saveSchoolTestResults() }
+    }
+
     @Published var settings: TestSettings {
         didSet { saveSettings() }
     }
@@ -28,6 +32,7 @@ final class AppModel: ObservableObject {
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
     private let practiceSamplesKey = "spellingTrainer.practiceSamples"
+    private let schoolTestResultsKey = "spellingTrainer.schoolTestResults"
     private let settingsKey = "spellingTrainer.settings"
     private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"
 
@@ -41,6 +46,7 @@ final class AppModel: ObservableObject {
         words = loadedWords
         attempts = Self.load([SpellingAttempt].self, key: attemptsKey) ?? []
         practiceSamples = Self.load([PracticeSample].self, key: practiceSamplesKey) ?? []
+        schoolTestResults = Self.load([SchoolTestResult].self, key: schoolTestResultsKey) ?? []
         settings = Self.load(TestSettings.self, key: settingsKey) ?? TestSettings()
         selectedWordStepID = UserDefaults.standard.string(forKey: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
         ensureSelectedWordStepStillExists()
@@ -289,6 +295,14 @@ final class AppModel: ObservableObject {
         practiceSamples = []
     }
 
+    func addSchoolTestResult(_ result: SchoolTestResult) {
+        schoolTestResults.append(result)
+    }
+
+    func deleteSchoolTestResult(_ result: SchoolTestResult) {
+        schoolTestResults.removeAll { $0.id == result.id }
+    }
+
     private func saveWords() {
         Self.save(words, key: wordsKey)
     }
@@ -299,6 +313,10 @@ final class AppModel: ObservableObject {
 
     private func savePracticeSamples() {
         Self.save(practiceSamples, key: practiceSamplesKey)
+    }
+
+    private func saveSchoolTestResults() {
+        Self.save(schoolTestResults, key: schoolTestResultsKey)
     }
 
     private func saveSettings() {

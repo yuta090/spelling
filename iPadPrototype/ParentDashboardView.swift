@@ -338,6 +338,7 @@ private struct ParentStatusTile: View {
 
 private enum ParentRecordSection: String, CaseIterable, Identifiable {
     case results
+    case school
     case handwriting
     case history
 
@@ -347,6 +348,8 @@ private enum ParentRecordSection: String, CaseIterable, Identifiable {
         switch self {
         case .results:
             return language.text(japanese: "成績", english: "Results")
+        case .school:
+            return language.text(japanese: "学校テスト", english: "School")
         case .handwriting:
             return language.text(japanese: "手書き", english: "Writing")
         case .history:
@@ -379,11 +382,294 @@ private struct ParentRecordsWorkspace: View {
         switch selectedRecordSection {
         case .results:
             AnswerReviewPanel(language: language)
+        case .school:
+            SchoolTestResultPanel(language: language)
         case .handwriting:
             HandwritingListPanel(language: language)
         case .history:
             LearningHistoryPanel(language: language)
         }
+    }
+}
+
+private struct SchoolTestResultPanel: View {
+    @EnvironmentObject private var model: AppModel
+    @State private var testDate = Date()
+    @State private var selectedStepID = ""
+    @State private var score = 0
+    @State private var total = 0
+    @State private var missedWords = ""
+    @State private var note = ""
+    var language: AppLanguage
+
+    private var sortedResults: [SchoolTestResult] {
+        model.schoolTestResults.sorted { $0.date > $1.date }
+    }
+
+    private var selectedStep: WordStep? {
+        model.wordSteps.first { $0.id == selectedStepID }
+    }
+
+    private var canSave: Bool {
+        total > 0 && score >= 0 && score <= total
+    }
+
+    var body: some View {
+        ParentPanel(
+            title: language.text(japanese: "学校テスト", english: "School Test"),
+            systemImage: "graduationcap.fill",
+            tint: Color(red: 0.56, green: 0.34, blue: 0.78)
+        ) {
+            Text(language.text(
+                japanese: "学校で返ってきたスペリングテストの結果を、アプリの練習記録とは別に保存します。",
+                english: "Save school spelling test results separately from app practice records."
+            ))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: 12) {
+                    DatePicker(
+                        language.text(japanese: "テスト日", english: "Date"),
+                        selection: $testDate,
+                        displayedComponents: .date
+                    )
+                    .font(.headline.weight(.bold))
+                    .datePickerStyle(.compact)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if !model.wordSteps.isEmpty {
+                        Picker(language.text(japanese: "単語集", english: "Step"), selection: $selectedStepID) {
+                            ForEach(model.wordSteps) { step in
+                                Text(step.title(language: language)).tag(step.id)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                }
+
+                HStack(spacing: 12) {
+                    Stepper(value: $score, in: 0...max(total, 1)) {
+                        SettingValueRow(
+                            title: language.text(japanese: "正解", english: "Correct"),
+                            value: "\(score)"
+                        )
+                    }
+
+                    Stepper(value: $total, in: 1...50) {
+                        SettingValueRow(
+                            title: language.text(japanese: "満点", english: "Total"),
+                            value: "\(total)"
+                        )
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Label(language.text(japanese: "間違えた単語", english: "Missed Words"), systemImage: "text.badge.xmark")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+                    TextEditor(text: $missedWords)
+                        .font(.body.monospaced())
+                        .frame(height: 70)
+                        .padding(8)
+                        .background(Color(red: 0.98, green: 0.97, blue: 1.0))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+                        )
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Label(language.text(japanese: "メモ", english: "Note"), systemImage: "note.text")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+                    TextEditor(text: $note)
+                        .font(.body)
+                        .frame(height: 64)
+                        .padding(8)
+                        .background(Color(red: 0.98, green: 0.97, blue: 1.0))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+                        )
+                }
+
+                HStack {
+                    Spacer()
+
+                    Button {
+                        saveResult()
+                    } label: {
+                        Label(language.text(japanese: "学校テストを保存", english: "Save School Test"), systemImage: "square.and.arrow.down.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color(red: 0.56, green: 0.34, blue: 0.78))
+                    .disabled(!canSave)
+                }
+            }
+            .padding(12)
+            .background(Color(red: 0.99, green: 0.98, blue: 1.0))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+            )
+
+            Divider()
+
+            HStack {
+                SettingValueRow(
+                    title: language.text(japanese: "保存済み", english: "Saved"),
+                    value: "\(model.schoolTestResults.count)"
+                )
+
+                Spacer()
+            }
+
+            if sortedResults.isEmpty {
+                ContentUnavailableView(
+                    language.text(japanese: "まだ学校テスト結果がありません", english: "No school test results yet"),
+                    systemImage: "graduationcap",
+                    description: Text(language.text(japanese: "学校のテストが返ってきたら、ここに点数を入れます。", english: "Enter scores here when school tests come back."))
+                )
+                .frame(minHeight: 220)
+            } else {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(sortedResults) { result in
+                            SchoolTestResultCard(result: result, language: language)
+                                .environmentObject(model)
+                        }
+                    }
+                }
+                .frame(maxHeight: 520)
+            }
+        }
+        .onAppear {
+            prepareDefaultsIfNeeded()
+        }
+        .onChange(of: selectedStepID) { _, _ in
+            if total <= 0 {
+                applyDefaultTotal()
+            }
+        }
+        .onChange(of: total) { _, newTotal in
+            score = min(score, max(newTotal, 1))
+        }
+    }
+
+    private func prepareDefaultsIfNeeded() {
+        if selectedStepID.isEmpty {
+            selectedStepID = model.selectedWordStep?.id ?? model.wordSteps.last?.id ?? ""
+        }
+        if total <= 0 {
+            applyDefaultTotal()
+        }
+    }
+
+    private func applyDefaultTotal() {
+        let defaultTotal = max(selectedStep?.words.count ?? model.activeWords.count, 1)
+        total = defaultTotal
+        score = defaultTotal
+    }
+
+    private func saveResult() {
+        let trimmedMissedWords = missedWords.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedNote = note.trimmingCharacters(in: .whitespacesAndNewlines)
+        let stepTitle = selectedStep?.title(language: language)
+            ?? language.text(japanese: "ステップ未設定", english: "No step")
+        let result = SchoolTestResult(
+            date: testDate,
+            stepID: selectedStep?.id,
+            stepTitle: stepTitle,
+            score: score,
+            total: total,
+            missedWords: trimmedMissedWords,
+            note: trimmedNote
+        )
+        model.addSchoolTestResult(result)
+        testDate = Date()
+        missedWords = ""
+        note = ""
+        applyDefaultTotal()
+    }
+}
+
+private struct SchoolTestResultCard: View {
+    @EnvironmentObject private var model: AppModel
+    var result: SchoolTestResult
+    var language: AppLanguage
+
+    private var scoreColor: Color {
+        let ratio = Double(result.score) / Double(max(result.total, 1))
+        if ratio >= 0.9 {
+            return Color(red: 0.24, green: 0.62, blue: 0.26)
+        }
+        if ratio >= 0.7 {
+            return Color(red: 0.88, green: 0.52, blue: 0.12)
+        }
+        return Color(red: 0.78, green: 0.22, blue: 0.18)
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            VStack(spacing: 2) {
+                Text("\(result.score)")
+                    .font(.system(size: 34, weight: .heavy, design: .rounded))
+                    .monospacedDigit()
+                Text("/ \(result.total)")
+                    .font(.headline.monospacedDigit().weight(.bold))
+            }
+            .foregroundStyle(scoreColor)
+            .frame(width: 82)
+            .padding(.vertical, 8)
+            .background(scoreColor.opacity(0.10))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(result.stepTitle.isEmpty ? language.text(japanese: "学校テスト", english: "School Test") : result.stepTitle)
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                Text(result.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+
+                if !result.missedWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Label(result.missedWords, systemImage: "text.badge.xmark")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color(red: 0.75, green: 0.28, blue: 0.18))
+                }
+
+                if !result.note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(result.note)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+
+            Button {
+                model.deleteSchoolTestResult(result)
+            } label: {
+                Image(systemName: "trash")
+                    .font(.headline.weight(.bold))
+                    .frame(width: 34, height: 34)
+            }
+            .buttonStyle(.bordered)
+            .tint(Color(red: 0.76, green: 0.22, blue: 0.18))
+            .accessibilityLabel(language.text(japanese: "学校テスト結果を削除", english: "Delete school test result"))
+        }
+        .padding(12)
+        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.purple.opacity(0.14), lineWidth: 1)
+        )
     }
 }
 
@@ -1988,7 +2274,20 @@ private struct LearningHistoryPanel: View {
             )
         }
 
-        return (testEntries + practiceEntries).sorted { $0.date > $1.date }
+        let schoolEntries = model.schoolTestResults.map { result in
+            LearningHistoryEntry(
+                id: "school-\(result.id.uuidString)",
+                date: result.date,
+                word: result.stepTitle.isEmpty ? language.text(japanese: "学校テスト", english: "School Test") : result.stepTitle,
+                modeLabel: language.text(japanese: "学校テスト", english: "School Test"),
+                detail: "\(result.score)/\(result.total)" + (result.missedWords.isEmpty ? "" : " ・ \(result.missedWords)"),
+                systemImage: "graduationcap.fill",
+                tint: Color(red: 0.56, green: 0.34, blue: 0.78),
+                drawingData: nil
+            )
+        }
+
+        return (testEntries + practiceEntries + schoolEntries).sorted { $0.date > $1.date }
     }
 
     var body: some View {
@@ -2005,11 +2304,15 @@ private struct LearningHistoryPanel: View {
                     title: language.text(japanese: "手書き記録", english: "Handwriting"),
                     value: "\(model.practiceSamples.count)"
                 )
+                SettingValueRow(
+                    title: language.text(japanese: "学校テスト", english: "School"),
+                    value: "\(model.schoolTestResults.count)"
+                )
             }
 
             Text(language.text(
-                japanese: "いつ、どのモードで、どの単語を書いたかを保存しています。",
-                english: "Saved records show when each word was practiced or tested."
+                japanese: "アプリ内の練習・テストと、学校で返ってきた結果を時系列で保存しています。",
+                english: "Saved records include app practice, app tests, and school test results."
             ))
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(.secondary)
