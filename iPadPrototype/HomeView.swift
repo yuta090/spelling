@@ -5,6 +5,7 @@ struct HomeView: View {
     @State private var activeMode: SessionMode?
     @State private var showingParent = false
     @State private var showingResults = false
+    @State private var showingPracticeWordPicker = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
     @State private var lastPracticeWordIDs = Set<UUID>()
 
@@ -38,11 +39,14 @@ struct HomeView: View {
                         .environmentObject(model)
                         .frame(maxWidth: 760)
 
-                    PracticeWordPickerPanel(
+                    PracticeWordSelectionSummaryPanel(
                         words: model.activeWords,
-                        selectedIDs: $selectedPracticeWordIDs,
+                        selectedIDs: selectedPracticeWordIDs,
+                        stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
                         language: language
-                    )
+                    ) {
+                        showingPracticeWordPicker = true
+                    }
                     .frame(maxWidth: 760)
 
                     HStack(alignment: .center, spacing: 24) {
@@ -97,6 +101,14 @@ struct HomeView: View {
             .sheet(isPresented: $showingResults) {
                 ResultsView()
                     .environmentObject(model)
+            }
+            .sheet(isPresented: $showingPracticeWordPicker) {
+                PracticeWordPickerSheet(
+                    words: model.activeWords,
+                    selectedIDs: $selectedPracticeWordIDs,
+                    stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
+                    language: language
+                )
             }
             .toolbar(.hidden, for: .navigationBar)
         }
@@ -233,9 +245,117 @@ struct HomeView: View {
     }
 }
 
+private struct PracticeWordSelectionSummaryPanel: View {
+    var words: [SpellingWord]
+    var selectedIDs: Set<UUID>
+    var stepTitle: String
+    var language: AppLanguage
+    var openPicker: () -> Void
+
+    private var selectedWords: [SpellingWord] {
+        words.filter { selectedIDs.contains($0.id) }
+    }
+
+    private var selectedSummary: String {
+        if selectedWords.isEmpty {
+            return language.text(japanese: "まだ選んでいません", english: "No words selected")
+        }
+        return selectedWords.map(\.text).prefix(4).joined(separator: " / ")
+    }
+
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: "checklist.checked")
+                .font(.system(size: 30, weight: .heavy))
+                .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78))
+                .frame(width: 58, height: 58)
+                .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text(language.text(japanese: "きょう れんしゅうする たんご", english: "Words to Practice Today"))
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                Text(language.text(
+                    japanese: "\(stepTitle) から \(selectedWords.count)/\(words.count) こ選んでいます",
+                    english: "\(selectedWords.count)/\(words.count) selected from \(stepTitle)"
+                ))
+                .font(.headline.monospacedDigit().weight(.bold))
+                .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78))
+                Text(selectedSummary)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 8)
+
+            Button(action: openPicker) {
+                Label(language.text(japanese: "単語をえらぶ", english: "Choose Words"), systemImage: "square.grid.2x2.fill")
+                    .font(.headline.weight(.heavy))
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 12)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Color(red: 0.49, green: 0.30, blue: 0.78))
+            .disabled(words.isEmpty)
+        }
+        .padding(14)
+        .background(.white.opacity(0.90))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.78, green: 0.68, blue: 0.94), lineWidth: 1.5)
+        )
+        .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 6)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(language.text(
+            japanese: "今日練習する単語。\(selectedWords.count)個選んでいます。単語を選ぶボタンで変更できます。",
+            english: "Practice words. \(selectedWords.count) selected. Use Choose Words to change them."
+        ))
+    }
+}
+
+private struct PracticeWordPickerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    var words: [SpellingWord]
+    @Binding var selectedIDs: Set<UUID>
+    var stepTitle: String
+    var language: AppLanguage
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                HomeBackground()
+
+                PracticeWordPickerPanel(
+                    words: words,
+                    selectedIDs: $selectedIDs,
+                    stepTitle: stepTitle,
+                    language: language
+                )
+                .frame(maxWidth: 760)
+                .padding(28)
+            }
+            .navigationTitle(language.text(japanese: "単語をえらぶ", english: "Choose Words"))
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "できた", english: "Done"), systemImage: "checkmark")
+                    }
+                    .font(.headline.weight(.bold))
+                }
+            }
+        }
+    }
+}
+
 private struct PracticeWordPickerPanel: View {
     var words: [SpellingWord]
     @Binding var selectedIDs: Set<UUID>
+    var stepTitle: String
     var language: AppLanguage
 
     private let columns = [
@@ -250,11 +370,14 @@ private struct PracticeWordPickerPanel: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Label(language.text(japanese: "れんしゅうする単語をえらぼう", english: "Choose Practice Words"), systemImage: "checkmark.square.fill")
-                        .font(.headline.weight(.heavy))
+                    Label(language.text(japanese: "きょう れんしゅうする たんご", english: "Words to Practice Today"), systemImage: "checkmark.square.fill")
+                        .font(.title2.weight(.heavy))
                         .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78))
-                    Text(language.text(japanese: "チェックした単語だけ、まとめてれんしゅうします。", english: "Only checked words will be practiced together."))
-                        .font(.subheadline.weight(.semibold))
+                    Text(language.text(
+                        japanese: "\(stepTitle) の中から、やる単語にチェックをつけてね。",
+                        english: "Check the words from \(stepTitle) that you want to practice."
+                    ))
+                        .font(.headline.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
 
