@@ -214,9 +214,19 @@ private struct ParentWordListPanel: View {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(model.words) { word in
                         HStack {
-                            Text(word.text)
-                                .font(.headline.weight(.semibold))
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(word.text)
+                                    .font(.headline.weight(.semibold))
+                                Text(language.text(
+                                    japanese: "登録日: \(formattedRegistrationDate(word.registeredAt, language: language))",
+                                    english: "Registered: \(formattedRegistrationDate(word.registeredAt, language: language))"
+                                ))
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            }
+
                             Spacer()
+
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.bold))
                                 .foregroundStyle(.secondary)
@@ -896,6 +906,13 @@ private struct DrawingPreview: UIViewRepresentable {
             imageView.image = nil
         }
     }
+}
+
+private func formattedRegistrationDate(_ date: Date, language: AppLanguage) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = language == .japanese ? Locale(identifier: "ja_JP") : Locale(identifier: "en_US")
+    formatter.dateFormat = language == .japanese ? "yyyy年M月d日" : "MMM d, yyyy"
+    return formatter.string(from: date)
 }
 
 private struct ParentBackground: View {

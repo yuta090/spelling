@@ -3,6 +3,26 @@ import Foundation
 struct SpellingWord: Identifiable, Equatable, Codable {
     var id = UUID()
     var text: String
+    var registeredAt = Date()
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case text
+        case registeredAt
+    }
+
+    init(id: UUID = UUID(), text: String, registeredAt: Date = Date()) {
+        self.id = id
+        self.text = text
+        self.registeredAt = registeredAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        text = try container.decode(String.self, forKey: .text)
+        registeredAt = try container.decodeIfPresent(Date.self, forKey: .registeredAt) ?? Date()
+    }
 }
 
 struct OCRCandidate: Equatable {

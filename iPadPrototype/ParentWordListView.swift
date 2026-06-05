@@ -40,8 +40,13 @@ struct ParentWordListView: View {
                     .foregroundStyle(.secondary)
 
                 List(model.words) { word in
-                    Text(word.text)
-                        .font(.title3)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(word.text)
+                            .font(.title3)
+                        Text("Registered: \(word.registeredAt.formatted(date: .abbreviated, time: .omitted))")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 .listStyle(.plain)
             }

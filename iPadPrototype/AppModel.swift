@@ -67,7 +67,18 @@ final class AppModel: ObservableObject {
             .filter { !$0.isEmpty }
 
         let unique = Array(NSOrderedSet(array: parsed)).compactMap { $0 as? String }
-        words = unique.map { SpellingWord(text: $0) }
+        let now = Date()
+        var existingWordsByText: [String: SpellingWord] = [:]
+        for word in words {
+            let key = normalize(word.text)
+            if existingWordsByText[key] == nil {
+                existingWordsByText[key] = word
+            }
+        }
+
+        words = unique.map { text in
+            existingWordsByText[text] ?? SpellingWord(text: text, registeredAt: now)
+        }
     }
 
     @discardableResult
