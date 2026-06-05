@@ -951,6 +951,17 @@ private struct PracticeSessionReviewView: View {
     @State private var showingCelebration = false
     @State private var celebrationSeed = 0
 
+    private var sampleGroups: [PracticeSampleGroup] {
+        groupedPracticeSamples(samples)
+    }
+
+    private var writtenSummary: String {
+        language.text(
+            japanese: "\(sampleGroups.count)こ・\(samples.count)かい書きました",
+            english: "\(sampleGroups.count) words ・ \(samples.count) writes"
+        )
+    }
+
     var body: some View {
         ZStack {
             if showingCelebration {
@@ -967,7 +978,7 @@ private struct PracticeSessionReviewView: View {
 
                     Spacer()
 
-                    Text(language.text(japanese: "\(samples.count) こ書きました", english: "\(samples.count) words written"))
+                    Text(writtenSummary)
                         .font(.headline.monospacedDigit().weight(.bold))
                         .foregroundStyle(.secondary)
                 }
@@ -1033,8 +1044,8 @@ private struct PracticeSessionReviewView: View {
                 } else {
                     ScrollView {
                         VStack(spacing: 14) {
-                            ForEach(samples) { sample in
-                                PracticeSampleReviewCard(sample: sample, language: language)
+                            ForEach(sampleGroups) { group in
+                                PracticeSampleGroupReviewCard(group: group, language: language)
                             }
                         }
                         .padding(.vertical, 4)
@@ -1059,6 +1070,20 @@ private struct PracticeSessionReviewView: View {
                 showingCelebration = true
             }
         }
+    }
+
+    private func groupedPracticeSamples(_ samples: [PracticeSample]) -> [PracticeSampleGroup] {
+        var groups: [PracticeSampleGroup] = []
+
+        for sample in samples {
+            if let index = groups.firstIndex(where: { $0.word == sample.word }) {
+                groups[index].samples.append(sample)
+            } else {
+                groups.append(PracticeSampleGroup(word: sample.word, samples: [sample]))
+            }
+        }
+
+        return groups
     }
 }
 
@@ -1257,30 +1282,43 @@ private struct TestAttemptResultCard: View {
     }
 }
 
-private struct PracticeSampleReviewCard: View {
-    var sample: PracticeSample
+private struct PracticeSampleGroup: Identifiable {
+    var word: String
+    var samples: [PracticeSample]
+
+    var id: UUID {
+        samples.first?.id ?? UUID()
+    }
+}
+
+private struct PracticeSampleGroupReviewCard: View {
+    var group: PracticeSampleGroup
     var language: AppLanguage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(sample.word)
+                Text(group.word)
                     .font(.title2.weight(.bold))
                     .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
                 Spacer()
-                Label(language.text(japanese: "手書き", english: "Written"), systemImage: "pencil.line")
+                Label(language.text(japanese: "\(group.samples.count)かい", english: "\(group.samples.count) writes"), systemImage: "rectangle.grid.1x2.fill")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.secondary)
             }
 
-            PracticeDrawingPreview(drawingData: sample.drawingData)
-                .frame(height: 210)
-                .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray.opacity(0.22), lineWidth: 1)
-                )
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 10) {
+                    ForEach(group.samples.indices, id: \.self) { sampleIndex in
+                        PracticeSampleAttemptTile(
+                            sample: group.samples[sampleIndex],
+                            round: sampleIndex + 1,
+                            language: language
+                        )
+                    }
+                }
+                .padding(.vertical, 1)
+            }
         }
         .padding(12)
         .background(.white.opacity(0.90))
@@ -1292,8 +1330,49 @@ private struct PracticeSampleReviewCard: View {
     }
 }
 
+private struct PracticeSampleAttemptTile: View {
+    var sample: PracticeSample
+    var round: Int
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(language.text(japanese: "\(round)かいめ", english: "Round \(round)"), systemImage: "pencil.line")
+                .font(.headline.monospacedDigit().weight(.heavy))
+                .foregroundStyle(Color(red: 0.48, green: 0.30, blue: 0.72))
+
+            PracticeDrawingPreview(
+                drawingData: sample.drawingData,
+                horizontalPadding: 70,
+                topPadding: 95,
+                bottomPadding: 190
+            )
+            .frame(height: 150)
+            .background(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+            )
+        }
+        .frame(width: 214, alignment: .leading)
+        .padding(10)
+        .background(Color(red: 0.97, green: 0.98, blue: 1.0))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.80, green: 0.84, blue: 0.94), lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(language.text(japanese: "\(sample.word) \(round)回目の手書き", english: "\(sample.word) handwriting round \(round)"))
+    }
+}
+
 private struct PracticeDrawingPreview: UIViewRepresentable {
     var drawingData: Data
+    var horizontalPadding: CGFloat = 80
+    var topPadding: CGFloat = 90
+    var bottomPadding: CGFloat = 150
 
     func makeUIView(context: Context) -> UIImageView {
         let imageView = UIImageView()
@@ -1304,7 +1383,11 @@ private struct PracticeDrawingPreview: UIViewRepresentable {
 
     func updateUIView(_ imageView: UIImageView, context: Context) {
         if let drawing = try? PKDrawing(data: drawingData) {
-            imageView.image = drawing.previewImage()
+            imageView.image = drawing.previewImage(
+                horizontalPadding: horizontalPadding,
+                topPadding: topPadding,
+                bottomPadding: bottomPadding
+            )
         } else {
             imageView.image = nil
         }
