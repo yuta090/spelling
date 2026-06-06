@@ -79,6 +79,14 @@ struct SpellingSessionView: View {
         return sessionWords[min(index, max(sessionWords.count - 1, 0))]
     }
 
+    private var currentInkDrawing: PKDrawing {
+        hasInk(drawingCapture.latestDrawing) ? drawingCapture.latestDrawing : drawing
+    }
+
+    private var hasCurrentDrawingInk: Bool {
+        hasInk(drawingCapture.latestDrawing) || hasInk(drawing)
+    }
+
     private var completedPracticeWordsInSession: Int {
         guard mode == .practice else {
             return 0
@@ -555,6 +563,9 @@ struct SpellingSessionView: View {
             if mode == .test {
                 return language.text(japanese: "読みにくいかも。大きく書き直そう。", english: "Hard to read. Write it larger.")
             }
+            if !hasCurrentDrawingInk {
+                return language.text(japanese: "まず、お手本を見て単語を書いてね。", english: "Write the word first.")
+            }
             return language.text(japanese: "大きく、はっきり書いてみよう。", english: "Write it again with larger letters.")
         case .timeExpired:
             return language.text(japanese: "時間切れです。つぎへ進めます。", english: "Time is up. You can move on.")
@@ -579,6 +590,9 @@ struct SpellingSessionView: View {
 
     private func moveNext(saveDrawing: Bool) {
         if saveDrawing {
+            guard requirePracticeInkIfNeeded() else {
+                return
+            }
             savePracticeDrawingIfNeeded()
         }
 
@@ -642,6 +656,10 @@ struct SpellingSessionView: View {
             return
         }
 
+        guard requirePracticeInkIfNeeded() else {
+            return
+        }
+
         isAdvancing = true
         savePracticeDrawingIfNeeded()
         completedPracticeWordCount = practicedWordCountInSession()
@@ -663,8 +681,8 @@ struct SpellingSessionView: View {
     }
 
     private func savePracticeDrawingIfNeeded() {
-        let latestDrawing = drawingCapture.latestDrawing
-        guard capturesPracticeSamples, !latestDrawing.bounds.isNull, !latestDrawing.bounds.isEmpty else {
+        let latestDrawing = currentInkDrawing
+        guard capturesPracticeSamples, hasInk(latestDrawing) else {
             return
         }
 
@@ -676,6 +694,26 @@ struct SpellingSessionView: View {
         )
         model.addPracticeSample(sample)
         sessionPracticeSamples.append(sample)
+    }
+
+    private func requirePracticeInkIfNeeded() -> Bool {
+        guard capturesPracticeSamples else {
+            return true
+        }
+
+        guard hasCurrentDrawingInk else {
+            candidates = []
+            withAnimation(.easeInOut(duration: 0.16)) {
+                decision = .rewrite
+            }
+            return false
+        }
+
+        return true
+    }
+
+    private func hasInk(_ drawing: PKDrawing) -> Bool {
+        !drawing.bounds.isNull && !drawing.bounds.isEmpty
     }
 
     private func practicedWordCountInSession() -> Int {
