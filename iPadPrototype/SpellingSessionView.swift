@@ -2583,6 +2583,10 @@ struct RubyPromptText: View {
         parseRubyTextSegments(text)
     }
 
+    private var reservesRubyLine: Bool {
+        segments.contains { $0.kind == .ruby }
+    }
+
     var body: some View {
         RubyFlowLayout(horizontalSpacing: 0, verticalSpacing: 4, maxLines: maxLines) {
             ForEach(segments) { segment in
@@ -2591,7 +2595,8 @@ struct RubyPromptText: View {
                     baseFontSize: baseFontSize,
                     rubyFontSize: rubyFontSize,
                     baseColor: baseColor,
-                    rubyColor: rubyColor
+                    rubyColor: rubyColor,
+                    reservesRubyLine: reservesRubyLine
                 )
             }
         }
@@ -2606,14 +2611,29 @@ private struct RubyPromptSegmentView: View {
     var rubyFontSize: CGFloat
     var baseColor: Color
     var rubyColor: Color
+    var reservesRubyLine: Bool
 
     var body: some View {
         switch segment.kind {
         case .plain:
-            Text(segment.base)
-                .font(.system(size: baseFontSize, weight: .heavy, design: .rounded))
-                .foregroundStyle(baseColor)
+            if reservesRubyLine {
+                VStack(spacing: -1) {
+                    Text(" ")
+                        .font(.system(size: rubyFontSize, weight: .heavy, design: .rounded))
+                        .lineLimit(1)
+                        .hidden()
+                    Text(segment.base)
+                        .font(.system(size: baseFontSize, weight: .heavy, design: .rounded))
+                        .foregroundStyle(baseColor)
+                        .lineLimit(1)
+                }
                 .fixedSize()
+            } else {
+                Text(segment.base)
+                    .font(.system(size: baseFontSize, weight: .heavy, design: .rounded))
+                    .foregroundStyle(baseColor)
+                    .fixedSize()
+            }
         case .ruby:
             VStack(spacing: -1) {
                 Text(segment.ruby)
