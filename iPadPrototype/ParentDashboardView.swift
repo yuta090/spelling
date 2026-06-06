@@ -572,26 +572,31 @@ private struct ParentStepChooserRow: View {
 private struct ParentRecordsWorkspace: View {
     @EnvironmentObject private var model: AppModel
     @State private var showingAppRecords = false
+    @State private var showingOtherSteps = false
     var language: AppLanguage
 
     private var orderedSteps: [WordStep] {
         Array(model.wordSteps.reversed())
     }
 
+    private var selectedStep: WordStep? {
+        model.selectedWordStep ?? orderedSteps.first
+    }
+
+    private var otherSteps: [WordStep] {
+        guard let selectedStep else {
+            return orderedSteps
+        }
+        return orderedSteps.filter { $0.id != selectedStep.id }
+    }
+
     var body: some View {
         VStack(spacing: 14) {
             ParentPanel(
-                title: language.text(japanese: "ステップ別の記録", english: "Step Records"),
+                title: language.text(japanese: "記録", english: "Records"),
                 systemImage: "rectangle.stack.fill",
                 tint: Color(red: 0.56, green: 0.34, blue: 0.78)
             ) {
-                Text(language.text(
-                    japanese: "ステップごとに、アプリでどれくらい覚えたか、学校テストはどうだったか、ふりかえりが必要かを見ます。",
-                    english: "Review each step by app learning, school test result, and whether review is needed."
-                ))
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
-
                 if orderedSteps.isEmpty {
                     ContentUnavailableView(
                         language.text(japanese: "まだステップがありません", english: "No steps yet"),
@@ -599,11 +604,33 @@ private struct ParentRecordsWorkspace: View {
                         description: Text(language.text(japanese: "単語を登録すると、日付ごとのステップ記録が作られます。", english: "Register words to create step records by date."))
                     )
                     .frame(minHeight: 240)
-                } else {
+                } else if let selectedStep {
                     VStack(spacing: 12) {
-                        ForEach(orderedSteps) { step in
-                            ParentStepRecordCard(step: step, language: language)
-                                .environmentObject(model)
+                        ParentStepRecordCard(step: selectedStep, language: language)
+                            .environmentObject(model)
+
+                        if !otherSteps.isEmpty {
+                            DisclosureGroup(isExpanded: $showingOtherSteps) {
+                                VStack(spacing: 10) {
+                                    ForEach(otherSteps) { step in
+                                        ParentStepRecordCard(step: step, language: language)
+                                            .environmentObject(model)
+                                    }
+                                }
+                                .padding(.top, 8)
+                            } label: {
+                                ParentOtherStepRecordsHeader(
+                                    count: otherSteps.count,
+                                    language: language
+                                )
+                            }
+                            .padding(12)
+                            .background(Color.white.opacity(0.86))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
+                            )
                         }
                     }
                 }
@@ -626,6 +653,41 @@ private struct ParentRecordsWorkspace: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
             )
+        }
+    }
+}
+
+private struct ParentOtherStepRecordsHeader: View {
+    var count: Int
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "tray.full.fill")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                .frame(width: 38, height: 38)
+                .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(language.text(japanese: "ほかのステップを見る", english: "View Other Steps"))
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                Text(language.text(japanese: "必要なときだけ開きます。", english: "Open only when needed."))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Text("\(count)")
+                .font(.headline.monospacedDigit().weight(.heavy))
+                .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
+                .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
 }
@@ -732,48 +794,63 @@ private struct ParentStepRecordCard: View {
         return "\(latestSchoolResult.score)/\(latestSchoolResult.total)"
     }
 
-    private var recommendation: (title: String, message: String, tint: Color, systemImage: String) {
+    private var primaryAction: ParentStepRecordPrimaryAction {
         if step.words.isEmpty {
-            return (
-                language.text(japanese: "単語なし", english: "No words"),
-                language.text(japanese: "このステップには単語がありません。", english: "This step has no words."),
-                Color.gray,
-                "minus.circle.fill"
+            return ParentStepRecordPrimaryAction(
+                eyebrow: language.text(japanese: "状態", english: "Status"),
+                title: language.text(japanese: "単語がありません", english: "No words"),
+                message: language.text(japanese: "単語登録からこのステップに単語を入れます。", english: "Add words to this step from word registration."),
+                buttonTitle: nil,
+                systemImage: "minus.circle.fill",
+                tint: Color.gray,
+                kind: .none
             )
         }
 
         if let latestSchoolResult, reviewWords.isEmpty && learnedCount == step.words.count && latestSchoolResult.score == latestSchoolResult.total {
-            return (
-                language.text(japanese: "このステップはOK", english: "This step looks good"),
-                language.text(japanese: "アプリでも学校テストでも大きな戻りはなさそうです。", english: "App and school results do not suggest review."),
-                Color(red: 0.20, green: 0.62, blue: 0.24),
-                "checkmark.seal.fill"
-            )
-        }
-
-        if !reviewWords.isEmpty {
-            return (
-                language.text(japanese: "ふりかえりおすすめ", english: "Review recommended"),
-                language.text(japanese: "学校で間違えた単語や、アプリでまだ安定していない単語があります。", english: "Some words were missed at school or are not stable in the app."),
-                Color(red: 0.90, green: 0.45, blue: 0.12),
-                "arrow.counterclockwise.circle.fill"
+            return ParentStepRecordPrimaryAction(
+                eyebrow: language.text(japanese: "状態", english: "Status"),
+                title: language.text(japanese: "このステップはOK", english: "This step looks good"),
+                message: language.text(japanese: "アプリと学校テストの記録はそろっています。必要なら結果だけ追加できます。", english: "App and school records are complete. Add another result only if needed."),
+                buttonTitle: nil,
+                systemImage: "checkmark.seal.fill",
+                tint: Color(red: 0.20, green: 0.62, blue: 0.24),
+                kind: .none
             )
         }
 
         if latestSchoolResult == nil {
-            return (
-                language.text(japanese: "学校テスト待ち", english: "Waiting for school test"),
-                language.text(japanese: "学校テストの結果を入れると、戻るべきか判断しやすくなります。", english: "Enter the school test result to make the review decision clearer."),
-                Color(red: 0.56, green: 0.34, blue: 0.78),
-                "graduationcap.fill"
+            return ParentStepRecordPrimaryAction(
+                eyebrow: language.text(japanese: "まずやること", english: "First Action"),
+                title: language.text(japanese: "学校テスト結果を入れる", english: "Enter school test result"),
+                message: language.text(japanese: "点数と間違えた単語を入れると、復習すべきか判断できます。", english: "Enter score and missed words to decide whether review is needed."),
+                buttonTitle: language.text(japanese: "結果を入れる", english: "Enter Result"),
+                systemImage: "graduationcap.fill",
+                tint: Color(red: 0.56, green: 0.34, blue: 0.78),
+                kind: .enterSchoolTest
             )
         }
 
-        return (
-            language.text(japanese: "様子見", english: "Watch"),
-            language.text(japanese: "必要なら学校テストの間違えた単語を追加してください。", english: "Add missed school words if needed."),
-            Color(red: 0.13, green: 0.40, blue: 0.78),
-            "eye.fill"
+        if !reviewWords.isEmpty {
+            return ParentStepRecordPrimaryAction(
+                eyebrow: language.text(japanese: "まずやること", english: "First Action"),
+                title: language.text(japanese: "復習する単語をホームに出す", english: "Send review words to Home"),
+                message: language.text(japanese: "間違えた単語だけを子供メニューから練習できるようにします。", english: "Let the child practice only the words that need review."),
+                buttonTitle: language.text(japanese: "復習に出す", english: "Use for Review"),
+                systemImage: "arrow.counterclockwise.circle.fill",
+                tint: Color(red: 0.90, green: 0.45, blue: 0.12),
+                kind: .reviewWords
+            )
+        }
+
+        return ParentStepRecordPrimaryAction(
+            eyebrow: language.text(japanese: "状態", english: "Status"),
+            title: language.text(japanese: "記録を確認しました", english: "Records checked"),
+            message: language.text(japanese: "必要なら学校テスト結果を追加できます。", english: "Add another school result if needed."),
+            buttonTitle: nil,
+            systemImage: "eye.fill",
+            tint: Color(red: 0.13, green: 0.40, blue: 0.78),
+            kind: .none
         )
     }
 
@@ -782,8 +859,6 @@ private struct ParentStepRecordCard: View {
     }
 
     var body: some View {
-        let recommendation = recommendation
-
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -818,6 +893,13 @@ private struct ParentStepRecordCard: View {
                 }
             }
 
+            ParentStepRecordPrimaryActionCard(
+                action: primaryAction,
+                language: language
+            ) {
+                performPrimaryAction(primaryAction)
+            }
+
             HStack(spacing: 10) {
                 ParentStepMetricPill(
                     title: language.text(japanese: "覚えた単語", english: "Learned"),
@@ -838,27 +920,6 @@ private struct ParentStepRecordCard: View {
                     tint: Color(red: 0.56, green: 0.34, blue: 0.78)
                 )
             }
-
-            HStack(alignment: .top, spacing: 10) {
-                Image(systemName: recommendation.systemImage)
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(recommendation.tint)
-                    .frame(width: 30, height: 30)
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(recommendation.title)
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(recommendation.tint)
-                    Text(recommendation.message)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer(minLength: 0)
-            }
-            .padding(10)
-            .background(recommendation.tint.opacity(0.10))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
 
             if !carryOverReviewWords.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
@@ -912,27 +973,12 @@ private struct ParentStepRecordCard: View {
                         }
                     }
 
-                    HStack {
-                        Text(language.text(
-                            japanese: "ホームで、この候補だけを練習できます。",
-                            english: "Practice only these candidates from Home."
-                        ))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-
-                        Spacer()
-
-                        Button {
-                            model.selectedWordStepID = step.id
-                            model.focusedPracticeWordIDs = Set(reviewWords.map(\.id))
-                        } label: {
-                            Label(language.text(japanese: "練習に出す", english: "Use for Practice"), systemImage: "play.fill")
-                        }
-                        .buttonStyle(.borderedProminent)
-            .tapFeedback()
-                        .font(.caption.weight(.bold))
-                        .tint(Color(red: 0.90, green: 0.45, blue: 0.12))
-                    }
+                    Text(language.text(
+                        japanese: "この候補だけをホームに出せます。",
+                        english: "These candidates can be sent to Home."
+                    ))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
                 }
             }
 
@@ -941,18 +987,23 @@ private struct ParentStepRecordCard: View {
                     .environmentObject(model)
             }
 
-            DisclosureGroup(isExpanded: $showingSchoolEntry) {
+            if showingSchoolEntry {
                 schoolEntryForm
-                    .padding(.top, 8)
-            } label: {
-                Label(
-                    latestSchoolResult == nil
-                        ? language.text(japanese: "学校テスト結果を入れる", english: "Enter School Test")
-                        : language.text(japanese: "学校テスト結果を追加", english: "Add School Test"),
-                    systemImage: "square.and.pencil"
-                )
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            } else if latestSchoolResult != nil {
+                Button {
+                    withAnimation(.spring(response: 0.24, dampingFraction: 0.86)) {
+                        showingSchoolEntry = true
+                    }
+                } label: {
+                    Label(language.text(japanese: "学校テスト結果を追加", english: "Add School Test"), systemImage: "square.and.pencil")
+                        .font(.subheadline.weight(.bold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 9)
+                }
+                .buttonStyle(.bordered)
+                .tapFeedback()
+                .tint(Color(red: 0.56, green: 0.34, blue: 0.78))
             }
 
             Text(step.words.map(\.text).joined(separator: " / "))
@@ -1060,6 +1111,20 @@ private struct ParentStepRecordCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
+    private func performPrimaryAction(_ action: ParentStepRecordPrimaryAction) {
+        switch action.kind {
+        case .enterSchoolTest:
+            withAnimation(.spring(response: 0.24, dampingFraction: 0.86)) {
+                showingSchoolEntry = true
+            }
+        case .reviewWords:
+            model.selectedWordStepID = step.id
+            model.focusedPracticeWordIDs = Set(reviewWords.map(\.id))
+        case .none:
+            break
+        }
+    }
+
     private func attemptIsCleared(_ attempt: SpellingAttempt) -> Bool {
         if attempt.parentReviewDecision == .approved {
             return true
@@ -1094,6 +1159,75 @@ private struct ParentStepRecordCard: View {
         note = ""
         prepareSchoolDefaultsIfNeeded()
         showingSchoolEntry = false
+    }
+}
+
+private enum ParentStepRecordPrimaryActionKind {
+    case enterSchoolTest
+    case reviewWords
+    case none
+}
+
+private struct ParentStepRecordPrimaryAction {
+    var eyebrow: String
+    var title: String
+    var message: String
+    var buttonTitle: String?
+    var systemImage: String
+    var tint: Color
+    var kind: ParentStepRecordPrimaryActionKind
+}
+
+private struct ParentStepRecordPrimaryActionCard: View {
+    var action: ParentStepRecordPrimaryAction
+    var language: AppLanguage
+    var perform: () -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Image(systemName: action.systemImage)
+                .font(.title3.weight(.heavy))
+                .foregroundStyle(action.tint)
+                .frame(width: 42, height: 42)
+                .background(action.tint.opacity(0.14))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(action.eyebrow)
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(action.tint)
+                Text(action.title)
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.76)
+                Text(action.message)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 8)
+
+            if let buttonTitle = action.buttonTitle {
+                Button(action: perform) {
+                    Label(buttonTitle, systemImage: "arrow.right.circle.fill")
+                        .font(.headline.weight(.heavy))
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 14)
+                }
+                .buttonStyle(.borderedProminent)
+                .tapFeedback()
+                .tint(action.tint)
+            }
+        }
+        .padding(14)
+        .background(action.tint.opacity(0.10))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(action.tint.opacity(0.22), lineWidth: 1)
+        )
     }
 }
 
