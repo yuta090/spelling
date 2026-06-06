@@ -263,6 +263,7 @@ struct SpellingSessionView: View {
             if showingSparkles {
                 PracticeWordCelebrationOverlay(
                     count: completedPracticeWordCount,
+                    total: sessionWords.count,
                     style: practiceCelebrationStyle,
                     language: language,
                     seed: sparkleSeed
@@ -1112,19 +1113,53 @@ private enum PracticeCelebrationStyle: CaseIterable {
 
 private struct PracticeWordCelebrationOverlay: View {
     var count: Int
+    var total: Int
     var style: PracticeCelebrationStyle
     var language: AppLanguage
     var seed: Int
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var animateCoin = false
+
+    private var completedCount: Int {
+        min(max(count, 1), max(total, 1))
+    }
+
+    private var remainingCount: Int {
+        max(total - completedCount, 0)
+    }
 
     var body: some View {
         ZStack {
             SparkleBurst(seed: seed, variant: style.burstVariant)
 
-            VStack(spacing: 10) {
-                Image(systemName: style.systemImage)
-                    .font(.system(size: 70, weight: .heavy))
-                    .foregroundStyle(style.tint)
-                    .shadow(color: style.tint.opacity(0.28), radius: 10, x: 0, y: 6)
+            VStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .stroke(style.tint.opacity(animateCoin ? 0 : 0.34), lineWidth: 8)
+                        .frame(width: animateCoin ? 104 : 74, height: animateCoin ? 104 : 74)
+                        .scaleEffect(reduceMotion ? 1 : (animateCoin ? 1.08 : 0.72))
+                        .opacity(reduceMotion ? 0 : (animateCoin ? 0 : 1))
+
+                    PracticeCoinView(tint: style.tint)
+                        .frame(width: 78, height: 78)
+                        .scaleEffect(reduceMotion ? 1 : (animateCoin ? 1 : 0.62))
+                        .rotationEffect(.degrees(reduceMotion ? 0 : (animateCoin ? 0 : -18)))
+                        .offset(y: reduceMotion ? 0 : (animateCoin ? 0 : -46))
+                        .opacity(animateCoin ? 1 : 0)
+                        .shadow(color: style.tint.opacity(0.34), radius: animateCoin ? 14 : 4, x: 0, y: animateCoin ? 8 : 2)
+
+                    Text("+1")
+                        .font(.title2.monospacedDigit().weight(.heavy))
+                        .foregroundStyle(.white)
+                        .padding(.vertical, 4)
+                        .padding(.horizontal, 10)
+                        .background(style.tint)
+                        .clipShape(Capsule())
+                        .offset(x: 52, y: -34)
+                        .scaleEffect(reduceMotion ? 1 : (animateCoin ? 1 : 0.5))
+                        .opacity(animateCoin ? 1 : 0)
+                }
+                .frame(width: 140, height: 94)
 
                 Text(style.title(language: language))
                     .font(.system(size: 46, weight: .heavy, design: .rounded))
@@ -1132,16 +1167,15 @@ private struct PracticeWordCelebrationOverlay: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
-                Text(language.text(japanese: "\(max(count, 1))こ れんしゅうできた", english: "\(max(count, 1)) practiced"))
-                    .font(.system(size: 30, weight: .heavy, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
-                    .padding(.vertical, 7)
-                    .padding(.horizontal, 20)
-                    .background(.white.opacity(0.84))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                PracticeProgressMeter(
+                    completed: completedCount,
+                    total: max(total, 1),
+                    remaining: remainingCount,
+                    language: language,
+                    tint: style.tint
+                )
             }
-            .padding(.vertical, 28)
+            .padding(.vertical, 24)
             .padding(.horizontal, 42)
             .background(
                 LinearGradient(
@@ -1158,6 +1192,119 @@ private struct PracticeWordCelebrationOverlay: View {
             .shadow(color: style.tint.opacity(0.28), radius: 24, x: 0, y: 12)
         }
         .allowsHitTesting(false)
+        .onAppear {
+            animateCoin = false
+            withAnimation(.spring(response: 0.34, dampingFraction: 0.62).delay(0.05)) {
+                animateCoin = true
+            }
+        }
+    }
+}
+
+private struct PracticeCoinView: View {
+    var tint: Color
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 1.0, green: 0.90, blue: 0.22),
+                            Color(red: 0.95, green: 0.62, blue: 0.06)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            Circle()
+                .stroke(Color.white.opacity(0.82), lineWidth: 4)
+                .padding(7)
+
+            Circle()
+                .stroke(tint.opacity(0.46), lineWidth: 3)
+                .padding(14)
+
+            Image(systemName: "star.fill")
+                .font(.system(size: 32, weight: .heavy))
+                .foregroundStyle(.white)
+                .shadow(color: .orange.opacity(0.32), radius: 3, x: 0, y: 2)
+        }
+    }
+}
+
+private struct PracticeProgressMeter: View {
+    var completed: Int
+    var total: Int
+    var remaining: Int
+    var language: AppLanguage
+    var tint: Color
+
+    private var progress: Double {
+        guard total > 0 else {
+            return 0
+        }
+        return min(max(Double(completed) / Double(total), 0), 1)
+    }
+
+    private var dotCount: Int {
+        min(max(total, 1), 8)
+    }
+
+    var body: some View {
+        VStack(spacing: 9) {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text(language.text(japanese: "\(completed)こ れんしゅうできた", english: "\(completed) practiced"))
+                    .font(.system(size: 28, weight: .heavy, design: .rounded))
+                    .monospacedDigit()
+
+                Text(remaining == 0
+                    ? language.text(japanese: "ぜんぶできた", english: "all done")
+                    : language.text(japanese: "あと \(remaining)こ", english: "\(remaining) left")
+                )
+                .font(.system(size: 24, weight: .heavy, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(remaining == 0 ? Color(red: 0.20, green: 0.56, blue: 0.20) : Color(red: 0.13, green: 0.31, blue: 0.70))
+            }
+            .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.white.opacity(0.62))
+
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(tint)
+                        .frame(width: max(proxy.size.width * progress, 12))
+                }
+            }
+            .frame(height: 16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.white.opacity(0.82), lineWidth: 2)
+            )
+
+            HStack(spacing: 8) {
+                ForEach(0..<dotCount, id: \.self) { dot in
+                    let threshold = Int(ceil(Double(dot + 1) * Double(total) / Double(dotCount)))
+                    Circle()
+                        .fill(completed >= threshold ? tint : Color.white.opacity(0.72))
+                        .frame(width: 18, height: 18)
+                        .overlay(
+                            Circle()
+                                .stroke(completed >= threshold ? Color.white.opacity(0.86) : tint.opacity(0.30), lineWidth: 2)
+                        )
+                }
+            }
+        }
+        .frame(width: 430)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(.white.opacity(0.70))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
