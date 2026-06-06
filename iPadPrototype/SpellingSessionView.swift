@@ -206,7 +206,7 @@ struct SpellingSessionView: View {
                 PracticeSessionReviewView(
                     samples: sessionPracticeSamples,
                     language: language,
-                    onStartTest: model.nextTestWords.isEmpty ? nil : onPracticeStartTest,
+                    onStartTest: mode == .practice && !sessionWords.isEmpty ? onPracticeStartTest : nil,
                     onDone: {
                         dismiss()
                     }
@@ -2082,6 +2082,7 @@ private struct ReviewHintPanel: View {
 }
 
 private struct PracticeSessionReviewView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var samples: [PracticeSample]
     var language: AppLanguage
     var onStartTest: (() -> Void)?
@@ -2089,6 +2090,7 @@ private struct PracticeSessionReviewView: View {
 
     @State private var showingCelebration = false
     @State private var celebrationSeed = 0
+    @State private var testButtonPulse = false
 
     private var sampleGroups: [PracticeSampleGroup] {
         groupedPracticeSamples(samples)
@@ -2191,31 +2193,34 @@ private struct PracticeSessionReviewView: View {
                     }
                 }
 
-                HStack(spacing: 14) {
+                HStack(spacing: 16) {
+                    Color.clear
+                        .frame(width: 220)
+
+                    Spacer(minLength: 0)
+
                     if let onStartTest {
-                        Button(action: onStartTest) {
-                            Label(language.text(japanese: "テストしてみる", english: "Try the Test"), systemImage: "checkmark.clipboard.fill")
-                                .font(.title2.weight(.heavy))
-                                .frame(minWidth: 260)
-                                .padding(.vertical, 16)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tapFeedback()
-                        .tint(Color(red: 0.20, green: 0.58, blue: 0.24))
+                        PracticeStartTestButton(
+                            language: language,
+                            isAnimating: testButtonPulse,
+                            reduceMotion: reduceMotion,
+                            action: onStartTest
+                        )
                     }
 
-                    Button(action: onDone) {
-                        Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
-                            .font(.title3.weight(.bold))
-                            .frame(minWidth: 220)
-                            .padding(.vertical, 14)
-                    }
-                    .buttonStyle(.bordered)
-                    .tapFeedback()
+                    Spacer(minLength: 0)
+
+                    PracticeReviewHomeButton(language: language, action: onDone)
                 }
+                .frame(maxWidth: .infinity)
             }
         }
         .onAppear {
+            if !reduceMotion {
+                withAnimation(.easeInOut(duration: 0.92).repeatForever(autoreverses: true)) {
+                    testButtonPulse = true
+                }
+            }
             guard !samples.isEmpty else {
                 return
             }
@@ -2238,6 +2243,79 @@ private struct PracticeSessionReviewView: View {
         }
 
         return groups
+    }
+}
+
+private struct PracticeStartTestButton: View {
+    var language: AppLanguage
+    var isAnimating: Bool
+    var reduceMotion: Bool
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color(red: 0.98, green: 0.80, blue: 0.18).opacity(reduceMotion ? 0.34 : (isAnimating ? 0.18 : 0.62)), lineWidth: 4)
+                    .scaleEffect(reduceMotion ? 1 : (isAnimating ? 1.08 : 0.96))
+
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.22))
+                            .frame(width: 40, height: 40)
+                        Image(systemName: "checkmark.clipboard.fill")
+                            .font(.system(size: 22, weight: .heavy))
+                    }
+
+                    Text(language.text(japanese: "テストしてみる", english: "Try the Test"))
+                        .font(.system(size: 25, weight: .heavy, design: .rounded))
+                }
+                .foregroundStyle(.white)
+                .frame(minWidth: 300)
+                .padding(.vertical, 18)
+                .padding(.horizontal, 24)
+                .background(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.18, green: 0.68, blue: 0.28),
+                            Color(red: 0.08, green: 0.48, blue: 0.28)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .shadow(color: Color.green.opacity(reduceMotion ? 0.18 : (isAnimating ? 0.34 : 0.18)), radius: reduceMotion ? 8 : (isAnimating ? 16 : 8), x: 0, y: 7)
+                .scaleEffect(reduceMotion ? 1 : (isAnimating ? 1.025 : 1))
+            }
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .accessibilityLabel(language.text(japanese: "テストしてみる", english: "Try the test"))
+    }
+}
+
+private struct PracticeReviewHomeButton: View {
+    var language: AppLanguage
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(Color(red: 0.13, green: 0.32, blue: 0.73))
+                .frame(width: 220)
+                .padding(.vertical, 15)
+                .background(.white.opacity(0.84))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color(red: 0.70, green: 0.80, blue: 0.94), lineWidth: 1.5)
+                )
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
     }
 }
 
@@ -2702,11 +2780,11 @@ private struct PracticeSampleAttemptTile: View {
 
             PracticeDrawingPreview(
                 drawingData: sample.drawingData,
-                horizontalPadding: 70,
-                topPadding: 95,
-                bottomPadding: 190
+                horizontalPadding: 90,
+                topPadding: 180,
+                bottomPadding: 230
             )
-            .frame(height: 150)
+            .frame(height: 176)
             .background(.white)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
@@ -2714,7 +2792,7 @@ private struct PracticeSampleAttemptTile: View {
                     .stroke(Color.gray.opacity(0.22), lineWidth: 1)
             )
         }
-        .frame(width: 214, alignment: .leading)
+        .frame(width: 232, alignment: .leading)
         .padding(10)
         .background(Color(red: 0.97, green: 0.98, blue: 1.0))
         .clipShape(RoundedRectangle(cornerRadius: 8))

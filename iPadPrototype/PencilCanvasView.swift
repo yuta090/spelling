@@ -62,9 +62,9 @@ extension PKDrawing {
 
     func previewImage(
         scale: CGFloat = 2,
-        horizontalPadding: CGFloat = 80,
-        topPadding: CGFloat = 90,
-        bottomPadding: CGFloat = 150
+        horizontalPadding: CGFloat = 90,
+        topPadding: CGFloat = 170,
+        bottomPadding: CGFloat = 210
     ) -> UIImage? {
         guard !bounds.isNull, !bounds.isEmpty else {
             return nil
