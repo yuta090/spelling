@@ -8,6 +8,7 @@ struct HomeView: View {
     @State private var showingWordPreview = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
     @State private var lastPracticeWordIDs = Set<UUID>()
+    @State private var practiceResumeState: PracticeSessionResumeState?
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -15,6 +16,20 @@ struct HomeView: View {
 
     private var selectedPracticeWords: [SpellingWord] {
         model.activeWords.filter { selectedPracticeWordIDs.contains($0.id) }
+    }
+
+    private var selectedPracticeWordIDsInOrder: [UUID] {
+        selectedPracticeWords.map(\.id)
+    }
+
+    private var activePracticeResumeState: PracticeSessionResumeState? {
+        guard let practiceResumeState,
+              practiceResumeState.wordIDs == selectedPracticeWordIDsInOrder,
+              practiceResumeState.index < selectedPracticeWords.count
+        else {
+            return nil
+        }
+        return practiceResumeState
     }
 
     var body: some View {
@@ -35,7 +50,8 @@ struct HomeView: View {
                         language: language,
                         canPractice: !selectedPracticeWords.isEmpty,
                         canTest: !model.nextTestWords.isEmpty,
-                        startPractice: { activeMode = .practice },
+                        hasPracticeResume: activePracticeResumeState != nil,
+                        startPractice: startPractice,
                         showWords: { showingWordPreview = true },
                         startTest: { activeMode = .test }
                     )
@@ -48,9 +64,17 @@ struct HomeView: View {
                 .padding(.bottom, 28)
             }
             .navigationDestination(item: $activeMode) { mode in
+                let resumeState = mode == .practice ? activePracticeResumeState : nil
                 SpellingSessionView(
                     mode: mode,
-                    words: sessionWords(for: mode)
+                    words: sessionWords(for: mode),
+                    resumeState: resumeState,
+                    onPracticeProgressChange: { state in
+                        practiceResumeState = state
+                    },
+                    onPracticeCompleted: {
+                        practiceResumeState = nil
+                    }
                 )
             }
             .fullScreenCover(isPresented: $showingParent) {
@@ -80,6 +104,14 @@ struct HomeView: View {
         .onChange(of: model.focusedPracticeWordIDs) { _, _ in
             applyFocusedPracticeSelectionIfNeeded()
         }
+        .onChange(of: selectedPracticeWordIDs) { _, _ in
+            clearPracticeResumeIfWordsChanged()
+        }
+    }
+
+    private func startPractice() {
+        clearPracticeResumeIfWordsChanged()
+        activeMode = .practice
     }
 
     private func sessionWords(for mode: SessionMode) -> [SpellingWord] {
@@ -101,11 +133,13 @@ struct HomeView: View {
 
         guard activeIDs != lastPracticeWordIDs else {
             selectedPracticeWordIDs = selectedPracticeWordIDs.intersection(activeIDs)
+            clearPracticeResumeIfWordsChanged()
             return
         }
 
         selectedPracticeWordIDs = activeIDs
         lastPracticeWordIDs = activeIDs
+        clearPracticeResumeIfWordsChanged()
     }
 
     @discardableResult
@@ -119,7 +153,17 @@ struct HomeView: View {
         selectedPracticeWordIDs = focusedIDs
         lastPracticeWordIDs = activeIDs
         model.focusedPracticeWordIDs = []
+        clearPracticeResumeIfWordsChanged()
         return true
+    }
+
+    private func clearPracticeResumeIfWordsChanged() {
+        guard let practiceResumeState else {
+            return
+        }
+        if practiceResumeState.wordIDs != selectedPracticeWordIDsInOrder {
+            self.practiceResumeState = nil
+        }
     }
 
     private var header: some View {
@@ -163,6 +207,7 @@ private struct ChildMissionPanel: View {
     var language: AppLanguage
     var canPractice: Bool
     var canTest: Bool
+    var hasPracticeResume: Bool
     var startPractice: () -> Void
     var showWords: () -> Void
     var startTest: () -> Void
@@ -238,7 +283,10 @@ private struct ChildMissionPanel: View {
             }
 
             Button(action: startPractice) {
-                Label(language.text(japanese: "はじめる", english: "Start"), systemImage: "play.fill")
+                Label(
+                    hasPracticeResume ? language.text(japanese: "つづきから", english: "Continue") : language.text(japanese: "はじめる", english: "Start"),
+                    systemImage: hasPracticeResume ? "arrow.forward.circle.fill" : "play.fill"
+                )
                     .font(.system(size: 34, weight: .heavy, design: .rounded))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 18)

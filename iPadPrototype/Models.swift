@@ -320,6 +320,13 @@ struct PracticeSample: Identifiable, Equatable, Codable {
     }
 }
 
+struct PracticeSessionResumeState: Equatable {
+    var wordIDs: [UUID]
+    var index: Int
+    var repeatIndex: Int
+    var sessionID: UUID
+}
+
 struct TestSettings: Equatable, Codable {
     var appLanguage: AppLanguage = .japanese
     var language = "en-US"

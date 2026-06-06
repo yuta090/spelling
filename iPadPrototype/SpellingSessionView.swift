@@ -8,6 +8,8 @@ struct SpellingSessionView: View {
     @StateObject private var drawingCapture = DrawingCapture()
 
     let mode: SessionMode
+    private let onPracticeProgressChange: (PracticeSessionResumeState?) -> Void
+    private let onPracticeCompleted: () -> Void
     @State private var sessionWords: [SpellingWord]
 
     @State private var index = 0
@@ -28,13 +30,33 @@ struct SpellingSessionView: View {
     @State private var showingTestResults = false
     @State private var practiceRepeatIndex = 0
     @State private var sessionID = UUID()
+    @State private var didLoadSessionPracticeSamples = false
     @State private var showingSpeakerHint = false
     @State private var speakerHintPhase = false
     @State private var didShowSpeakerHint = false
 
-    init(mode: SessionMode, words: [SpellingWord]) {
+    init(
+        mode: SessionMode,
+        words: [SpellingWord],
+        resumeState: PracticeSessionResumeState? = nil,
+        onPracticeProgressChange: @escaping (PracticeSessionResumeState?) -> Void = { _ in },
+        onPracticeCompleted: @escaping () -> Void = {}
+    ) {
         self.mode = mode
-        _sessionWords = State(initialValue: mode == .test ? words.shuffled() : words)
+        self.onPracticeProgressChange = onPracticeProgressChange
+        self.onPracticeCompleted = onPracticeCompleted
+
+        let orderedWords = mode == .test ? words.shuffled() : words
+        let maxIndex = max(orderedWords.count - 1, 0)
+        let shouldResumePractice = mode == .practice && resumeState?.wordIDs == orderedWords.map(\.id)
+        let initialIndex = shouldResumePractice ? min(max(resumeState?.index ?? 0, 0), maxIndex) : 0
+        let initialRepeatIndex = shouldResumePractice ? max(resumeState?.repeatIndex ?? 0, 0) : 0
+        let initialSessionID = shouldResumePractice ? (resumeState?.sessionID ?? UUID()) : UUID()
+
+        _sessionWords = State(initialValue: orderedWords)
+        _index = State(initialValue: initialIndex)
+        _practiceRepeatIndex = State(initialValue: initialRepeatIndex)
+        _sessionID = State(initialValue: initialSessionID)
     }
 
     private var language: AppLanguage {
@@ -241,6 +263,8 @@ struct SpellingSessionView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
+            loadSessionPracticeSamplesIfNeeded()
+            clampPracticeRepeatIndexIfNeeded()
             resetTimer()
             startTimerIfNeeded()
             showSpeakerHintIfNeeded()
@@ -528,12 +552,16 @@ struct SpellingSessionView: View {
 
         if capturesPracticeSamples, !isLastPracticeRepeat {
             practiceRepeatIndex += 1
+            publishPracticeProgressIfNeeded()
             clearCanvas()
             return
         }
 
         if index == sessionWords.count - 1 {
             if capturesPracticeSamples {
+                if mode == .practice {
+                    onPracticeCompleted()
+                }
                 withAnimation(.easeInOut(duration: 0.18)) {
                     showingPracticeReview = true
                 }
@@ -547,6 +575,7 @@ struct SpellingSessionView: View {
         } else {
             index += 1
             practiceRepeatIndex = 0
+            publishPracticeProgressIfNeeded()
             clearCanvas()
             replayCount = 0
             resetTimer()
@@ -607,6 +636,46 @@ struct SpellingSessionView: View {
         )
         model.addPracticeSample(sample)
         sessionPracticeSamples.append(sample)
+    }
+
+    private func loadSessionPracticeSamplesIfNeeded() {
+        guard capturesPracticeSamples, !didLoadSessionPracticeSamples else {
+            return
+        }
+
+        didLoadSessionPracticeSamples = true
+        let savedSamples = model.practiceSamples
+            .filter { $0.sessionID == sessionID }
+            .sorted { $0.date < $1.date }
+        if !savedSamples.isEmpty {
+            sessionPracticeSamples = savedSamples
+        }
+    }
+
+    private func clampPracticeRepeatIndexIfNeeded() {
+        guard capturesPracticeSamples else {
+            return
+        }
+        practiceRepeatIndex = min(max(practiceRepeatIndex, 0), max(practiceRepetitionCount - 1, 0))
+    }
+
+    private func publishPracticeProgressIfNeeded() {
+        guard mode == .practice, !sessionWords.isEmpty else {
+            return
+        }
+
+        guard index > 0 || practiceRepeatIndex > 0 || !sessionPracticeSamples.isEmpty else {
+            return
+        }
+
+        onPracticeProgressChange(
+            PracticeSessionResumeState(
+                wordIDs: sessionWords.map(\.id),
+                index: min(max(index, 0), max(sessionWords.count - 1, 0)),
+                repeatIndex: min(max(practiceRepeatIndex, 0), max(practiceRepetitionCount - 1, 0)),
+                sessionID: sessionID
+            )
+        )
     }
 
     private func passWord() {
