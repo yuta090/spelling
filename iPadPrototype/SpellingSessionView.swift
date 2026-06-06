@@ -484,7 +484,8 @@ struct SpellingSessionView: View {
                     SessionControlButton(
                         title: practiceNextButtonTitle,
                         systemImage: practiceNextButtonIcon,
-                        style: .primary
+                        style: .primary,
+                        funTapAnimations: mode == .practice
                     ) {
                         celebrateThenMoveNext()
                     }
@@ -1374,11 +1375,95 @@ private enum SessionButtonStyleKind {
     case finish
 }
 
+private enum PracticeButtonTapEffectStyle: CaseIterable {
+    case bounce
+    case wiggle
+    case hop
+    case glow
+    case ring
+    case stars
+    case coin
+    case sweep
+    case check
+    case dots
+
+    static func random() -> PracticeButtonTapEffectStyle {
+        allCases.randomElement() ?? .bounce
+    }
+
+    var tint: Color {
+        switch self {
+        case .bounce:
+            return Color(red: 0.95, green: 0.70, blue: 0.08)
+        case .wiggle:
+            return Color(red: 0.80, green: 0.34, blue: 0.78)
+        case .hop:
+            return Color(red: 0.22, green: 0.66, blue: 0.28)
+        case .glow:
+            return Color(red: 0.22, green: 0.62, blue: 0.96)
+        case .ring:
+            return Color(red: 0.98, green: 0.56, blue: 0.12)
+        case .stars:
+            return Color(red: 1.0, green: 0.76, blue: 0.10)
+        case .coin:
+            return Color(red: 0.96, green: 0.62, blue: 0.06)
+        case .sweep:
+            return Color.white
+        case .check:
+            return Color(red: 0.18, green: 0.68, blue: 0.28)
+        case .dots:
+            return Color(red: 0.52, green: 0.38, blue: 0.88)
+        }
+    }
+
+    func scale(active: Bool, reduceMotion: Bool) -> CGFloat {
+        guard active, !reduceMotion else {
+            return 1
+        }
+        switch self {
+        case .bounce:
+            return 1.08
+        case .hop:
+            return 1.04
+        case .glow, .ring, .stars, .coin, .sweep, .check, .dots:
+            return 1.02
+        case .wiggle:
+            return 1.01
+        }
+    }
+
+    func rotation(active: Bool, reduceMotion: Bool) -> Double {
+        guard active, !reduceMotion else {
+            return 0
+        }
+        switch self {
+        case .wiggle:
+            return -4
+        case .coin:
+            return 2
+        default:
+            return 0
+        }
+    }
+
+    func yOffset(active: Bool, reduceMotion: Bool) -> CGFloat {
+        guard active, !reduceMotion else {
+            return 0
+        }
+        return self == .hop ? -8 : 0
+    }
+}
+
 private struct SessionControlButton: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var title: String
     var systemImage: String
     var style: SessionButtonStyleKind
+    var funTapAnimations = false
     var action: () -> Void
+    @State private var tapEffectStyle = PracticeButtonTapEffectStyle.bounce
+    @State private var tapEffectActive = false
+    @State private var tapEffectSeed = 0
 
     private var foregroundColor: Color {
         switch style {
@@ -1437,7 +1522,10 @@ private struct SessionControlButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            triggerFunTapAnimationIfNeeded()
+            action()
+        } label: {
             Label(title, systemImage: systemImage)
                 .font(.title3.weight(.bold))
                 .frame(minWidth: 190)
@@ -1445,15 +1533,261 @@ private struct SessionControlButton: View {
                 .padding(.horizontal, 24)
         }
         .buttonStyle(.plain)
-            .tapFeedback()
+        .tapFeedback()
         .foregroundStyle(foregroundColor)
         .background(background)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .scaleEffect(tapEffectStyle.scale(active: tapEffectActive, reduceMotion: reduceMotion))
+        .rotationEffect(.degrees(tapEffectStyle.rotation(active: tapEffectActive, reduceMotion: reduceMotion)))
+        .offset(y: tapEffectStyle.yOffset(active: tapEffectActive, reduceMotion: reduceMotion))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
                 .stroke(borderColor, lineWidth: style == .primary ? 0 : 2)
         )
+        .overlay {
+            if funTapAnimations && tapEffectActive {
+                PracticeButtonTapEffectOverlay(
+                    style: tapEffectStyle,
+                    seed: tapEffectSeed
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+        }
         .shadow(color: shadowColor, radius: style == .finish ? 12 : 8, x: 0, y: 5)
+        .animation(.spring(response: 0.24, dampingFraction: 0.62), value: tapEffectActive)
+    }
+
+    private func triggerFunTapAnimationIfNeeded() {
+        guard funTapAnimations, !reduceMotion else {
+            return
+        }
+
+        tapEffectStyle = PracticeButtonTapEffectStyle.random()
+        tapEffectSeed += 1
+        let currentSeed = tapEffectSeed
+        tapEffectActive = false
+
+        withAnimation(.spring(response: 0.22, dampingFraction: 0.58)) {
+            tapEffectActive = true
+        }
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 360_000_000)
+            guard tapEffectSeed == currentSeed else {
+                return
+            }
+            withAnimation(.easeOut(duration: 0.12)) {
+                tapEffectActive = false
+            }
+        }
+    }
+}
+
+private struct PracticeButtonTapEffectOverlay: View {
+    var style: PracticeButtonTapEffectStyle
+    var seed: Int
+    @State private var active = false
+
+    var body: some View {
+        ZStack {
+            switch style {
+            case .bounce:
+                TapPopMarks(active: active, tint: style.tint, symbols: ["sparkles", "star.fill", "sparkles"])
+            case .wiggle:
+                TapSideMarks(active: active, tint: style.tint)
+            case .hop:
+                TapHopArc(active: active, tint: style.tint)
+            case .glow:
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(style.tint.opacity(active ? 0.85 : 0), lineWidth: active ? 5 : 1)
+                    .blur(radius: active ? 4 : 0)
+                    .scaleEffect(active ? 1.05 : 0.94)
+            case .ring:
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(style.tint.opacity(active ? 0 : 0.75), lineWidth: active ? 1 : 5)
+                    .scaleEffect(active ? 1.18 : 0.88)
+            case .stars:
+                TapPopMarks(active: active, tint: style.tint, symbols: ["star.fill", "sparkle", "star.fill"])
+            case .coin:
+                TapCoinBurst(active: active, tint: style.tint)
+            case .sweep:
+                TapShineSweep(active: active)
+            case .check:
+                TapCheckBadge(active: active, tint: style.tint)
+            case .dots:
+                TapDotBurst(active: active, tint: style.tint)
+            }
+        }
+        .id(seed)
+        .allowsHitTesting(false)
+        .onAppear {
+            active = false
+            Task { @MainActor in
+                await Task.yield()
+                active = true
+            }
+        }
+    }
+}
+
+private struct TapPopMarks: View {
+    var active: Bool
+    var tint: Color
+    var symbols: [String]
+
+    var body: some View {
+        GeometryReader { proxy in
+            ForEach(Array(symbols.enumerated()), id: \.offset) { item in
+                Image(systemName: item.element)
+                    .font(.system(size: item.offset == 1 ? 24 : 18, weight: .bold))
+                    .foregroundStyle(tint)
+                    .scaleEffect(active ? 1.1 : 0.2)
+                    .opacity(active ? 0 : 1)
+                    .position(
+                        x: proxy.size.width * [0.18, 0.50, 0.82][item.offset],
+                        y: active ? -8 : proxy.size.height * 0.50
+                    )
+                    .animation(.easeOut(duration: 0.38).delay(Double(item.offset) * 0.035), value: active)
+            }
+        }
+    }
+}
+
+private struct TapSideMarks: View {
+    var active: Bool
+    var tint: Color
+
+    var body: some View {
+        GeometryReader { proxy in
+            ForEach(0..<4, id: \.self) { item in
+                Capsule()
+                    .fill(tint.opacity(0.82))
+                    .frame(width: 18, height: 4)
+                    .rotationEffect(.degrees(item % 2 == 0 ? -18 : 18))
+                    .position(
+                        x: item < 2 ? (active ? 8 : proxy.size.width * 0.22) : (active ? proxy.size.width - 8 : proxy.size.width * 0.78),
+                        y: item % 2 == 0 ? proxy.size.height * 0.28 : proxy.size.height * 0.72
+                    )
+                    .opacity(active ? 0 : 1)
+                    .animation(.easeOut(duration: 0.32).delay(Double(item) * 0.02), value: active)
+            }
+        }
+    }
+}
+
+private struct TapHopArc: View {
+    var active: Bool
+    var tint: Color
+
+    var body: some View {
+        GeometryReader { proxy in
+            ForEach(0..<3, id: \.self) { item in
+                Circle()
+                    .fill(tint.opacity(0.84))
+                    .frame(width: 10 + CGFloat(item) * 3, height: 10 + CGFloat(item) * 3)
+                    .position(
+                        x: proxy.size.width * (0.36 + CGFloat(item) * 0.14),
+                        y: active ? -8 : proxy.size.height * 0.44
+                    )
+                    .opacity(active ? 0 : 1)
+                    .animation(.easeOut(duration: 0.36).delay(Double(item) * 0.04), value: active)
+            }
+        }
+    }
+}
+
+private struct TapCoinBurst: View {
+    var active: Bool
+    var tint: Color
+
+    var body: some View {
+        GeometryReader { proxy in
+            ForEach(0..<3, id: \.self) { item in
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(red: 1.0, green: 0.88, blue: 0.22), Color(red: 0.94, green: 0.58, blue: 0.05)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(.white)
+                }
+                .frame(width: 22, height: 22)
+                .position(
+                    x: proxy.size.width * (0.32 + CGFloat(item) * 0.18),
+                    y: active ? proxy.size.height * 0.10 : proxy.size.height * 0.52
+                )
+                .rotationEffect(.degrees(active ? 22 : -20))
+                .opacity(active ? 0 : 1)
+                .shadow(color: tint.opacity(0.20), radius: 3, x: 0, y: 2)
+                .animation(.easeOut(duration: 0.40).delay(Double(item) * 0.035), value: active)
+            }
+        }
+    }
+}
+
+private struct TapShineSweep: View {
+    var active: Bool
+
+    var body: some View {
+        GeometryReader { proxy in
+            Rectangle()
+                .fill(
+                    LinearGradient(
+                        colors: [.clear, .white.opacity(0.70), .clear],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .frame(width: 60, height: proxy.size.height * 1.8)
+                .rotationEffect(.degrees(18))
+                .offset(x: active ? proxy.size.width + 60 : -90, y: -proxy.size.height * 0.30)
+                .animation(.easeOut(duration: 0.34), value: active)
+        }
+    }
+}
+
+private struct TapCheckBadge: View {
+    var active: Bool
+    var tint: Color
+
+    var body: some View {
+        GeometryReader { proxy in
+            Image(systemName: "checkmark.seal.fill")
+                .font(.system(size: 34, weight: .bold))
+                .foregroundStyle(tint)
+                .background(Circle().fill(.white.opacity(0.92)).frame(width: 36, height: 36))
+                .position(x: proxy.size.width - 22, y: 14)
+                .scaleEffect(active ? 1 : 0.2)
+                .opacity(active ? 1 : 0)
+                .animation(.spring(response: 0.24, dampingFraction: 0.58), value: active)
+        }
+    }
+}
+
+private struct TapDotBurst: View {
+    var active: Bool
+    var tint: Color
+
+    var body: some View {
+        GeometryReader { proxy in
+            ForEach(0..<8, id: \.self) { item in
+                let angle = Double(item) / 8.0 * Double.pi * 2
+                Circle()
+                    .fill(item % 2 == 0 ? tint : Color(red: 1.0, green: 0.72, blue: 0.12))
+                    .frame(width: 8, height: 8)
+                    .position(
+                        x: proxy.size.width / 2 + (active ? CGFloat(cos(angle)) * 92 : 0),
+                        y: proxy.size.height / 2 + (active ? CGFloat(sin(angle)) * 42 : 0)
+                    )
+                    .opacity(active ? 0 : 1)
+                    .animation(.easeOut(duration: 0.38).delay(Double(item) * 0.012), value: active)
+            }
+        }
     }
 }
 
