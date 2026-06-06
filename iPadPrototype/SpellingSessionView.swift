@@ -10,6 +10,7 @@ struct SpellingSessionView: View {
     let mode: SessionMode
     private let onPracticeProgressChange: (PracticeSessionResumeState?) -> Void
     private let onPracticeCompleted: () -> Void
+    private let onPracticeStartTest: () -> Void
     @State private var sessionWords: [SpellingWord]
 
     @State private var index = 0
@@ -23,6 +24,8 @@ struct SpellingSessionView: View {
     @State private var canvasResetID = UUID()
     @State private var showingSparkles = false
     @State private var sparkleSeed = 0
+    @State private var completedPracticeWordCount = 0
+    @State private var practiceCelebrationStyle = PracticeCelebrationStyle.random()
     @State private var isAdvancing = false
     @State private var sessionPracticeSamples: [PracticeSample] = []
     @State private var showingPracticeReview = false
@@ -40,11 +43,13 @@ struct SpellingSessionView: View {
         words: [SpellingWord],
         resumeState: PracticeSessionResumeState? = nil,
         onPracticeProgressChange: @escaping (PracticeSessionResumeState?) -> Void = { _ in },
-        onPracticeCompleted: @escaping () -> Void = {}
+        onPracticeCompleted: @escaping () -> Void = {},
+        onPracticeStartTest: @escaping () -> Void = {}
     ) {
         self.mode = mode
         self.onPracticeProgressChange = onPracticeProgressChange
         self.onPracticeCompleted = onPracticeCompleted
+        self.onPracticeStartTest = onPracticeStartTest
 
         let orderedWords = mode == .test ? words.shuffled() : words
         let maxIndex = max(orderedWords.count - 1, 0)
@@ -186,6 +191,7 @@ struct SpellingSessionView: View {
                 PracticeSessionReviewView(
                     samples: sessionPracticeSamples,
                     language: language,
+                    onStartTest: model.nextTestWords.isEmpty ? nil : onPracticeStartTest,
                     onDone: {
                         dismiss()
                     }
@@ -255,7 +261,12 @@ struct SpellingSessionView: View {
             }
 
             if showingSparkles {
-                SparkleBurst(seed: sparkleSeed)
+                PracticeWordCelebrationOverlay(
+                    count: completedPracticeWordCount,
+                    style: practiceCelebrationStyle,
+                    language: language,
+                    seed: sparkleSeed
+                )
                     .transition(.opacity)
                     .zIndex(4)
             }
@@ -297,7 +308,7 @@ struct SpellingSessionView: View {
 
             HStack(spacing: 10) {
                 if mode == .test {
-                    TimerPill(seconds: remainingSeconds, language: language)
+                    TestTimerBar(seconds: remainingSeconds, totalSeconds: model.settings.secondsPerWord, language: language)
                     TestProgressPill(current: index + 1, total: max(sessionWords.count, 1), language: language)
                 } else {
                     ProgressPill(current: index + 1, total: max(sessionWords.count, 1))
@@ -548,7 +559,13 @@ struct SpellingSessionView: View {
     }
 
     private func moveNext() {
-        savePracticeDrawingIfNeeded()
+        moveNext(saveDrawing: true)
+    }
+
+    private func moveNext(saveDrawing: Bool) {
+        if saveDrawing {
+            savePracticeDrawingIfNeeded()
+        }
 
         if capturesPracticeSamples, !isLastPracticeRepeat {
             practiceRepeatIndex += 1
@@ -605,19 +622,27 @@ struct SpellingSessionView: View {
             return
         }
 
-        stopTimer()
+        guard mode == .practice, capturesPracticeSamples, isLastPracticeRepeat else {
+            moveNext()
+            return
+        }
+
         isAdvancing = true
+        savePracticeDrawingIfNeeded()
+        completedPracticeWordCount = practicedWordCountInSession()
+        practiceCelebrationStyle = PracticeCelebrationStyle.random()
         sparkleSeed += 1
-        withAnimation(.easeOut(duration: 0.12)) {
+
+        withAnimation(.easeOut(duration: 0.16)) {
             showingSparkles = true
         }
 
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 650_000_000)
+            try? await Task.sleep(nanoseconds: 1_250_000_000)
             withAnimation(.easeIn(duration: 0.18)) {
                 showingSparkles = false
             }
-            moveNext()
+            moveNext(saveDrawing: false)
             isAdvancing = false
         }
     }
@@ -636,6 +661,10 @@ struct SpellingSessionView: View {
         )
         model.addPracticeSample(sample)
         sessionPracticeSamples.append(sample)
+    }
+
+    private func practicedWordCountInSession() -> Int {
+        Set(sessionPracticeSamples.map(\.word)).count
     }
 
     private func loadSessionPracticeSamplesIfNeeded() {
@@ -994,21 +1023,193 @@ private struct PracticeRepeatGuide: View {
     }
 }
 
-private struct TimerPill: View {
-    var seconds: Int
+private enum PracticeCelebrationStyle: CaseIterable {
+    case gold
+    case blue
+    case green
+    case pink
+    case sunrise
+
+    static func random() -> PracticeCelebrationStyle {
+        allCases.randomElement() ?? .gold
+    }
+
+    var systemImage: String {
+        switch self {
+        case .gold:
+            return "star.circle.fill"
+        case .blue:
+            return "checkmark.seal.fill"
+        case .green:
+            return "trophy.fill"
+        case .pink:
+            return "sparkles"
+        case .sunrise:
+            return "sun.max.fill"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .gold:
+            return Color(red: 0.96, green: 0.66, blue: 0.05)
+        case .blue:
+            return Color(red: 0.16, green: 0.42, blue: 0.86)
+        case .green:
+            return Color(red: 0.20, green: 0.62, blue: 0.26)
+        case .pink:
+            return Color(red: 0.78, green: 0.28, blue: 0.72)
+        case .sunrise:
+            return Color(red: 0.92, green: 0.40, blue: 0.10)
+        }
+    }
+
+    var burstVariant: CelebrationBurstVariant {
+        switch self {
+        case .gold:
+            return .stars
+        case .blue:
+            return .rings
+        case .green:
+            return .leaves
+        case .pink:
+            return .sparkles
+        case .sunrise:
+            return .rays
+        }
+    }
+
+    func title(language: AppLanguage) -> String {
+        switch self {
+        case .gold:
+            return language.text(japanese: "できた！", english: "Done!")
+        case .blue:
+            return language.text(japanese: "いいかんじ！", english: "Nice!")
+        case .green:
+            return language.text(japanese: "よく書けた！", english: "Well written!")
+        case .pink:
+            return language.text(japanese: "すごい！", english: "Great!")
+        case .sunrise:
+            return language.text(japanese: "そのちょうし！", english: "Keep going!")
+        }
+    }
+
+    var backgroundColors: [Color] {
+        switch self {
+        case .gold:
+            return [Color(red: 1.0, green: 0.95, blue: 0.62), Color(red: 1.0, green: 0.82, blue: 0.28)]
+        case .blue:
+            return [Color(red: 0.82, green: 0.92, blue: 1.0), Color(red: 0.70, green: 0.82, blue: 1.0)]
+        case .green:
+            return [Color(red: 0.84, green: 1.0, blue: 0.74), Color(red: 0.72, green: 0.93, blue: 0.64)]
+        case .pink:
+            return [Color(red: 1.0, green: 0.83, blue: 0.96), Color(red: 0.92, green: 0.78, blue: 1.0)]
+        case .sunrise:
+            return [Color(red: 1.0, green: 0.88, blue: 0.58), Color(red: 1.0, green: 0.70, blue: 0.44)]
+        }
+    }
+}
+
+private struct PracticeWordCelebrationOverlay: View {
+    var count: Int
+    var style: PracticeCelebrationStyle
     var language: AppLanguage
+    var seed: Int
 
     var body: some View {
-        HStack(spacing: 7) {
-            Image(systemName: "timer")
-            Text(language.text(japanese: "のこり", english: "left"))
-            Text("\(max(seconds, 0))")
-                .monospacedDigit()
-            Text(language.text(japanese: "秒", english: "s"))
+        ZStack {
+            SparkleBurst(seed: seed, variant: style.burstVariant)
+
+            VStack(spacing: 10) {
+                Image(systemName: style.systemImage)
+                    .font(.system(size: 70, weight: .heavy))
+                    .foregroundStyle(style.tint)
+                    .shadow(color: style.tint.opacity(0.28), radius: 10, x: 0, y: 6)
+
+                Text(style.title(language: language))
+                    .font(.system(size: 46, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+
+                Text(language.text(japanese: "\(max(count, 1))こ れんしゅうできた", english: "\(max(count, 1)) practiced"))
+                    .font(.system(size: 30, weight: .heavy, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
+                    .padding(.vertical, 7)
+                    .padding(.horizontal, 20)
+                    .background(.white.opacity(0.84))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            .padding(.vertical, 28)
+            .padding(.horizontal, 42)
+            .background(
+                LinearGradient(
+                    colors: style.backgroundColors,
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.white.opacity(0.86), lineWidth: 3)
+            )
+            .shadow(color: style.tint.opacity(0.28), radius: 24, x: 0, y: 12)
         }
-        .font(.headline.weight(.bold))
-        .foregroundStyle(seconds <= 5 ? .red : Color(red: 0.20, green: 0.22, blue: 0.28))
-        .padding(.vertical, 8)
+        .allowsHitTesting(false)
+    }
+}
+
+private struct TestTimerBar: View {
+    var seconds: Int
+    var totalSeconds: Int
+    var language: AppLanguage
+
+    private var progress: Double {
+        guard totalSeconds > 0 else {
+            return 0
+        }
+        return min(max(Double(seconds) / Double(totalSeconds), 0), 1)
+    }
+
+    private var tint: Color {
+        if seconds <= 5 {
+            return Color(red: 0.90, green: 0.18, blue: 0.14)
+        }
+        if progress <= 0.45 {
+            return Color(red: 0.96, green: 0.58, blue: 0.12)
+        }
+        return Color(red: 0.18, green: 0.58, blue: 0.28)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 7) {
+                Image(systemName: "timer")
+                Text(language.text(japanese: "のこり", english: "left"))
+                Text("\(max(seconds, 0))")
+                    .monospacedDigit()
+                Text(language.text(japanese: "秒", english: "s"))
+            }
+            .font(.headline.weight(.bold))
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color(red: 0.88, green: 0.92, blue: 0.98))
+
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(tint)
+                        .frame(width: max(proxy.size.width * progress, 8))
+                        .animation(.linear(duration: 0.22), value: seconds)
+                }
+            }
+            .frame(height: 10)
+        }
+        .foregroundStyle(seconds <= 5 ? Color(red: 0.82, green: 0.08, blue: 0.07) : Color(red: 0.20, green: 0.22, blue: 0.28))
+        .frame(width: 230, alignment: .leading)
+        .padding(.vertical, 7)
         .padding(.horizontal, 12)
         .background(.white.opacity(0.86))
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -1016,6 +1217,7 @@ private struct TimerPill: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color(red: 0.76, green: 0.82, blue: 0.92), lineWidth: 1)
         )
+        .accessibilityLabel(language.text(japanese: "残り \(max(seconds, 0)) 秒", english: "\(max(seconds, 0)) seconds left"))
     }
 }
 
@@ -1149,6 +1351,7 @@ private struct ReviewHintPanel: View {
 private struct PracticeSessionReviewView: View {
     var samples: [PracticeSample]
     var language: AppLanguage
+    var onStartTest: (() -> Void)?
     var onDone: () -> Void
 
     @State private var showingCelebration = false
@@ -1255,14 +1458,28 @@ private struct PracticeSessionReviewView: View {
                     }
                 }
 
-                Button(action: onDone) {
-                    Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
-                        .font(.title3.weight(.bold))
-                        .frame(minWidth: 240)
-                        .padding(.vertical, 14)
+                HStack(spacing: 14) {
+                    if let onStartTest {
+                        Button(action: onStartTest) {
+                            Label(language.text(japanese: "テストしてみる", english: "Try the Test"), systemImage: "checkmark.clipboard.fill")
+                                .font(.title2.weight(.heavy))
+                                .frame(minWidth: 260)
+                                .padding(.vertical, 16)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tapFeedback()
+                        .tint(Color(red: 0.20, green: 0.58, blue: 0.24))
+                    }
+
+                    Button(action: onDone) {
+                        Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
+                            .font(.title3.weight(.bold))
+                            .frame(minWidth: 220)
+                            .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.bordered)
+                    .tapFeedback()
                 }
-                .buttonStyle(.borderedProminent)
-            .tapFeedback()
             }
         }
         .onAppear {
@@ -1803,19 +2020,65 @@ private struct PracticeDrawingPreview: UIViewRepresentable {
     }
 }
 
+private enum CelebrationBurstVariant {
+    case sparkles
+    case stars
+    case rings
+    case leaves
+    case rays
+}
+
 private struct SparkleBurst: View {
     var seed: Int
+    var variant: CelebrationBurstVariant = .sparkles
     @State private var animate = false
 
-    private let items: [SparkleItem] = [
-        SparkleItem(x: -220, y: -120, size: 34, delay: 0.00, color: Color(red: 0.96, green: 0.70, blue: 0.08), symbol: "sparkles"),
-        SparkleItem(x: 210, y: -110, size: 28, delay: 0.04, color: Color(red: 0.28, green: 0.67, blue: 0.92), symbol: "star.fill"),
-        SparkleItem(x: -160, y: 90, size: 26, delay: 0.08, color: Color(red: 0.39, green: 0.73, blue: 0.32), symbol: "sparkle"),
-        SparkleItem(x: 170, y: 115, size: 32, delay: 0.02, color: Color(red: 0.93, green: 0.33, blue: 0.22), symbol: "sparkles"),
-        SparkleItem(x: -60, y: -160, size: 24, delay: 0.10, color: Color(red: 0.62, green: 0.43, blue: 0.84), symbol: "star.fill"),
-        SparkleItem(x: 70, y: -150, size: 22, delay: 0.12, color: Color(red: 0.98, green: 0.78, blue: 0.18), symbol: "sparkle"),
-        SparkleItem(x: -20, y: 145, size: 28, delay: 0.06, color: Color(red: 0.18, green: 0.58, blue: 0.86), symbol: "star.fill")
-    ]
+    private var items: [SparkleItem] {
+        switch variant {
+        case .sparkles:
+            return [
+                SparkleItem(x: -220, y: -120, size: 34, delay: 0.00, color: Color(red: 0.96, green: 0.70, blue: 0.08), symbol: "sparkles"),
+                SparkleItem(x: 210, y: -110, size: 28, delay: 0.04, color: Color(red: 0.28, green: 0.67, blue: 0.92), symbol: "star.fill"),
+                SparkleItem(x: -160, y: 90, size: 26, delay: 0.08, color: Color(red: 0.39, green: 0.73, blue: 0.32), symbol: "sparkle"),
+                SparkleItem(x: 170, y: 115, size: 32, delay: 0.02, color: Color(red: 0.93, green: 0.33, blue: 0.22), symbol: "sparkles"),
+                SparkleItem(x: -60, y: -160, size: 24, delay: 0.10, color: Color(red: 0.62, green: 0.43, blue: 0.84), symbol: "star.fill"),
+                SparkleItem(x: 70, y: -150, size: 22, delay: 0.12, color: Color(red: 0.98, green: 0.78, blue: 0.18), symbol: "sparkle"),
+                SparkleItem(x: -20, y: 145, size: 28, delay: 0.06, color: Color(red: 0.18, green: 0.58, blue: 0.86), symbol: "star.fill")
+            ]
+        case .stars:
+            return [
+                SparkleItem(x: -230, y: -130, size: 38, delay: 0.00, color: Color(red: 1.0, green: 0.76, blue: 0.10), symbol: "star.fill"),
+                SparkleItem(x: 220, y: -135, size: 34, delay: 0.04, color: Color(red: 1.0, green: 0.55, blue: 0.06), symbol: "star.circle.fill"),
+                SparkleItem(x: -210, y: 120, size: 30, delay: 0.09, color: Color(red: 0.95, green: 0.30, blue: 0.18), symbol: "star.fill"),
+                SparkleItem(x: 185, y: 130, size: 32, delay: 0.02, color: Color(red: 0.42, green: 0.68, blue: 0.96), symbol: "sparkles"),
+                SparkleItem(x: -20, y: -170, size: 26, delay: 0.12, color: Color(red: 0.62, green: 0.43, blue: 0.84), symbol: "star.fill")
+            ]
+        case .rings:
+            return [
+                SparkleItem(x: -220, y: -110, size: 34, delay: 0.00, color: Color(red: 0.18, green: 0.48, blue: 0.94), symbol: "circle.circle.fill"),
+                SparkleItem(x: 220, y: -105, size: 30, delay: 0.05, color: Color(red: 0.25, green: 0.70, blue: 0.96), symbol: "checkmark.seal.fill"),
+                SparkleItem(x: -175, y: 125, size: 28, delay: 0.08, color: Color(red: 0.58, green: 0.45, blue: 0.94), symbol: "circle.circle.fill"),
+                SparkleItem(x: 165, y: 130, size: 32, delay: 0.03, color: Color(red: 0.12, green: 0.58, blue: 0.78), symbol: "sparkles"),
+                SparkleItem(x: 0, y: -170, size: 24, delay: 0.11, color: Color(red: 0.32, green: 0.48, blue: 0.92), symbol: "checkmark.seal.fill")
+            ]
+        case .leaves:
+            return [
+                SparkleItem(x: -210, y: -115, size: 34, delay: 0.00, color: Color(red: 0.20, green: 0.62, blue: 0.24), symbol: "leaf.fill"),
+                SparkleItem(x: 210, y: -120, size: 30, delay: 0.06, color: Color(red: 0.46, green: 0.75, blue: 0.22), symbol: "trophy.fill"),
+                SparkleItem(x: -170, y: 115, size: 28, delay: 0.08, color: Color(red: 0.70, green: 0.82, blue: 0.18), symbol: "leaf.fill"),
+                SparkleItem(x: 175, y: 120, size: 32, delay: 0.02, color: Color(red: 0.16, green: 0.48, blue: 0.20), symbol: "sparkles"),
+                SparkleItem(x: -10, y: -170, size: 25, delay: 0.13, color: Color(red: 0.94, green: 0.70, blue: 0.08), symbol: "star.fill")
+            ]
+        case .rays:
+            return [
+                SparkleItem(x: -215, y: -125, size: 36, delay: 0.00, color: Color(red: 0.96, green: 0.42, blue: 0.08), symbol: "sun.max.fill"),
+                SparkleItem(x: 215, y: -120, size: 30, delay: 0.05, color: Color(red: 1.0, green: 0.74, blue: 0.12), symbol: "sparkles"),
+                SparkleItem(x: -170, y: 120, size: 28, delay: 0.08, color: Color(red: 0.88, green: 0.24, blue: 0.20), symbol: "sun.max.fill"),
+                SparkleItem(x: 180, y: 125, size: 32, delay: 0.03, color: Color(red: 0.40, green: 0.64, blue: 0.94), symbol: "star.fill"),
+                SparkleItem(x: 0, y: -170, size: 26, delay: 0.12, color: Color(red: 0.98, green: 0.82, blue: 0.20), symbol: "sparkles")
+            ]
+        }
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -1855,7 +2118,10 @@ private struct SparkleBurst: View {
 }
 
 private struct SparkleItem: Identifiable {
-    let id = UUID()
+    var id: String {
+        "\(symbol)-\(Int(x))-\(Int(y))-\(String(format: "%.2f", delay))"
+    }
+
     var x: CGFloat
     var y: CGFloat
     var size: CGFloat

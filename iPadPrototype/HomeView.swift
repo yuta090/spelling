@@ -82,6 +82,13 @@ struct HomeView: View {
                     },
                     onPracticeCompleted: {
                         practiceResumeState = nil
+                    },
+                    onPracticeStartTest: {
+                        practiceResumeState = nil
+                        activeMode = nil
+                        DispatchQueue.main.async {
+                            activeMode = .test
+                        }
                     }
                 )
             }
