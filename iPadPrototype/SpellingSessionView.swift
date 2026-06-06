@@ -281,7 +281,8 @@ struct SpellingSessionView: View {
                     total: sessionWords.count,
                     style: practiceCelebrationStyle,
                     language: language,
-                    seed: sparkleSeed
+                    seed: sparkleSeed,
+                    coinReward: AppModel.practiceCoinReward
                 )
                     .transition(.opacity)
                     .zIndex(4)
@@ -662,6 +663,7 @@ struct SpellingSessionView: View {
 
         isAdvancing = true
         savePracticeDrawingIfNeeded()
+        model.awardPracticeCoins()
         completedPracticeWordCount = practicedWordCountInSession()
         practiceCelebrationStyle = PracticeCelebrationStyle.random()
         sparkleSeed += 1
@@ -1370,6 +1372,7 @@ private struct PracticeWordCelebrationOverlay: View {
     var style: PracticeCelebrationStyle
     var language: AppLanguage
     var seed: Int
+    var coinReward: Int
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var animateCoin = false
 
@@ -1401,7 +1404,7 @@ private struct PracticeWordCelebrationOverlay: View {
                         .opacity(animateCoin ? 1 : 0)
                         .shadow(color: style.tint.opacity(0.34), radius: animateCoin ? 14 : 4, x: 0, y: animateCoin ? 8 : 2)
 
-                    Text("+1")
+                    Text("+\(coinReward)")
                         .font(.title2.monospacedDigit().weight(.heavy))
                         .foregroundStyle(.white)
                         .padding(.vertical, 4)

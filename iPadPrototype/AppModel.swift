@@ -29,7 +29,23 @@ final class AppModel: ObservableObject {
         didSet { saveSelectedWordStepID() }
     }
 
+    @Published var rewardCoins: Int {
+        didSet { saveRewardCoins() }
+    }
+
+    @Published var selectedCharacterID: String {
+        didSet { saveSelectedCharacterID() }
+    }
+
+    @Published var unlockedCharacterIDs: Set<String> {
+        didSet { saveUnlockedCharacterIDs() }
+    }
+
     @Published var focusedPracticeWordIDs = Set<UUID>()
+
+    static let practiceCoinReward = 3
+    static let defaultCharacterID = "bear"
+    static let defaultUnlockedCharacterIDs: Set<String> = ["bear", "cat", "dog"]
 
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
@@ -37,6 +53,9 @@ final class AppModel: ObservableObject {
     private let schoolTestResultsKey = "spellingTrainer.schoolTestResults"
     private let settingsKey = "spellingTrainer.settings"
     private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"
+    private let rewardCoinsKey = "spellingTrainer.rewardCoins"
+    private let selectedCharacterIDKey = "spellingTrainer.selectedCharacterID"
+    private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
 
     init() {
         let loadedWords = Self.load([SpellingWord].self, key: wordsKey) ?? [
@@ -51,6 +70,11 @@ final class AppModel: ObservableObject {
         schoolTestResults = Self.load([SchoolTestResult].self, key: schoolTestResultsKey) ?? []
         settings = Self.load(TestSettings.self, key: settingsKey) ?? TestSettings()
         selectedWordStepID = UserDefaults.standard.string(forKey: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
+        rewardCoins = max(Self.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
+        let initialUnlockedCharacterIDs = (Self.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
+        unlockedCharacterIDs = initialUnlockedCharacterIDs
+        let savedCharacterID = UserDefaults.standard.string(forKey: selectedCharacterIDKey) ?? Self.defaultCharacterID
+        selectedCharacterID = initialUnlockedCharacterIDs.contains(savedCharacterID) ? savedCharacterID : Self.defaultCharacterID
         ensureSelectedWordStepStillExists()
     }
 
@@ -405,6 +429,37 @@ final class AppModel: ObservableObject {
         schoolTestResults.removeAll { $0.id == result.id }
     }
 
+    func awardPracticeCoins(_ amount: Int = AppModel.practiceCoinReward) {
+        rewardCoins = max(rewardCoins + max(amount, 0), 0)
+    }
+
+    func selectCharacter(id: String) {
+        guard unlockedCharacterIDs.contains(id) else {
+            return
+        }
+        selectedCharacterID = id
+    }
+
+    @discardableResult
+    func unlockCharacter(id: String, cost: Int) -> Bool {
+        if unlockedCharacterIDs.contains(id) {
+            selectedCharacterID = id
+            return true
+        }
+
+        let safeCost = max(cost, 0)
+        guard rewardCoins >= safeCost else {
+            return false
+        }
+
+        rewardCoins -= safeCost
+        var updatedUnlockedIDs = unlockedCharacterIDs
+        updatedUnlockedIDs.insert(id)
+        unlockedCharacterIDs = updatedUnlockedIDs
+        selectedCharacterID = id
+        return true
+    }
+
     private func saveWords() {
         Self.save(words, key: wordsKey)
     }
@@ -427,6 +482,18 @@ final class AppModel: ObservableObject {
 
     private func saveSelectedWordStepID() {
         UserDefaults.standard.set(selectedWordStepID, forKey: selectedWordStepIDKey)
+    }
+
+    private func saveRewardCoins() {
+        Self.save(max(rewardCoins, 0), key: rewardCoinsKey)
+    }
+
+    private func saveSelectedCharacterID() {
+        UserDefaults.standard.set(selectedCharacterID, forKey: selectedCharacterIDKey)
+    }
+
+    private func saveUnlockedCharacterIDs() {
+        Self.save(unlockedCharacterIDs, key: unlockedCharacterIDsKey)
     }
 
     private func ensureSelectedWordStepStillExists() {
