@@ -1798,10 +1798,13 @@ private struct SessionControlButton: View {
         )
         .overlay {
             if funTapAnimations && tapEffectActive {
-                PracticeButtonTapEffectOverlay(
-                    style: tapEffectStyle,
-                    seed: tapEffectSeed
-                )
+                ZStack {
+                    GuaranteedPracticeTapFlash(tint: tapEffectStyle.tint)
+                    PracticeButtonTapEffectOverlay(
+                        style: tapEffectStyle,
+                        seed: tapEffectSeed
+                    )
+                }
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
@@ -1824,7 +1827,7 @@ private struct SessionControlButton: View {
         triggerFunTapAnimationIfNeeded()
 
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 170_000_000)
+            try? await Task.sleep(nanoseconds: 280_000_000)
             isWaitingForFunTapAction = false
             action()
         }
@@ -1853,6 +1856,38 @@ private struct SessionControlButton: View {
                 tapEffectActive = false
             }
         }
+    }
+}
+
+private struct GuaranteedPracticeTapFlash: View {
+    var tint: Color
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                tint.opacity(0.28),
+                                Color.white.opacity(0.12)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.white.opacity(0.72), lineWidth: 2)
+
+                Image(systemName: "sparkles")
+                    .font(.system(size: 24, weight: .heavy))
+                    .foregroundStyle(.white)
+                    .shadow(color: tint.opacity(0.40), radius: 4, x: 0, y: 2)
+                    .position(x: proxy.size.width - 26, y: 22)
+            }
+        }
+        .allowsHitTesting(false)
     }
 }
 
