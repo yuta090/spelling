@@ -243,6 +243,7 @@ private struct ParentSectionButton: View {
 
 private struct ParentCurrentStepCard: View {
     @EnvironmentObject private var model: AppModel
+    @State private var showingStepChooser = false
     var language: AppLanguage
 
     var body: some View {
@@ -279,14 +280,8 @@ private struct ParentCurrentStepCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
             if !model.wordSteps.isEmpty {
-                Menu {
-                    ForEach(model.wordSteps.reversed()) { step in
-                        Button {
-                            model.selectedWordStepID = step.id
-                        } label: {
-                            Text("\(step.title(language: language)) ・ \(step.words.count)")
-                        }
-                    }
+                Button {
+                    showingStepChooser = true
                 } label: {
                     Label(language.text(japanese: "切り替え", english: "Switch"), systemImage: "chevron.up.chevron.down")
                         .font(.subheadline.weight(.bold))
@@ -294,7 +289,7 @@ private struct ParentCurrentStepCard: View {
                         .padding(.horizontal, 10)
                 }
                 .buttonStyle(.bordered)
-            .tapFeedback()
+                .tapFeedback()
                 .tint(Color(red: 0.13, green: 0.40, blue: 0.78))
             }
         }
@@ -305,6 +300,272 @@ private struct ParentCurrentStepCard: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color(red: 0.68, green: 0.80, blue: 0.96), lineWidth: 1)
         )
+        .sheet(isPresented: $showingStepChooser) {
+            ParentStepChooserSheet(
+                title: language.text(japanese: "ステップを選ぶ", english: "Choose Step"),
+                language: language,
+                selectedStepID: model.selectedWordStepID
+            ) { step in
+                model.selectedWordStepID = step.id
+            }
+            .environmentObject(model)
+            .presentationDetents([.large])
+        }
+    }
+}
+
+private struct ParentStepChooserSheet: View {
+    @EnvironmentObject private var model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var searchText = ""
+    var title: String
+    var language: AppLanguage
+    var selectedStepID: String
+    var onSelect: (WordStep) -> Void
+
+    private var orderedSteps: [WordStep] {
+        Array(model.wordSteps.reversed())
+    }
+
+    private var filteredSteps: [WordStep] {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else {
+            return orderedSteps
+        }
+
+        return orderedSteps.filter { step in
+            stepMatchesQuery(step, query: query)
+        }
+    }
+
+    private var groupedSections: [ParentStepChooserMonthSection] {
+        let calendar = Calendar.current
+        let grouped = Dictionary(grouping: filteredSteps) { step in
+            let components = calendar.dateComponents([.year, .month], from: step.registeredDate)
+            return calendar.date(from: components) ?? calendar.startOfDay(for: step.registeredDate)
+        }
+
+        return grouped.keys.sorted(by: >).map { date in
+            ParentStepChooserMonthSection(
+                date: date,
+                steps: (grouped[date] ?? []).sorted { $0.registeredDate > $1.registeredDate }
+            )
+        }
+    }
+
+    private var schoolResultStepIDs: Set<String> {
+        Set(model.schoolTestResults.compactMap(\.stepID))
+    }
+
+    private var selectedStep: WordStep? {
+        orderedSteps.first { $0.id == selectedStepID }
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                ParentStepChooserHeader(
+                    selectedStep: selectedStep,
+                    totalCount: orderedSteps.count,
+                    filteredCount: filteredSteps.count,
+                    language: language
+                )
+
+                if groupedSections.isEmpty {
+                    ContentUnavailableView(
+                        language.text(japanese: "見つかりません", english: "No matching steps"),
+                        systemImage: "magnifyingglass",
+                        description: Text(language.text(japanese: "ステップ番号、日付、単語で検索できます。", english: "Search by step number, date, or word."))
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List {
+                        ForEach(groupedSections) { section in
+                            Section(monthTitle(section.date)) {
+                                ForEach(section.steps) { step in
+                                    ParentStepChooserRow(
+                                        step: step,
+                                        language: language,
+                                        isSelected: step.id == selectedStepID,
+                                        hasSchoolResult: schoolResultStepIDs.contains(step.id)
+                                    ) {
+                                        select(step)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .listStyle(.insetGrouped)
+                    .scrollContentBackground(.hidden)
+                }
+            }
+            .background(ParentBackground())
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(
+                text: $searchText,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: language.text(japanese: "ステップ・日付・単語を検索", english: "Search step, date, or word")
+            )
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "閉じる", english: "Close"), systemImage: "xmark")
+                    }
+                    .tapFeedback()
+                }
+            }
+        }
+    }
+
+    private func select(_ step: WordStep) {
+        onSelect(step)
+        dismiss()
+    }
+
+    private func stepMatchesQuery(_ step: WordStep, query: String) -> Bool {
+        let parts = [
+            step.title(language: language),
+            "\(step.number)",
+            formattedStepDate(step.registeredDate, language: language),
+            step.words.map(\.text).joined(separator: " "),
+            step.words.map(\.promptText).joined(separator: " ")
+        ]
+
+        return parts.contains { part in
+            part.localizedCaseInsensitiveContains(query)
+        }
+    }
+
+    private func monthTitle(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = language == .japanese ? Locale(identifier: "ja_JP") : Locale(identifier: "en_US")
+        formatter.dateFormat = language == .japanese ? "yyyy年M月" : "MMM yyyy"
+        return formatter.string(from: date)
+    }
+}
+
+private struct ParentStepChooserMonthSection: Identifiable {
+    var date: Date
+    var steps: [WordStep]
+
+    var id: TimeInterval {
+        date.timeIntervalSinceReferenceDate
+    }
+}
+
+private struct ParentStepChooserHeader: View {
+    var selectedStep: WordStep?
+    var totalCount: Int
+    var filteredCount: Int
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "rectangle.stack.fill")
+                .font(.title2.weight(.heavy))
+                .foregroundStyle(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .frame(width: 46, height: 46)
+                .background(Color(red: 0.88, green: 0.94, blue: 1.0))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(language.text(japanese: "いま選んでいる単語集", english: "Selected Word Set"))
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+                Text(selectedStep?.title(language: language) ?? language.text(japanese: "未選択", english: "Not selected"))
+                    .font(.title3.monospacedDigit().weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+            }
+
+            Spacer()
+
+            Text(language.text(
+                japanese: "\(filteredCount) / \(totalCount) 件",
+                english: "\(filteredCount) / \(totalCount)"
+            ))
+            .font(.headline.monospacedDigit().weight(.heavy))
+            .foregroundStyle(Color(red: 0.17, green: 0.50, blue: 0.24))
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(Color(red: 0.90, green: 0.97, blue: 0.88))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .padding(14)
+        .background(.white.opacity(0.88))
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.black.opacity(0.08))
+                .frame(height: 1)
+        }
+    }
+}
+
+private struct ParentStepChooserRow: View {
+    var step: WordStep
+    var language: AppLanguage
+    var isSelected: Bool
+    var hasSchoolResult: Bool
+    var action: () -> Void
+
+    private var wordPreview: String {
+        let previewWords = step.words.prefix(5).map(\.text).joined(separator: " / ")
+        guard step.words.count > 5 else {
+            return previewWords
+        }
+        return "\(previewWords) ..."
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "rectangle.stack")
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(isSelected ? Color(red: 0.13, green: 0.40, blue: 0.78) : Color(red: 0.42, green: 0.48, blue: 0.55))
+                    .frame(width: 34, height: 34)
+                    .background(isSelected ? Color(red: 0.88, green: 0.94, blue: 1.0) : Color(red: 0.95, green: 0.97, blue: 0.98))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack(spacing: 8) {
+                        Text(step.title(language: language))
+                            .font(.headline.monospacedDigit().weight(.heavy))
+                            .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+
+                        if hasSchoolResult {
+                            Label(language.text(japanese: "学校結果あり", english: "School result"), systemImage: "graduationcap.fill")
+                                .font(.caption2.weight(.heavy))
+                                .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                                .padding(.vertical, 4)
+                                .padding(.horizontal, 7)
+                                .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+
+                    Text("\(formattedStepDate(step.registeredDate, language: language)) ・ \(step.words.count) \(language.text(japanese: "単語", english: "words"))")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+
+                    Text(wordPreview)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color(red: 0.24, green: 0.30, blue: 0.40))
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 6)
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .listRowBackground(isSelected ? Color(red: 0.92, green: 0.97, blue: 1.0) : Color.white.opacity(0.92))
     }
 }
 
@@ -883,6 +1144,7 @@ private struct SchoolTestResultPanel: View {
     @State private var score = 0
     @State private var total = 0
     @State private var showingOptionalDetails = false
+    @State private var showingStepChooser = false
     @State private var missedWords = ""
     @State private var note = ""
     var language: AppLanguage
@@ -924,12 +1186,30 @@ private struct SchoolTestResultPanel: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                     if !model.wordSteps.isEmpty {
-                        Picker(language.text(japanese: "単語集", english: "Step"), selection: $selectedStepID) {
-                            ForEach(model.wordSteps) { step in
-                                Text(step.title(language: language)).tag(step.id)
+                        Button {
+                            showingStepChooser = true
+                        } label: {
+                            HStack(spacing: 10) {
+                                VStack(alignment: .trailing, spacing: 2) {
+                                    Text(language.text(japanese: "単語集", english: "Step"))
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.secondary)
+                                    Text(selectedStep?.title(language: language) ?? language.text(japanese: "選ぶ", english: "Choose"))
+                                        .font(.headline.monospacedDigit().weight(.heavy))
+                                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                                }
+
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.subheadline.weight(.heavy))
+                                    .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
                             }
+                            .padding(.vertical, 9)
+                            .padding(.horizontal, 12)
+                            .background(Color(red: 0.97, green: 0.93, blue: 1.0))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
-                        .pickerStyle(.menu)
+                        .buttonStyle(.plain)
+                        .tapFeedback()
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
@@ -1053,6 +1333,17 @@ private struct SchoolTestResultPanel: View {
         }
         .onChange(of: total) { _, newTotal in
             score = min(score, max(newTotal, 1))
+        }
+        .sheet(isPresented: $showingStepChooser) {
+            ParentStepChooserSheet(
+                title: language.text(japanese: "学校テストのステップを選ぶ", english: "Choose School Test Step"),
+                language: language,
+                selectedStepID: selectedStepID
+            ) { step in
+                selectedStepID = step.id
+            }
+            .environmentObject(model)
+            .presentationDetents([.large])
         }
     }
 
@@ -1204,6 +1495,7 @@ private struct ParentPanel<Content: View>: View {
 
 private struct ParentWordStepPanel: View {
     @EnvironmentObject private var model: AppModel
+    @State private var showingStepChooser = false
     var language: AppLanguage
 
     private var orderedSteps: [WordStep] {
@@ -1232,21 +1524,41 @@ private struct ParentWordStepPanel: View {
                 )
                 .frame(minHeight: 180)
             } else {
-                ScrollView {
-                    VStack(spacing: 10) {
-                        ForEach(orderedSteps) { step in
-                            ParentWordStepCard(
-                                step: step,
-                                language: language,
-                                isSelected: step.id == model.selectedWordStepID
-                            ) {
-                                model.selectedWordStepID = step.id
-                            }
+                VStack(alignment: .leading, spacing: 12) {
+                    if let step = model.selectedWordStep {
+                        ParentWordStepCard(
+                            step: step,
+                            language: language,
+                            isSelected: true
+                        ) {
+                            showingStepChooser = true
                         }
                     }
+
+                    Button {
+                        showingStepChooser = true
+                    } label: {
+                        Label(language.text(japanese: "ステップを探す", english: "Find Step"), systemImage: "magnifyingglass")
+                            .font(.headline.weight(.bold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 11)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tapFeedback()
+                    .tint(Color(red: 0.13, green: 0.40, blue: 0.78))
                 }
-                .frame(maxHeight: 360)
             }
+        }
+        .sheet(isPresented: $showingStepChooser) {
+            ParentStepChooserSheet(
+                title: language.text(japanese: "ステップを探す", english: "Find Step"),
+                language: language,
+                selectedStepID: model.selectedWordStepID
+            ) { step in
+                model.selectedWordStepID = step.id
+            }
+            .environmentObject(model)
+            .presentationDetents([.large])
         }
     }
 }
