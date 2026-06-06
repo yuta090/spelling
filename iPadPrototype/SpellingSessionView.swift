@@ -79,6 +79,13 @@ struct SpellingSessionView: View {
         return sessionWords[min(index, max(sessionWords.count - 1, 0))]
     }
 
+    private var completedPracticeWordsInSession: Int {
+        guard mode == .practice else {
+            return 0
+        }
+        return min(max(index, 0), sessionWords.count)
+    }
+
     private var practiceRepetitionCount: Int {
         switch mode {
         case .practice:
@@ -311,6 +318,12 @@ struct SpellingSessionView: View {
                 if mode == .test {
                     TestTimerBar(seconds: remainingSeconds, totalSeconds: model.settings.secondsPerWord, language: language)
                     TestProgressPill(current: index + 1, total: max(sessionWords.count, 1), language: language)
+                } else if mode == .practice {
+                    PracticeGoalBadge(
+                        completed: completedPracticeWordsInSession,
+                        total: max(sessionWords.count, 1),
+                        language: language
+                    )
                 } else {
                     ProgressPill(current: index + 1, total: max(sessionWords.count, 1))
                 }
@@ -882,6 +895,124 @@ private struct ProgressPill: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color(red: 0.65, green: 0.78, blue: 0.97), lineWidth: 1)
             )
+    }
+}
+
+private struct PracticeGoalBadge: View {
+    var completed: Int
+    var total: Int
+    var language: AppLanguage
+
+    private var safeTotal: Int {
+        max(total, 1)
+    }
+
+    private var safeCompleted: Int {
+        min(max(completed, 0), safeTotal)
+    }
+
+    private var remaining: Int {
+        max(safeTotal - safeCompleted, 0)
+    }
+
+    private var progress: Double {
+        min(max(Double(safeCompleted) / Double(safeTotal), 0), 1)
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 1.0, green: 0.86, blue: 0.24),
+                                Color(red: 0.98, green: 0.52, blue: 0.10)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .shadow(color: Color.orange.opacity(0.20), radius: 5, x: 0, y: 3)
+
+                Image(systemName: remaining == 0 ? "star.fill" : "flag.fill")
+                    .font(.system(size: 19, weight: .heavy))
+                    .foregroundStyle(.white)
+            }
+            .frame(width: 42, height: 42)
+
+            VStack(alignment: .leading, spacing: 5) {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(remainingText)
+                        .font(.system(size: 22, weight: .heavy, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(Color(red: 0.14, green: 0.25, blue: 0.44))
+                        .contentTransition(.numericText())
+
+                    Spacer(minLength: 4)
+
+                    Text("\(safeCompleted)/\(safeTotal)")
+                        .font(.caption.monospacedDigit().weight(.heavy))
+                        .foregroundStyle(Color(red: 0.43, green: 0.37, blue: 0.54))
+                }
+
+                GeometryReader { proxy in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.white.opacity(0.66))
+
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 0.34, green: 0.72, blue: 0.36),
+                                        Color(red: 0.88, green: 0.72, blue: 0.18)
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: proxy.size.width * progress)
+                    }
+                }
+                .frame(height: 8)
+
+                Text(language.text(japanese: "きょうのれんしゅう", english: "today's practice"))
+                    .font(.caption2.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.42, green: 0.45, blue: 0.58))
+            }
+        }
+        .frame(width: 218, alignment: .leading)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 11)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 1.0, green: 0.97, blue: 0.76),
+                    Color(red: 0.88, green: 0.98, blue: 0.91)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: Color(red: 0.32, green: 0.40, blue: 0.58).opacity(0.12), radius: 10, x: 0, y: 5)
+        .animation(.spring(response: 0.30, dampingFraction: 0.78), value: safeCompleted)
+        .accessibilityLabel(accessibilityText)
+    }
+
+    private var remainingText: String {
+        if remaining == 0 {
+            return language.text(japanese: "できた！", english: "Done!")
+        }
+        return language.text(japanese: "あと \(remaining)こ", english: "\(remaining) left")
+    }
+
+    private var accessibilityText: String {
+        language.text(
+            japanese: "今日の練習。\(safeCompleted)個できました。あと\(remaining)個です。",
+            english: "Today's practice. \(safeCompleted) done. \(remaining) left."
+        )
     }
 }
 
