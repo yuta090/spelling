@@ -28,6 +28,9 @@ struct SpellingSessionView: View {
     @State private var showingTestResults = false
     @State private var practiceRepeatIndex = 0
     @State private var sessionID = UUID()
+    @State private var showingSpeakerHint = false
+    @State private var speakerHintPhase = false
+    @State private var didShowSpeakerHint = false
 
     init(mode: SessionMode, words: [SpellingWord]) {
         self.mode = mode
@@ -240,9 +243,11 @@ struct SpellingSessionView: View {
         .onAppear {
             resetTimer()
             startTimerIfNeeded()
+            showSpeakerHintIfNeeded()
         }
         .onDisappear {
             stopTimer()
+            showingSpeakerHint = false
         }
     }
 
@@ -346,15 +351,23 @@ struct SpellingSessionView: View {
         Button {
             playWord()
         } label: {
-            Image(systemName: "speaker.wave.2.fill")
-                .font(.system(size: 26, weight: .bold))
-                .foregroundStyle(Color(red: 0.14, green: 0.34, blue: 0.76))
-                .frame(width: 58, height: 58)
-                .background(Color(red: 0.82, green: 0.90, blue: 1.0))
-                .clipShape(Circle())
+            ZStack {
+                if showingSpeakerHint && mode == .test {
+                    SpeakerHintPulse(phase: speakerHintPhase)
+                }
+
+                Image(systemName: "speaker.wave.2.fill")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(Color(red: 0.14, green: 0.34, blue: 0.76))
+                    .frame(width: 58, height: 58)
+                    .background(Color(red: 0.82, green: 0.90, blue: 1.0))
+                    .clipShape(Circle())
+                    .scaleEffect(showingSpeakerHint && speakerHintPhase ? 1.08 : 1)
+            }
+            .frame(width: mode == .test ? 82 : 58, height: mode == .test ? 82 : 58)
         }
         .buttonStyle(.plain)
-            .tapFeedback()
+        .tapFeedback()
         .disabled(mode == .test && replayCount >= model.settings.maxReplays)
         .opacity(mode == .test && replayCount >= model.settings.maxReplays ? 0.45 : 1)
         .accessibilityLabel(language.text(japanese: "発音を聞く", english: "Play word"))
@@ -613,8 +626,49 @@ struct SpellingSessionView: View {
         guard mode != .test || replayCount < model.settings.maxReplays else {
             return
         }
+        withAnimation(.easeIn(duration: 0.12)) {
+            showingSpeakerHint = false
+        }
         replayCount += 1
         speech.speak(currentWord.text, language: model.settings.language, rate: model.settings.speechRate)
+    }
+
+    private func showSpeakerHintIfNeeded() {
+        guard mode == .test, shouldShowSpeakerButton, !didShowSpeakerHint else {
+            return
+        }
+
+        didShowSpeakerHint = true
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 450_000_000)
+            guard shouldShowSpeakerButton, replayCount == 0, decision == nil, !showingTestResults else {
+                return
+            }
+
+            showingSpeakerHint = true
+            speakerHintPhase = false
+
+            for _ in 0..<3 {
+                guard showingSpeakerHint, replayCount == 0, decision == nil else {
+                    return
+                }
+
+                withAnimation(.easeOut(duration: 0.38)) {
+                    speakerHintPhase = true
+                }
+                try? await Task.sleep(nanoseconds: 380_000_000)
+
+                withAnimation(.easeIn(duration: 0.16)) {
+                    speakerHintPhase = false
+                }
+                try? await Task.sleep(nanoseconds: 160_000_000)
+            }
+
+            withAnimation(.easeIn(duration: 0.18)) {
+                showingSpeakerHint = false
+            }
+        }
     }
 
     private func resetTimer() {
@@ -728,6 +782,26 @@ private struct ProgressPill: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color(red: 0.65, green: 0.78, blue: 0.97), lineWidth: 1)
             )
+    }
+}
+
+private struct SpeakerHintPulse: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    var phase: Bool
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color(red: 0.18, green: 0.45, blue: 0.92).opacity(phase ? 0.06 : 0.16))
+                .frame(width: reduceMotion ? 76 : 82, height: reduceMotion ? 76 : 82)
+                .scaleEffect(reduceMotion ? 1 : (phase ? 1.06 : 0.84))
+
+            Circle()
+                .stroke(Color(red: 0.18, green: 0.45, blue: 0.92).opacity(phase ? 0.08 : 0.62), lineWidth: phase ? 2 : 5)
+                .frame(width: 72, height: 72)
+                .scaleEffect(reduceMotion ? 1 : (phase ? 1.16 : 0.78))
+        }
+        .allowsHitTesting(false)
     }
 }
 
