@@ -939,89 +939,172 @@ private struct PracticeRepeatGuide: View {
     var total: Int
     var language: AppLanguage
 
+    private var remaining: Int {
+        max(total - current, 0)
+    }
+
     var body: some View {
-        HStack(spacing: 22) {
-            Image(systemName: "pencil.and.scribble")
-                .font(.system(size: 34, weight: .bold))
-                .foregroundStyle(Color(red: 0.52, green: 0.31, blue: 0.78))
-                .frame(width: 68, height: 68)
-                .background(Color(red: 0.95, green: 0.90, blue: 1.0))
-                .clipShape(Circle())
-
+        HStack(spacing: 18) {
             VStack(alignment: .leading, spacing: 6) {
-                Text(language.text(japanese: "この単語は \(total) かい", english: "\(total) rounds for this word"))
-                    .font(.title3.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.44))
                 Text(language.text(japanese: "\(current)かいめ", english: "Round \(current)"))
-                    .font(.system(size: 42, weight: .heavy, design: .rounded))
+                    .font(.system(size: 46, weight: .heavy, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(Color(red: 0.50, green: 0.27, blue: 0.75))
+                    .foregroundStyle(Color(red: 0.14, green: 0.24, blue: 0.42))
+
+                Label(remainingMessage, systemImage: remaining == 0 ? "sparkles" : "pencil.tip")
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(remaining == 0 ? Color(red: 0.32, green: 0.55, blue: 0.18) : Color(red: 0.54, green: 0.31, blue: 0.74))
             }
+            .frame(width: 188, alignment: .leading)
 
-            Spacer(minLength: 8)
-
-            HStack(spacing: 10) {
-                ForEach(1...total, id: \.self) { step in
-                    Text("\(step)")
-                        .font(.title3.monospacedDigit().weight(.heavy))
-                        .foregroundStyle(stepForeground(step))
-                        .frame(width: 44, height: 44)
-                        .background(stepBackground(step))
-                        .clipShape(Circle())
-                        .overlay(
-                            Circle()
-                                .stroke(stepBorder(step), lineWidth: step == current ? 3 : 1.5)
-                        )
+            HStack(spacing: 12) {
+                ForEach(Array(1...max(total, 1)), id: \.self) { step in
+                    PracticeRoundBubble(
+                        step: step,
+                        current: current,
+                        language: language
+                    )
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .frame(maxWidth: 760)
-        .padding(.vertical, 14)
-        .padding(.horizontal, 18)
+        .padding(.vertical, 16)
+        .padding(.horizontal, 20)
         .background(
             LinearGradient(
                 colors: [
-                    Color(red: 1.0, green: 0.98, blue: 0.88),
-                    Color(red: 0.94, green: 0.98, blue: 1.0)
+                    Color(red: 1.0, green: 0.93, blue: 0.74),
+                    Color(red: 0.88, green: 0.98, blue: 0.91),
+                    Color(red: 0.92, green: 0.91, blue: 1.0)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
         )
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.82, green: 0.70, blue: 0.95), lineWidth: 2)
-        )
-        .shadow(color: Color.purple.opacity(0.08), radius: 10, x: 0, y: 5)
+        .shadow(color: Color(red: 0.40, green: 0.30, blue: 0.62).opacity(0.14), radius: 16, x: 0, y: 8)
+        .shadow(color: .white.opacity(0.78), radius: 1, x: -1, y: -1)
         .accessibilityLabel(language.text(japanese: "この単語は\(total)回。今は\(current)回目です。", english: "This word has \(total) rounds. Current round \(current)."))
     }
 
-    private func stepForeground(_ step: Int) -> Color {
-        if step < current {
-            return .white
+    private var remainingMessage: String {
+        if remaining == 0 {
+            return language.text(japanese: "このあとチェック", english: "Review next")
         }
-        if step == current {
-            return .white
-        }
-        return Color(red: 0.37, green: 0.32, blue: 0.47)
+        return language.text(japanese: "あと \(remaining)かい", english: "\(remaining) left")
+    }
+}
+
+private struct PracticeRoundBubble: View {
+    var step: Int
+    var current: Int
+    var language: AppLanguage
+
+    private var isDone: Bool {
+        step < current
     }
 
-    private func stepBackground(_ step: Int) -> Color {
-        if step < current {
-            return Color(red: 0.38, green: 0.70, blue: 0.32)
-        }
-        if step == current {
-            return Color(red: 0.51, green: 0.30, blue: 0.78)
-        }
-        return .white.opacity(0.92)
+    private var isCurrent: Bool {
+        step == current
     }
 
-    private func stepBorder(_ step: Int) -> Color {
-        if step <= current {
-            return Color(red: 0.51, green: 0.30, blue: 0.78)
+    var body: some View {
+        VStack(spacing: 7) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(background)
+                    .shadow(color: shadowColor, radius: isCurrent ? 10 : 5, x: 0, y: isCurrent ? 6 : 3)
+                    .overlay(alignment: .topTrailing) {
+                        if isCurrent {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundStyle(Color(red: 0.98, green: 0.64, blue: 0.08))
+                                .padding(7)
+                        }
+                    }
+
+                if isDone {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 26, weight: .heavy))
+                        .foregroundStyle(.white)
+                } else {
+                    Text("\(step)")
+                        .font(.system(size: isCurrent ? 30 : 24, weight: .heavy, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(numberColor)
+                }
+            }
+            .frame(width: isCurrent ? 76 : 62, height: isCurrent ? 58 : 52)
+            .scaleEffect(isCurrent ? 1.04 : 1)
+
+            Text(statusText)
+                .font(.caption.weight(.heavy))
+                .foregroundStyle(statusColor)
+                .lineLimit(1)
         }
-        return Color(red: 0.80, green: 0.75, blue: 0.88)
+        .animation(.spring(response: 0.24, dampingFraction: 0.72), value: current)
+        .accessibilityLabel(accessibilityText)
+    }
+
+    private var background: LinearGradient {
+        if isDone {
+            return LinearGradient(
+                colors: [Color(red: 0.32, green: 0.70, blue: 0.36), Color(red: 0.18, green: 0.56, blue: 0.34)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+        if isCurrent {
+            return LinearGradient(
+                colors: [Color(red: 1.0, green: 0.82, blue: 0.22), Color(red: 1.0, green: 0.58, blue: 0.20)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+        return LinearGradient(
+            colors: [Color.white.opacity(0.94), Color(red: 0.91, green: 0.96, blue: 1.0)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+
+    private var shadowColor: Color {
+        if isCurrent {
+            return Color(red: 0.96, green: 0.47, blue: 0.08).opacity(0.22)
+        }
+        return Color(red: 0.30, green: 0.38, blue: 0.56).opacity(0.10)
+    }
+
+    private var numberColor: Color {
+        isCurrent ? .white : Color(red: 0.22, green: 0.30, blue: 0.48)
+    }
+
+    private var statusText: String {
+        if isDone {
+            return language.text(japanese: "できた", english: "Done")
+        }
+        if isCurrent {
+            return language.text(japanese: "いま", english: "Now")
+        }
+        return language.text(japanese: "つぎ", english: "Next")
+    }
+
+    private var statusColor: Color {
+        if isDone {
+            return Color(red: 0.16, green: 0.46, blue: 0.23)
+        }
+        if isCurrent {
+            return Color(red: 0.76, green: 0.30, blue: 0.06)
+        }
+        return Color(red: 0.38, green: 0.42, blue: 0.58)
+    }
+
+    private var accessibilityText: String {
+        language.text(
+            japanese: "\(step)回目 \(statusText)",
+            english: "Round \(step), \(statusText)"
+        )
     }
 }
 
