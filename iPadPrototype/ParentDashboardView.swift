@@ -1822,26 +1822,10 @@ private struct ParentGradingPanel: View {
         let activeSession = filteredSessions.first { $0.id == selectedSessionID } ?? filteredSessions.first
 
         ParentPanel(
-            title: language.text(japanese: "採点モード", english: "Grading Mode"),
+            title: language.text(japanese: "採点", english: "Grade"),
             systemImage: "checkmark.seal.fill",
             tint: Color(red: 0.12, green: 0.36, blue: 0.72)
         ) {
-            HStack {
-                SettingValueRow(
-                    title: sessionFilter.title(language: language),
-                    value: "\(filteredSessions.count)/\(sessions.count)"
-                )
-
-                Spacer()
-            }
-
-            Text(language.text(
-                japanese: "最初は未採点だけ表示します。過去分は「今日」「すべて」で見られます。",
-                english: "Only ungraded sessions show first. Use Today or All for older sessions."
-            ))
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
-
             if sessions.isEmpty {
                 ContentUnavailableView(
                     language.text(japanese: "まだ採点する記録がありません", english: "Nothing to grade yet"),
@@ -1851,14 +1835,13 @@ private struct ParentGradingPanel: View {
                 .frame(minHeight: 240)
             } else {
                 VStack(alignment: .leading, spacing: 12) {
-                    Picker("", selection: $sessionFilter) {
-                        ForEach(ParentGradingSessionFilter.allCases) { filter in
-                            Text(filter.title(language: language)).tag(filter)
-                        }
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.segmented)
-                    .accessibilityLabel(language.text(japanese: "採点記録の表示", english: "Grading session filter"))
+                    GradingWorkHeader(
+                        filter: $sessionFilter,
+                        activeSession: activeSession,
+                        filteredCount: filteredSessions.count,
+                        totalCount: sessions.count,
+                        language: language
+                    )
 
                     if filteredSessions.isEmpty {
                         ContentUnavailableView(
@@ -1868,20 +1851,51 @@ private struct ParentGradingPanel: View {
                         )
                         .frame(minHeight: 260)
                     } else {
-                        ParentGradingSessionPicker(
-                            sessions: filteredSessions,
-                            selectedID: activeSession?.id,
-                            language: language,
-                            select: { selectedSessionID = $0 }
-                        )
+                        ViewThatFits(in: .horizontal) {
+                            HStack(alignment: .top, spacing: 12) {
+                                ParentGradingSessionPicker(
+                                    sessions: filteredSessions,
+                                    selectedID: activeSession?.id,
+                                    language: language,
+                                    select: { selectedSessionID = $0 }
+                                )
+                                .frame(width: 220)
 
-                        ScrollView {
-                            if let activeSession {
-                                ParentGradingSessionCard(session: activeSession, language: language)
-                                    .environmentObject(model)
+                                ScrollView {
+                                    if let activeSession {
+                                        ParentGradingSessionCard(
+                                            session: activeSession,
+                                            showsOnlyUngraded: sessionFilter == .unreviewed,
+                                            language: language
+                                        )
+                                            .environmentObject(model)
+                                    }
+                                }
+                                .frame(maxHeight: 760)
+                            }
+
+                            VStack(alignment: .leading, spacing: 12) {
+                                ParentGradingSessionPicker(
+                                    sessions: filteredSessions,
+                                    selectedID: activeSession?.id,
+                                    language: language,
+                                    select: { selectedSessionID = $0 }
+                                )
+                                .frame(maxHeight: 180)
+
+                                ScrollView {
+                                    if let activeSession {
+                                        ParentGradingSessionCard(
+                                            session: activeSession,
+                                            showsOnlyUngraded: sessionFilter == .unreviewed,
+                                            language: language
+                                        )
+                                            .environmentObject(model)
+                                    }
+                                }
+                                .frame(maxHeight: 760)
                             }
                         }
-                        .frame(maxHeight: 760)
                     }
                 }
                 .onAppear {
@@ -1948,6 +1962,92 @@ private enum ParentGradingSessionFilter: String, CaseIterable, Identifiable {
         case .all:
             return language.text(japanese: "練習やテストをすると表示されます。", english: "Practice or test to show sessions here.")
         }
+    }
+}
+
+private struct GradingWorkHeader: View {
+    @Binding var filter: ParentGradingSessionFilter
+    var activeSession: ParentGradingSession?
+    var filteredCount: Int
+    var totalCount: Int
+    var language: AppLanguage
+
+    private var unreviewedCount: Int {
+        activeSession?.unreviewedCount ?? 0
+    }
+
+    private var title: String {
+        if unreviewedCount > 0 {
+            return language.text(japanese: "未採点をチェック", english: "Check Ungraded")
+        }
+        return language.text(japanese: "この回は採点済み", english: "This Session Is Done")
+    }
+
+    private var subtitle: String {
+        if let activeSession {
+            return activeSession.title(language: language)
+        }
+        return language.text(japanese: "採点する回を選んでください", english: "Choose a session")
+    }
+
+    var body: some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text(title)
+                    .font(.system(size: 28, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.38))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                Text(subtitle)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 8)
+
+            VStack(alignment: .trailing, spacing: 8) {
+                HStack(alignment: .firstTextBaseline, spacing: 5) {
+                    Text("\(unreviewedCount)")
+                        .font(.system(size: 34, weight: .heavy, design: .rounded))
+                        .monospacedDigit()
+                    Text(language.text(japanese: "件", english: "left"))
+                        .font(.headline.weight(.heavy))
+                }
+                .foregroundStyle(unreviewedCount > 0 ? Color(red: 0.90, green: 0.45, blue: 0.12) : Color(red: 0.20, green: 0.62, blue: 0.24))
+
+                Picker("", selection: $filter) {
+                    ForEach(ParentGradingSessionFilter.allCases) { filter in
+                        Text(filter.title(language: language)).tag(filter)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .frame(width: 260)
+                .accessibilityLabel(language.text(japanese: "採点記録の表示", english: "Grading session filter"))
+            }
+        }
+        .padding(14)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 0.93, green: 0.97, blue: 1.0),
+                    Color.white.opacity(0.95)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(language.text(
+            japanese: "\(title)。\(subtitle)。未採点 \(unreviewedCount) 件。表示 \(filteredCount) / \(totalCount)。",
+            english: "\(title). \(subtitle). \(unreviewedCount) ungraded. Showing \(filteredCount) of \(totalCount)."
+        ))
     }
 }
 
@@ -2037,8 +2137,8 @@ private struct ParentGradingSessionPicker: View {
     var select: (String) -> Void
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
+        ScrollView {
+            LazyVStack(spacing: 8) {
                 ForEach(sessions) { session in
                     Button {
                         withAnimation(.easeInOut(duration: 0.12)) {
@@ -2057,9 +2157,10 @@ private struct ParentGradingSessionPicker: View {
                     .accessibilityAddTraits(session.id == selectedID ? .isSelected : [])
                 }
             }
-            .padding(.vertical, 2)
+            .padding(2)
         }
-        .frame(height: 88)
+        .background(Color.white.opacity(0.58))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
@@ -2069,29 +2170,31 @@ private struct ParentGradingSessionChip: View {
     var language: AppLanguage
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 7) {
-                Image(systemName: session.kind.systemImage)
-                    .font(.subheadline.weight(.bold))
+        HStack(spacing: 9) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(session.title(language: language))
                     .font(.subheadline.weight(.heavy))
                     .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                Text(session.date.formatted(date: .abbreviated, time: .shortened))
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
             }
 
-            Text(session.date.formatted(date: .abbreviated, time: .shortened))
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
+            Spacer(minLength: 4)
 
-            HStack(spacing: 6) {
-                Text("\(session.itemCount)\(language.text(japanese: "件", english: ""))")
-                Text("OK \(session.approvedCount)")
-                Text("\(language.text(japanese: "直す", english: "Fix")) \(session.needsPracticeCount)")
+            VStack(spacing: 2) {
+                Image(systemName: session.kind.systemImage)
+                    .font(.caption.weight(.bold))
+                Text(session.unreviewedCount > 0 ? "\(session.unreviewedCount)" : "OK")
+                    .font(.caption.monospacedDigit().weight(.heavy))
             }
-            .font(.caption2.monospacedDigit().weight(.bold))
+            .frame(width: 42)
         }
         .foregroundStyle(isSelected ? .white : session.kind.tint)
-        .frame(width: 190, alignment: .leading)
-        .padding(10)
+        .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
         .background(isSelected ? session.kind.tint : session.kind.tint.opacity(0.10))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
@@ -2103,15 +2206,32 @@ private struct ParentGradingSessionChip: View {
 
 private struct ParentGradingSessionCard: View {
     var session: ParentGradingSession
+    var showsOnlyUngraded: Bool
     var language: AppLanguage
+
+    private var visibleAttempts: [SpellingAttempt] {
+        guard showsOnlyUngraded else {
+            return session.attempts
+        }
+        return session.attempts.filter { $0.parentReviewDecision == .unreviewed }
+    }
+
+    private var visibleSamples: [PracticeSample] {
+        guard showsOnlyUngraded else {
+            return session.samples
+        }
+        return session.samples.filter { $0.parentReviewDecision == .unreviewed }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
                 Image(systemName: session.kind.systemImage)
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(session.kind.tint)
-                    .frame(width: 34, height: 34)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(session.kind.tint)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(session.title(language: language))
@@ -2124,31 +2244,24 @@ private struct ParentGradingSessionCard: View {
 
                 Spacer()
 
-                HStack(spacing: 6) {
-                    GradingCountPill(
-                        title: language.text(japanese: "件", english: "Items"),
-                        value: session.itemCount,
-                        tint: Color(red: 0.16, green: 0.42, blue: 0.78)
-                    )
-                    GradingCountPill(
-                        title: "OK",
-                        value: session.approvedCount,
-                        tint: Color(red: 0.20, green: 0.62, blue: 0.24)
-                    )
-                    GradingCountPill(
-                        title: language.text(japanese: "直す", english: "Fix"),
-                        value: session.needsPracticeCount,
-                        tint: Color(red: 0.90, green: 0.45, blue: 0.12)
-                    )
-                }
+                Text(session.unreviewedCount > 0
+                    ? language.text(japanese: "あと \(session.unreviewedCount)件", english: "\(session.unreviewedCount) left")
+                    : language.text(japanese: "採点済み", english: "Done")
+                )
+                .font(.headline.monospacedDigit().weight(.heavy))
+                .foregroundStyle(session.unreviewedCount > 0 ? Color(red: 0.90, green: 0.45, blue: 0.12) : Color(red: 0.20, green: 0.62, blue: 0.24))
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background((session.unreviewedCount > 0 ? Color(red: 1.0, green: 0.93, blue: 0.82) : Color(red: 0.90, green: 0.97, blue: 0.88)))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
             VStack(spacing: 12) {
-                ForEach(session.attempts) { attempt in
+                ForEach(visibleAttempts) { attempt in
                     ParentAttemptGradingCard(attempt: attempt, language: language)
                 }
 
-                ForEach(session.samples) { sample in
+                ForEach(visibleSamples) { sample in
                     ParentPracticeGradingCard(sample: sample, language: language)
                 }
             }
@@ -2200,9 +2313,9 @@ private struct ParentAttemptGradingCard: View {
         VStack(alignment: .leading, spacing: 10) {
             GradingItemHeader(
                 word: attempt.word,
-                detail: "\(language.text(japanese: "テスト", english: "Test")) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
                 decision: attempt.parentReviewDecision,
-                language: language
+                language: language,
+                detail: attempt.recognizedText.isEmpty ? nil : "OCR: \(attempt.recognizedText)"
             )
 
             if let drawingData = attempt.drawingData {
@@ -2279,9 +2392,9 @@ private struct ParentPracticeGradingCard: View {
         VStack(alignment: .leading, spacing: 10) {
             GradingItemHeader(
                 word: sample.word,
-                detail: "\(modeLabel) ・ \(sample.date.formatted(date: .omitted, time: .shortened))",
                 decision: sample.parentReviewDecision,
-                language: language
+                language: language,
+                detail: modeLabel
             )
 
             DrawingPreview(drawingData: sample.drawingData, topPadding: 100, bottomPadding: 190)
@@ -2334,28 +2447,33 @@ private struct ParentPracticeGradingCard: View {
 
 private struct GradingItemHeader: View {
     var word: String
-    var detail: String
     var decision: ParentReviewDecision
     var language: AppLanguage
+    var detail: String?
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            VStack(alignment: .leading, spacing: 4) {
+        HStack(alignment: .center, spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(word)
-                    .font(.title3.weight(.heavy))
+                    .font(.system(size: 28, weight: .heavy, design: .rounded))
                     .foregroundStyle(Color(red: 0.10, green: 0.27, blue: 0.62))
-                Text(detail)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                if let detail, !detail.isEmpty {
+                    Text(detail)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
             }
 
             Spacer()
 
             Text(decision.label(language: language))
-                .font(.caption.weight(.heavy))
+                .font(.caption2.weight(.heavy))
                 .foregroundStyle(reviewTint(for: decision))
-                .padding(.vertical, 6)
-                .padding(.horizontal, 9)
+                .padding(.vertical, 5)
+                .padding(.horizontal, 8)
                 .background(reviewTint(for: decision).opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
@@ -2404,15 +2522,12 @@ private struct ParentNeedsPracticeBanner: View {
                 .foregroundStyle(Color(red: 0.90, green: 0.45, blue: 0.12))
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(language.text(japanese: "直そうとして保存されています", english: "Saved as Needs Fix"))
+                Text(language.text(japanese: "直そうにしました", english: "Marked Needs Fix"))
                     .font(.subheadline.weight(.heavy))
                     .foregroundStyle(Color(red: 0.58, green: 0.27, blue: 0.05))
-                Text(isTest
-                    ? language.text(japanese: "このテスト回答は不正解扱いになります。お手本を書くと、あとで子供に見せられます。", english: "This test answer counts as incorrect. Add a model so the child can review it later.")
-                    : language.text(japanese: "この練習記録は直すポイントとして残ります。お手本を書くと、あとで子供に見せられます。", english: "This practice entry is saved as a fix point. Add a model so the child can review it later.")
-                )
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                Text(language.text(japanese: "お手本を書くと、子供の復習に出せます。", english: "Add a model for the child to review."))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
             }
 
             Spacer(minLength: 0)
@@ -2486,16 +2601,9 @@ private struct ParentExampleEditor: View {
                 }
             }
 
-            Text(language.text(
-                japanese: affectsTestScore
-                    ? "\(word) の見本を保存すると、この回答は「直そう」のまま残り、不正解として集計されます。"
-                    : "\(word) の見本を保存すると、この練習は「直そう」のまま残ります。",
-                english: affectsTestScore
-                    ? "Saving a model keeps this answer marked Needs Fix and counted as incorrect."
-                    : "Saving a model keeps this practice entry marked Needs Fix."
-            ))
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
+            Text(language.text(japanese: "\(word) の見本を書く", english: "Write a model for \(word)"))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
 
             ZStack {
                 FourLineGuide(mode: .practice, labels: parentGuideLabels(language: language))
