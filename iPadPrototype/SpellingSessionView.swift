@@ -1716,6 +1716,7 @@ private struct SessionControlButton: View {
     @State private var tapEffectStyle = PracticeButtonTapEffectStyle.bounce
     @State private var tapEffectActive = false
     @State private var tapEffectSeed = 0
+    @State private var isWaitingForFunTapAction = false
 
     private var foregroundColor: Color {
         switch style {
@@ -1775,8 +1776,7 @@ private struct SessionControlButton: View {
 
     var body: some View {
         Button {
-            triggerFunTapAnimationIfNeeded()
-            action()
+            handleTap()
         } label: {
             Label(title, systemImage: systemImage)
                 .font(.title3.weight(.bold))
@@ -1807,6 +1807,27 @@ private struct SessionControlButton: View {
         }
         .shadow(color: shadowColor, radius: style == .finish ? 12 : 8, x: 0, y: 5)
         .animation(.spring(response: 0.24, dampingFraction: 0.62), value: tapEffectActive)
+        .disabled(isWaitingForFunTapAction)
+    }
+
+    private func handleTap() {
+        guard !isWaitingForFunTapAction else {
+            return
+        }
+
+        guard funTapAnimations, !reduceMotion else {
+            action()
+            return
+        }
+
+        isWaitingForFunTapAction = true
+        triggerFunTapAnimationIfNeeded()
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 170_000_000)
+            isWaitingForFunTapAction = false
+            action()
+        }
     }
 
     private func triggerFunTapAnimationIfNeeded() {
