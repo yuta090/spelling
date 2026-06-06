@@ -32,6 +32,13 @@ struct HomeView: View {
         return practiceResumeState
     }
 
+    private var activePracticeRemainingCount: Int? {
+        guard let activePracticeResumeState else {
+            return nil
+        }
+        return max(selectedPracticeWords.count - activePracticeResumeState.index, 1)
+    }
+
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
@@ -51,6 +58,7 @@ struct HomeView: View {
                         canPractice: !selectedPracticeWords.isEmpty,
                         canTest: !model.nextTestWords.isEmpty,
                         hasPracticeResume: activePracticeResumeState != nil,
+                        remainingPracticeCount: activePracticeRemainingCount,
                         startPractice: startPractice,
                         showWords: { showingWordPreview = true },
                         startTest: { activeMode = .test }
@@ -208,6 +216,7 @@ private struct ChildMissionPanel: View {
     var canPractice: Bool
     var canTest: Bool
     var hasPracticeResume: Bool
+    var remainingPracticeCount: Int?
     var startPractice: () -> Void
     var showWords: () -> Void
     var startTest: () -> Void
@@ -215,6 +224,9 @@ private struct ChildMissionPanel: View {
     private var missionText: String {
         if practiceCount == 0 {
             return language.text(japanese: "たんごがない", english: "No words")
+        }
+        if let remainingPracticeCount {
+            return language.text(japanese: "あと \(remainingPracticeCount)こ れんしゅう", english: "\(remainingPracticeCount) left")
         }
         if carryOverCount > 0 {
             return language.text(japanese: "\(practiceCount)こ + ふくしゅう\(carryOverCount)こ", english: "\(practiceCount) + \(carryOverCount) review")
