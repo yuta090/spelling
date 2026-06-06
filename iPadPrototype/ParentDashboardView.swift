@@ -2571,12 +2571,16 @@ private struct ParentGradingSessionCard: View {
             VStack(spacing: 12) {
                 ForEach(visibleAttempts) { attempt in
                     ParentAttemptGradingCard(attempt: attempt, language: language)
+                        .transition(.opacity.combined(with: .move(edge: .trailing)))
                 }
 
                 ForEach(visibleSamples) { sample in
                     ParentPracticeGradingCard(sample: sample, language: language)
+                        .transition(.opacity.combined(with: .move(edge: .trailing)))
                 }
             }
+            .animation(.easeInOut(duration: 0.22), value: visibleAttempts.map(\.id))
+            .animation(.easeInOut(duration: 0.22), value: visibleSamples.map(\.id))
         }
         .padding(12)
         .background(Color(red: 0.98, green: 0.99, blue: 0.97))
@@ -2610,6 +2614,8 @@ private struct GradingCountPill: View {
 
 private struct ParentAttemptGradingCard: View {
     @EnvironmentObject private var model: AppModel
+    @State private var pendingReviewDecision: ParentReviewDecision?
+    @State private var isCompletingReview = false
     var attempt: SpellingAttempt
     var language: AppLanguage
 
@@ -2647,12 +2653,17 @@ private struct ParentAttemptGradingCard: View {
 
             ParentReviewButtons(
                 decision: attempt.parentReviewDecision,
+                pendingDecision: pendingReviewDecision,
                 language: language,
                 approve: {
-                    model.updateAttemptParentReview(attempt, decision: .approved)
+                    runReviewFeedback(.approved) {
+                        model.updateAttemptParentReview(attempt, decision: .approved)
+                    }
                 },
                 needsPractice: {
-                    model.updateAttemptParentReview(attempt, decision: .needsPractice)
+                    runReviewFeedback(.needsPractice) {
+                        model.updateAttemptParentReview(attempt, decision: .needsPractice)
+                    }
                 }
             )
 
@@ -2677,11 +2688,53 @@ private struct ParentAttemptGradingCard: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(gradingBorder(for: attempt.parentReviewDecision), lineWidth: isApproved ? 2 : 1)
         )
+        .overlay(alignment: .topTrailing) {
+            if let pendingReviewDecision {
+                ParentReviewActionToast(decision: pendingReviewDecision, language: language)
+                    .padding(10)
+                    .transition(.scale(scale: 0.86, anchor: .topTrailing).combined(with: .opacity))
+            }
+        }
+        .scaleEffect(isCompletingReview ? 0.985 : 1)
+        .shadow(
+            color: reviewTint(for: pendingReviewDecision ?? attempt.parentReviewDecision).opacity(isCompletingReview ? 0.22 : 0),
+            radius: isCompletingReview ? 14 : 0,
+            x: 0,
+            y: 8
+        )
+        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: pendingReviewDecision)
+        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: isCompletingReview)
+    }
+
+    private func runReviewFeedback(_ decision: ParentReviewDecision, commit: @escaping () -> Void) {
+        guard pendingReviewDecision == nil else {
+            return
+        }
+
+        withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
+            pendingReviewDecision = decision
+            isCompletingReview = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.42) {
+            withAnimation(.easeInOut(duration: 0.18)) {
+                commit()
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                withAnimation(.easeInOut(duration: 0.16)) {
+                    pendingReviewDecision = nil
+                    isCompletingReview = false
+                }
+            }
+        }
     }
 }
 
 private struct ParentPracticeGradingCard: View {
     @EnvironmentObject private var model: AppModel
+    @State private var pendingReviewDecision: ParentReviewDecision?
+    @State private var isCompletingReview = false
     var sample: PracticeSample
     var language: AppLanguage
 
@@ -2724,12 +2777,17 @@ private struct ParentPracticeGradingCard: View {
 
             ParentReviewButtons(
                 decision: sample.parentReviewDecision,
+                pendingDecision: pendingReviewDecision,
                 language: language,
                 approve: {
-                    model.updatePracticeSampleParentReview(sample, decision: .approved)
+                    runReviewFeedback(.approved) {
+                        model.updatePracticeSampleParentReview(sample, decision: .approved)
+                    }
                 },
                 needsPractice: {
-                    model.updatePracticeSampleParentReview(sample, decision: .needsPractice)
+                    runReviewFeedback(.needsPractice) {
+                        model.updatePracticeSampleParentReview(sample, decision: .needsPractice)
+                    }
                 }
             )
 
@@ -2754,6 +2812,46 @@ private struct ParentPracticeGradingCard: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(gradingBorder(for: sample.parentReviewDecision), lineWidth: isApproved ? 2 : 1)
         )
+        .overlay(alignment: .topTrailing) {
+            if let pendingReviewDecision {
+                ParentReviewActionToast(decision: pendingReviewDecision, language: language)
+                    .padding(10)
+                    .transition(.scale(scale: 0.86, anchor: .topTrailing).combined(with: .opacity))
+            }
+        }
+        .scaleEffect(isCompletingReview ? 0.985 : 1)
+        .shadow(
+            color: reviewTint(for: pendingReviewDecision ?? sample.parentReviewDecision).opacity(isCompletingReview ? 0.22 : 0),
+            radius: isCompletingReview ? 14 : 0,
+            x: 0,
+            y: 8
+        )
+        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: pendingReviewDecision)
+        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: isCompletingReview)
+    }
+
+    private func runReviewFeedback(_ decision: ParentReviewDecision, commit: @escaping () -> Void) {
+        guard pendingReviewDecision == nil else {
+            return
+        }
+
+        withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
+            pendingReviewDecision = decision
+            isCompletingReview = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.42) {
+            withAnimation(.easeInOut(duration: 0.18)) {
+                commit()
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                withAnimation(.easeInOut(duration: 0.16)) {
+                    pendingReviewDecision = nil
+                    isCompletingReview = false
+                }
+            }
+        }
     }
 }
 
@@ -2794,6 +2892,7 @@ private struct GradingItemHeader: View {
 
 private struct ParentReviewButtons: View {
     var decision: ParentReviewDecision
+    var pendingDecision: ParentReviewDecision?
     var language: AppLanguage
     var approve: () -> Void
     var needsPractice: () -> Void
@@ -2801,25 +2900,73 @@ private struct ParentReviewButtons: View {
     var body: some View {
         HStack(spacing: 10) {
             Button(action: approve) {
-                Label("OK", systemImage: decision == .approved ? "checkmark.seal.fill" : "checkmark.circle.fill")
+                Label(
+                    pendingDecision == .approved ? language.text(japanese: "OK 保存中", english: "Saving OK") : "OK",
+                    systemImage: pendingDecision == .approved || decision == .approved ? "checkmark.seal.fill" : "checkmark.circle.fill"
+                )
                     .font(.headline.weight(.bold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 9)
+                    .scaleEffect(pendingDecision == .approved ? 1.04 : 1)
             }
             .buttonStyle(.borderedProminent)
             .tapFeedback()
             .tint(Color(red: 0.20, green: 0.62, blue: 0.24))
+            .allowsHitTesting(pendingDecision == nil)
 
             Button(action: needsPractice) {
-                Label(language.text(japanese: "直そう", english: "Needs Fix"), systemImage: "pencil.and.scribble")
+                Label(
+                    pendingDecision == .needsPractice ? language.text(japanese: "直そう 保存中", english: "Saving Fix") : language.text(japanese: "直そう", english: "Needs Fix"),
+                    systemImage: pendingDecision == .needsPractice ? "pencil.circle.fill" : "pencil.and.scribble"
+                )
                     .font(.headline.weight(.bold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 9)
+                    .scaleEffect(pendingDecision == .needsPractice ? 1.04 : 1)
             }
             .buttonStyle(.bordered)
             .tapFeedback()
             .tint(Color(red: 0.90, green: 0.45, blue: 0.12))
+            .allowsHitTesting(pendingDecision == nil)
         }
+    }
+}
+
+private struct ParentReviewActionToast: View {
+    var decision: ParentReviewDecision
+    var language: AppLanguage
+
+    private var title: String {
+        switch decision {
+        case .approved:
+            return language.text(japanese: "OK 保存しました", english: "OK saved")
+        case .needsPractice:
+            return language.text(japanese: "直そう 保存しました", english: "Fix saved")
+        case .unreviewed:
+            return language.text(japanese: "保存しました", english: "Saved")
+        }
+    }
+
+    private var systemImage: String {
+        switch decision {
+        case .approved:
+            return "checkmark.seal.fill"
+        case .needsPractice:
+            return "pencil.circle.fill"
+        case .unreviewed:
+            return "checkmark.circle.fill"
+        }
+    }
+
+    var body: some View {
+        Label(title, systemImage: systemImage)
+            .font(.subheadline.weight(.heavy))
+            .foregroundStyle(.white)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(reviewTint(for: decision).gradient)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .shadow(color: reviewTint(for: decision).opacity(0.26), radius: 12, x: 0, y: 6)
     }
 }
 
