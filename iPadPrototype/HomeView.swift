@@ -270,15 +270,6 @@ private struct ChildMissionPanel: View {
                     Button(action: showCharacters) {
                         RewardCharacterAvatar(character: character)
                             .frame(width: 118, height: 118)
-                            .overlay(alignment: .bottomTrailing) {
-                                Image(systemName: "hand.tap.fill")
-                                    .font(.headline.weight(.heavy))
-                                    .foregroundStyle(.white)
-                                    .frame(width: 34, height: 34)
-                                    .background(Color(red: 0.16, green: 0.42, blue: 0.84))
-                                    .clipShape(Circle())
-                                    .shadow(color: .black.opacity(0.16), radius: 5, x: 0, y: 3)
-                            }
                     }
                     .buttonStyle(.plain)
                     .tapFeedback(scale: 0.94)
@@ -1112,10 +1103,24 @@ private enum HomeRewardCharacterStyle {
     case panda
     case penguin
     case lion
+    case fox
+    case koala
+    case sheep
+    case elephant
+    case giraffe
+    case owl
+    case turtle
+    case whale
     case car
     case train
     case rocket
     case plane
+    case bus
+    case ship
+    case helicopter
+    case bicycle
+    case tractor
+    case balloon
 }
 
 private struct HomeRewardCharacter: Identifiable {
@@ -1220,6 +1225,149 @@ private struct HomeRewardCharacter: Identifiable {
             accent: Color(red: 0.58, green: 0.26, blue: 0.08)
         ),
         HomeRewardCharacter(
+            id: "fox",
+            category: .animal,
+            japaneseName: "きつね",
+            englishName: "Fox",
+            price: 4,
+            style: .fox,
+            primary: Color(red: 0.92, green: 0.43, blue: 0.12),
+            secondary: Color(red: 1.0, green: 0.88, blue: 0.70),
+            accent: Color(red: 0.43, green: 0.18, blue: 0.08)
+        ),
+        HomeRewardCharacter(
+            id: "koala",
+            category: .animal,
+            japaneseName: "コアラ",
+            englishName: "Koala",
+            price: 4,
+            style: .koala,
+            primary: Color(red: 0.56, green: 0.61, blue: 0.66),
+            secondary: Color(red: 0.88, green: 0.90, blue: 0.92),
+            accent: Color(red: 0.22, green: 0.24, blue: 0.28)
+        ),
+        HomeRewardCharacter(
+            id: "hamster",
+            category: .animal,
+            japaneseName: "ハムスター",
+            englishName: "Hamster",
+            price: 4,
+            style: .bear,
+            primary: Color(red: 0.86, green: 0.64, blue: 0.38),
+            secondary: Color(red: 1.0, green: 0.86, blue: 0.62),
+            accent: Color(red: 0.50, green: 0.28, blue: 0.12)
+        ),
+        HomeRewardCharacter(
+            id: "sheep",
+            category: .animal,
+            japaneseName: "ひつじ",
+            englishName: "Sheep",
+            price: 5,
+            style: .sheep,
+            primary: Color(red: 0.96, green: 0.96, blue: 0.90),
+            secondary: Color(red: 0.72, green: 0.76, blue: 0.82),
+            accent: Color(red: 0.38, green: 0.40, blue: 0.46)
+        ),
+        HomeRewardCharacter(
+            id: "elephant",
+            category: .animal,
+            japaneseName: "ぞう",
+            englishName: "Elephant",
+            price: 5,
+            style: .elephant,
+            primary: Color(red: 0.55, green: 0.63, blue: 0.74),
+            secondary: Color(red: 0.82, green: 0.88, blue: 0.96),
+            accent: Color(red: 0.24, green: 0.31, blue: 0.44)
+        ),
+        HomeRewardCharacter(
+            id: "giraffe",
+            category: .animal,
+            japaneseName: "キリン",
+            englishName: "Giraffe",
+            price: 5,
+            style: .giraffe,
+            primary: Color(red: 0.94, green: 0.68, blue: 0.22),
+            secondary: Color(red: 1.0, green: 0.86, blue: 0.44),
+            accent: Color(red: 0.57, green: 0.31, blue: 0.08)
+        ),
+        HomeRewardCharacter(
+            id: "owl",
+            category: .animal,
+            japaneseName: "ふくろう",
+            englishName: "Owl",
+            price: 5,
+            style: .owl,
+            primary: Color(red: 0.60, green: 0.38, blue: 0.18),
+            secondary: Color(red: 0.95, green: 0.78, blue: 0.48),
+            accent: Color(red: 0.28, green: 0.17, blue: 0.10)
+        ),
+        HomeRewardCharacter(
+            id: "turtle",
+            category: .animal,
+            japaneseName: "かめ",
+            englishName: "Turtle",
+            price: 5,
+            style: .turtle,
+            primary: Color(red: 0.22, green: 0.58, blue: 0.30),
+            secondary: Color(red: 0.72, green: 0.86, blue: 0.42),
+            accent: Color(red: 0.12, green: 0.36, blue: 0.18)
+        ),
+        HomeRewardCharacter(
+            id: "whale",
+            category: .animal,
+            japaneseName: "くじら",
+            englishName: "Whale",
+            price: 6,
+            style: .whale,
+            primary: Color(red: 0.22, green: 0.48, blue: 0.80),
+            secondary: Color(red: 0.78, green: 0.92, blue: 1.0),
+            accent: Color(red: 0.12, green: 0.26, blue: 0.52)
+        ),
+        HomeRewardCharacter(
+            id: "frog",
+            category: .animal,
+            japaneseName: "かえる",
+            englishName: "Frog",
+            price: 4,
+            style: .panda,
+            primary: Color(red: 0.15, green: 0.56, blue: 0.26),
+            secondary: Color(red: 0.76, green: 0.94, blue: 0.58),
+            accent: Color(red: 0.08, green: 0.32, blue: 0.14)
+        ),
+        HomeRewardCharacter(
+            id: "tiger",
+            category: .animal,
+            japaneseName: "トラ",
+            englishName: "Tiger",
+            price: 6,
+            style: .lion,
+            primary: Color(red: 0.96, green: 0.50, blue: 0.10),
+            secondary: Color(red: 1.0, green: 0.76, blue: 0.28),
+            accent: Color(red: 0.20, green: 0.13, blue: 0.08)
+        ),
+        HomeRewardCharacter(
+            id: "squirrel",
+            category: .animal,
+            japaneseName: "リス",
+            englishName: "Squirrel",
+            price: 5,
+            style: .cat,
+            primary: Color(red: 0.66, green: 0.38, blue: 0.16),
+            secondary: Color(red: 0.94, green: 0.68, blue: 0.36),
+            accent: Color(red: 0.34, green: 0.18, blue: 0.08)
+        ),
+        HomeRewardCharacter(
+            id: "deer",
+            category: .animal,
+            japaneseName: "しか",
+            englishName: "Deer",
+            price: 6,
+            style: .rabbit,
+            primary: Color(red: 0.67, green: 0.42, blue: 0.20),
+            secondary: Color(red: 0.96, green: 0.76, blue: 0.48),
+            accent: Color(red: 0.36, green: 0.20, blue: 0.10)
+        ),
+        HomeRewardCharacter(
             id: "car",
             category: .vehicle,
             japaneseName: "くるま",
@@ -1262,6 +1410,116 @@ private struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.28, green: 0.62, blue: 0.90),
             secondary: Color(red: 0.86, green: 0.96, blue: 1.0),
             accent: Color(red: 0.14, green: 0.34, blue: 0.70)
+        ),
+        HomeRewardCharacter(
+            id: "bus",
+            category: .vehicle,
+            japaneseName: "バス",
+            englishName: "Bus",
+            price: 5,
+            style: .bus,
+            primary: Color(red: 0.96, green: 0.70, blue: 0.12),
+            secondary: Color(red: 1.0, green: 0.92, blue: 0.54),
+            accent: Color(red: 0.58, green: 0.36, blue: 0.06)
+        ),
+        HomeRewardCharacter(
+            id: "truck",
+            category: .vehicle,
+            japaneseName: "トラック",
+            englishName: "Truck",
+            price: 5,
+            style: .car,
+            primary: Color(red: 0.22, green: 0.52, blue: 0.72),
+            secondary: Color(red: 0.72, green: 0.90, blue: 1.0),
+            accent: Color(red: 0.10, green: 0.25, blue: 0.36)
+        ),
+        HomeRewardCharacter(
+            id: "ship",
+            category: .vehicle,
+            japaneseName: "ふね",
+            englishName: "Ship",
+            price: 6,
+            style: .ship,
+            primary: Color(red: 0.20, green: 0.42, blue: 0.78),
+            secondary: Color(red: 0.84, green: 0.94, blue: 1.0),
+            accent: Color(red: 0.82, green: 0.34, blue: 0.18)
+        ),
+        HomeRewardCharacter(
+            id: "helicopter",
+            category: .vehicle,
+            japaneseName: "ヘリコプター",
+            englishName: "Helicopter",
+            price: 6,
+            style: .helicopter,
+            primary: Color(red: 0.84, green: 0.28, blue: 0.28),
+            secondary: Color(red: 1.0, green: 0.82, blue: 0.74),
+            accent: Color(red: 0.48, green: 0.12, blue: 0.12)
+        ),
+        HomeRewardCharacter(
+            id: "bicycle",
+            category: .vehicle,
+            japaneseName: "じてんしゃ",
+            englishName: "Bicycle",
+            price: 5,
+            style: .bicycle,
+            primary: Color(red: 0.52, green: 0.34, blue: 0.82),
+            secondary: Color(red: 0.92, green: 0.86, blue: 1.0),
+            accent: Color(red: 0.28, green: 0.16, blue: 0.54)
+        ),
+        HomeRewardCharacter(
+            id: "tractor",
+            category: .vehicle,
+            japaneseName: "トラクター",
+            englishName: "Tractor",
+            price: 6,
+            style: .tractor,
+            primary: Color(red: 0.22, green: 0.62, blue: 0.28),
+            secondary: Color(red: 0.88, green: 0.96, blue: 0.66),
+            accent: Color(red: 0.12, green: 0.32, blue: 0.16)
+        ),
+        HomeRewardCharacter(
+            id: "balloon",
+            category: .vehicle,
+            japaneseName: "ききゅう",
+            englishName: "Balloon",
+            price: 6,
+            style: .balloon,
+            primary: Color(red: 0.82, green: 0.32, blue: 0.66),
+            secondary: Color(red: 1.0, green: 0.84, blue: 0.94),
+            accent: Color(red: 0.44, green: 0.20, blue: 0.36)
+        ),
+        HomeRewardCharacter(
+            id: "submarine",
+            category: .vehicle,
+            japaneseName: "せんすいかん",
+            englishName: "Submarine",
+            price: 7,
+            style: .ship,
+            primary: Color(red: 0.88, green: 0.62, blue: 0.08),
+            secondary: Color(red: 1.0, green: 0.90, blue: 0.40),
+            accent: Color(red: 0.52, green: 0.34, blue: 0.05)
+        ),
+        HomeRewardCharacter(
+            id: "firetruck",
+            category: .vehicle,
+            japaneseName: "しょうぼうしゃ",
+            englishName: "Fire Truck",
+            price: 7,
+            style: .bus,
+            primary: Color(red: 0.86, green: 0.16, blue: 0.12),
+            secondary: Color(red: 1.0, green: 0.78, blue: 0.70),
+            accent: Color(red: 0.48, green: 0.06, blue: 0.04)
+        ),
+        HomeRewardCharacter(
+            id: "scooter",
+            category: .vehicle,
+            japaneseName: "スクーター",
+            englishName: "Scooter",
+            price: 6,
+            style: .bicycle,
+            primary: Color(red: 0.18, green: 0.62, blue: 0.70),
+            secondary: Color(red: 0.80, green: 0.96, blue: 1.0),
+            accent: Color(red: 0.08, green: 0.34, blue: 0.40)
         )
     ]
 }
@@ -1272,7 +1530,7 @@ private struct CharacterPickerSheet: View {
     var language: AppLanguage
 
     private let columns = [
-        GridItem(.adaptive(minimum: 142, maximum: 184), spacing: 12)
+        GridItem(.adaptive(minimum: 96, maximum: 122), spacing: 8)
     ]
 
     var body: some View {
@@ -1280,14 +1538,14 @@ private struct CharacterPickerSheet: View {
             ZStack {
                 HomeBackground()
 
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 14) {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(language.text(japanese: "なかまをえらぼう", english: "Choose a Buddy"))
-                                .font(.system(size: 34, weight: .heavy, design: .rounded))
+                                .font(.system(size: 32, weight: .heavy, design: .rounded))
                                 .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
                             Text(language.text(japanese: "れんしゅうでコインをためて、なかまをふやせます。", english: "Practice to earn coins and unlock buddies."))
-                                .font(.headline.weight(.bold))
+                                .font(.subheadline.weight(.bold))
                                 .foregroundStyle(.secondary)
                         }
 
@@ -1297,32 +1555,19 @@ private struct CharacterPickerSheet: View {
                     }
 
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 18) {
-                            ForEach(HomeRewardCharacterCategory.allCases) { category in
-                                let characters = HomeRewardCharacter.catalog.filter { $0.category == category }
-                                if !characters.isEmpty {
-                                    VStack(alignment: .leading, spacing: 10) {
-                                        Text(category.title(language: language))
-                                            .font(.title3.weight(.heavy))
-                                            .foregroundStyle(Color(red: 0.11, green: 0.30, blue: 0.70))
-
-                                        LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
-                                            ForEach(characters) { character in
-                                                CharacterPickerCard(
-                                                    character: character,
-                                                    isSelected: model.selectedCharacterID == character.id,
-                                                    isUnlocked: model.unlockedCharacterIDs.contains(character.id),
-                                                    coinBalance: model.rewardCoins,
-                                                    language: language
-                                                ) {
-                                                    if model.unlockedCharacterIDs.contains(character.id) {
-                                                        model.selectCharacter(id: character.id)
-                                                    } else {
-                                                        model.unlockCharacter(id: character.id, cost: character.price)
-                                                    }
-                                                }
-                                            }
-                                        }
+                        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                            ForEach(HomeRewardCharacter.catalog) { character in
+                                CharacterPickerCard(
+                                    character: character,
+                                    isSelected: model.selectedCharacterID == character.id,
+                                    isUnlocked: model.unlockedCharacterIDs.contains(character.id),
+                                    coinBalance: model.rewardCoins,
+                                    language: language
+                                ) {
+                                    if model.unlockedCharacterIDs.contains(character.id) {
+                                        model.selectCharacter(id: character.id)
+                                    } else {
+                                        model.unlockCharacter(id: character.id, cost: character.price)
                                     }
                                 }
                             }
@@ -1330,7 +1575,7 @@ private struct CharacterPickerSheet: View {
                         .padding(.vertical, 2)
                     }
                 }
-                .frame(maxWidth: 760)
+                .frame(maxWidth: 820)
                 .padding(28)
             }
             .toolbar {
@@ -1371,29 +1616,29 @@ private struct CharacterPickerCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 10) {
+            VStack(spacing: 6) {
                 RewardCharacterAvatar(character: character)
-                    .frame(width: 90, height: 90)
+                    .frame(width: 58, height: 58)
                     .opacity(canUnlock ? 1 : 0.46)
 
                 Text(character.name(language: language))
-                    .font(.headline.weight(.heavy))
+                    .font(.subheadline.weight(.heavy))
                     .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    .minimumScaleFactor(0.56)
 
                 statePill
             }
-            .frame(maxWidth: .infinity, minHeight: 154)
-            .padding(.vertical, 12)
-            .padding(.horizontal, 10)
+            .frame(maxWidth: .infinity, minHeight: 108)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 6)
             .background(.white.opacity(canUnlock ? 0.92 : 0.64))
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(borderColor, lineWidth: isSelected ? 3 : 1.5)
+                    .stroke(borderColor, lineWidth: isSelected ? 2.5 : 1.2)
             )
-            .shadow(color: .black.opacity(canUnlock ? 0.07 : 0.02), radius: 10, x: 0, y: 6)
+            .shadow(color: .black.opacity(canUnlock ? 0.05 : 0.02), radius: 6, x: 0, y: 4)
         }
         .buttonStyle(.plain)
         .tapFeedback()
@@ -1405,34 +1650,34 @@ private struct CharacterPickerCard: View {
     private var statePill: some View {
         if isSelected {
             Label(language.text(japanese: "いっしょ", english: "Active"), systemImage: "checkmark.circle.fill")
-                .font(.caption.weight(.heavy))
+                .font(.caption2.weight(.heavy))
                 .foregroundStyle(.white)
-                .padding(.vertical, 5)
-                .padding(.horizontal, 9)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 7)
                 .background(Color(red: 0.20, green: 0.62, blue: 0.26))
                 .clipShape(Capsule())
         } else if isUnlocked {
             Label(language.text(japanese: "えらぶ", english: "Choose"), systemImage: "hand.tap.fill")
-                .font(.caption.weight(.heavy))
+                .font(.caption2.weight(.heavy))
                 .foregroundStyle(Color(red: 0.13, green: 0.35, blue: 0.76))
-                .padding(.vertical, 5)
-                .padding(.horizontal, 9)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 7)
                 .background(Color(red: 0.91, green: 0.96, blue: 1.0))
                 .clipShape(Capsule())
         } else {
             HStack(spacing: 5) {
                 SmallCoinIcon()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 14, height: 14)
                 Text("\(character.price)")
-                    .font(.caption.monospacedDigit().weight(.heavy))
+                    .font(.caption2.monospacedDigit().weight(.heavy))
                 if !canUnlock {
                     Image(systemName: "lock.fill")
                         .font(.caption2.weight(.heavy))
                 }
             }
             .foregroundStyle(canUnlock ? Color(red: 0.62, green: 0.36, blue: 0.04) : Color(red: 0.48, green: 0.50, blue: 0.56))
-            .padding(.vertical, 5)
-            .padding(.horizontal, 9)
+            .padding(.vertical, 4)
+            .padding(.horizontal, 7)
             .background(canUnlock ? Color(red: 1.0, green: 0.94, blue: 0.76) : Color(red: 0.91, green: 0.92, blue: 0.95))
             .clipShape(Capsule())
         }
@@ -1529,6 +1774,22 @@ private struct RewardCharacterAvatar: View {
                 PenguinCharacterFace(character: character)
             case .lion:
                 LionCharacterFace(character: character)
+            case .fox:
+                FoxCharacterFace(character: character)
+            case .koala:
+                KoalaCharacterFace(character: character)
+            case .sheep:
+                SheepCharacterFace(character: character)
+            case .elephant:
+                ElephantCharacterFace(character: character)
+            case .giraffe:
+                GiraffeCharacterFace(character: character)
+            case .owl:
+                OwlCharacterFace(character: character)
+            case .turtle:
+                TurtleCharacterView(character: character)
+            case .whale:
+                WhaleCharacterView(character: character)
             case .car:
                 CarCharacterView(character: character)
             case .train:
@@ -1537,6 +1798,18 @@ private struct RewardCharacterAvatar: View {
                 RocketCharacterView(character: character)
             case .plane:
                 PlaneCharacterView(character: character)
+            case .bus:
+                BusCharacterView(character: character)
+            case .ship:
+                ShipCharacterView(character: character)
+            case .helicopter:
+                HelicopterCharacterView(character: character)
+            case .bicycle:
+                BicycleCharacterView(character: character)
+            case .tractor:
+                TractorCharacterView(character: character)
+            case .balloon:
+                BalloonCharacterView(character: character)
             }
         }
         .padding(4)
@@ -1672,6 +1945,144 @@ private struct LionCharacterFace: View {
     }
 }
 
+private struct FoxCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.primary).frame(width: 32, height: 34).rotationEffect(.degrees(-18)).offset(x: -25, y: -30)
+            Triangle().fill(character.primary).frame(width: 32, height: 34).rotationEffect(.degrees(18)).offset(x: 25, y: -30)
+            Circle().fill(character.primary).frame(width: 74, height: 74).offset(y: 6)
+            Triangle().fill(character.secondary).frame(width: 56, height: 42).rotationEffect(.degrees(180)).offset(y: 20)
+            CharacterEyes(color: character.accent)
+            Circle().fill(character.accent).frame(width: 8, height: 7).offset(y: 16)
+        }
+    }
+}
+
+private struct KoalaCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 34, height: 34).offset(x: -31, y: -18)
+            Circle().fill(character.primary).frame(width: 34, height: 34).offset(x: 31, y: -18)
+            Circle().fill(character.secondary).frame(width: 20, height: 20).offset(x: -31, y: -18)
+            Circle().fill(character.secondary).frame(width: 20, height: 20).offset(x: 31, y: -18)
+            Circle().fill(character.primary).frame(width: 76, height: 76).offset(y: 7)
+            CharacterEyes(color: .black.opacity(0.78))
+            Capsule().fill(character.accent).frame(width: 16, height: 22).offset(y: 14)
+        }
+    }
+}
+
+private struct SheepCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<9) { index in
+                Circle()
+                    .fill(character.primary)
+                    .frame(width: 29, height: 29)
+                    .offset(y: -28)
+                    .rotationEffect(.degrees(Double(index) * 40))
+            }
+            Circle().fill(character.primary).frame(width: 74, height: 68).offset(y: 6)
+            Capsule().fill(character.secondary).frame(width: 40, height: 35).offset(y: 18)
+            CharacterEyes(color: character.accent)
+            Circle().fill(character.accent).frame(width: 7, height: 6).offset(y: 16)
+        }
+    }
+}
+
+private struct ElephantCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 44, height: 52).offset(x: -34, y: 2)
+            Circle().fill(character.primary).frame(width: 44, height: 52).offset(x: 34, y: 2)
+            Circle().fill(character.secondary.opacity(0.70)).frame(width: 28, height: 34).offset(x: -34, y: 4)
+            Circle().fill(character.secondary.opacity(0.70)).frame(width: 28, height: 34).offset(x: 34, y: 4)
+            Circle().fill(character.primary).frame(width: 76, height: 76).offset(y: 5)
+            Capsule().fill(character.primary).frame(width: 18, height: 42).offset(y: 30)
+            CharacterEyes(color: character.accent)
+            Capsule().fill(character.accent.opacity(0.26)).frame(width: 10, height: 4).offset(y: 46)
+        }
+    }
+}
+
+private struct GiraffeCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12).fill(character.primary).frame(width: 36, height: 66).offset(y: 24)
+            Circle().fill(character.primary).frame(width: 66, height: 58).offset(y: -4)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: -13, y: -2)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: 17, y: 11)
+            Capsule().fill(character.primary).frame(width: 8, height: 24).offset(x: -16, y: -37)
+            Capsule().fill(character.primary).frame(width: 8, height: 24).offset(x: 16, y: -37)
+            Circle().fill(character.accent).frame(width: 11, height: 11).offset(x: -16, y: -49)
+            Circle().fill(character.accent).frame(width: 11, height: 11).offset(x: 16, y: -49)
+            CharacterEyes(color: character.accent)
+            Capsule().fill(character.secondary).frame(width: 26, height: 17).offset(y: 16)
+        }
+    }
+}
+
+private struct OwlCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 76, height: 86).offset(y: 8)
+            Circle().fill(character.secondary).frame(width: 30, height: 30).offset(x: -16, y: -5)
+            Circle().fill(character.secondary).frame(width: 30, height: 30).offset(x: 16, y: -5)
+            Circle().fill(character.accent).frame(width: 8, height: 8).offset(x: -16, y: -5)
+            Circle().fill(character.accent).frame(width: 8, height: 8).offset(x: 16, y: -5)
+            Triangle().fill(character.secondary).frame(width: 18, height: 14).rotationEffect(.degrees(180)).offset(y: 12)
+            Circle().fill(character.secondary.opacity(0.50)).frame(width: 34, height: 42).offset(x: -28, y: 17)
+            Circle().fill(character.secondary.opacity(0.50)).frame(width: 34, height: 42).offset(x: 28, y: 17)
+        }
+    }
+}
+
+private struct TurtleCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 25, height: 25).offset(x: 43, y: -3)
+            Capsule().fill(character.primary).frame(width: 18, height: 24).rotationEffect(.degrees(-28)).offset(x: -28, y: -24)
+            Capsule().fill(character.primary).frame(width: 18, height: 24).rotationEffect(.degrees(28)).offset(x: -26, y: 28)
+            Capsule().fill(character.primary).frame(width: 18, height: 24).rotationEffect(.degrees(28)).offset(x: 18, y: -28)
+            Capsule().fill(character.primary).frame(width: 18, height: 24).rotationEffect(.degrees(-28)).offset(x: 18, y: 31)
+            Ellipse().fill(character.secondary).frame(width: 70, height: 56).offset(x: -3, y: 5)
+            Ellipse().stroke(character.accent.opacity(0.72), lineWidth: 4).frame(width: 54, height: 40).offset(x: -3, y: 5)
+            Circle().fill(character.accent).frame(width: 5, height: 5).offset(x: 48, y: -8)
+        }
+    }
+}
+
+private struct WhaleCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.primary).frame(width: 82, height: 48).offset(x: -6, y: 6)
+            Triangle().fill(character.primary).frame(width: 28, height: 24).rotationEffect(.degrees(90)).offset(x: 44, y: 1)
+            Triangle().fill(character.primary).frame(width: 28, height: 24).rotationEffect(.degrees(140)).offset(x: 42, y: 15)
+            Circle().fill(.white).frame(width: 7, height: 7).offset(x: -24, y: -2)
+            Circle().fill(character.accent).frame(width: 4, height: 4).offset(x: -24, y: -2)
+            Capsule().fill(character.secondary).frame(width: 34, height: 8).offset(x: -4, y: 19)
+            Circle().fill(character.secondary).frame(width: 6, height: 6).offset(x: -8, y: -32)
+            Circle().fill(character.secondary).frame(width: 5, height: 5).offset(x: 1, y: -39)
+        }
+    }
+}
+
 private struct CarCharacterView: View {
     var character: HomeRewardCharacter
 
@@ -1750,6 +2161,108 @@ private struct PlaneCharacterView: View {
     }
 }
 
+private struct BusCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12).fill(character.primary).frame(width: 78, height: 58).offset(y: 4)
+            HStack(spacing: 6) {
+                RoundedRectangle(cornerRadius: 4).fill(character.secondary)
+                RoundedRectangle(cornerRadius: 4).fill(character.secondary)
+                RoundedRectangle(cornerRadius: 4).fill(character.secondary)
+            }
+            .frame(width: 54, height: 18)
+            .offset(y: -6)
+            RoundedRectangle(cornerRadius: 3).fill(.white.opacity(0.85)).frame(width: 48, height: 5).offset(y: 17)
+            Circle().fill(character.accent).frame(width: 14, height: 14).offset(x: -24, y: 35)
+            Circle().fill(character.accent).frame(width: 14, height: 14).offset(x: 24, y: 35)
+        }
+    }
+}
+
+private struct ShipCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 5).fill(character.secondary).frame(width: 42, height: 24).offset(y: -18)
+            RoundedRectangle(cornerRadius: 4).fill(.white.opacity(0.86)).frame(width: 20, height: 9).offset(y: -20)
+            Trapezoid().fill(character.primary).frame(width: 82, height: 34).offset(y: 12)
+            Capsule().fill(character.accent).frame(width: 58, height: 6).offset(y: 23)
+            Circle().fill(character.secondary).frame(width: 8, height: 8).offset(x: -22, y: 9)
+            Circle().fill(character.secondary).frame(width: 8, height: 8).offset(x: 0, y: 9)
+            Circle().fill(character.secondary).frame(width: 8, height: 8).offset(x: 22, y: 9)
+        }
+    }
+}
+
+private struct HelicopterCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.accent).frame(width: 76, height: 6).offset(y: -44)
+            Capsule().fill(character.accent).frame(width: 6, height: 22).offset(y: -32)
+            Capsule().fill(character.primary).frame(width: 68, height: 36).offset(y: 2)
+            Circle().fill(character.secondary).frame(width: 22, height: 22).offset(x: -12, y: 1)
+            Capsule().fill(character.primary).frame(width: 42, height: 10).rotationEffect(.degrees(-8)).offset(x: 48, y: -1)
+            Capsule().fill(character.accent).frame(width: 55, height: 6).offset(y: 31)
+            Capsule().fill(character.accent).frame(width: 8, height: 17).offset(x: -20, y: 24)
+            Capsule().fill(character.accent).frame(width: 8, height: 17).offset(x: 20, y: 24)
+        }
+    }
+}
+
+private struct BicycleCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().stroke(character.accent, lineWidth: 5).frame(width: 30, height: 30).offset(x: -28, y: 26)
+            Circle().stroke(character.accent, lineWidth: 5).frame(width: 30, height: 30).offset(x: 28, y: 26)
+            Capsule().fill(character.primary).frame(width: 44, height: 6).rotationEffect(.degrees(-24)).offset(x: -8, y: 9)
+            Capsule().fill(character.primary).frame(width: 44, height: 6).rotationEffect(.degrees(24)).offset(x: 8, y: 9)
+            Capsule().fill(character.primary).frame(width: 34, height: 6).offset(y: 11)
+            Capsule().fill(character.primary).frame(width: 20, height: 6).rotationEffect(.degrees(80)).offset(x: 14, y: -8)
+            Capsule().fill(character.accent).frame(width: 24, height: 6).offset(x: 23, y: -18)
+            Capsule().fill(character.accent).frame(width: 20, height: 6).offset(x: -8, y: -10)
+        }
+    }
+}
+
+private struct TractorCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10).fill(character.primary).frame(width: 45, height: 36).offset(x: 5, y: 5)
+            RoundedRectangle(cornerRadius: 7).fill(character.secondary).frame(width: 26, height: 28).offset(x: 20, y: -20)
+            RoundedRectangle(cornerRadius: 5).fill(character.primary).frame(width: 30, height: 22).offset(x: -28, y: 14)
+            Circle().fill(character.accent).frame(width: 31, height: 31).offset(x: 22, y: 32)
+            Circle().fill(character.secondary).frame(width: 16, height: 16).offset(x: 22, y: 32)
+            Circle().fill(character.accent).frame(width: 20, height: 20).offset(x: -28, y: 34)
+            Circle().fill(character.secondary).frame(width: 10, height: 10).offset(x: -28, y: 34)
+        }
+    }
+}
+
+private struct BalloonCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 62, height: 62).offset(y: -22)
+            Capsule().fill(character.secondary.opacity(0.78)).frame(width: 12, height: 55).offset(y: -22)
+            Capsule().fill(character.secondary.opacity(0.56)).frame(width: 5, height: 58).offset(x: -18, y: -21)
+            Capsule().fill(character.secondary.opacity(0.56)).frame(width: 5, height: 58).offset(x: 18, y: -21)
+            Capsule().fill(character.accent.opacity(0.70)).frame(width: 3, height: 30).rotationEffect(.degrees(-16)).offset(x: -8, y: 26)
+            Capsule().fill(character.accent.opacity(0.70)).frame(width: 3, height: 30).rotationEffect(.degrees(16)).offset(x: 8, y: 26)
+            RoundedRectangle(cornerRadius: 4).fill(character.accent).frame(width: 28, height: 18).offset(y: 44)
+        }
+    }
+}
+
 private struct CharacterEyes: View {
     var color: Color
 
@@ -1781,6 +2294,18 @@ private struct Triangle: Shape {
         path.move(to: CGPoint(x: rect.midX, y: rect.minY))
         path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
         path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct Trapezoid: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX + rect.width * 0.12, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.04, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.18, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.26, y: rect.maxY))
         path.closeSubpath()
         return path
     }
