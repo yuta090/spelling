@@ -138,6 +138,7 @@ struct HomeView: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(HomeIconButtonStyle())
+            .tapFeedback()
             .accessibilityLabel(language.text(japanese: "結果", english: "Results"))
 
             Button {
@@ -148,6 +149,7 @@ struct HomeView: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(HomeIconButtonStyle())
+            .tapFeedback()
             .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
         }
     }
@@ -242,6 +244,7 @@ private struct ChildMissionPanel: View {
                     .padding(.vertical, 18)
             }
             .buttonStyle(.borderedProminent)
+            .tapFeedback()
             .tint(Color(red: 0.16, green: 0.42, blue: 0.84))
             .disabled(!canPractice)
 
@@ -289,6 +292,7 @@ private struct MissionSmallButton: View {
                 .padding(.vertical, 14)
         }
         .buttonStyle(.bordered)
+            .tapFeedback()
         .tint(tint)
         .disabled(disabled)
     }
@@ -446,6 +450,7 @@ private struct PracticeWordSelectionSummaryPanel: View {
                     .padding(.horizontal, 12)
             }
             .buttonStyle(.borderedProminent)
+            .tapFeedback()
             .tint(Color(red: 0.49, green: 0.30, blue: 0.78))
             .disabled(words.isEmpty)
         }
@@ -570,6 +575,7 @@ private struct PracticeWordPickerPanel: View {
                         Label(language.text(japanese: "ぜんぶチェック", english: "Select All"), systemImage: "checkmark.square.fill")
                     }
                     .buttonStyle(.bordered)
+            .tapFeedback()
 
                     Button {
                         selectedIDs = []
@@ -577,6 +583,7 @@ private struct PracticeWordPickerPanel: View {
                         Label(language.text(japanese: "チェックをはずす", english: "Clear"), systemImage: "square")
                     }
                     .buttonStyle(.bordered)
+            .tapFeedback()
 
                     Spacer()
                 }
@@ -633,6 +640,7 @@ private struct PracticeWordToggleChip: View {
             )
         }
         .buttonStyle(.plain)
+            .tapFeedback()
         .accessibilityLabel(language.text(japanese: "\(word.text)を\(isSelected ? "えらんでいます" : "えらんでいません")", english: "\(word.text) is \(isSelected ? "selected" : "not selected")"))
     }
 }
@@ -778,6 +786,7 @@ private struct StepSelectorChip: View {
             )
         }
         .buttonStyle(.plain)
+            .tapFeedback()
         .accessibilityLabel("\(step.title(language: language)), \(formattedStepDate(step.registeredDate, language: language))")
     }
 }
@@ -821,6 +830,7 @@ private struct HomeActionCard: View {
             .shadow(color: colors.last?.opacity(disabled ? 0 : 0.24) ?? .clear, radius: 12, x: 0, y: 8)
         }
         .buttonStyle(.plain)
+            .tapFeedback()
         .disabled(disabled)
     }
 }
@@ -897,6 +907,7 @@ private struct TodayProgressCard: View {
                     .padding(.vertical, 12)
             }
             .buttonStyle(.borderedProminent)
+            .tapFeedback()
             .tint(Color(red: 0.52, green: 0.35, blue: 0.76))
             .disabled(!canReviewRemaining)
         }

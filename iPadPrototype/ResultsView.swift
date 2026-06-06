@@ -57,6 +57,7 @@ struct ResultsView: View {
                             .padding(.vertical, 13)
                     }
                     .buttonStyle(.borderedProminent)
+            .tapFeedback()
                     .tint(Color(red: 0.93, green: 0.70, blue: 0.16))
                 }
                 .padding(24)
@@ -79,6 +80,7 @@ struct ResultsView: View {
                 Label(language.text(japanese: "リセット", english: "Reset"), systemImage: "trash")
             }
             .buttonStyle(.bordered)
+            .tapFeedback()
 
             Button {
                 dismiss()
@@ -86,6 +88,7 @@ struct ResultsView: View {
                 Label(language.text(japanese: "閉じる", english: "Close"), systemImage: "xmark")
             }
             .buttonStyle(.bordered)
+            .tapFeedback()
         }
         .font(.headline.weight(.bold))
     }

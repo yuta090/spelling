@@ -55,6 +55,7 @@ struct TestSessionView: View {
                     .font(.title3.weight(.semibold))
             }
             .buttonStyle(.borderedProminent)
+            .tapFeedback()
         }
     }
 
@@ -68,6 +69,7 @@ struct TestSessionView: View {
                 Label("Clear", systemImage: "eraser")
             }
             .buttonStyle(.bordered)
+            .tapFeedback()
 
             Spacer()
 
@@ -81,6 +83,7 @@ struct TestSessionView: View {
                 }
             }
             .buttonStyle(.borderedProminent)
+            .tapFeedback()
             .disabled(isChecking)
 
             Button {
@@ -92,6 +95,7 @@ struct TestSessionView: View {
                 Label("Next", systemImage: "arrow.right")
             }
             .buttonStyle(.bordered)
+            .tapFeedback()
             .disabled(index == words.count - 1)
         }
         .font(.title3)

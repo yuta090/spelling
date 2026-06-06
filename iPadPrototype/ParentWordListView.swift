@@ -26,6 +26,7 @@ struct ParentWordListView: View {
                         Label("Reload", systemImage: "arrow.clockwise")
                     }
                     .buttonStyle(.bordered)
+            .tapFeedback()
 
                     Spacer()
 
@@ -36,6 +37,7 @@ struct ParentWordListView: View {
                         Label("Save Words", systemImage: "square.and.arrow.down.fill")
                     }
                     .buttonStyle(.borderedProminent)
+            .tapFeedback()
                     .disabled(parseWordListEntries(from: rawWords).isEmpty)
                 }
 

@@ -89,6 +89,7 @@ struct ParentDashboardView: View {
                     .padding(.horizontal, 12)
             }
             .buttonStyle(.plain)
+            .tapFeedback()
             .foregroundStyle(Color(red: 0.16, green: 0.48, blue: 0.18))
             .background(.white.opacity(0.84))
             .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -235,6 +236,7 @@ private struct ParentSectionButton: View {
             .shadow(color: isSelected ? section.tint.opacity(0.20) : .black.opacity(0.05), radius: isSelected ? 12 : 7, x: 0, y: 5)
         }
         .buttonStyle(.plain)
+            .tapFeedback()
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
@@ -292,6 +294,7 @@ private struct ParentCurrentStepCard: View {
                         .padding(.horizontal, 10)
                 }
                 .buttonStyle(.bordered)
+            .tapFeedback()
                 .tint(Color(red: 0.13, green: 0.40, blue: 0.78))
             }
         }
@@ -548,6 +551,7 @@ private struct ParentStepRecordCard: View {
                         Label(language.text(japanese: "このステップを選ぶ", english: "Select Step"), systemImage: "cursorarrow.rays")
                     }
                     .buttonStyle(.bordered)
+            .tapFeedback()
                     .font(.caption.weight(.bold))
                     .tint(Color(red: 0.13, green: 0.40, blue: 0.78))
                 }
@@ -664,6 +668,7 @@ private struct ParentStepRecordCard: View {
                             Label(language.text(japanese: "練習に出す", english: "Use for Practice"), systemImage: "play.fill")
                         }
                         .buttonStyle(.borderedProminent)
+            .tapFeedback()
                         .font(.caption.weight(.bold))
                         .tint(Color(red: 0.90, green: 0.45, blue: 0.12))
                     }
@@ -784,6 +789,7 @@ private struct ParentStepRecordCard: View {
                     Label(language.text(japanese: "保存", english: "Save"), systemImage: "square.and.arrow.down.fill")
                 }
                 .buttonStyle(.borderedProminent)
+            .tapFeedback()
                 .tint(Color(red: 0.56, green: 0.34, blue: 0.78))
                 .disabled(!canSaveSchoolResult)
             }
@@ -994,6 +1000,7 @@ private struct SchoolTestResultPanel: View {
                         Label(language.text(japanese: "学校テストを保存", english: "Save School Test"), systemImage: "square.and.arrow.down.fill")
                     }
                     .buttonStyle(.borderedProminent)
+            .tapFeedback()
                     .tint(Color(red: 0.56, green: 0.34, blue: 0.78))
                     .disabled(!canSave)
                 }
@@ -1148,6 +1155,7 @@ private struct SchoolTestResultCard: View {
                     .frame(width: 34, height: 34)
             }
             .buttonStyle(.bordered)
+            .tapFeedback()
             .tint(Color(red: 0.76, green: 0.22, blue: 0.18))
             .accessibilityLabel(language.text(japanese: "学校テスト結果を削除", english: "Delete school test result"))
         }
@@ -1294,6 +1302,7 @@ private struct ParentWordStepCard: View {
             )
         }
         .buttonStyle(.plain)
+            .tapFeedback()
     }
 }
 
@@ -1347,6 +1356,7 @@ private struct ParentWordListPanel: View {
                     )
                 }
                 .buttonStyle(.borderedProminent)
+            .tapFeedback()
                 .tint(Color(red: 0.14, green: 0.42, blue: 0.78))
                 .disabled(isScanningWordImage)
 
@@ -1357,6 +1367,7 @@ private struct ParentWordListPanel: View {
                     Label(language.text(japanese: "読み直す", english: "Reload"), systemImage: "arrow.clockwise")
                 }
                 .buttonStyle(.bordered)
+            .tapFeedback()
 
                 Spacer()
 
@@ -1366,6 +1377,7 @@ private struct ParentWordListPanel: View {
                     Label(language.text(japanese: "単語を保存", english: "Save Words"), systemImage: "square.and.arrow.down.fill")
                 }
                 .buttonStyle(.borderedProminent)
+            .tapFeedback()
                 .disabled(parseWordListEntries(from: rawWords).isEmpty)
             }
             .font(.subheadline.weight(.bold))
@@ -1683,6 +1695,7 @@ private struct TestSettingsPanel: View {
                     .padding(.vertical, 11)
             }
             .buttonStyle(.borderedProminent)
+            .tapFeedback()
         }
     }
 }
@@ -2039,6 +2052,7 @@ private struct ParentGradingSessionPicker: View {
                         )
                     }
                     .buttonStyle(.plain)
+            .tapFeedback()
                     .contentShape(RoundedRectangle(cornerRadius: 8))
                     .accessibilityAddTraits(session.id == selectedID ? .isSelected : [])
                 }
@@ -2363,6 +2377,7 @@ private struct ParentReviewButtons: View {
                     .padding(.vertical, 9)
             }
             .buttonStyle(.borderedProminent)
+            .tapFeedback()
             .tint(Color(red: 0.20, green: 0.62, blue: 0.24))
 
             Button(action: needsPractice) {
@@ -2372,6 +2387,7 @@ private struct ParentReviewButtons: View {
                     .padding(.vertical, 9)
             }
             .buttonStyle(.bordered)
+            .tapFeedback()
             .tint(Color(red: 0.90, green: 0.45, blue: 0.12))
         }
     }
@@ -2501,6 +2517,7 @@ private struct ParentExampleEditor: View {
                     Label(language.text(japanese: "消す", english: "Clear"), systemImage: "eraser.fill")
                 }
                 .buttonStyle(.bordered)
+            .tapFeedback()
 
                 Spacer()
 
@@ -2518,6 +2535,7 @@ private struct ParentExampleEditor: View {
                     )
                 }
                 .buttonStyle(.borderedProminent)
+            .tapFeedback()
             }
             .font(.subheadline.weight(.bold))
         }
@@ -2691,6 +2709,7 @@ private struct AnswerReviewPanel: View {
                     }
                     .font(.caption.weight(.bold))
                     .buttonStyle(.bordered)
+            .tapFeedback()
                 }
             }
 
@@ -3066,6 +3085,7 @@ private struct ReviewAttemptSummaryCard: View {
                     Label(language.text(japanese: "正解", english: "Correct"), systemImage: "checkmark.circle.fill")
                 }
                 .buttonStyle(.borderedProminent)
+            .tapFeedback()
 
                 Button {
                     model.updateAttemptParentReview(attempt, decision: .needsPractice)
@@ -3073,6 +3093,7 @@ private struct ReviewAttemptSummaryCard: View {
                     Label(language.text(japanese: "もう一度", english: "Try Again"), systemImage: "xmark.circle")
                 }
                 .buttonStyle(.bordered)
+            .tapFeedback()
             }
             .font(.caption.weight(.bold))
         }

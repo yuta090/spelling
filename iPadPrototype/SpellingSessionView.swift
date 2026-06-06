@@ -255,6 +255,7 @@ struct SpellingSessionView: View {
                     .font(.headline.weight(.bold))
             }
             .buttonStyle(.plain)
+            .tapFeedback()
             .foregroundStyle(Color(red: 0.10, green: 0.32, blue: 0.74))
 
             Spacer()
@@ -353,6 +354,7 @@ struct SpellingSessionView: View {
                 .clipShape(Circle())
         }
         .buttonStyle(.plain)
+            .tapFeedback()
         .disabled(mode == .test && replayCount >= model.settings.maxReplays)
         .opacity(mode == .test && replayCount >= model.settings.maxReplays ? 0.45 : 1)
         .accessibilityLabel(language.text(japanese: "発音を聞く", english: "Play word"))
@@ -951,6 +953,7 @@ private struct SessionControlButton: View {
                 .padding(.horizontal, 24)
         }
         .buttonStyle(.plain)
+            .tapFeedback()
         .foregroundStyle(foregroundColor)
         .background(background)
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -1116,6 +1119,7 @@ private struct PracticeSessionReviewView: View {
                         .padding(.vertical, 14)
                 }
                 .buttonStyle(.borderedProminent)
+            .tapFeedback()
             }
         }
         .onAppear {
@@ -1274,6 +1278,7 @@ private struct TestSessionResultsView: View {
                         .padding(.vertical, 14)
                 }
                 .buttonStyle(.borderedProminent)
+            .tapFeedback()
             }
         }
         .onAppear {
