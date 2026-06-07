@@ -1729,18 +1729,6 @@ private struct SchoolTestResultDatePicker: View {
                 Label(language.text(japanese: "学校テスト", english: "School Test"), systemImage: "graduationcap.fill")
                     .font(.subheadline.weight(.heavy))
                     .foregroundStyle(ParentPalette.primary)
-
-                Spacer()
-
-                if results.count > 1 {
-                    Text(language.text(japanese: "\(results.count)日分", english: "\(results.count) dates"))
-                        .font(.caption.weight(.heavy))
-                        .foregroundStyle(ParentPalette.primary)
-                        .padding(.vertical, 5)
-                        .padding(.horizontal, 8)
-                        .background(ParentPalette.primarySoft)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
             }
 
             ScrollView(.horizontal, showsIndicators: false) {
