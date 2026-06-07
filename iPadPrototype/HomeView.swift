@@ -413,8 +413,8 @@ private struct ChildMissionPanel: View {
     private var primaryButtonTitle: String {
         if hasFinishedPracticeRound {
             return isReviewPractice
-                ? language.text(japanese: "もういちど ふくしゅう", english: "Review Again")
-                : language.text(japanese: "もういちど れんしゅう", english: "Practice Again")
+                ? language.text(japanese: "えらんで ふくしゅう", english: "Choose Review")
+                : language.text(japanese: "えらんで れんしゅう", english: "Choose Practice")
         }
         if hasPracticeResume {
             return isReviewPractice
