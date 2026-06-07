@@ -87,7 +87,6 @@ struct HomeView: View {
                             remainingPracticeCount: activePracticeRemainingCount,
                             isReviewPractice: isHomeReviewActive,
                             character: selectedCharacter,
-                            coinBalance: model.rewardCoins,
                             startPractice: startPractice,
                             showWords: { showingWordPreview = true },
                             showStepPicker: { showingStepPicker = true },
@@ -372,7 +371,6 @@ private struct ChildMissionPanel: View {
     var remainingPracticeCount: Int?
     var isReviewPractice: Bool
     var character: HomeRewardCharacter
-    var coinBalance: Int
     var startPractice: () -> Void
     var showWords: () -> Void
     var showStepPicker: () -> Void
@@ -452,8 +450,6 @@ private struct ChildMissionPanel: View {
                     .buttonStyle(.plain)
                     .tapFeedback(scale: 0.94)
                     .accessibilityLabel(language.text(japanese: "\(character.name(language: language))を選ぶ", english: "Choose \(character.name(language: language))"))
-
-                    HomeCoinBadge(coins: coinBalance, language: language)
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
