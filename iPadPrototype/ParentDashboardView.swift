@@ -2077,6 +2077,21 @@ private struct SchoolTestResultCard: View {
         return ParentPalette.danger
     }
 
+    private var missedWordsText: String {
+        result.missedWords.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var missedWordsLabel: String {
+        if missedWordsText.isEmpty {
+            return language.text(japanese: "まちがいなし", english: "No missed words")
+        }
+        return language.text(japanese: "まちがい: \(missedWordsText)", english: "Missed: \(missedWordsText)")
+    }
+
+    private var missedWordsColor: Color {
+        missedWordsText.isEmpty ? ParentPalette.success : ParentPalette.danger
+    }
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             VStack(spacing: 4) {
@@ -2106,11 +2121,14 @@ private struct SchoolTestResultCard: View {
                         .foregroundStyle(.secondary)
                 }
 
-                if !result.missedWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Label(result.missedWords, systemImage: "text.badge.xmark")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(ParentPalette.danger)
-                }
+                Label(
+                    missedWordsLabel,
+                    systemImage: missedWordsText.isEmpty ? "checkmark.circle.fill" : "text.badge.xmark"
+                )
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(missedWordsColor)
+                .lineLimit(2)
+                .minimumScaleFactor(0.74)
 
                 if !result.note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Text(result.note)
