@@ -356,6 +356,60 @@ final class AppModel: ObservableObject {
     }
 
     @discardableResult
+    func addWordsToStep(from rawText: String, registeredAt: Date = Date()) -> (added: Int, updated: Int) {
+        let entries = parseWordListEntries(from: rawText)
+        guard !entries.isEmpty else {
+            return (0, 0)
+        }
+
+        let calendar = Calendar.current
+        let stepDate = calendar.startOfDay(for: registeredAt)
+        let stepID = Self.stepID(for: stepDate, calendar: calendar)
+        var updatedWords = words
+        var indexesByText: [String: Int] = [:]
+        for (index, word) in updatedWords.enumerated() {
+            let key = normalize(word.text)
+            if indexesByText[key] == nil {
+                indexesByText[key] = index
+            }
+        }
+
+        var addedCount = 0
+        var updatedCount = 0
+
+        for entry in entries {
+            let key = normalize(entry.text)
+            guard !key.isEmpty else {
+                continue
+            }
+
+            let promptText = entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let index = indexesByText[key] {
+                guard let promptText else {
+                    continue
+                }
+                if updatedWords[index].promptText != promptText {
+                    updatedWords[index].promptText = promptText
+                    updatedCount += 1
+                }
+            } else {
+                updatedWords.append(SpellingWord(text: key, promptText: promptText ?? "", registeredAt: stepDate))
+                indexesByText[key] = updatedWords.count - 1
+                addedCount += 1
+            }
+        }
+
+        if updatedWords != words {
+            words = updatedWords
+        }
+        if addedCount > 0 {
+            selectedWordStepID = stepID
+        }
+
+        return (addedCount, updatedCount)
+    }
+
+    @discardableResult
     func addAttempt(
         word: String,
         recognizedText: String,
