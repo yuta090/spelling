@@ -882,7 +882,7 @@ private struct ParentStepRecordCard: View {
             if reviewWordsAreOnHome {
                 return ParentStepRecordPrimaryAction(
                     eyebrow: language.text(japanese: "準備できました", english: "Ready"),
-                    title: language.text(japanese: "復習をホームに出しました", english: "Review is on Home"),
+                    title: language.text(japanese: "ホームに出しました", english: "Shown on Home"),
                     message: "",
                     buttonTitle: nil,
                     systemImage: "checkmark.circle.fill",
@@ -898,9 +898,9 @@ private struct ParentStepRecordCard: View {
 
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
-                title: language.text(japanese: "復習に出す", english: "Use for Review"),
+                title: language.text(japanese: "復習が必要です", english: "Review Needed"),
                 message: language.text(japanese: "\(reviewWords.count)単語をホームの復習に追加します。", english: "\(reviewWords.count) words will be added to Home review."),
-                buttonTitle: language.text(japanese: "復習に出す", english: "Use for Review"),
+                buttonTitle: language.text(japanese: "ホームに出す", english: "Show on Home"),
                 systemImage: "arrow.counterclockwise.circle.fill",
                 tint: ParentPalette.warning,
                 kind: .reviewWords,
