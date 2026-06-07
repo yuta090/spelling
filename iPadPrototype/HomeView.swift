@@ -10,6 +10,7 @@ struct HomeView: View {
     @State private var showingStepPicker = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
     @State private var lastPracticeWordIDs = Set<UUID>()
+    @State private var completedPracticeWordIDs = Set<UUID>()
     @State private var practiceResumeState: PracticeSessionResumeState?
 
     private var language: AppLanguage {
@@ -49,6 +50,10 @@ struct HomeView: View {
         return max(selectedPracticeWords.count - activePracticeResumeState.index, 1)
     }
 
+    private var hasCompletedCurrentPractice: Bool {
+        !completedPracticeWordIDs.isEmpty && selectedPracticeWordIDs.isEmpty
+    }
+
     private var selectedCharacter: HomeRewardCharacter {
         HomeRewardCharacter.character(id: model.selectedCharacterID)
     }
@@ -75,6 +80,7 @@ struct HomeView: View {
                             canPractice: !selectedPracticeWords.isEmpty,
                             canTest: !model.nextTestWords.isEmpty,
                             canSwitchSteps: model.wordSteps.count > 1,
+                            hasCompletedPractice: hasCompletedCurrentPractice,
                             hasPracticeResume: activePracticeResumeState != nil,
                             remainingPracticeCount: activePracticeRemainingCount,
                             isReviewPractice: isHomeReviewActive,
@@ -105,7 +111,7 @@ struct HomeView: View {
                         practiceResumeState = state
                     },
                     onPracticeCompleted: {
-                        practiceResumeState = nil
+                        finishCurrentPracticeSelection()
                     },
                     onPracticeStartTest: {
                         practiceResumeState = nil
@@ -164,6 +170,15 @@ struct HomeView: View {
     }
 
     private func startPractice() {
+        if hasCompletedCurrentPractice, !model.nextTestWords.isEmpty {
+            activeMode = .test
+            return
+        }
+
+        guard !selectedPracticeWords.isEmpty else {
+            return
+        }
+
         clearPracticeResumeIfWordsChanged()
         activeMode = .practice
     }
@@ -178,6 +193,7 @@ struct HomeView: View {
 
         selectedPracticeWordIDs = retryIDs
         lastPracticeWordIDs = activeIDs
+        completedPracticeWordIDs = []
         practiceResumeState = nil
         activeMode = nil
         DispatchQueue.main.async {
@@ -214,6 +230,7 @@ struct HomeView: View {
 
         selectedPracticeWordIDs = activeIDs
         lastPracticeWordIDs = activeIDs
+        completedPracticeWordIDs = []
         clearPracticeResumeIfWordsChanged()
     }
 
@@ -227,6 +244,7 @@ struct HomeView: View {
 
         selectedPracticeWordIDs = reviewIDs
         lastPracticeWordIDs = activeIDs
+        completedPracticeWordIDs = []
         clearPracticeResumeIfWordsChanged()
         return true
     }
@@ -241,9 +259,24 @@ struct HomeView: View {
 
         selectedPracticeWordIDs = focusedIDs
         lastPracticeWordIDs = activeIDs
+        completedPracticeWordIDs = []
         model.focusedPracticeWordIDs = []
         clearPracticeResumeIfWordsChanged()
         return true
+    }
+
+    private func finishCurrentPracticeSelection() {
+        let completedIDs = Set(selectedPracticeWordIDsInOrder)
+        practiceResumeState = nil
+        guard !completedIDs.isEmpty else {
+            return
+        }
+
+        completedPracticeWordIDs = completedIDs
+        selectedPracticeWordIDs = []
+        lastPracticeWordIDs = Set(model.activeWords.map(\.id))
+        model.homeReviewWordIDs = model.homeReviewWordIDs.subtracting(completedIDs)
+        model.focusedPracticeWordIDs = []
     }
 
     private func clearPracticeResumeIfWordsChanged() {
@@ -297,6 +330,7 @@ private struct ChildMissionPanel: View {
     var canPractice: Bool
     var canTest: Bool
     var canSwitchSteps: Bool
+    var hasCompletedPractice: Bool
     var hasPracticeResume: Bool
     var remainingPracticeCount: Int?
     var isReviewPractice: Bool
@@ -309,6 +343,11 @@ private struct ChildMissionPanel: View {
     var startTest: () -> Void
 
     private var missionText: String {
+        if hasCompletedPractice {
+            return canTest
+                ? language.text(japanese: "テストしてみよう", english: "Try the test")
+                : language.text(japanese: "れんしゅうできた", english: "Practice done")
+        }
         if practiceCount == 0 {
             return language.text(japanese: "たんごがない", english: "No words")
         }
@@ -335,6 +374,11 @@ private struct ChildMissionPanel: View {
     }
 
     private var primaryButtonTitle: String {
+        if hasCompletedPractice {
+            return canTest
+                ? language.text(japanese: "テストしてみる", english: "Try the Test")
+                : language.text(japanese: "れんしゅうできた", english: "Practice Done")
+        }
         if hasPracticeResume {
             return isReviewPractice
                 ? language.text(japanese: "ふくしゅうのつづき", english: "Continue Review")
@@ -343,6 +387,23 @@ private struct ChildMissionPanel: View {
         return isReviewPractice
             ? language.text(japanese: "ふくしゅうする", english: "Review")
             : language.text(japanese: "はじめる", english: "Start")
+    }
+
+    private var primaryButtonIcon: String {
+        if hasCompletedPractice {
+            return canTest ? "checkmark.clipboard.fill" : "checkmark.circle.fill"
+        }
+        return hasPracticeResume ? "arrow.forward.circle.fill" : "play.fill"
+    }
+
+    private var isPrimaryButtonDisabled: Bool {
+        hasCompletedPractice ? !canTest : !canPractice
+    }
+
+    private var primaryButtonTint: Color {
+        hasCompletedPractice && canTest
+            ? Color(red: 0.20, green: 0.58, blue: 0.24)
+            : Color(red: 0.16, green: 0.42, blue: 0.84)
     }
 
     var body: some View {
@@ -423,10 +484,16 @@ private struct ChildMissionPanel: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
-            Button(action: startPractice) {
+            Button {
+                if hasCompletedPractice {
+                    startTest()
+                } else {
+                    startPractice()
+                }
+            } label: {
                 Label(
                     primaryButtonTitle,
-                    systemImage: hasPracticeResume ? "arrow.forward.circle.fill" : "play.fill"
+                    systemImage: primaryButtonIcon
                 )
                     .font(.system(size: 34, weight: .heavy, design: .rounded))
                     .frame(maxWidth: .infinity)
@@ -434,8 +501,8 @@ private struct ChildMissionPanel: View {
             }
             .buttonStyle(.borderedProminent)
             .tapFeedback()
-            .tint(Color(red: 0.16, green: 0.42, blue: 0.84))
-            .disabled(!canPractice)
+            .tint(primaryButtonTint)
+            .disabled(isPrimaryButtonDisabled)
 
             HStack(spacing: 12) {
                 MissionSmallButton(
