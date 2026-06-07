@@ -2561,7 +2561,6 @@ private struct ParentPanel<Content: View>: View {
 
 private struct ParentWordStepPanel: View {
     @EnvironmentObject private var model: AppModel
-    @State private var showingStepChooser = false
     @State private var showingNewStep = false
     var language: AppLanguage
 
@@ -2578,58 +2577,40 @@ private struct ParentWordStepPanel: View {
                 showingNewStep = true
             }
 
-            HStack {
-                SettingValueRow(
-                    title: language.text(japanese: "登録済みステップ", english: "Registered steps"),
-                    value: "\(model.wordSteps.count)"
-                )
-
-                Spacer()
-            }
-
             if orderedSteps.isEmpty {
                 ContentUnavailableView(
                     language.text(japanese: "ステップがありません", english: "No steps yet"),
                     systemImage: "rectangle.stack.fill",
-                    description: Text(language.text(japanese: "単語を登録するとここに表示されます。", english: "Registered words will appear here."))
+                    description: Text(language.text(japanese: "最初のステップを作ってください。", english: "Create the first step."))
                 )
-                .frame(minHeight: 180)
+                .frame(minHeight: 120)
             } else {
-                VStack(alignment: .leading, spacing: 12) {
-                    if let step = model.selectedWordStep {
-                        ParentWordStepCard(
-                            step: step,
-                            language: language,
-                            isSelected: true
-                        ) {
-                            showingStepChooser = true
-                        }
-                    }
+                HStack(spacing: 10) {
+                    Image(systemName: "rectangle.stack.fill")
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.primary)
+                        .frame(width: 34, height: 34)
+                        .background(ParentPalette.primarySoft)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                    Button {
-                        showingStepChooser = true
-                    } label: {
-                        Label(language.text(japanese: "ステップを探す", english: "Find Step"), systemImage: "magnifyingglass")
-                            .font(.headline.weight(.bold))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 11)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tapFeedback()
-                    .tint(ParentPalette.primary)
+                    Text(language.text(japanese: "登録済み", english: "Registered"))
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+
+                    Spacer()
+
+                    Text("\(model.wordSteps.count)")
+                        .font(.title3.monospacedDigit().weight(.heavy))
+                        .foregroundStyle(ParentPalette.primary)
+                        .padding(.vertical, 7)
+                        .padding(.horizontal, 12)
+                        .background(ParentPalette.primarySoft)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+                .padding(12)
+                .background(ParentPalette.surfaceTint)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-        }
-        .sheet(isPresented: $showingStepChooser) {
-            ParentStepChooserSheet(
-                title: language.text(japanese: "ステップを探す", english: "Find Step"),
-                language: language,
-                selectedStepID: model.selectedWordStepID
-            ) { step in
-                model.selectedWordStepID = step.id
-            }
-            .environmentObject(model)
-            .presentationDetents([.large])
         }
         .sheet(isPresented: $showingNewStep) {
             ParentNewStepSheet(language: language)
@@ -2657,7 +2638,7 @@ private struct ParentNewStepButton: View {
                     Text(language.text(japanese: "新しいステップを作る", english: "Create New Step"))
                         .font(.headline.weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
-                    Text(language.text(japanese: "今日の宿題だけを登録", english: "Register this homework set"))
+                    Text(language.text(japanese: "日付と単語を入力", english: "Enter date and words"))
                         .font(.caption.weight(.bold))
                         .foregroundStyle(.secondary)
                 }
@@ -2696,8 +2677,19 @@ private struct ParentNewStepSheet: View {
         parseWordListEntries(from: rawWords)
     }
 
-    private var targetTitle: String {
-        language.text(japanese: "新しいステップ", english: "New Step")
+    private var sampleWordListText: String {
+        """
+        cat | ねこ
+        friend | 友[とも]だち
+        school | 学校[がっこう]
+        """
+    }
+
+    private var wordInputPlaceholder: String {
+        language.text(
+            japanese: "例:\ncat | ねこ\nfriend | 友[とも]だち\nschool | 学校[がっこう]",
+            english: "Example:\ncat | cat\nfriend | friend\nschool | school"
+        )
     }
 
     private var datePickerLocale: Locale {
@@ -2717,36 +2709,13 @@ private struct ParentNewStepSheet: View {
 
                 VStack(spacing: 16) {
                     ParentPanel(
-                        title: language.text(japanese: "ステップ登録", english: "New Step"),
+                        title: language.text(japanese: "新しいステップを作る", english: "Create New Step"),
                         systemImage: "plus.circle.fill"
                     ) {
-                        HStack(alignment: .center, spacing: 12) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(targetTitle)
-                                    .font(.title2.monospacedDigit().weight(.heavy))
-                                    .foregroundStyle(ParentPalette.ink)
-                                Text(language.text(japanese: "この日付で新しい単語集を作ります", english: "A new word set will be created for this date"))
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            Spacer()
-
-                            Text(language.text(japanese: "\(entries.count) 単語", english: "\(entries.count) words"))
-                                .font(.headline.monospacedDigit().weight(.heavy))
-                                .foregroundStyle(ParentPalette.primary)
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 12)
-                                .background(ParentPalette.primarySoft)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-
                         HStack(spacing: 12) {
                             Label(language.text(japanese: "登録日", english: "Date"), systemImage: "calendar")
                                 .font(.headline.weight(.bold))
                                 .foregroundStyle(ParentPalette.ink)
-
-                            Spacer()
 
                             DatePicker(
                                 "",
@@ -2758,6 +2727,16 @@ private struct ParentNewStepSheet: View {
                             .environment(\.locale, datePickerLocale)
                             .environment(\.calendar, datePickerCalendar)
                             .tint(ParentPalette.primary)
+
+                            Spacer()
+
+                            Text(language.text(japanese: "\(entries.count) 単語", english: "\(entries.count) words"))
+                                .font(.headline.monospacedDigit().weight(.heavy))
+                                .foregroundStyle(ParentPalette.primary)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 12)
+                                .background(ParentPalette.primarySoft)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                         .padding(12)
                         .background(ParentPalette.surfaceTint)
@@ -2767,16 +2746,48 @@ private struct ParentNewStepSheet: View {
                                 .stroke(ParentPalette.primary.opacity(0.14), lineWidth: 1)
                         )
 
-                        TextEditor(text: $rawWords)
-                            .font(.title3.monospaced())
-                            .frame(minHeight: 240)
-                            .padding(10)
-                            .background(ParentPalette.surfaceTint)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
+                        HStack(alignment: .center, spacing: 10) {
+                            Label(
+                                language.text(japanese: "1行に1単語。日本語は | の右に書きます。", english: "One word per line. Put prompts after |."),
+                                systemImage: "text.alignleft"
                             )
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+
+                            Spacer()
+
+                            Button {
+                                copySampleWordList()
+                            } label: {
+                                Label(language.text(japanese: "ルビ例をコピー", english: "Copy Ruby Sample"), systemImage: "doc.on.doc.fill")
+                                    .font(.caption.weight(.heavy))
+                            }
+                            .buttonStyle(.bordered)
+                            .tapFeedback()
+                            .tint(ParentPalette.primary)
+                        }
+
+                        ZStack(alignment: .topLeading) {
+                            TextEditor(text: $rawWords)
+                                .font(.title3.monospaced())
+                                .frame(minHeight: 210, maxHeight: 260)
+                                .padding(8)
+                                .background(ParentPalette.surfaceTint)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
+                                )
+
+                            if rawWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                Text(wordInputPlaceholder)
+                                    .font(.title3.monospaced())
+                                    .foregroundStyle(.secondary.opacity(0.55))
+                                    .padding(.top, 16)
+                                    .padding(.leading, 14)
+                                    .allowsHitTesting(false)
+                            }
+                        }
 
                         if let statusMessage {
                             WordImportStatusBanner(
@@ -2863,6 +2874,15 @@ private struct ParentNewStepSheet: View {
         statusMessage = language.text(
             japanese: "新しく追加できる単語がありません。",
             english: "There are no new words to add."
+        )
+    }
+
+    private func copySampleWordList() {
+        UIPasteboard.general.string = sampleWordListText
+        statusSucceeded = true
+        statusMessage = language.text(
+            japanese: "ルビつきのサンプルをコピーしました。入力欄に貼り付けて試せます。",
+            english: "Copied the sample. Paste it into the editor to try it."
         )
     }
 
@@ -3018,6 +3038,21 @@ private struct ParentWordListPanel: View {
         model.selectedWordStep
     }
 
+    private var sampleWordListText: String {
+        """
+        cat | ねこ
+        friend | 友[とも]だち
+        school | 学校[がっこう]
+        """
+    }
+
+    private var wordInputPlaceholder: String {
+        language.text(
+            japanese: "例:\ncat | ねこ\nfriend | 友[とも]だち\nschool | 学校[がっこう]",
+            english: "Example:\ncat | cat\nfriend | friend\nschool | school"
+        )
+    }
+
     var body: some View {
         ParentPanel(
             title: language.text(japanese: "このステップの単語", english: "Step Words"),
@@ -3026,15 +3061,12 @@ private struct ParentWordListPanel: View {
             if let step = selectedStep {
                 HStack(alignment: .center, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(step.title(language: language))
-                            .font(.title2.monospacedDigit().weight(.heavy))
-                            .foregroundStyle(ParentPalette.ink)
                         Text(language.text(
-                            japanese: "このステップだけを編集します",
-                            english: "Only this step will be edited"
+                            japanese: "\(step.words.count)単語を編集中",
+                            english: "Editing \(step.words.count) words"
                         ))
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.secondary)
+                        .font(.headline.monospacedDigit().weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
                     }
 
                     Spacer()
@@ -3050,23 +3082,48 @@ private struct ParentWordListPanel: View {
                     .tint(ParentPalette.primary)
                 }
 
-                Text(language.text(
-                    japanese: "1行に1単語。日本語や説明を出す時は「friend | 友[とも]だち」のように書けます。",
-                    english: "One word per line. Add a prompt like \"friend | friend meaning.\""
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-                TextEditor(text: $rawWords)
-                    .font(.title3.monospaced())
-                    .frame(minHeight: 180, maxHeight: 230)
-                    .padding(8)
-                    .background(ParentPalette.surfaceTint)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
+                HStack(alignment: .center, spacing: 10) {
+                    Label(
+                        language.text(japanese: "1行に1単語。日本語は | の右に書きます。", english: "One word per line. Put prompts after |."),
+                        systemImage: "text.alignleft"
                     )
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                    Spacer()
+
+                    Button {
+                        copySampleWordList()
+                    } label: {
+                        Label(language.text(japanese: "ルビ例をコピー", english: "Copy Ruby Sample"), systemImage: "doc.on.doc.fill")
+                            .font(.caption.weight(.heavy))
+                    }
+                    .buttonStyle(.bordered)
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
+                }
+
+                ZStack(alignment: .topLeading) {
+                    TextEditor(text: $rawWords)
+                        .font(.title3.monospaced())
+                        .frame(minHeight: 180, maxHeight: 230)
+                        .padding(8)
+                        .background(ParentPalette.surfaceTint)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
+                        )
+
+                    if rawWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        Text(wordInputPlaceholder)
+                            .font(.title3.monospaced())
+                            .foregroundStyle(.secondary.opacity(0.55))
+                            .padding(.top, 16)
+                            .padding(.leading, 14)
+                            .allowsHitTesting(false)
+                    }
+                }
 
                 if let importMessage {
                     WordImportStatusBanner(
@@ -3111,10 +3168,6 @@ private struct ParentWordListPanel: View {
                     .disabled(parseWordListEntries(from: rawWords).isEmpty)
                 }
                 .font(.subheadline.weight(.bold))
-
-                Text(language.text(japanese: "このステップ \(step.words.count) 単語", english: "This step: \(step.words.count) words"))
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.secondary)
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
@@ -3164,6 +3217,15 @@ private struct ParentWordListPanel: View {
         importMessage = language.text(
             japanese: "\(count)単語をこのステップに保存しました。",
             english: "Saved \(count) words in this step."
+        )
+    }
+
+    private func copySampleWordList() {
+        UIPasteboard.general.string = sampleWordListText
+        importSucceeded = true
+        importMessage = language.text(
+            japanese: "ルビつきのサンプルをコピーしました。入力欄に貼り付けて試せます。",
+            english: "Copied the sample. Paste it into the editor to try it."
         )
     }
 
