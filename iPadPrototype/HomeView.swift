@@ -152,6 +152,8 @@ struct HomeView: View {
             .sheet(isPresented: $showingCharacterPicker) {
                 CharacterPickerSheet(language: language)
                     .environmentObject(model)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showingStepPicker) {
                 ChildStepPickerSheet(language: language)
@@ -1993,51 +1995,56 @@ private struct CharacterPickerSheet: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                HomeBackground()
+            GeometryReader { geometry in
+                let listHeight = max(geometry.size.height - 144, 220)
 
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(spacing: 14) {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(language.text(japanese: "なかまをえらぼう", english: "Choose a Buddy"))
-                                .font(.system(size: 32, weight: .heavy, design: .rounded))
-                                .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
-                            Text(language.text(japanese: "れんしゅうでコインをためて、なかまをふやせます。", english: "Practice to earn coins and unlock buddies."))
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.secondary)
+                ZStack {
+                    HomeBackground()
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(spacing: 14) {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(language.text(japanese: "なかまをえらぼう", english: "Choose a Buddy"))
+                                    .font(.system(size: 32, weight: .heavy, design: .rounded))
+                                    .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
+                                Text(language.text(japanese: "れんしゅうでコインをためて、なかまをふやせます。", english: "Practice to earn coins and unlock buddies."))
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            HomeCoinBadge(coins: model.rewardCoins, language: language)
                         }
 
-                        Spacer()
-
-                        HomeCoinBadge(coins: model.rewardCoins, language: language)
-                    }
-
-                    ScrollView {
-                        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-                            ForEach(HomeRewardCharacter.catalog) { character in
-                                CharacterPickerCard(
-                                    character: character,
-                                    isSelected: model.selectedCharacterID == character.id,
-                                    isUnlocked: model.unlockedCharacterIDs.contains(character.id),
-                                    coinBalance: model.rewardCoins,
-                                    language: language
-                                ) {
-                                    if model.unlockedCharacterIDs.contains(character.id) {
-                                        model.selectCharacter(id: character.id)
-                                    } else {
-                                        model.unlockCharacter(id: character.id, cost: character.price)
+                        ScrollView {
+                            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                                ForEach(HomeRewardCharacter.catalog) { character in
+                                    CharacterPickerCard(
+                                        character: character,
+                                        isSelected: model.selectedCharacterID == character.id,
+                                        isUnlocked: model.unlockedCharacterIDs.contains(character.id),
+                                        coinBalance: model.rewardCoins,
+                                        language: language
+                                    ) {
+                                        if model.unlockedCharacterIDs.contains(character.id) {
+                                            model.selectCharacter(id: character.id)
+                                        } else {
+                                            model.unlockCharacter(id: character.id, cost: character.price)
+                                        }
                                     }
                                 }
                             }
+                            .padding(.vertical, 2)
+                            .padding(.bottom, 28)
                         }
-                        .padding(.vertical, 2)
-                        .padding(.bottom, 24)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: listHeight)
+                        .scrollIndicators(.visible)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .scrollIndicators(.visible)
+                    .frame(maxWidth: 820, maxHeight: .infinity, alignment: .top)
+                    .padding(28)
                 }
-                .frame(maxWidth: 820, maxHeight: .infinity, alignment: .top)
-                .padding(28)
             }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
