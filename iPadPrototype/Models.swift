@@ -5,19 +5,22 @@ struct SpellingWord: Identifiable, Equatable, Codable {
     var text: String
     var promptText = ""
     var registeredAt = Date()
+    var stepID: String?
 
     enum CodingKeys: String, CodingKey {
         case id
         case text
         case promptText
         case registeredAt
+        case stepID
     }
 
-    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date()) {
+    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date(), stepID: String? = nil) {
         self.id = id
         self.text = text
         self.promptText = promptText
         self.registeredAt = registeredAt
+        self.stepID = stepID
     }
 
     init(from decoder: Decoder) throws {
@@ -26,6 +29,7 @@ struct SpellingWord: Identifiable, Equatable, Codable {
         text = try container.decode(String.self, forKey: .text)
         promptText = try container.decodeIfPresent(String.self, forKey: .promptText) ?? ""
         registeredAt = try container.decodeIfPresent(Date.self, forKey: .registeredAt) ?? Date()
+        stepID = try container.decodeIfPresent(String.self, forKey: .stepID)
     }
 }
 

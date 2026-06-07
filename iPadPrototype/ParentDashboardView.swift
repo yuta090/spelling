@@ -2273,7 +2273,7 @@ private struct ParentWordStepPanel: View {
 
             HStack {
                 SettingValueRow(
-                    title: language.text(japanese: "登録日ごとの単語集", english: "Word sets by date"),
+                    title: language.text(japanese: "登録済みステップ", english: "Registered steps"),
                     value: "\(model.wordSteps.count)"
                 )
 
@@ -2389,12 +2389,8 @@ private struct ParentNewStepSheet: View {
         parseWordListEntries(from: rawWords)
     }
 
-    private var targetStep: WordStep? {
-        model.wordSteps.first { Calendar.current.isDate($0.registeredDate, inSameDayAs: stepDate) }
-    }
-
     private var targetTitle: String {
-        targetStep?.title(language: language) ?? language.text(japanese: "新しいステップ", english: "New Step")
+        language.text(japanese: "新しいステップ", english: "New Step")
     }
 
     private var datePickerLocale: Locale {
@@ -2422,9 +2418,7 @@ private struct ParentNewStepSheet: View {
                                 Text(targetTitle)
                                     .font(.title2.monospacedDigit().weight(.heavy))
                                     .foregroundStyle(ParentPalette.ink)
-                                Text(targetStep == nil
-                                     ? language.text(japanese: "この日付で単語集を作ります", english: "A word set will be created for this date")
-                                     : language.text(japanese: "同じ日付のステップに追加します", english: "Words will be added to the existing step"))
+                                Text(language.text(japanese: "この日付で新しい単語集を作ります", english: "A new word set will be created for this date"))
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(.secondary)
                             }
@@ -2514,9 +2508,7 @@ private struct ParentNewStepSheet: View {
                                 saveStep()
                             } label: {
                                 Label(
-                                    targetStep == nil
-                                    ? language.text(japanese: "ステップを作成", english: "Create Step")
-                                    : language.text(japanese: "このステップに追加", english: "Add to Step"),
+                                    language.text(japanese: "ステップを作成", english: "Create Step"),
                                     systemImage: "checkmark.circle.fill"
                                 )
                             }

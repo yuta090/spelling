@@ -364,18 +364,10 @@ final class AppModel: ObservableObject {
 
         let calendar = Calendar.current
         let stepDate = calendar.startOfDay(for: registeredAt)
-        let stepID = Self.stepID(for: stepDate, calendar: calendar)
+        let storedDate = Self.registrationDate(on: stepDate, calendar: calendar)
+        let stepID = Self.uniqueStepID(for: stepDate, calendar: calendar)
         var updatedWords = words
-        var indexesByText: [String: Int] = [:]
-        for (index, word) in updatedWords.enumerated() {
-            let key = normalize(word.text)
-            if indexesByText[key] == nil {
-                indexesByText[key] = index
-            }
-        }
-
         var addedCount = 0
-        var updatedCount = 0
 
         for entry in entries {
             let key = normalize(entry.text)
@@ -384,19 +376,8 @@ final class AppModel: ObservableObject {
             }
 
             let promptText = entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines)
-            if let index = indexesByText[key] {
-                guard let promptText else {
-                    continue
-                }
-                if updatedWords[index].promptText != promptText {
-                    updatedWords[index].promptText = promptText
-                    updatedCount += 1
-                }
-            } else {
-                updatedWords.append(SpellingWord(text: key, promptText: promptText ?? "", registeredAt: stepDate))
-                indexesByText[key] = updatedWords.count - 1
-                addedCount += 1
-            }
+            updatedWords.append(SpellingWord(text: key, promptText: promptText ?? "", registeredAt: storedDate, stepID: stepID))
+            addedCount += 1
         }
 
         if updatedWords != words {
@@ -406,7 +387,7 @@ final class AppModel: ObservableObject {
             selectedWordStepID = stepID
         }
 
-        return (addedCount, updatedCount)
+        return (addedCount, 0)
     }
 
     @discardableResult
@@ -628,22 +609,30 @@ final class AppModel: ObservableObject {
     }
 
     private static func makeWordSteps(from words: [SpellingWord], calendar: Calendar = .current) -> [WordStep] {
-        var groups: [String: (date: Date, words: [SpellingWord])] = [:]
+        var groups: [String: (date: Date, sortDate: Date, words: [SpellingWord])] = [:]
 
         for word in words {
             let date = calendar.startOfDay(for: word.registeredAt)
-            let id = stepID(for: date, calendar: calendar)
+            let id = word.stepID ?? stepID(for: date, calendar: calendar)
             if groups[id] == nil {
-                groups[id] = (date: date, words: [])
+                groups[id] = (date: date, sortDate: word.registeredAt, words: [])
+            } else if let currentSortDate = groups[id]?.sortDate, word.registeredAt < currentSortDate {
+                groups[id]?.sortDate = word.registeredAt
             }
             groups[id]?.words.append(word)
         }
 
         let sortedIDs = groups.keys.sorted {
-            guard let left = groups[$0]?.date, let right = groups[$1]?.date else {
+            guard let left = groups[$0], let right = groups[$1] else {
                 return $0 < $1
             }
-            return left < right
+            if left.date != right.date {
+                return left.date < right.date
+            }
+            if left.sortDate != right.sortDate {
+                return left.sortDate < right.sortDate
+            }
+            return $0 < $1
         }
 
         return sortedIDs.enumerated().compactMap { index, id in
@@ -666,6 +655,21 @@ final class AppModel: ObservableObject {
             components.month ?? 0,
             components.day ?? 0
         )
+    }
+
+    private static func uniqueStepID(for date: Date, calendar: Calendar) -> String {
+        "\(stepID(for: date, calendar: calendar))-\(UUID().uuidString.prefix(8))"
+    }
+
+    private static func registrationDate(on day: Date, calendar: Calendar) -> Date {
+        let now = Date()
+        let components = calendar.dateComponents([.hour, .minute, .second, .nanosecond], from: now)
+        return calendar.date(
+            bySettingHour: components.hour ?? 0,
+            minute: components.minute ?? 0,
+            second: components.second ?? 0,
+            of: day
+        ) ?? day
     }
 
     private static func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
