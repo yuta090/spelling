@@ -325,6 +325,8 @@ private struct ChildMissionPanel: View {
 
     var body: some View {
         VStack(spacing: 22) {
+            HomeLearnedWordMilestone(count: totalLearnedWordCount, language: language)
+
             HStack(spacing: 22) {
                 VStack(spacing: 8) {
                     Button(action: showCharacters) {
@@ -336,7 +338,6 @@ private struct ChildMissionPanel: View {
                     .accessibilityLabel(language.text(japanese: "\(character.name(language: language))を選ぶ", english: "Choose \(character.name(language: language))"))
 
                     HomeCoinBadge(coins: coinBalance, language: language)
-                    HomeLearnedWordBadge(count: totalLearnedWordCount, language: language)
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -1948,32 +1949,63 @@ private struct HomeCoinBadge: View {
     }
 }
 
-private struct HomeLearnedWordBadge: View {
+private struct HomeLearnedWordMilestone: View {
     var count: Int
     var language: AppLanguage
 
     var body: some View {
-        VStack(spacing: 2) {
-            HStack(spacing: 5) {
-                Image(systemName: "book.fill")
-                    .font(.caption.weight(.heavy))
-                Text(language.text(japanese: "これまで", english: "learned"))
-                    .font(.caption2.weight(.heavy))
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(Color(red: 1.0, green: 0.82, blue: 0.25))
+                    .frame(width: 58, height: 58)
+                Image(systemName: "sparkles")
+                    .font(.system(size: 26, weight: .heavy))
+                    .foregroundStyle(.white)
             }
 
-            Text(language.text(japanese: "\(max(count, 0))こ", english: "\(max(count, 0)) words"))
-                .font(.headline.monospacedDigit().weight(.heavy))
+            VStack(alignment: .leading, spacing: 0) {
+                Text(language.text(japanese: "これまで", english: "learned so far"))
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.34, blue: 0.66))
+                    .lineLimit(1)
+
+                HStack(alignment: .firstTextBaseline, spacing: 5) {
+                    Text("\(max(count, 0))")
+                        .font(.system(size: 54, weight: .heavy, design: .rounded).monospacedDigit())
+                        .foregroundStyle(Color(red: 0.14, green: 0.36, blue: 0.78))
+                    Text(language.text(japanese: "こ できた", english: "words"))
+                        .font(.title2.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.20, green: 0.58, blue: 0.24))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            Image(systemName: "book.fill")
+                .font(.system(size: 30, weight: .heavy))
+                .foregroundStyle(Color(red: 0.38, green: 0.59, blue: 0.94).opacity(0.85))
         }
-        .foregroundStyle(Color(red: 0.12, green: 0.34, blue: 0.66))
-        .frame(minWidth: 92)
-        .padding(.vertical, 7)
-        .padding(.horizontal, 10)
-        .background(Color(red: 0.90, green: 0.96, blue: 1.0).opacity(0.96))
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(red: 0.90, green: 0.96, blue: 1.0),
+                    Color(red: 0.96, green: 1.0, blue: 0.90)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        )
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.62, green: 0.78, blue: 0.96), lineWidth: 1)
+                .stroke(Color(red: 0.62, green: 0.78, blue: 0.96), lineWidth: 1.5)
         )
+        .shadow(color: Color(red: 0.30, green: 0.50, blue: 0.85).opacity(0.10), radius: 10, x: 0, y: 6)
         .accessibilityLabel(language.text(japanese: "これまで学習した単語 \(count)個", english: "\(count) learned words"))
     }
 }
