@@ -2212,28 +2212,32 @@ private struct PracticeStartTestButton: View {
 
     var body: some View {
         Button(action: action) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(red: 0.98, green: 0.80, blue: 0.18).opacity(reduceMotion ? 0.34 : (isAnimating ? 0.18 : 0.62)), lineWidth: 4)
-                    .scaleEffect(reduceMotion ? 1 : (isAnimating ? 1.08 : 0.96))
-
-                HStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.white.opacity(0.22))
-                            .frame(width: 40, height: 40)
-                        Image(systemName: "checkmark.clipboard.fill")
-                            .font(.system(size: 22, weight: .heavy))
-                    }
-
-                    Text(language.text(japanese: "テストしてみる", english: "Try the Test"))
-                        .font(.system(size: 25, weight: .heavy, design: .rounded))
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(reduceMotion ? 0.22 : (isAnimating ? 0.28 : 0.18)))
+                        .frame(width: 42, height: 42)
+                    Image(systemName: "checkmark.clipboard.fill")
+                        .font(.system(size: 22, weight: .heavy))
+                        .offset(y: reduceMotion ? 0 : (isAnimating ? -1.5 : 1))
                 }
-                .foregroundStyle(.white)
-                .frame(minWidth: 300)
-                .padding(.vertical, 18)
-                .padding(.horizontal, 24)
-                .background(
+
+                Text(language.text(japanese: "テストしてみる", english: "Try the Test"))
+                    .font(.system(size: 25, weight: .heavy, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 18, weight: .heavy))
+                    .offset(x: reduceMotion ? 0 : (isAnimating ? 3 : 0))
+                    .opacity(reduceMotion ? 0.86 : (isAnimating ? 1 : 0.72))
+            }
+            .foregroundStyle(.white)
+            .frame(minWidth: 300)
+            .padding(.vertical, 18)
+            .padding(.horizontal, 24)
+            .background(
+                ZStack {
                     LinearGradient(
                         colors: [
                             Color(red: 0.18, green: 0.68, blue: 0.28),
@@ -2242,11 +2246,20 @@ private struct PracticeStartTestButton: View {
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .shadow(color: Color.green.opacity(reduceMotion ? 0.18 : (isAnimating ? 0.34 : 0.18)), radius: reduceMotion ? 8 : (isAnimating ? 16 : 8), x: 0, y: 7)
-                .scaleEffect(reduceMotion ? 1 : (isAnimating ? 1.025 : 1))
-            }
+
+                    LinearGradient(
+                        colors: [
+                            .white.opacity(reduceMotion ? 0.08 : (isAnimating ? 0.16 : 0.06)),
+                            .clear
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                }
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .shadow(color: Color.green.opacity(reduceMotion ? 0.18 : (isAnimating ? 0.25 : 0.16)), radius: reduceMotion ? 8 : (isAnimating ? 12 : 7), x: 0, y: reduceMotion ? 7 : (isAnimating ? 8 : 6))
+            .scaleEffect(reduceMotion ? 1 : (isAnimating ? 1.012 : 1))
         }
         .buttonStyle(.plain)
         .tapFeedback()
