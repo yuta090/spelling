@@ -837,6 +837,7 @@ private struct ParentRecordDetailSheetView: View {
 
                 ScrollView {
                     detailPanel
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
                         .padding(22)
                 }
             }
@@ -970,6 +971,7 @@ private struct ParentAppTestResultRow: View {
 
             if let drawingData = attempt.drawingData {
                 DrawingPreview(drawingData: drawingData)
+                    .frame(maxWidth: .infinity)
                     .frame(height: 150)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -4604,6 +4606,7 @@ private struct ParentAttemptGradingCard: View {
 
             if let drawingData = attempt.drawingData {
                 DrawingPreview(drawingData: drawingData, topPadding: 100, bottomPadding: 190)
+                    .frame(maxWidth: .infinity)
                     .frame(height: 220)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -4725,6 +4728,7 @@ private struct ParentPracticeGradingCard: View {
             )
 
             DrawingPreview(drawingData: sample.drawingData, topPadding: 100, bottomPadding: 190)
+                .frame(maxWidth: .infinity)
                 .frame(height: 220)
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -5437,6 +5441,7 @@ private struct HandwritingListPanel: View {
                             ParentHandwritingListCard(entry: entry, language: language)
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .top)
                 }
                 .frame(maxHeight: 760)
             }
@@ -5473,6 +5478,7 @@ private struct ParentHandwritingListCard: View {
 
             if let drawingData = entry.drawingData {
                 DrawingPreview(drawingData: drawingData)
+                    .frame(maxWidth: .infinity)
                     .frame(height: 220)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -5483,6 +5489,7 @@ private struct ParentHandwritingListCard: View {
             }
         }
         .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
@@ -5520,6 +5527,7 @@ private struct LearningHistoryCard: View {
 
             if let drawingData = entry.drawingData {
                 DrawingPreview(drawingData: drawingData)
+                    .frame(maxWidth: .infinity)
                     .frame(height: 140)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -5574,6 +5582,7 @@ private struct ReviewAttemptSummaryCard: View {
 
             if let drawingData = attempt.drawingData {
                 DrawingPreview(drawingData: drawingData)
+                    .frame(maxWidth: .infinity)
                     .frame(height: 140)
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -5647,6 +5656,7 @@ private struct ParentPracticeSampleCard: View {
             }
 
             DrawingPreview(drawingData: sample.drawingData)
+                .frame(maxWidth: .infinity)
                 .frame(height: 150)
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
