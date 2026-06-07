@@ -1893,7 +1893,7 @@ private struct ParentStepTestTimelinePicker: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
-            Label(language.text(japanese: "テスト", english: "Tests"), systemImage: "clock.fill")
+            Label(language.text(japanese: "テスト結果", english: "Test Results"), systemImage: "clock.fill")
                 .font(.caption.weight(.heavy))
                 .foregroundStyle(.secondary)
 
