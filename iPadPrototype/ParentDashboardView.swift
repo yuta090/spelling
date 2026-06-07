@@ -725,7 +725,7 @@ private struct ParentStepRecordCard: View {
     @State private var showingSchoolEntry = false
     @State private var testDate = Date()
     @State private var missedSchoolWordIDs = Set<UUID>()
-    @State private var selectedSchoolResultID: UUID?
+    @State private var selectedResultItemID: String?
     @State private var note = ""
     var step: WordStep
     var language: AppLanguage
@@ -746,15 +746,55 @@ private struct ParentStepRecordCard: View {
         schoolResults.first
     }
 
-    private var selectedSchoolResult: SchoolTestResult? {
-        guard !schoolResults.isEmpty else {
-            return nil
+    private var appTestSummaries: [ParentStepAppTestSummary] {
+        Dictionary(grouping: stepAttempts, by: \.sessionID)
+            .compactMap { sessionID, attempts -> ParentStepAppTestSummary? in
+                let sortedAttempts = attempts.sorted { $0.date < $1.date }
+                guard let firstDate = sortedAttempts.first?.date else {
+                    return nil
+                }
+
+                var latestByWord: [String: SpellingAttempt] = [:]
+                for attempt in sortedAttempts {
+                    latestByWord[normalize(attempt.word)] = attempt
+                }
+
+                let correctCount = step.words.filter { word in
+                    guard let attempt = latestByWord[normalize(word.text)] else {
+                        return false
+                    }
+                    return attemptIsCleared(attempt)
+                }.count
+                let missedWords = step.words.compactMap { word -> String? in
+                    guard let attempt = latestByWord[normalize(word.text)] else {
+                        return nil
+                    }
+                    return attemptIsCleared(attempt) ? nil : word.text
+                }
+
+                return ParentStepAppTestSummary(
+                    sessionID: sessionID,
+                    date: firstDate,
+                    correct: correctCount,
+                    total: step.words.count,
+                    missedWords: missedWords
+                )
+            }
+            .sorted { $0.date > $1.date }
+    }
+
+    private var resultTimelineItems: [ParentStepTestTimelineItem] {
+        let appItems = appTestSummaries.map { ParentStepTestTimelineItem(appSummary: $0) }
+        let schoolItems = schoolResults.map { ParentStepTestTimelineItem(schoolResult: $0) }
+        return (appItems + schoolItems).sorted { $0.date > $1.date }
+    }
+
+    private var selectedResultItem: ParentStepTestTimelineItem? {
+        if let selectedResultItemID,
+           let item = resultTimelineItems.first(where: { $0.id == selectedResultItemID }) {
+            return item
         }
-        if let selectedSchoolResultID,
-           let result = schoolResults.first(where: { $0.id == selectedSchoolResultID }) {
-            return result
-        }
-        return schoolResults.first
+        return resultTimelineItems.first
     }
 
     private var carryOverReviewWords: [SpellingWord] {
@@ -1021,16 +1061,27 @@ private struct ParentStepRecordCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
-            if !schoolResults.isEmpty {
-                SchoolTestResultDatePicker(
-                    results: schoolResults,
-                    selectedID: $selectedSchoolResultID,
+            if !resultTimelineItems.isEmpty {
+                ParentStepTestTimelinePicker(
+                    items: resultTimelineItems,
+                    selectedID: selectedResultItem?.id,
                     language: language
-                )
+                ) { itemID in
+                    selectedResultItemID = itemID
+                }
 
-                if let selectedSchoolResult {
-                    SchoolTestResultCard(result: selectedSchoolResult, language: language, showsStepTitle: false)
-                        .environmentObject(model)
+                if let selectedResultItem {
+                    switch selectedResultItem.source {
+                    case .app:
+                        if let appSummary = selectedResultItem.appSummary {
+                            ParentStepAppTestResultCard(summary: appSummary, language: language)
+                        }
+                    case .school:
+                        if let schoolResult = selectedResultItem.schoolResult {
+                            SchoolTestResultCard(result: schoolResult, language: language, showsStepTitle: false)
+                                .environmentObject(model)
+                        }
+                    }
                 }
             }
 
@@ -1059,10 +1110,10 @@ private struct ParentStepRecordCard: View {
         .shadow(color: .black.opacity(isSelectedStep ? 0.09 : 0.05), radius: isSelectedStep ? 14 : 9, x: 0, y: 6)
         .onAppear {
             prepareSchoolDefaultsIfNeeded()
-            selectDefaultSchoolResultIfNeeded()
+            selectDefaultResultItemIfNeeded()
         }
-        .onChange(of: schoolResults.map(\.id)) { _, _ in
-            selectDefaultSchoolResultIfNeeded()
+        .onChange(of: resultTimelineItems.map(\.id)) { _, _ in
+            selectDefaultResultItemIfNeeded()
         }
     }
 
@@ -1155,12 +1206,12 @@ private struct ParentStepRecordCard: View {
         missedSchoolWordIDs = missedSchoolWordIDs.filter { validIDs.contains($0) }
     }
 
-    private func selectDefaultSchoolResultIfNeeded() {
-        let resultIDs = Set(schoolResults.map(\.id))
-        if let selectedSchoolResultID, resultIDs.contains(selectedSchoolResultID) {
+    private func selectDefaultResultItemIfNeeded() {
+        let resultIDs = Set(resultTimelineItems.map(\.id))
+        if let selectedResultItemID, resultIDs.contains(selectedResultItemID) {
             return
         }
-        selectedSchoolResultID = schoolResults.first?.id
+        selectedResultItemID = resultTimelineItems.first?.id
     }
 
     private func saveSchoolResult() {
@@ -1175,7 +1226,7 @@ private struct ParentStepRecordCard: View {
             note: note.trimmingCharacters(in: .whitespacesAndNewlines)
         )
         model.addSchoolTestResult(result)
-        selectedSchoolResultID = result.id
+        selectedResultItemID = "school-\(result.id.uuidString)"
         testDate = Date()
         missedSchoolWordIDs.removeAll()
         note = ""
@@ -1749,86 +1800,244 @@ private struct SchoolTestResultPanel: View {
     }
 }
 
-private struct SchoolTestResultDatePicker: View {
-    var results: [SchoolTestResult]
-    @Binding var selectedID: UUID?
+private struct ParentStepAppTestSummary: Equatable {
+    var sessionID: UUID
+    var date: Date
+    var correct: Int
+    var total: Int
+    var missedWords: [String]
+
+    var id: String {
+        "app-\(sessionID.uuidString)"
+    }
+}
+
+private enum ParentStepTestTimelineSource {
+    case app
+    case school
+
+    var systemImage: String {
+        switch self {
+        case .app:
+            return "checkmark.circle.fill"
+        case .school:
+            return "graduationcap.fill"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .app:
+            return ParentPalette.neutral
+        case .school:
+            return ParentPalette.primary
+        }
+    }
+
+    func label(language: AppLanguage) -> String {
+        switch self {
+        case .app:
+            return language.text(japanese: "アプリテスト", english: "App test")
+        case .school:
+            return language.text(japanese: "学校テスト", english: "School test")
+        }
+    }
+}
+
+private struct ParentStepTestTimelineItem: Identifiable, Equatable {
+    var id: String
+    var source: ParentStepTestTimelineSource
+    var date: Date
+    var score: Int
+    var total: Int
+    var appSummary: ParentStepAppTestSummary?
+    var schoolResult: SchoolTestResult?
+
+    init(appSummary: ParentStepAppTestSummary) {
+        self.id = appSummary.id
+        self.source = .app
+        self.date = appSummary.date
+        self.score = appSummary.correct
+        self.total = appSummary.total
+        self.appSummary = appSummary
+        self.schoolResult = nil
+    }
+
+    init(schoolResult: SchoolTestResult) {
+        self.id = "school-\(schoolResult.id.uuidString)"
+        self.source = .school
+        self.date = schoolResult.date
+        self.score = schoolResult.score
+        self.total = schoolResult.total
+        self.appSummary = nil
+        self.schoolResult = schoolResult
+    }
+
+    func scoreText(language: AppLanguage, includesCorrectLabel: Bool = false) -> String {
+        if source == .school && score == total {
+            return language.text(japanese: "満点", english: "Perfect")
+        }
+        let base = "\(score)/\(max(total, 1))"
+        guard includesCorrectLabel else {
+            return base
+        }
+        return language.text(japanese: "\(base) 正解", english: "\(base) correct")
+    }
+}
+
+private struct ParentStepTestTimelinePicker: View {
+    var items: [ParentStepTestTimelineItem]
+    var selectedID: String?
     var language: AppLanguage
+    var select: (String) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Label(language.text(japanese: "学校テスト", english: "School Test"), systemImage: "graduationcap.fill")
-                    .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(ParentPalette.primary)
-            }
+        VStack(alignment: .leading, spacing: 7) {
+            Label(language.text(japanese: "テスト", english: "Tests"), systemImage: "clock.fill")
+                .font(.caption.weight(.heavy))
+                .foregroundStyle(.secondary)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(results) { result in
-                        SchoolTestResultDateButton(
-                            result: result,
-                            isSelected: result.id == selectedID || (selectedID == nil && result.id == results.first?.id),
-                            language: language
-                        ) {
+                    ForEach(items) { item in
+                        Button {
                             withAnimation(.easeInOut(duration: 0.14)) {
-                                selectedID = result.id
+                                select(item.id)
                             }
+                        } label: {
+                            ParentStepTestTimelineChip(
+                                item: item,
+                                isSelected: item.id == selectedID,
+                                language: language
+                            )
                         }
+                        .buttonStyle(.plain)
+                        .tapFeedback()
+                        .accessibilityAddTraits(item.id == selectedID ? .isSelected : [])
                     }
                 }
                 .padding(.vertical, 1)
             }
         }
         .padding(10)
-        .background(Color.white.opacity(0.72))
+        .background(Color.white.opacity(0.66))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.035), radius: 7, x: 0, y: 4)
     }
 }
 
-private struct SchoolTestResultDateButton: View {
-    var result: SchoolTestResult
+private struct ParentStepTestTimelineChip: View {
+    var item: ParentStepTestTimelineItem
     var isSelected: Bool
     var language: AppLanguage
-    var action: () -> Void
 
-    private var scoreText: String {
-        if result.score == result.total {
-            return language.text(japanese: "満点", english: "Perfect")
-        }
-        return language.text(japanese: "\(result.score)/\(result.total) 正解", english: "\(result.score)/\(result.total) correct")
+    private var tint: Color {
+        item.source.tint
     }
 
-    private var scoreColor: Color {
-        result.score == result.total ? ParentPalette.success : ParentPalette.warning
+    private var backgroundColor: Color {
+        if isSelected {
+            return tint
+        }
+        return item.source == .school ? ParentPalette.primarySoft : Color.white.opacity(0.9)
+    }
+
+    private var foregroundColor: Color {
+        isSelected ? .white : tint
     }
 
     var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text(formattedLocalizedDate(result.date, language: language))
-                    .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(ParentPalette.ink)
+        HStack(spacing: 7) {
+            Image(systemName: item.source.systemImage)
+                .font(.caption.weight(.heavy))
+                .frame(width: 22, height: 22)
+                .background(isSelected ? Color.white.opacity(0.18) : tint.opacity(0.12))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.scoreText(language: language))
+                    .font(.subheadline.monospacedDigit().weight(.heavy))
                     .lineLimit(1)
-                Text(scoreText)
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(scoreColor)
+                Text(formattedCompactResultDate(item.date, language: language))
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(isSelected ? .white.opacity(0.78) : .secondary)
                     .lineLimit(1)
             }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 11)
-            .background(isSelected ? scoreColor.opacity(0.13) : Color.white.opacity(0.92))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? scoreColor.opacity(0.52) : .clear, lineWidth: isSelected ? 2 : 1)
-            )
-            .shadow(color: .black.opacity(isSelected ? 0.08 : 0.035), radius: 7, x: 0, y: 4)
         }
-        .buttonStyle(.plain)
-        .tapFeedback()
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .foregroundStyle(foregroundColor)
+        .frame(minWidth: item.source == .school ? 108 : 92, minHeight: 48, alignment: .leading)
+        .padding(.horizontal, 9)
+        .background(backgroundColor)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                    item.source == .school ? tint.opacity(isSelected ? 0 : 0.44) : ParentPalette.neutral.opacity(0.12),
+                    lineWidth: 1.2
+                )
+        )
+        .shadow(color: .black.opacity(isSelected ? 0.08 : 0.035), radius: 7, x: 0, y: 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(item.source.label(language: language)) \(item.scoreText(language: language, includesCorrectLabel: true)) \(formattedCompactResultDate(item.date, language: language))")
     }
+}
+
+private struct ParentStepAppTestResultCard: View {
+    var summary: ParentStepAppTestSummary
+    var language: AppLanguage
+
+    private var scoreHeadline: String {
+        if summary.correct == summary.total {
+            return language.text(japanese: "全問正解", english: "All Correct")
+        }
+        return language.text(japanese: "\(summary.correct)/\(max(summary.total, 1)) 正解", english: "\(summary.correct)/\(max(summary.total, 1)) correct")
+    }
+
+    private var scoreColor: Color {
+        summary.correct == summary.total ? ParentPalette.success : ParentPalette.warning
+    }
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.title3.weight(.heavy))
+                .foregroundStyle(scoreColor)
+                .frame(width: 40, height: 40)
+                .background(scoreColor.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(scoreHeadline)
+                    .font(.headline.monospacedDigit().weight(.heavy))
+                    .foregroundStyle(scoreColor)
+                    .lineLimit(1)
+                if summary.missedWords.isEmpty {
+                    Text(language.text(japanese: "アプリでは間違いなし", english: "No misses in the app"))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(summary.missedWords.joined(separator: " / "))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ParentPalette.warning)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                }
+            }
+
+            Spacer()
+        }
+        .padding(12)
+        .background(ParentPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
+    }
+}
+
+private func formattedCompactResultDate(_ date: Date, language: AppLanguage) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = language == .japanese ? Locale(identifier: "ja_JP") : Locale(identifier: "en_US")
+    formatter.dateFormat = language == .japanese ? "M月d日" : "MMM d"
+    return formatter.string(from: date)
 }
 
 private struct SchoolTestResultCard: View {
