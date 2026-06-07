@@ -8,7 +8,9 @@ struct HomeView: View {
     @State private var showingWordPreview = false
     @State private var showingCharacterPicker = false
     @State private var showingStepPicker = false
+    @State private var showingPracticeRetryPicker = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
+    @State private var retryPracticeWordIDs = Set<UUID>()
     @State private var lastPracticeWordIDs = Set<UUID>()
     @State private var completedPracticeWordIDs = Set<UUID>()
     @State private var practiceResumeState: PracticeSessionResumeState?
@@ -140,6 +142,14 @@ struct HomeView: View {
                     language: language
                 )
             }
+            .sheet(isPresented: $showingPracticeRetryPicker) {
+                PracticeRetryPickerSheet(
+                    words: selectedPracticeWords,
+                    selectedIDs: $retryPracticeWordIDs,
+                    language: language,
+                    onStart: startSelectedPracticeRetry
+                )
+            }
             .sheet(isPresented: $showingCharacterPicker) {
                 CharacterPickerSheet(language: language)
                     .environmentObject(model)
@@ -175,6 +185,12 @@ struct HomeView: View {
             return
         }
 
+        if hasFinishedCurrentPracticeRound {
+            retryPracticeWordIDs = Set(selectedPracticeWordIDsInOrder)
+            showingPracticeRetryPicker = true
+            return
+        }
+
         completedPracticeWordIDs = []
         clearPracticeResumeIfWordsChanged()
         activeMode = .practice
@@ -192,6 +208,23 @@ struct HomeView: View {
         lastPracticeWordIDs = activeIDs
         completedPracticeWordIDs = []
         practiceResumeState = nil
+        activeMode = nil
+        DispatchQueue.main.async {
+            activeMode = .practice
+        }
+    }
+
+    private func startSelectedPracticeRetry() {
+        let availableIDs = Set(selectedPracticeWords.map(\.id))
+        let retryIDs = retryPracticeWordIDs.intersection(availableIDs)
+        guard !retryIDs.isEmpty else {
+            return
+        }
+
+        selectedPracticeWordIDs = retryIDs
+        completedPracticeWordIDs = []
+        practiceResumeState = nil
+        showingPracticeRetryPicker = false
         activeMode = nil
         DispatchQueue.main.async {
             activeMode = .practice
@@ -800,6 +833,121 @@ private struct PracticeWordPreviewChip: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
         )
+    }
+}
+
+private struct PracticeRetryPickerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    var words: [SpellingWord]
+    @Binding var selectedIDs: Set<UUID>
+    var language: AppLanguage
+    var onStart: () -> Void
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 150, maximum: 230), spacing: 12)
+    ]
+
+    private var selectedCount: Int {
+        words.filter { selectedIDs.contains($0.id) }.count
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                HomeBackground()
+
+                VStack(spacing: 18) {
+                    VStack(spacing: 8) {
+                        Text(language.text(japanese: "もういちど やるたんご", english: "Practice Again"))
+                            .font(.system(size: 38, weight: .heavy, design: .rounded))
+                            .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.70)
+
+                        Text(language.text(japanese: "\(selectedCount)/\(words.count)こ", english: "\(selectedCount)/\(words.count) selected"))
+                            .font(.title2.monospacedDigit().weight(.heavy))
+                            .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78))
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    if words.isEmpty {
+                        ContentUnavailableView(
+                            language.text(japanese: "たんごがありません", english: "No words"),
+                            systemImage: "list.bullet"
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        ScrollView {
+                            LazyVGrid(columns: columns, spacing: 12) {
+                                ForEach(words) { word in
+                                    PracticeWordToggleChip(
+                                        word: word,
+                                        isSelected: selectedIDs.contains(word.id),
+                                        language: language
+                                    ) {
+                                        toggle(word.id)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 3)
+                        }
+
+                        HStack(spacing: 12) {
+                            Button {
+                                selectedIDs = Set(words.map(\.id))
+                            } label: {
+                                Label(language.text(japanese: "ぜんぶ", english: "All"), systemImage: "checkmark.square.fill")
+                            }
+                            .buttonStyle(.bordered)
+                            .tapFeedback()
+
+                            Button {
+                                selectedIDs = []
+                            } label: {
+                                Label(language.text(japanese: "はずす", english: "Clear"), systemImage: "square")
+                            }
+                            .buttonStyle(.bordered)
+                            .tapFeedback()
+
+                            Spacer(minLength: 0)
+                        }
+                        .font(.headline.weight(.bold))
+
+                        Button(action: onStart) {
+                            Label(language.text(japanese: "これを れんしゅう", english: "Practice These"), systemImage: "pencil.line")
+                                .font(.system(size: 30, weight: .heavy, design: .rounded))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tapFeedback()
+                        .tint(Color(red: 0.16, green: 0.42, blue: 0.84))
+                        .disabled(selectedCount == 0)
+                    }
+                }
+                .frame(maxWidth: 760)
+                .padding(28)
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                    .tapFeedback()
+                }
+            }
+        }
+    }
+
+    private func toggle(_ id: UUID) {
+        if selectedIDs.contains(id) {
+            selectedIDs.remove(id)
+        } else {
+            selectedIDs.insert(id)
+        }
     }
 }
 
