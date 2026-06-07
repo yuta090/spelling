@@ -2,6 +2,22 @@ import PencilKit
 import SwiftUI
 import UIKit
 
+private enum ParentPalette {
+    static let primary = Color(red: 0.17, green: 0.45, blue: 0.24)
+    static let primarySoft = Color(red: 0.91, green: 0.97, blue: 0.90)
+    static let surface = Color.white.opacity(0.92)
+    static let surfaceRaised = Color.white.opacity(0.86)
+    static let surfaceTint = Color(red: 0.97, green: 0.99, blue: 0.97)
+    static let ink = Color(red: 0.12, green: 0.22, blue: 0.34)
+    static let neutral = Color(red: 0.42, green: 0.48, blue: 0.52)
+    static let neutralSoft = Color(red: 0.94, green: 0.96, blue: 0.95)
+    static let success = Color(red: 0.20, green: 0.62, blue: 0.24)
+    static let successSoft = Color(red: 0.90, green: 0.97, blue: 0.88)
+    static let warning = Color(red: 0.84, green: 0.45, blue: 0.10)
+    static let warningSoft = Color(red: 1.0, green: 0.95, blue: 0.88)
+    static let danger = Color(red: 0.76, green: 0.22, blue: 0.18)
+}
+
 struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
@@ -76,7 +92,7 @@ struct ParentDashboardView: View {
         HStack {
             Label(language.text(japanese: "保護者メニュー", english: "Parent Menu"), systemImage: "person.2.fill")
                 .font(.title3.weight(.bold))
-                .foregroundStyle(Color(red: 0.16, green: 0.48, blue: 0.18))
+                .foregroundStyle(ParentPalette.primary)
 
             Spacer()
 
@@ -90,12 +106,12 @@ struct ParentDashboardView: View {
             }
             .buttonStyle(.plain)
             .tapFeedback()
-            .foregroundStyle(Color(red: 0.16, green: 0.48, blue: 0.18))
-            .background(.white.opacity(0.84))
+            .foregroundStyle(ParentPalette.primary)
+            .background(ParentPalette.surfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.green.opacity(0.25), lineWidth: 1)
+                    .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
             )
         }
     }
@@ -149,16 +165,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
     }
 
     var tint: Color {
-        switch self {
-        case .grading:
-            return Color(red: 0.13, green: 0.40, blue: 0.78)
-        case .words:
-            return Color(red: 0.17, green: 0.56, blue: 0.24)
-        case .records:
-            return Color(red: 0.56, green: 0.34, blue: 0.78)
-        case .settings:
-            return Color(red: 0.42, green: 0.48, blue: 0.56)
-        }
+        ParentPalette.primary
     }
 }
 
@@ -208,7 +215,7 @@ private struct ParentSectionButton: View {
                 Image(systemName: section.systemImage)
                     .font(.title3.weight(.bold))
                     .frame(width: 34, height: 34)
-                    .background(isSelected ? .white.opacity(0.22) : section.tint.opacity(0.12))
+                    .background(isSelected ? .white.opacity(0.22) : ParentPalette.primarySoft)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -224,16 +231,16 @@ private struct ParentSectionButton: View {
 
                 Spacer(minLength: 0)
             }
-            .foregroundStyle(isSelected ? .white : section.tint)
+            .foregroundStyle(isSelected ? .white : ParentPalette.primary)
             .frame(width: 172, height: 64, alignment: .leading)
             .padding(.horizontal, 12)
-            .background(isSelected ? section.tint : .white.opacity(0.92))
+            .background(isSelected ? ParentPalette.primary : ParentPalette.surface)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? section.tint : section.tint.opacity(0.22), lineWidth: isSelected ? 0 : 1)
+                    .stroke(isSelected ? ParentPalette.primary : ParentPalette.primary.opacity(0.16), lineWidth: isSelected ? 0 : 1)
             )
-            .shadow(color: isSelected ? section.tint.opacity(0.20) : .black.opacity(0.05), radius: isSelected ? 12 : 7, x: 0, y: 5)
+            .shadow(color: isSelected ? ParentPalette.primary.opacity(0.16) : .black.opacity(0.05), radius: isSelected ? 12 : 7, x: 0, y: 5)
         }
         .buttonStyle(.plain)
             .tapFeedback()
@@ -252,9 +259,9 @@ private struct ParentCurrentStepCard: View {
         HStack(spacing: 12) {
             Image(systemName: "rectangle.stack.fill")
                 .font(.title3.weight(.bold))
-                .foregroundStyle(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .foregroundStyle(ParentPalette.primary)
                 .frame(width: 40, height: 40)
-                .background(Color(red: 0.88, green: 0.94, blue: 1.0))
+                .background(ParentPalette.primarySoft)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {
@@ -263,7 +270,7 @@ private struct ParentCurrentStepCard: View {
                     .foregroundStyle(.secondary)
                 Text(step?.title(language: language) ?? language.text(japanese: "ステップなし", english: "No step"))
                     .font(.title3.monospacedDigit().weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
             }
 
             Spacer(minLength: 0)
@@ -273,10 +280,10 @@ private struct ParentCurrentStepCard: View {
                 english: "\(step?.words.count ?? 0) words"
             ))
             .font(.headline.monospacedDigit().weight(.heavy))
-            .foregroundStyle(Color(red: 0.17, green: 0.50, blue: 0.24))
+            .foregroundStyle(ParentPalette.primary)
             .padding(.vertical, 7)
             .padding(.horizontal, 12)
-            .background(Color(red: 0.90, green: 0.97, blue: 0.88))
+            .background(ParentPalette.primarySoft)
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
             if !model.wordSteps.isEmpty {
@@ -290,11 +297,11 @@ private struct ParentCurrentStepCard: View {
                 }
                 .buttonStyle(.bordered)
                 .tapFeedback()
-                .tint(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .tint(ParentPalette.primary)
             }
         }
         .padding(12)
-        .background(.white.opacity(0.86))
+        .background(ParentPalette.surfaceRaised)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.07), radius: 12, x: 0, y: 6)
         .sheet(isPresented: $showingStepChooser) {
@@ -463,9 +470,9 @@ private struct ParentStepChooserHeader: View {
         HStack(spacing: 12) {
             Image(systemName: "rectangle.stack.fill")
                 .font(.title2.weight(.heavy))
-                .foregroundStyle(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .foregroundStyle(ParentPalette.primary)
                 .frame(width: 46, height: 46)
-                .background(Color(red: 0.88, green: 0.94, blue: 1.0))
+                .background(ParentPalette.primarySoft)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -474,7 +481,7 @@ private struct ParentStepChooserHeader: View {
                     .foregroundStyle(.secondary)
                 Text(selectedStep?.title(language: language) ?? language.text(japanese: "未選択", english: "Not selected"))
                     .font(.title3.monospacedDigit().weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
             }
 
             Spacer()
@@ -484,10 +491,10 @@ private struct ParentStepChooserHeader: View {
                 english: "\(filteredCount) / \(totalCount)"
             ))
             .font(.headline.monospacedDigit().weight(.heavy))
-            .foregroundStyle(Color(red: 0.17, green: 0.50, blue: 0.24))
+            .foregroundStyle(ParentPalette.primary)
             .padding(.vertical, 8)
             .padding(.horizontal, 12)
-            .background(Color(red: 0.90, green: 0.97, blue: 0.88))
+            .background(ParentPalette.primarySoft)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding(14)
@@ -520,24 +527,24 @@ private struct ParentStepChooserRow: View {
             HStack(spacing: 12) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "rectangle.stack")
                     .font(.title3.weight(.heavy))
-                    .foregroundStyle(isSelected ? Color(red: 0.13, green: 0.40, blue: 0.78) : Color(red: 0.42, green: 0.48, blue: 0.55))
+                    .foregroundStyle(isSelected ? ParentPalette.primary : ParentPalette.neutral)
                     .frame(width: 34, height: 34)
-                    .background(isSelected ? Color(red: 0.88, green: 0.94, blue: 1.0) : Color(red: 0.95, green: 0.97, blue: 0.98))
+                    .background(isSelected ? ParentPalette.primarySoft : ParentPalette.neutralSoft)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(spacing: 8) {
                         Text(step.title(language: language))
                             .font(.headline.monospacedDigit().weight(.heavy))
-                            .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                            .foregroundStyle(ParentPalette.ink)
 
                         if hasSchoolResult {
                             Label(language.text(japanese: "学校結果あり", english: "School result"), systemImage: "graduationcap.fill")
                                 .font(.caption2.weight(.heavy))
-                                .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                                .foregroundStyle(ParentPalette.primary)
                                 .padding(.vertical, 4)
                                 .padding(.horizontal, 7)
-                                .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                                .background(ParentPalette.primarySoft)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
@@ -548,7 +555,7 @@ private struct ParentStepChooserRow: View {
 
                     Text(wordPreview)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Color(red: 0.24, green: 0.30, blue: 0.40))
+                        .foregroundStyle(ParentPalette.ink)
                         .lineLimit(1)
                 }
 
@@ -562,7 +569,7 @@ private struct ParentStepChooserRow: View {
         }
         .buttonStyle(.plain)
         .tapFeedback()
-        .listRowBackground(isSelected ? Color(red: 0.92, green: 0.97, blue: 1.0) : Color.white.opacity(0.92))
+        .listRowBackground(isSelected ? ParentPalette.primarySoft : Color.white.opacity(0.92))
     }
 }
 
@@ -592,7 +599,7 @@ private struct ParentRecordsWorkspace: View {
             ParentPanel(
                 title: language.text(japanese: "記録", english: "Records"),
                 systemImage: "rectangle.stack.fill",
-                tint: Color(red: 0.56, green: 0.34, blue: 0.78)
+                tint: ParentPalette.primary
             ) {
                 if orderedSteps.isEmpty {
                     ContentUnavailableView(
@@ -656,15 +663,15 @@ private struct ParentOtherStepRecordsHeader: View {
         HStack(spacing: 12) {
             Image(systemName: "tray.full.fill")
                 .font(.title3.weight(.bold))
-                .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                .foregroundStyle(ParentPalette.primary)
                 .frame(width: 38, height: 38)
-                .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                .background(ParentPalette.primarySoft)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(language.text(japanese: "ほかのステップを見る", english: "View Other Steps"))
                     .font(.headline.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
                 Text(language.text(japanese: "必要なときだけ開きます。", english: "Open only when needed."))
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
@@ -674,10 +681,10 @@ private struct ParentOtherStepRecordsHeader: View {
 
             Text("\(count)")
                 .font(.headline.monospacedDigit().weight(.heavy))
-                .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                .foregroundStyle(ParentPalette.primary)
                 .padding(.vertical, 6)
                 .padding(.horizontal, 10)
-                .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                .background(ParentPalette.primarySoft)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
@@ -691,15 +698,15 @@ private struct ParentAppRecordDisclosureHeader: View {
         HStack(spacing: 12) {
             Image(systemName: "chart.bar.xaxis")
                 .font(.title3.weight(.bold))
-                .foregroundStyle(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .foregroundStyle(ParentPalette.primary)
                 .frame(width: 38, height: 38)
-                .background(Color(red: 0.88, green: 0.94, blue: 1.0))
+                .background(ParentPalette.primarySoft)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(language.text(japanese: "アプリの記録を見る", english: "View App Records"))
                     .font(.headline.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
                 Text(language.text(
                     japanese: "成績・手書き・学習履歴は必要な時だけ開きます。",
                     english: "Open results, handwriting, and history only when needed."
@@ -712,10 +719,10 @@ private struct ParentAppRecordDisclosureHeader: View {
 
             Text("\(model.attempts.count + model.practiceSamples.count)")
                 .font(.headline.monospacedDigit().weight(.heavy))
-                .foregroundStyle(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .foregroundStyle(ParentPalette.primary)
                 .padding(.vertical, 6)
                 .padding(.horizontal, 10)
-                .background(Color(red: 0.90, green: 0.96, blue: 1.0))
+                .background(ParentPalette.primarySoft)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
@@ -828,7 +835,7 @@ private struct ParentStepRecordCard: View {
                 message: language.text(japanese: "単語登録からこのステップに単語を入れます。", english: "Add words to this step from word registration."),
                 buttonTitle: nil,
                 systemImage: "minus.circle.fill",
-                tint: Color.gray,
+                tint: ParentPalette.neutral,
                 kind: .none
             )
         }
@@ -840,7 +847,7 @@ private struct ParentStepRecordCard: View {
                 message: language.text(japanese: "アプリと学校テストの記録はそろっています。別の日の結果が返ってきたら記録できます。", english: "App and school records are complete. Record another test date if needed."),
                 buttonTitle: nil,
                 systemImage: "checkmark.seal.fill",
-                tint: Color(red: 0.20, green: 0.62, blue: 0.24),
+                tint: ParentPalette.success,
                 kind: .none
             )
         }
@@ -852,7 +859,7 @@ private struct ParentStepRecordCard: View {
                 message: language.text(japanese: "点数と間違えた単語を入れると、復習すべきか判断できます。", english: "Enter score and missed words to decide whether review is needed."),
                 buttonTitle: language.text(japanese: "結果を入れる", english: "Enter Result"),
                 systemImage: "graduationcap.fill",
-                tint: Color(red: 0.56, green: 0.34, blue: 0.78),
+                tint: ParentPalette.primary,
                 kind: .enterSchoolTest
             )
         }
@@ -865,7 +872,7 @@ private struct ParentStepRecordCard: View {
                     message: language.text(japanese: "子供メニューで、間違えた単語だけを練習できます。", english: "The child can practice only missed words from Home."),
                     buttonTitle: nil,
                     systemImage: "checkmark.circle.fill",
-                    tint: Color(red: 0.20, green: 0.62, blue: 0.24),
+                    tint: ParentPalette.success,
                     kind: .none
                 )
             }
@@ -876,7 +883,7 @@ private struct ParentStepRecordCard: View {
                 message: language.text(japanese: "間違えた単語だけを子供メニューから練習できるようにします。", english: "Let the child practice only the words that need review."),
                 buttonTitle: language.text(japanese: "復習に出す", english: "Use for Review"),
                 systemImage: "arrow.counterclockwise.circle.fill",
-                tint: Color(red: 0.90, green: 0.45, blue: 0.12),
+                tint: ParentPalette.warning,
                 kind: .reviewWords
             )
         }
@@ -887,7 +894,7 @@ private struct ParentStepRecordCard: View {
             message: language.text(japanese: "再テストなど別の日の結果があれば記録できます。", english: "Record another test date if needed."),
             buttonTitle: nil,
             systemImage: "eye.fill",
-            tint: Color(red: 0.13, green: 0.40, blue: 0.78),
+            tint: ParentPalette.primary,
             kind: .none
         )
     }
@@ -902,7 +909,7 @@ private struct ParentStepRecordCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(step.title(language: language))
                         .font(.title2.monospacedDigit().weight(.heavy))
-                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                        .foregroundStyle(ParentPalette.ink)
                     Label(
                         language.text(
                             japanese: "単語登録日 \(formattedStepDate(step.registeredDate, language: language))",
@@ -919,10 +926,10 @@ private struct ParentStepRecordCard: View {
                 if step.id == model.selectedWordStepID {
                     Label(language.text(japanese: "選択中", english: "Selected"), systemImage: "checkmark.circle.fill")
                         .font(.caption.weight(.heavy))
-                        .foregroundStyle(Color(red: 0.14, green: 0.42, blue: 0.78))
+                        .foregroundStyle(ParentPalette.primary)
                         .padding(.vertical, 6)
                         .padding(.horizontal, 9)
-                        .background(Color(red: 0.90, green: 0.96, blue: 1.0))
+                        .background(ParentPalette.primarySoft)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 } else {
                     Button {
@@ -933,7 +940,7 @@ private struct ParentStepRecordCard: View {
                     .buttonStyle(.bordered)
             .tapFeedback()
                     .font(.caption.weight(.bold))
-                    .tint(Color(red: 0.13, green: 0.40, blue: 0.78))
+                    .tint(ParentPalette.primary)
                 }
             }
 
@@ -949,19 +956,19 @@ private struct ParentStepRecordCard: View {
                     title: language.text(japanese: "覚えた単語", english: "Learned"),
                     value: "\(learnedCount)/\(step.words.count)",
                     systemImage: "brain.head.profile",
-                    tint: Color(red: 0.20, green: 0.58, blue: 0.24)
+                    tint: ParentPalette.primary
                 )
                 ParentStepMetricPill(
                     title: language.text(japanese: "テスト回数", english: "App Tests"),
                     value: language.text(japanese: "\(appTestSessionCount)回", english: "\(appTestSessionCount) times"),
                     systemImage: "checklist.checked",
-                    tint: Color(red: 0.13, green: 0.40, blue: 0.78)
+                    tint: ParentPalette.primary
                 )
                 ParentStepMetricPill(
                     title: language.text(japanese: "学校テスト", english: "School Test"),
                     value: schoolScoreText,
                     systemImage: "graduationcap.fill",
-                    tint: Color(red: 0.56, green: 0.34, blue: 0.78)
+                    tint: ParentPalette.primary
                 )
             }
 
@@ -969,17 +976,17 @@ private struct ParentStepRecordCard: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Label(language.text(japanese: "前ステップから自動で出る", english: "Auto-added from previous step"), systemImage: "arrow.forward.circle.fill")
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                        .foregroundStyle(ParentPalette.primary)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(carryOverReviewWords) { word in
                                 Text(word.text)
                                     .font(.headline.weight(.heavy))
-                                    .foregroundStyle(Color(red: 0.46, green: 0.26, blue: 0.68))
+                                    .foregroundStyle(ParentPalette.primary)
                                     .padding(.vertical, 6)
                                     .padding(.horizontal, 10)
-                                    .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                                    .background(ParentPalette.primarySoft)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                             }
                         }
@@ -993,7 +1000,7 @@ private struct ParentStepRecordCard: View {
                     .foregroundStyle(.secondary)
                 }
                 .padding(10)
-                .background(Color(red: 0.98, green: 0.95, blue: 1.0))
+                .background(ParentPalette.surfaceTint)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
@@ -1001,17 +1008,17 @@ private struct ParentStepRecordCard: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Label(language.text(japanese: "ふりかえり候補", english: "Review Words"), systemImage: "arrow.counterclockwise")
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(Color(red: 0.80, green: 0.36, blue: 0.08))
+                        .foregroundStyle(ParentPalette.warning)
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(reviewWords) { word in
                                 Text(word.text)
                                     .font(.headline.weight(.heavy))
-                                    .foregroundStyle(Color(red: 0.70, green: 0.30, blue: 0.05))
+                                    .foregroundStyle(ParentPalette.warning)
                                     .padding(.vertical, 6)
                                     .padding(.horizontal, 10)
-                                    .background(Color(red: 1.0, green: 0.94, blue: 0.84))
+                                    .background(ParentPalette.warningSoft)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                             }
                         }
@@ -1055,7 +1062,7 @@ private struct ParentStepRecordCard: View {
                 }
                 .buttonStyle(.bordered)
                 .tapFeedback()
-                .tint(Color(red: 0.56, green: 0.34, blue: 0.78))
+                .tint(ParentPalette.primary)
             }
 
             Text(step.words.map(\.text).joined(separator: " / "))
@@ -1113,7 +1120,7 @@ private struct ParentStepRecordCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+                            .stroke(ParentPalette.primary.opacity(0.14), lineWidth: 1)
                     )
             }
 
@@ -1134,12 +1141,12 @@ private struct ParentStepRecordCard: View {
                 }
                 .buttonStyle(.borderedProminent)
             .tapFeedback()
-                .tint(Color(red: 0.56, green: 0.34, blue: 0.78))
+                .tint(ParentPalette.primary)
                 .disabled(!canSaveSchoolResult)
             }
         }
         .padding(12)
-        .background(Color(red: 0.99, green: 0.98, blue: 1.0))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
@@ -1239,7 +1246,7 @@ private struct ParentStepRecordPrimaryActionCard: View {
                     .foregroundStyle(action.tint)
                 Text(action.title)
                     .font(.title3.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.76)
                 Text(action.message)
@@ -1278,7 +1285,7 @@ private struct ParentSchoolScorePreview: View {
         HStack(spacing: 8) {
             Image(systemName: score == total ? "checkmark.seal.fill" : "graduationcap.fill")
                 .font(.headline.weight(.bold))
-                .foregroundStyle(score == total ? Color(red: 0.20, green: 0.62, blue: 0.24) : Color(red: 0.90, green: 0.45, blue: 0.12))
+                .foregroundStyle(score == total ? ParentPalette.success : ParentPalette.warning)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(language.text(japanese: "点数", english: "Score"))
@@ -1286,7 +1293,7 @@ private struct ParentSchoolScorePreview: View {
                     .foregroundStyle(.secondary)
                 Text("\(score)/\(total)")
                     .font(.headline.monospacedDigit().weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
             }
         }
         .padding(.vertical, 8)
@@ -1311,7 +1318,7 @@ private struct ParentSchoolMissedWordPicker: View {
             HStack(spacing: 10) {
                 Label(language.text(japanese: "間違えた単語を選ぶ", english: "Choose missed words"), systemImage: "text.badge.xmark")
                     .font(.headline.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                    .foregroundStyle(ParentPalette.primary)
 
                 Spacer()
 
@@ -1326,7 +1333,7 @@ private struct ParentSchoolMissedWordPicker: View {
                     }
                     .buttonStyle(.bordered)
                     .tapFeedback()
-                    .tint(Color(red: 0.20, green: 0.62, blue: 0.24))
+                    .tint(ParentPalette.success)
                 }
             }
 
@@ -1373,7 +1380,7 @@ private struct ParentSchoolWordChoiceButton: View {
     var action: () -> Void
 
     private var tint: Color {
-        isMissed ? Color(red: 0.90, green: 0.45, blue: 0.12) : Color(red: 0.20, green: 0.62, blue: 0.24)
+        isMissed ? ParentPalette.warning : ParentPalette.success
     }
 
     private var promptText: String {
@@ -1390,7 +1397,7 @@ private struct ParentSchoolWordChoiceButton: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(word.text)
                         .font(.headline.weight(.heavy))
-                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                        .foregroundStyle(ParentPalette.ink)
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
 
@@ -1407,7 +1414,7 @@ private struct ParentSchoolWordChoiceButton: View {
             }
             .frame(minHeight: 52)
             .padding(.horizontal, 10)
-            .background(isMissed ? Color(red: 1.0, green: 0.94, blue: 0.84) : Color(red: 0.90, green: 0.97, blue: 0.88))
+            .background(isMissed ? ParentPalette.warningSoft : ParentPalette.successSoft)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
@@ -1447,7 +1454,7 @@ private struct ParentStepMetricPill: View {
                     .lineLimit(1)
                 Text(value)
                     .font(.headline.monospacedDigit().weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.70)
             }
@@ -1490,7 +1497,7 @@ private struct SchoolTestResultPanel: View {
         ParentPanel(
             title: language.text(japanese: "学校テスト", english: "School Test"),
             systemImage: "graduationcap.fill",
-            tint: Color(red: 0.56, green: 0.34, blue: 0.78)
+            tint: ParentPalette.primary
         ) {
             Text(language.text(
                 japanese: "学校で返ってきたスペリングテストの結果を、アプリの練習記録とは別に保存します。",
@@ -1521,16 +1528,16 @@ private struct SchoolTestResultPanel: View {
                                         .foregroundStyle(.secondary)
                                     Text(selectedStep?.title(language: language) ?? language.text(japanese: "選ぶ", english: "Choose"))
                                         .font(.headline.monospacedDigit().weight(.heavy))
-                                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                                        .foregroundStyle(ParentPalette.ink)
                                 }
 
                                 Image(systemName: "chevron.up.chevron.down")
                                     .font(.subheadline.weight(.heavy))
-                                    .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                                    .foregroundStyle(ParentPalette.primary)
                             }
                             .padding(.vertical, 9)
                             .padding(.horizontal, 12)
-                            .background(Color(red: 0.97, green: 0.93, blue: 1.0))
+                            .background(ParentPalette.primarySoft)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                         .buttonStyle(.plain)
@@ -1565,11 +1572,11 @@ private struct SchoolTestResultPanel: View {
                                 .font(.body.monospaced())
                                 .frame(height: 70)
                                 .padding(8)
-                                .background(Color(red: 0.98, green: 0.97, blue: 1.0))
+                                .background(ParentPalette.surfaceTint)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+                                        .stroke(ParentPalette.primary.opacity(0.14), lineWidth: 1)
                                 )
                         }
 
@@ -1581,11 +1588,11 @@ private struct SchoolTestResultPanel: View {
                                 .font(.body)
                                 .frame(height: 64)
                                 .padding(8)
-                                .background(Color(red: 0.98, green: 0.97, blue: 1.0))
+                                .background(ParentPalette.surfaceTint)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+                                        .stroke(ParentPalette.primary.opacity(0.14), lineWidth: 1)
                                 )
                         }
                     }
@@ -1593,7 +1600,7 @@ private struct SchoolTestResultPanel: View {
                 } label: {
                     Label(language.text(japanese: "間違えた単語・メモを追加", english: "Add missed words or note"), systemImage: "plus.circle.fill")
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                        .foregroundStyle(ParentPalette.primary)
                 }
 
                 HStack {
@@ -1606,16 +1613,16 @@ private struct SchoolTestResultPanel: View {
                     }
                     .buttonStyle(.borderedProminent)
             .tapFeedback()
-                    .tint(Color(red: 0.56, green: 0.34, blue: 0.78))
+                    .tint(ParentPalette.primary)
                     .disabled(!canSave)
                 }
             }
             .padding(12)
-            .background(Color(red: 0.99, green: 0.98, blue: 1.0))
+            .background(ParentPalette.surfaceTint)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+                    .stroke(ParentPalette.primary.opacity(0.14), lineWidth: 1)
             )
 
             Divider()
@@ -1719,17 +1726,17 @@ private struct SchoolTestResultDatePicker: View {
             HStack {
                 Label(language.text(japanese: "見る結果の日付", english: "Result Date"), systemImage: "calendar")
                     .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                    .foregroundStyle(ParentPalette.primary)
 
                 Spacer()
 
                 if results.count > 1 {
                     Text(language.text(japanese: "\(results.count)日分", english: "\(results.count) dates"))
                         .font(.caption.weight(.heavy))
-                        .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                        .foregroundStyle(ParentPalette.primary)
                         .padding(.vertical, 5)
                         .padding(.horizontal, 8)
-                        .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                        .background(ParentPalette.primarySoft)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
@@ -1781,10 +1788,10 @@ private struct SchoolTestResultDateButton: View {
                     .font(.caption.weight(.bold))
                     .lineLimit(1)
             }
-            .foregroundStyle(isSelected ? .white : Color(red: 0.24, green: 0.22, blue: 0.34))
+            .foregroundStyle(isSelected ? .white : ParentPalette.ink)
             .padding(.vertical, 8)
             .padding(.horizontal, 11)
-            .background(isSelected ? Color(red: 0.56, green: 0.34, blue: 0.78) : Color.white.opacity(0.92))
+            .background(isSelected ? ParentPalette.primary : Color.white.opacity(0.92))
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .shadow(color: .black.opacity(isSelected ? 0.08 : 0.035), radius: 7, x: 0, y: 4)
         }
@@ -1820,12 +1827,12 @@ private struct SchoolTestResultCard: View {
     private var scoreColor: Color {
         let ratio = Double(result.score) / Double(max(result.total, 1))
         if ratio >= 0.9 {
-            return Color(red: 0.24, green: 0.62, blue: 0.26)
+            return ParentPalette.success
         }
         if ratio >= 0.7 {
-            return Color(red: 0.88, green: 0.52, blue: 0.12)
+            return ParentPalette.warning
         }
-        return Color(red: 0.78, green: 0.22, blue: 0.18)
+        return ParentPalette.danger
     }
 
     var body: some View {
@@ -1849,7 +1856,7 @@ private struct SchoolTestResultCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(language.text(japanese: "学校テスト結果", english: "School Test Result"))
                     .font(.headline.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
                 Text(
                     "\(result.stepTitle.isEmpty ? language.text(japanese: "ステップ未設定", english: "No step") : result.stepTitle) ・ " +
                     language.text(
@@ -1863,7 +1870,7 @@ private struct SchoolTestResultCard: View {
                 if !result.missedWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Label(result.missedWords, systemImage: "text.badge.xmark")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(Color(red: 0.75, green: 0.28, blue: 0.18))
+                        .foregroundStyle(ParentPalette.danger)
                 }
 
                 if !result.note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -1884,11 +1891,11 @@ private struct SchoolTestResultCard: View {
             }
             .buttonStyle(.bordered)
             .tapFeedback()
-            .tint(Color(red: 0.76, green: 0.22, blue: 0.18))
+            .tint(ParentPalette.danger)
             .accessibilityLabel(language.text(japanese: "学校テスト結果を削除", english: "Delete school test result"))
         }
         .padding(12)
-        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
     }
@@ -1897,10 +1904,10 @@ private struct SchoolTestResultCard: View {
 private struct ParentPanel<Content: View>: View {
     var title: String
     var systemImage: String
-    var tint: Color = Color(red: 0.19, green: 0.54, blue: 0.22)
+    var tint: Color = ParentPalette.primary
     var content: Content
 
-    init(title: String, systemImage: String, tint: Color = Color(red: 0.19, green: 0.54, blue: 0.22), @ViewBuilder content: () -> Content) {
+    init(title: String, systemImage: String, tint: Color = ParentPalette.primary, @ViewBuilder content: () -> Content) {
         self.title = title
         self.systemImage = systemImage
         self.tint = tint
@@ -1917,7 +1924,7 @@ private struct ParentPanel<Content: View>: View {
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .padding(14)
-        .background(.white.opacity(0.92))
+        .background(ParentPalette.surface)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.07), radius: 10, x: 0, y: 6)
     }
@@ -1975,7 +1982,7 @@ private struct ParentWordStepPanel: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .tapFeedback()
-                    .tint(Color(red: 0.13, green: 0.40, blue: 0.78))
+                    .tint(ParentPalette.primary)
                 }
             }
         }
@@ -2010,7 +2017,7 @@ private struct ParentWordStepCard: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(step.title(language: language))
                             .font(.title3.monospacedDigit().weight(.heavy))
-                            .foregroundStyle(isSelected ? Color(red: 0.10, green: 0.30, blue: 0.70) : Color(red: 0.12, green: 0.22, blue: 0.38))
+                            .foregroundStyle(ParentPalette.ink)
                         Text("\(formattedStepDate(step.registeredDate, language: language)) ・ \(step.words.count) \(language.text(japanese: "単語", english: "words"))")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.secondary)
@@ -2021,22 +2028,22 @@ private struct ParentWordStepCard: View {
                     if isSelected {
                         Label(language.text(japanese: "選択中", english: "Selected"), systemImage: "checkmark.circle.fill")
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(Color(red: 0.14, green: 0.42, blue: 0.78))
+                            .foregroundStyle(ParentPalette.primary)
                             .padding(.vertical, 5)
                             .padding(.horizontal, 8)
-                            .background(Color(red: 0.90, green: 0.96, blue: 1.0))
+                            .background(ParentPalette.primarySoft)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                 }
 
                 Text(wordSummary)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color(red: 0.18, green: 0.24, blue: 0.34))
+                    .foregroundStyle(ParentPalette.ink)
                     .lineLimit(3)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(12)
-            .background(isSelected ? Color(red: 0.92, green: 0.97, blue: 1.0) : Color(red: 0.98, green: 0.99, blue: 0.97))
+            .background(isSelected ? ParentPalette.primarySoft : ParentPalette.surfaceTint)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .shadow(color: .black.opacity(isSelected ? 0.07 : 0.04), radius: 8, x: 0, y: 4)
         }
@@ -2070,11 +2077,11 @@ private struct ParentWordListPanel: View {
                 .font(.title3.monospaced())
                 .frame(minHeight: 180, maxHeight: 210)
                 .padding(8)
-                .background(Color(red: 0.96, green: 0.99, blue: 0.96))
+                .background(ParentPalette.surfaceTint)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.green.opacity(0.18), lineWidth: 1)
+                        .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
                 )
 
             if let importMessage {
@@ -2096,7 +2103,7 @@ private struct ParentWordListPanel: View {
                 }
                 .buttonStyle(.borderedProminent)
             .tapFeedback()
-                .tint(Color(red: 0.14, green: 0.42, blue: 0.78))
+                .tint(ParentPalette.primary)
                 .disabled(isScanningWordImage)
 
                 Button {
@@ -2141,8 +2148,8 @@ private struct ParentWordListPanel: View {
                                             text: word.promptText,
                                             baseFontSize: 13,
                                             rubyFontSize: 7,
-                                            baseColor: Color(red: 0.18, green: 0.38, blue: 0.72),
-                                            rubyColor: Color(red: 0.46, green: 0.32, blue: 0.64),
+                                            baseColor: ParentPalette.primary,
+                                            rubyColor: ParentPalette.neutral,
                                             maxLines: 1
                                         )
                                     }
@@ -2287,9 +2294,9 @@ private struct WordImportStatusBanner: View {
 
             Spacer(minLength: 0)
         }
-        .foregroundStyle(isSuccess ? Color(red: 0.15, green: 0.48, blue: 0.22) : Color(red: 0.65, green: 0.34, blue: 0.05))
+        .foregroundStyle(isSuccess ? ParentPalette.success : ParentPalette.warning)
         .padding(10)
-        .background(isSuccess ? Color(red: 0.90, green: 0.97, blue: 0.88) : Color(red: 1.0, green: 0.95, blue: 0.84))
+        .background(isSuccess ? ParentPalette.successSoft : ParentPalette.warningSoft)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -2456,7 +2463,7 @@ private struct SettingBlock<Content: View>: View {
             content
         }
         .padding(10)
-        .background(Color(red: 0.97, green: 0.99, blue: 0.96))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -2563,7 +2570,7 @@ private struct ParentGradingPanel: View {
         ParentPanel(
             title: language.text(japanese: "採点", english: "Grade"),
             systemImage: "checkmark.seal.fill",
-            tint: Color(red: 0.12, green: 0.36, blue: 0.72)
+            tint: ParentPalette.primary
         ) {
             if sessions.isEmpty {
                 ContentUnavailableView(
@@ -2734,7 +2741,7 @@ private struct GradingWorkHeader: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text(title)
                     .font(.system(size: 28, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.38))
+                    .foregroundStyle(ParentPalette.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                 Text(subtitle)
@@ -2753,7 +2760,7 @@ private struct GradingWorkHeader: View {
                     Text(language.text(japanese: "件", english: "left"))
                         .font(.headline.weight(.heavy))
                 }
-                .foregroundStyle(unreviewedCount > 0 ? Color(red: 0.90, green: 0.45, blue: 0.12) : Color(red: 0.20, green: 0.62, blue: 0.24))
+                .foregroundStyle(unreviewedCount > 0 ? ParentPalette.warning : ParentPalette.success)
 
                 Picker("", selection: $filter) {
                     ForEach(ParentGradingSessionFilter.allCases) { filter in
@@ -2770,7 +2777,7 @@ private struct GradingWorkHeader: View {
         .background(
             LinearGradient(
                 colors: [
-                    Color(red: 0.93, green: 0.97, blue: 1.0),
+                    ParentPalette.primarySoft,
                     Color.white.opacity(0.95)
                 ],
                 startPoint: .leading,
@@ -2813,14 +2820,7 @@ private enum ParentGradingSessionKind: Equatable {
     }
 
     var tint: Color {
-        switch self {
-        case .test:
-            return Color(red: 0.15, green: 0.38, blue: 0.76)
-        case .practice:
-            return Color(red: 0.48, green: 0.28, blue: 0.72)
-        case .review:
-            return Color(red: 0.11, green: 0.48, blue: 0.34)
-        }
+        ParentPalette.primary
     }
 }
 
@@ -2963,13 +2963,13 @@ private struct ParentGradingSessionCard: View {
                     .font(.title2.weight(.bold))
                     .foregroundStyle(.white)
                     .frame(width: 44, height: 44)
-                    .background(session.kind.tint)
+                    .background(ParentPalette.primary)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(session.title(language: language))
                         .font(.title2.weight(.heavy))
-                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                        .foregroundStyle(ParentPalette.ink)
                     Text(session.date.formatted(date: .abbreviated, time: .shortened))
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
@@ -2982,10 +2982,10 @@ private struct ParentGradingSessionCard: View {
                     : language.text(japanese: "採点済み", english: "Done")
                 )
                 .font(.headline.monospacedDigit().weight(.heavy))
-                .foregroundStyle(session.unreviewedCount > 0 ? Color(red: 0.90, green: 0.45, blue: 0.12) : Color(red: 0.20, green: 0.62, blue: 0.24))
+                .foregroundStyle(session.unreviewedCount > 0 ? ParentPalette.warning : ParentPalette.success)
                 .padding(.vertical, 8)
                 .padding(.horizontal, 12)
-                .background((session.unreviewedCount > 0 ? Color(red: 1.0, green: 0.93, blue: 0.82) : Color(red: 0.90, green: 0.97, blue: 0.88)))
+                .background((session.unreviewedCount > 0 ? ParentPalette.warningSoft : ParentPalette.successSoft))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
@@ -3004,7 +3004,7 @@ private struct ParentGradingSessionCard: View {
             .animation(.easeInOut(duration: 0.22), value: visibleSamples.map(\.id))
         }
         .padding(12)
-        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
     }
@@ -3276,7 +3276,7 @@ private struct GradingItemHeader: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(word)
                     .font(.system(size: 28, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Color(red: 0.10, green: 0.27, blue: 0.62))
+                    .foregroundStyle(ParentPalette.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                 if let detail, !detail.isEmpty {
@@ -3321,7 +3321,7 @@ private struct ParentReviewButtons: View {
             }
             .buttonStyle(.borderedProminent)
             .tapFeedback()
-            .tint(Color(red: 0.20, green: 0.62, blue: 0.24))
+            .tint(ParentPalette.success)
             .allowsHitTesting(pendingDecision == nil)
 
             Button(action: needsPractice) {
@@ -3336,7 +3336,7 @@ private struct ParentReviewButtons: View {
             }
             .buttonStyle(.bordered)
             .tapFeedback()
-            .tint(Color(red: 0.90, green: 0.45, blue: 0.12))
+            .tint(ParentPalette.warning)
             .allowsHitTesting(pendingDecision == nil)
         }
     }
@@ -3388,12 +3388,12 @@ private struct ParentNeedsPracticeBanner: View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "exclamationmark.circle.fill")
                 .font(.headline.weight(.bold))
-                .foregroundStyle(Color(red: 0.90, green: 0.45, blue: 0.12))
+                .foregroundStyle(ParentPalette.warning)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(language.text(japanese: "直そうにしました", english: "Marked Needs Fix"))
                     .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.58, green: 0.27, blue: 0.05))
+                    .foregroundStyle(ParentPalette.warning)
                 Text(language.text(japanese: "お手本を書くと、子供の復習に出せます。", english: "Add a model for the child to review."))
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
@@ -3402,11 +3402,11 @@ private struct ParentNeedsPracticeBanner: View {
             Spacer(minLength: 0)
         }
         .padding(10)
-        .background(Color(red: 1.0, green: 0.93, blue: 0.82))
+        .background(ParentPalette.warningSoft)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.95, green: 0.62, blue: 0.26), lineWidth: 1)
+                .stroke(ParentPalette.warning.opacity(0.22), lineWidth: 1)
         )
     }
 }
@@ -3421,19 +3421,10 @@ private struct ParentApprovedBanner: View {
             Image(systemName: "star.fill")
         }
         .font(.headline.weight(.heavy))
-        .foregroundStyle(Color(red: 0.52, green: 0.30, blue: 0.02))
+        .foregroundStyle(ParentPalette.success)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 10)
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 1.0, green: 0.88, blue: 0.28),
-                    Color(red: 0.74, green: 0.94, blue: 0.38)
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
+        .background(ParentPalette.successSoft)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -3455,17 +3446,17 @@ private struct ParentExampleEditor: View {
             HStack(spacing: 10) {
                 Label(language.text(japanese: "親のお手本", english: "Parent Model"), systemImage: "pencil.and.scribble")
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(Color(red: 0.66, green: 0.30, blue: 0.04))
+                    .foregroundStyle(ParentPalette.warning)
 
                 Spacer()
 
                 if hasSavedModel {
                     Label(language.text(japanese: "保存済み", english: "Saved"), systemImage: "checkmark.circle.fill")
                         .font(.caption.weight(.heavy))
-                        .foregroundStyle(Color(red: 0.20, green: 0.58, blue: 0.24))
+                        .foregroundStyle(ParentPalette.success)
                         .padding(.vertical, 5)
                         .padding(.horizontal, 8)
-                        .background(Color(red: 0.89, green: 0.97, blue: 0.87))
+                        .background(ParentPalette.successSoft)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
@@ -3483,7 +3474,7 @@ private struct ParentExampleEditor: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(red: 0.95, green: 0.75, blue: 0.32), lineWidth: 1)
+                    .stroke(ParentPalette.warning.opacity(0.22), lineWidth: 1)
             )
 
             HStack {
@@ -3517,7 +3508,7 @@ private struct ParentExampleEditor: View {
             .font(.subheadline.weight(.bold))
         }
         .padding(12)
-        .background(Color(red: 1.0, green: 0.97, blue: 0.88))
+        .background(ParentPalette.warningSoft)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .onAppear {
             loadInitialDrawingIfNeeded()
@@ -3548,22 +3539,22 @@ private func parentGuideLabels(language: AppLanguage) -> [String] {
 private func reviewTint(for decision: ParentReviewDecision) -> Color {
     switch decision {
     case .unreviewed:
-        return Color.gray
+        return ParentPalette.neutral
     case .approved:
-        return Color(red: 0.20, green: 0.62, blue: 0.24)
+        return ParentPalette.success
     case .needsPractice:
-        return Color(red: 0.90, green: 0.45, blue: 0.12)
+        return ParentPalette.warning
     }
 }
 
 private func gradingBackground(for decision: ParentReviewDecision) -> Color {
     switch decision {
     case .unreviewed:
-        return Color.white.opacity(0.92)
+        return ParentPalette.surface
     case .approved:
-        return Color(red: 1.0, green: 0.98, blue: 0.80)
+        return ParentPalette.successSoft
     case .needsPractice:
-        return Color(red: 1.0, green: 0.96, blue: 0.88)
+        return ParentPalette.warningSoft
     }
 }
 
@@ -3663,7 +3654,7 @@ private struct AnswerReviewPanel: View {
             HStack {
                 Label(language.text(japanese: "れんしゅう記録", english: "Practice Samples"), systemImage: "pencil.and.scribble")
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(Color(red: 0.16, green: 0.42, blue: 0.78))
+                    .foregroundStyle(ParentPalette.primary)
 
                 Spacer()
 
@@ -3687,7 +3678,7 @@ private struct AnswerReviewPanel: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, minHeight: 80, alignment: .center)
-                .background(Color(red: 0.97, green: 0.99, blue: 0.96))
+                .background(ParentPalette.surfaceTint)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 ScrollView {
@@ -3725,7 +3716,7 @@ private struct LearningHistoryPanel: View {
                 modeLabel: language.text(japanese: "テスト", english: "Test"),
                 detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
                 systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
-                tint: attempt.decision == .autoCorrect ? Color.green : Color.orange,
+                tint: attempt.decision == .autoCorrect ? ParentPalette.success : ParentPalette.warning,
                 drawingData: attempt.drawingData
             )
         }
@@ -3742,7 +3733,7 @@ private struct LearningHistoryPanel: View {
                 modeLabel: modeLabel,
                 detail: language.text(japanese: "手書き記録", english: "Handwriting saved"),
                 systemImage: "pencil.and.scribble",
-                tint: Color(red: 0.16, green: 0.42, blue: 0.78),
+                tint: ParentPalette.primary,
                 drawingData: sample.drawingData
             )
         }
@@ -3755,7 +3746,7 @@ private struct LearningHistoryPanel: View {
                 modeLabel: language.text(japanese: "学校テスト", english: "School Test"),
                 detail: "\(result.score)/\(result.total)" + (result.missedWords.isEmpty ? "" : " ・ \(result.missedWords)"),
                 systemImage: "graduationcap.fill",
-                tint: Color(red: 0.56, green: 0.34, blue: 0.78),
+                tint: ParentPalette.primary,
                 drawingData: nil
             )
         }
@@ -3838,7 +3829,7 @@ private struct HandwritingListPanel: View {
                 modeLabel: language.text(japanese: "テスト", english: "Test"),
                 detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
                 systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
-                tint: attempt.decision == .autoCorrect ? Color.green : Color.orange,
+                tint: attempt.decision == .autoCorrect ? ParentPalette.success : ParentPalette.warning,
                 drawingData: drawingData
             )
         }
@@ -3855,7 +3846,7 @@ private struct HandwritingListPanel: View {
                 modeLabel: modeLabel,
                 detail: language.text(japanese: "手書き記録", english: "Handwriting saved"),
                 systemImage: "pencil.and.scribble",
-                tint: Color(red: 0.16, green: 0.42, blue: 0.78),
+                tint: ParentPalette.primary,
                 drawingData: sample.drawingData
             )
         }
@@ -3920,7 +3911,7 @@ private struct ParentHandwritingListCard: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(entry.word)
                         .font(.title2.weight(.bold))
-                        .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                        .foregroundStyle(ParentPalette.ink)
                     Text("\(entry.modeLabel) ・ \(entry.date.formatted(date: .abbreviated, time: .shortened))")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
@@ -3944,11 +3935,11 @@ private struct ParentHandwritingListCard: View {
             }
         }
         .padding(12)
-        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.77, green: 0.86, blue: 0.72), lineWidth: 1)
+                .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
         )
     }
 }
@@ -3991,7 +3982,7 @@ private struct LearningHistoryCard: View {
             }
         }
         .padding(10)
-        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -4028,8 +4019,8 @@ private struct ReviewAttemptSummaryCard: View {
                     .font(.caption.weight(.bold))
                     .padding(.vertical, 5)
                     .padding(.horizontal, 8)
-                    .background(Color.orange.opacity(0.12))
-                    .foregroundStyle(Color.orange)
+                    .background(ParentPalette.warning.opacity(0.12))
+                    .foregroundStyle(ParentPalette.warning)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
@@ -4064,7 +4055,7 @@ private struct ReviewAttemptSummaryCard: View {
             .font(.caption.weight(.bold))
         }
         .padding(10)
-        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -4104,7 +4095,7 @@ private struct ParentPracticeSampleCard: View {
 
                 Image(systemName: "text.bubble.fill")
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(Color(red: 0.16, green: 0.42, blue: 0.78))
+                    .foregroundStyle(ParentPalette.primary)
             }
 
             DrawingPreview(drawingData: sample.drawingData)
@@ -4117,7 +4108,7 @@ private struct ParentPracticeSampleCard: View {
                 )
         }
         .padding(10)
-        .background(Color(red: 0.97, green: 0.99, blue: 0.97))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -4128,14 +4119,14 @@ private struct ProgressRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.green.opacity(0.18), lineWidth: 12)
+                .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 12)
             Circle()
                 .trim(from: 0, to: max(0, min(progress, 1)))
-                .stroke(Color(red: 0.36, green: 0.70, blue: 0.22), style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                .stroke(ParentPalette.primary, style: StrokeStyle(lineWidth: 12, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             Text("\(Int((max(0, min(progress, 1)) * 100).rounded()))%")
                 .font(.title3.monospacedDigit().weight(.heavy))
-                .foregroundStyle(Color(red: 0.26, green: 0.58, blue: 0.18))
+                .foregroundStyle(ParentPalette.primary)
         }
     }
 }
@@ -4170,8 +4161,8 @@ private struct ParentBackground: View {
     var body: some View {
         LinearGradient(
             colors: [
-                Color(red: 0.94, green: 0.99, blue: 0.93),
-                Color(red: 1.0, green: 0.99, blue: 0.96)
+                ParentPalette.primarySoft,
+                Color.white.opacity(0.96)
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
