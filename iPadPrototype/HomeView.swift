@@ -2031,9 +2031,12 @@ private struct CharacterPickerSheet: View {
                             }
                         }
                         .padding(.vertical, 2)
+                        .padding(.bottom, 24)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scrollIndicators(.visible)
                 }
-                .frame(maxWidth: 820)
+                .frame(maxWidth: 820, maxHeight: .infinity, alignment: .top)
                 .padding(28)
             }
             .toolbar {
