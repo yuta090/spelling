@@ -356,6 +356,46 @@ final class AppModel: ObservableObject {
     }
 
     @discardableResult
+    func replaceWords(in step: WordStep, from rawText: String) -> Int {
+        let entries = parseWordListEntries(from: rawText)
+        guard !entries.isEmpty else {
+            return 0
+        }
+
+        let calendar = Calendar.current
+        let stepWords = words.filter { wordBelongs($0, to: step, calendar: calendar) }
+        let explicitStepID = step.words.first { $0.stepID == step.id }?.stepID
+        let fallbackRegisteredAt = stepWords.first?.registeredAt
+            ?? Self.registrationDate(on: calendar.startOfDay(for: step.registeredDate), calendar: calendar)
+        var existingWordsByText: [String: SpellingWord] = [:]
+
+        for word in stepWords {
+            let key = normalize(word.text)
+            if existingWordsByText[key] == nil {
+                existingWordsByText[key] = word
+            }
+        }
+
+        let replacementWords = entries.map { entry in
+            let key = normalize(entry.text)
+            var word = existingWordsByText[key] ?? SpellingWord(
+                text: key,
+                registeredAt: fallbackRegisteredAt,
+                stepID: explicitStepID
+            )
+            word.text = key
+            word.promptText = entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            word.stepID = explicitStepID
+            return word
+        }
+
+        let untouchedWords = words.filter { !wordBelongs($0, to: step, calendar: calendar) }
+        words = untouchedWords + replacementWords
+        selectedWordStepID = step.id
+        return replacementWords.count
+    }
+
+    @discardableResult
     func addWordsToStep(from rawText: String, registeredAt: Date = Date()) -> (added: Int, updated: Int) {
         let entries = parseWordListEntries(from: rawText)
         guard !entries.isEmpty else {
@@ -388,6 +428,15 @@ final class AppModel: ObservableObject {
         }
 
         return (addedCount, 0)
+    }
+
+    private func wordBelongs(_ word: SpellingWord, to step: WordStep, calendar: Calendar) -> Bool {
+        if let stepID = word.stepID {
+            return stepID == step.id
+        }
+
+        let wordDate = calendar.startOfDay(for: word.registeredAt)
+        return Self.stepID(for: wordDate, calendar: calendar) == step.id
     }
 
     @discardableResult

@@ -2701,6 +2701,354 @@ private struct ParentWordListPanel: View {
     @EnvironmentObject private var model: AppModel
     @State private var rawWords = ""
     @State private var showingWordCamera = false
+    @State private var showingAllWords = false
+    @State private var isScanningWordImage = false
+    @State private var importMessage: String?
+    @State private var importSucceeded = false
+    var language: AppLanguage
+
+    private var selectedStep: WordStep? {
+        model.selectedWordStep
+    }
+
+    var body: some View {
+        ParentPanel(
+            title: language.text(japanese: "このステップの単語", english: "Step Words"),
+            systemImage: "list.bullet.rectangle"
+        ) {
+            if let step = selectedStep {
+                HStack(alignment: .center, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(step.title(language: language))
+                            .font(.title2.monospacedDigit().weight(.heavy))
+                            .foregroundStyle(ParentPalette.ink)
+                        Text(language.text(
+                            japanese: "このステップだけを編集します",
+                            english: "Only this step will be edited"
+                        ))
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        showingAllWords = true
+                    } label: {
+                        Label(language.text(japanese: "全単語を見る", english: "All Words"), systemImage: "tray.full.fill")
+                            .font(.subheadline.weight(.bold))
+                    }
+                    .buttonStyle(.bordered)
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
+                }
+
+                Text(language.text(
+                    japanese: "1行に1単語。日本語や説明を出す時は「friend | 友[とも]だち」のように書けます。",
+                    english: "One word per line. Add a prompt like \"friend | friend meaning.\""
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+                TextEditor(text: $rawWords)
+                    .font(.title3.monospaced())
+                    .frame(minHeight: 180, maxHeight: 230)
+                    .padding(8)
+                    .background(ParentPalette.surfaceTint)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
+                    )
+
+                if let importMessage {
+                    WordImportStatusBanner(
+                        message: importMessage,
+                        isSuccess: importSucceeded,
+                        isScanning: isScanningWordImage
+                    )
+                }
+
+                HStack {
+                    Button {
+                        startCameraImport()
+                    } label: {
+                        Label(
+                            isScanningWordImage ? language.text(japanese: "読み取り中", english: "Scanning") : language.text(japanese: "カメラで読み取り", english: "Scan Camera"),
+                            systemImage: "camera.fill"
+                        )
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
+                    .disabled(isScanningWordImage)
+
+                    Button {
+                        reloadSelectedStep()
+                    } label: {
+                        Label(language.text(japanese: "戻す", english: "Reload"), systemImage: "arrow.clockwise")
+                    }
+                    .buttonStyle(.bordered)
+                    .tapFeedback()
+
+                    Spacer()
+
+                    Button {
+                        saveSelectedStep(step)
+                    } label: {
+                        Label(language.text(japanese: "このステップを保存", english: "Save This Step"), systemImage: "square.and.arrow.down.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
+                    .disabled(parseWordListEntries(from: rawWords).isEmpty)
+                }
+                .font(.subheadline.weight(.bold))
+
+                Text(language.text(japanese: "このステップ \(step.words.count) 単語", english: "This step: \(step.words.count) words"))
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.secondary)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(step.words) { word in
+                            ParentWordRow(word: word, language: language)
+                            Divider()
+                        }
+                    }
+                }
+                .frame(maxHeight: 210)
+            } else {
+                ContentUnavailableView(
+                    language.text(japanese: "ステップがありません", english: "No step"),
+                    systemImage: "rectangle.stack.fill",
+                    description: Text(language.text(japanese: "先に新しいステップを作ってください。", english: "Create a step first."))
+                )
+                .frame(minHeight: 220)
+            }
+        }
+        .onAppear {
+            reloadSelectedStep()
+        }
+        .onChange(of: model.selectedWordStepID) { _, _ in
+            reloadSelectedStep()
+        }
+        .sheet(isPresented: $showingWordCamera) {
+            WordCameraPicker { image in
+                scanWordImage(image)
+            }
+            .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showingAllWords) {
+            ParentAllWordsSheet(language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
+        }
+    }
+
+    private func reloadSelectedStep() {
+        rawWords = wordListEditorText(selectedStep?.words ?? [])
+        importMessage = nil
+    }
+
+    private func saveSelectedStep(_ step: WordStep) {
+        let count = model.replaceWords(in: step, from: rawWords)
+        importSucceeded = true
+        importMessage = language.text(
+            japanese: "\(count)単語をこのステップに保存しました。",
+            english: "Saved \(count) words in this step."
+        )
+    }
+
+    private func startCameraImport() {
+        importSucceeded = false
+
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            importMessage = language.text(
+                japanese: "この端末ではカメラが使えません。iPad実機で試してください。",
+                english: "Camera is not available on this device. Try it on a real iPad."
+            )
+            return
+        }
+
+        showingWordCamera = true
+    }
+
+    private func scanWordImage(_ image: UIImage) {
+        isScanningWordImage = true
+        importSucceeded = false
+        importMessage = language.text(japanese: "宿題の文字を読み取っています。", english: "Scanning the homework text.")
+
+        Task {
+            do {
+                let importedWords = try await WordListImageTextRecognizer(language: model.settings.language).recognizeWords(in: image)
+                await MainActor.run {
+                    let addedCount = appendImportedWords(importedWords)
+                    isScanningWordImage = false
+
+                    if importedWords.isEmpty {
+                        importSucceeded = false
+                        importMessage = language.text(
+                            japanese: "英単語を見つけられませんでした。明るい場所で、紙全体が入るように撮り直してください。",
+                            english: "No English words were found. Retake it in good light with the whole page visible."
+                        )
+                    } else if addedCount == 0 {
+                        importSucceeded = true
+                        importMessage = language.text(
+                            japanese: "読み取った単語はこのステップに入っています。",
+                            english: "The scanned words are already in this step."
+                        )
+                    } else {
+                        importSucceeded = true
+                        importMessage = language.text(
+                            japanese: "\(addedCount)単語をこのステップに追加しました。保存前に読み間違いを直してください。",
+                            english: "Added \(addedCount) words to this step. Edit misread words before saving."
+                        )
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    isScanningWordImage = false
+                    importSucceeded = false
+                    importMessage = language.text(
+                        japanese: "読み取りに失敗しました。もう一度撮り直してください。",
+                        english: "Scanning failed. Please retake the photo."
+                    )
+                }
+            }
+        }
+    }
+
+    private func appendImportedWords(_ importedWords: [String]) -> Int {
+        let existingWords = parseWordListEntries(from: rawWords).map(\.text)
+        var seen = Set(existingWords)
+        var additions: [String] = []
+
+        for word in importedWords {
+            let normalized = normalize(word)
+            guard !normalized.isEmpty, !seen.contains(normalized) else {
+                continue
+            }
+            seen.insert(normalized)
+            additions.append(normalized)
+        }
+
+        guard !additions.isEmpty else {
+            return 0
+        }
+
+        let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
+        rawWords = currentText.isEmpty
+            ? additions.joined(separator: "\n")
+            : currentText + "\n" + additions.joined(separator: "\n")
+
+        return additions.count
+    }
+}
+
+private struct ParentWordRow: View {
+    var word: SpellingWord
+    var language: AppLanguage
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(word.text)
+                    .font(.headline.weight(.semibold))
+                if !word.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text(language.text(japanese: "ヒント:", english: "Prompt:"))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        RubyPromptText(
+                            text: word.promptText,
+                            baseFontSize: 13,
+                            rubyFontSize: 7,
+                            baseColor: ParentPalette.primary,
+                            rubyColor: ParentPalette.neutral,
+                            maxLines: 1
+                        )
+                    }
+                }
+            }
+
+            Spacer()
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+private struct ParentAllWordsSheet: View {
+    @EnvironmentObject private var model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    var language: AppLanguage
+
+    private var steps: [WordStep] {
+        Array(model.wordSteps.reversed())
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                ParentBackground()
+
+                ParentPanel(
+                    title: language.text(japanese: "全単語", english: "All Words"),
+                    systemImage: "tray.full.fill"
+                ) {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 14) {
+                            ForEach(steps) { step in
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Text(step.title(language: language))
+                                            .font(.headline.monospacedDigit().weight(.heavy))
+                                            .foregroundStyle(ParentPalette.ink)
+                                        Spacer()
+                                        Text(language.text(japanese: "\(step.words.count) 単語", english: "\(step.words.count) words"))
+                                            .font(.caption.monospacedDigit().weight(.bold))
+                                            .foregroundStyle(ParentPalette.primary)
+                                            .padding(.vertical, 5)
+                                            .padding(.horizontal, 8)
+                                            .background(ParentPalette.primarySoft)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    }
+
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        ForEach(step.words) { word in
+                                            ParentWordRow(word: word, language: language)
+                                            Divider()
+                                        }
+                                    }
+                                }
+                                .padding(12)
+                                .background(ParentPalette.surfaceTint)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                    }
+                }
+                .padding(24)
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "閉じる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                    .tapFeedback()
+                }
+            }
+        }
+    }
+}
+
+private struct ParentLegacyWordListPanel: View {
+    @EnvironmentObject private var model: AppModel
+    @State private var rawWords = ""
+    @State private var showingWordCamera = false
     @State private var isScanningWordImage = false
     @State private var importMessage: String?
     @State private var importSucceeded = false
