@@ -817,13 +817,6 @@ private struct ParentStepRecordCard: View {
         return language.text(japanese: "\(latestSchoolResult.score)/\(latestSchoolResult.total) 正解", english: "\(latestSchoolResult.score)/\(latestSchoolResult.total) correct")
     }
 
-    private var schoolScoreDetail: String {
-        guard let latestSchoolResult else {
-            return language.text(japanese: "結果なし", english: "No result")
-        }
-        return formattedLocalizedDate(latestSchoolResult.date, language: language)
-    }
-
     private var appResultText: String {
         guard appTestSessionCount > 0 else {
             return language.text(japanese: "未テスト", english: "Not tested")
@@ -996,7 +989,7 @@ private struct ParentStepRecordCard: View {
                 ParentStepSourceSummaryTile(
                     title: language.text(japanese: "学校のテスト", english: "School Test"),
                     value: schoolScoreText,
-                    detail: schoolScoreDetail,
+                    detail: nil,
                     systemImage: "graduationcap.fill",
                     tint: schoolScoreColor,
                     valueTint: schoolScoreColor
@@ -1461,7 +1454,7 @@ private struct ParentSchoolWordChoiceButton: View {
 private struct ParentStepSourceSummaryTile: View {
     var title: String
     var value: String
-    var detail: String
+    var detail: String?
     var systemImage: String
     var tint: Color
     var valueTint: Color = ParentPalette.ink
@@ -1487,11 +1480,13 @@ private struct ParentStepSourceSummaryTile: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.64)
 
-                Text(detail)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.70)
+                if let detail, !detail.isEmpty {
+                    Text(detail)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.70)
+                }
             }
 
             Spacer(minLength: 0)
@@ -1503,7 +1498,14 @@ private struct ParentStepSourceSummaryTile: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.035), radius: 7, x: 0, y: 4)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(title): \(value), \(detail)")
+        .accessibilityLabel(accessibilityText)
+    }
+
+    private var accessibilityText: String {
+        guard let detail, !detail.isEmpty else {
+            return "\(title): \(value)"
+        }
+        return "\(title): \(value), \(detail)"
     }
 }
 
@@ -1887,10 +1889,11 @@ private struct SchoolTestResultCard: View {
                     Text(result.stepTitle.isEmpty ? language.text(japanese: "ステップ未設定", english: "No step") : result.stepTitle)
                         .font(.headline.weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
+
+                    Text(formattedLocalizedDate(result.date, language: language))
+                        .font(Font.caption.weight(.bold))
+                        .foregroundStyle(.secondary)
                 }
-                Text(formattedLocalizedDate(result.date, language: language))
-                    .font((showsStepTitle ? Font.caption : Font.headline).weight(.bold))
-                    .foregroundStyle(.secondary)
 
                 if !result.missedWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Label(result.missedWords, systemImage: "text.badge.xmark")
