@@ -1347,7 +1347,7 @@ private enum PracticeCelebrationStyle: CaseIterable {
         case .blue:
             return language.text(japanese: "いいかんじ！", english: "Nice!")
         case .green:
-            return language.text(japanese: "よく書けた！", english: "Well written!")
+            return language.text(japanese: "よく書けたね！", english: "Well done writing!")
         case .pink:
             return language.text(japanese: "すごい！", english: "Great!")
         case .sunrise:
