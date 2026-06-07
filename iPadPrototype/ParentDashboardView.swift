@@ -296,10 +296,13 @@ private struct ParentCurrentStepCard: View {
         .padding(12)
         .background(.white.opacity(0.86))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.68, green: 0.80, blue: 0.96), lineWidth: 1)
-        )
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Color(red: 0.13, green: 0.40, blue: 0.78))
+                .frame(width: 5)
+                .padding(.vertical, 12)
+        }
+        .shadow(color: .black.opacity(0.07), radius: 12, x: 0, y: 6)
         .sheet(isPresented: $showingStepChooser) {
             ParentStepChooserSheet(
                 title: language.text(japanese: "ステップを選ぶ", english: "Choose Step"),
@@ -627,10 +630,7 @@ private struct ParentRecordsWorkspace: View {
                             .padding(12)
                             .background(Color.white.opacity(0.86))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
-                            )
+                            .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
                         }
                     }
                 }
@@ -649,10 +649,7 @@ private struct ParentRecordsWorkspace: View {
             .padding(14)
             .background(.white.opacity(0.88))
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
-            )
+            .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
         }
     }
 }
@@ -1031,12 +1028,15 @@ private struct ParentStepRecordCard: View {
                 .lineLimit(2)
         }
         .padding(12)
-        .background(Color(red: 0.98, green: 0.99, blue: 0.97))
+        .background(step.id == model.selectedWordStepID ? Color(red: 0.95, green: 0.98, blue: 1.0) : Color.white.opacity(0.92))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(step.id == model.selectedWordStepID ? Color(red: 0.42, green: 0.63, blue: 0.92) : Color(red: 0.77, green: 0.86, blue: 0.72), lineWidth: step.id == model.selectedWordStepID ? 2 : 1)
-        )
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(step.id == model.selectedWordStepID ? Color(red: 0.13, green: 0.40, blue: 0.78) : Color(red: 0.20, green: 0.58, blue: 0.24).opacity(0.55))
+                .frame(width: 5)
+                .padding(.vertical, 12)
+        }
+        .shadow(color: .black.opacity(step.id == model.selectedWordStepID ? 0.09 : 0.05), radius: step.id == model.selectedWordStepID ? 14 : 9, x: 0, y: 6)
         .onAppear {
             prepareSchoolDefaultsIfNeeded()
         }
@@ -1220,10 +1220,7 @@ private struct ParentStepRecordPrimaryActionCard: View {
         .padding(14)
         .background(action.tint.opacity(0.10))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(action.tint.opacity(0.22), lineWidth: 1)
-        )
+        .shadow(color: action.tint.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -1251,10 +1248,7 @@ private struct ParentSchoolScorePreview: View {
         .padding(.horizontal, 12)
         .background(Color.white.opacity(0.88))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.purple.opacity(0.16), lineWidth: 1)
-        )
+        .shadow(color: .black.opacity(0.04), radius: 7, x: 0, y: 4)
     }
 }
 
@@ -1313,10 +1307,7 @@ private struct ParentSchoolMissedWordPicker: View {
         .padding(10)
         .background(Color.white.opacity(0.72))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.purple.opacity(0.14), lineWidth: 1)
-        )
+        .shadow(color: .black.opacity(0.04), radius: 7, x: 0, y: 4)
     }
 
     private func toggle(_ word: SpellingWord) {
@@ -1375,8 +1366,9 @@ private struct ParentSchoolWordChoiceButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(tint.opacity(isMissed ? 0.55 : 0.22), lineWidth: isMissed ? 2 : 1)
+                    .stroke(isMissed ? tint.opacity(0.55) : .clear, lineWidth: isMissed ? 2 : 1)
             )
+            .shadow(color: .black.opacity(isMissed ? 0.06 : 0.03), radius: 6, x: 0, y: 3)
         }
         .buttonStyle(.plain)
         .tapFeedback()
@@ -1421,10 +1413,7 @@ private struct ParentStepMetricPill: View {
         .padding(.horizontal, 10)
         .background(Color.white.opacity(0.82))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(tint.opacity(0.16), lineWidth: 1)
-        )
+        .shadow(color: .black.opacity(0.035), radius: 7, x: 0, y: 4)
     }
 }
 
@@ -1771,10 +1760,7 @@ private struct SchoolTestResultCard: View {
         .padding(12)
         .background(Color(red: 0.98, green: 0.99, blue: 0.97))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.purple.opacity(0.14), lineWidth: 1)
-        )
+        .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
     }
 }
 
@@ -1803,10 +1789,6 @@ private struct ParentPanel<Content: View>: View {
         .padding(14)
         .background(.white.opacity(0.92))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.77, green: 0.86, blue: 0.72), lineWidth: 1)
-        )
         .shadow(color: .black.opacity(0.07), radius: 10, x: 0, y: 6)
     }
 }
@@ -1926,10 +1908,13 @@ private struct ParentWordStepCard: View {
             .padding(12)
             .background(isSelected ? Color(red: 0.92, green: 0.97, blue: 1.0) : Color(red: 0.98, green: 0.99, blue: 0.97))
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? Color(red: 0.42, green: 0.63, blue: 0.92) : Color(red: 0.77, green: 0.86, blue: 0.72), lineWidth: 1)
-            )
+            .overlay(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(isSelected ? Color(red: 0.13, green: 0.40, blue: 0.78) : Color.clear)
+                    .frame(width: 5)
+                    .padding(.vertical, 10)
+            }
+            .shadow(color: .black.opacity(isSelected ? 0.07 : 0.04), radius: 8, x: 0, y: 4)
         }
         .buttonStyle(.plain)
             .tapFeedback()
@@ -2669,10 +2654,13 @@ private struct GradingWorkHeader: View {
             )
         )
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
-        )
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(unreviewedCount > 0 ? Color(red: 0.90, green: 0.45, blue: 0.12) : Color(red: 0.20, green: 0.62, blue: 0.24))
+                .frame(width: 5)
+                .padding(.vertical, 12)
+        }
+        .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(language.text(
             japanese: "\(title)。\(subtitle)。未採点 \(unreviewedCount) 件。表示 \(filteredCount) / \(totalCount)。",
@@ -2825,12 +2813,15 @@ private struct ParentGradingSessionChip: View {
         .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
-        .background(isSelected ? session.kind.tint : session.kind.tint.opacity(0.10))
+        .background(isSelected ? session.kind.tint : Color.white.opacity(0.88))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(session.kind.tint.opacity(isSelected ? 0 : 0.30), lineWidth: 1)
-        )
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(isSelected ? .white.opacity(0.86) : session.kind.tint.opacity(0.70))
+                .frame(width: 4)
+                .padding(.vertical, 9)
+        }
+        .shadow(color: .black.opacity(isSelected ? 0.08 : 0.04), radius: 7, x: 0, y: 4)
     }
 }
 
@@ -2903,10 +2894,7 @@ private struct ParentGradingSessionCard: View {
         .padding(12)
         .background(Color(red: 0.98, green: 0.99, blue: 0.97))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
-        )
+        .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
     }
 }
 
@@ -3002,10 +2990,12 @@ private struct ParentAttemptGradingCard: View {
         .padding(12)
         .background(gradingBackground(for: attempt.parentReviewDecision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(gradingBorder(for: attempt.parentReviewDecision), lineWidth: isApproved ? 2 : 1)
-        )
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(reviewTint(for: attempt.parentReviewDecision).opacity(attempt.parentReviewDecision == .unreviewed ? 0.36 : 0.92))
+                .frame(width: 5)
+                .padding(.vertical, 12)
+        }
         .overlay(alignment: .topTrailing) {
             if let pendingReviewDecision {
                 ParentReviewActionToast(decision: pendingReviewDecision, language: language)
@@ -3126,10 +3116,12 @@ private struct ParentPracticeGradingCard: View {
         .padding(12)
         .background(gradingBackground(for: sample.parentReviewDecision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(gradingBorder(for: sample.parentReviewDecision), lineWidth: isApproved ? 2 : 1)
-        )
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(reviewTint(for: sample.parentReviewDecision).opacity(sample.parentReviewDecision == .unreviewed ? 0.36 : 0.92))
+                .frame(width: 5)
+                .padding(.vertical, 12)
+        }
         .overlay(alignment: .topTrailing) {
             if let pendingReviewDecision {
                 ParentReviewActionToast(decision: pendingReviewDecision, language: language)
@@ -3472,17 +3464,6 @@ private func gradingBackground(for decision: ParentReviewDecision) -> Color {
         return Color(red: 1.0, green: 0.98, blue: 0.80)
     case .needsPractice:
         return Color(red: 1.0, green: 0.96, blue: 0.88)
-    }
-}
-
-private func gradingBorder(for decision: ParentReviewDecision) -> Color {
-    switch decision {
-    case .unreviewed:
-        return Color(red: 0.72, green: 0.82, blue: 0.96)
-    case .approved:
-        return Color(red: 0.95, green: 0.68, blue: 0.12)
-    case .needsPractice:
-        return Color(red: 0.95, green: 0.62, blue: 0.26)
     }
 }
 
