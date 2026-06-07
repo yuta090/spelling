@@ -63,27 +63,30 @@ struct HomeView: View {
 
                     Spacer(minLength: 22)
 
-                    ChildMissionPanel(
-                        stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
-                        practiceCount: selectedPracticeWords.count,
-                        carryOverCount: model.carryOverReviewWordsForSelectedStep.count,
-                        progress: model.todayStepProgress,
-                        language: language,
-                        canPractice: !selectedPracticeWords.isEmpty,
-                        canTest: !model.nextTestWords.isEmpty,
-                        canSwitchSteps: model.wordSteps.count > 1,
-                        totalLearnedWordCount: model.totalLearnedWordCount,
-                        hasPracticeResume: activePracticeResumeState != nil,
-                        remainingPracticeCount: activePracticeRemainingCount,
-                        isReviewPractice: isHomeReviewActive,
-                        character: selectedCharacter,
-                        coinBalance: model.rewardCoins,
-                        startPractice: startPractice,
-                        showWords: { showingWordPreview = true },
-                        showStepPicker: { showingStepPicker = true },
-                        showCharacters: { showingCharacterPicker = true },
-                        startTest: { activeMode = .test }
-                    )
+                    VStack(spacing: 12) {
+                        HomeLearnedWordMilestone(count: model.totalLearnedWordCount, language: language)
+
+                        ChildMissionPanel(
+                            stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
+                            practiceCount: selectedPracticeWords.count,
+                            carryOverCount: model.carryOverReviewWordsForSelectedStep.count,
+                            progress: model.todayStepProgress,
+                            language: language,
+                            canPractice: !selectedPracticeWords.isEmpty,
+                            canTest: !model.nextTestWords.isEmpty,
+                            canSwitchSteps: model.wordSteps.count > 1,
+                            hasPracticeResume: activePracticeResumeState != nil,
+                            remainingPracticeCount: activePracticeRemainingCount,
+                            isReviewPractice: isHomeReviewActive,
+                            character: selectedCharacter,
+                            coinBalance: model.rewardCoins,
+                            startPractice: startPractice,
+                            showWords: { showingWordPreview = true },
+                            showStepPicker: { showingStepPicker = true },
+                            showCharacters: { showingCharacterPicker = true },
+                            startTest: { activeMode = .test }
+                        )
+                    }
                     .frame(maxWidth: 760)
 
                     Spacer(minLength: 100)
@@ -294,7 +297,6 @@ private struct ChildMissionPanel: View {
     var canPractice: Bool
     var canTest: Bool
     var canSwitchSteps: Bool
-    var totalLearnedWordCount: Int
     var hasPracticeResume: Bool
     var remainingPracticeCount: Int?
     var isReviewPractice: Bool
@@ -345,8 +347,6 @@ private struct ChildMissionPanel: View {
 
     var body: some View {
         VStack(spacing: 22) {
-            HomeLearnedWordMilestone(count: totalLearnedWordCount, language: language)
-
             HStack(spacing: 22) {
                 VStack(spacing: 8) {
                     Button(action: showCharacters) {
@@ -1974,58 +1974,22 @@ private struct HomeLearnedWordMilestone: View {
     var language: AppLanguage
 
     var body: some View {
-        HStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(Color(red: 1.0, green: 0.82, blue: 0.25))
-                    .frame(width: 58, height: 58)
-                Image(systemName: "sparkles")
-                    .font(.system(size: 26, weight: .heavy))
-                    .foregroundStyle(.white)
-            }
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text(language.text(japanese: "これまで", english: "Learned"))
+                .font(.system(size: 30, weight: .heavy, design: .rounded))
+                .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
 
-            VStack(alignment: .leading, spacing: 0) {
-                Text(language.text(japanese: "これまで", english: "learned so far"))
-                    .font(.headline.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.34, blue: 0.66))
-                    .lineLimit(1)
+            Text("\(max(count, 0))")
+                .font(.system(size: 56, weight: .heavy, design: .rounded).monospacedDigit())
+                .foregroundStyle(Color(red: 0.14, green: 0.36, blue: 0.78))
 
-                HStack(alignment: .firstTextBaseline, spacing: 5) {
-                    Text("\(max(count, 0))")
-                        .font(.system(size: 54, weight: .heavy, design: .rounded).monospacedDigit())
-                        .foregroundStyle(Color(red: 0.14, green: 0.36, blue: 0.78))
-                    Text(language.text(japanese: "こ できた", english: "words"))
-                        .font(.title2.weight(.heavy))
-                        .foregroundStyle(Color(red: 0.20, green: 0.58, blue: 0.24))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.72)
-                }
-            }
-
-            Spacer(minLength: 0)
-
-            Image(systemName: "book.fill")
-                .font(.system(size: 30, weight: .heavy))
-                .foregroundStyle(Color(red: 0.38, green: 0.59, blue: 0.94).opacity(0.85))
+            Text(language.text(japanese: "こ できた", english: "words"))
+                .font(.system(size: 30, weight: .heavy, design: .rounded))
+                .foregroundStyle(Color(red: 0.20, green: 0.58, blue: 0.24))
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 0.90, green: 0.96, blue: 1.0),
-                    Color(red: 0.96, green: 1.0, blue: 0.90)
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.62, green: 0.78, blue: 0.96), lineWidth: 1.5)
-        )
-        .shadow(color: Color(red: 0.30, green: 0.50, blue: 0.85).opacity(0.10), radius: 10, x: 0, y: 6)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .lineLimit(1)
+        .minimumScaleFactor(0.68)
         .accessibilityLabel(language.text(japanese: "これまで学習した単語 \(count)個", english: "\(count) learned words"))
     }
 }
