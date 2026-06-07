@@ -1225,8 +1225,8 @@ private struct ParentStepRecordCard: View {
             missedWords: missedWordsText,
             note: note.trimmingCharacters(in: .whitespacesAndNewlines)
         )
-        model.addSchoolTestResult(result)
-        selectedResultItemID = "school-\(result.id.uuidString)"
+        let savedResult = model.addSchoolTestResult(result)
+        selectedResultItemID = "school-\(savedResult.id.uuidString)"
         testDate = Date()
         missedSchoolWordIDs.removeAll()
         note = ""

@@ -427,12 +427,50 @@ final class AppModel: ObservableObject {
         practiceSamples = []
     }
 
-    func addSchoolTestResult(_ result: SchoolTestResult) {
-        schoolTestResults.append(result)
+    @discardableResult
+    func addSchoolTestResult(_ result: SchoolTestResult) -> SchoolTestResult {
+        var savedResult = result
+        if let index = schoolTestResults.firstIndex(where: { existingResult in
+            schoolTestResultsShareSlot(existingResult, result)
+        }) {
+            savedResult.id = schoolTestResults[index].id
+            schoolTestResults[index] = savedResult
+        } else {
+            schoolTestResults.append(savedResult)
+        }
+        return savedResult
     }
 
     func deleteSchoolTestResult(_ result: SchoolTestResult) {
         schoolTestResults.removeAll { $0.id == result.id }
+    }
+
+    private func schoolTestResultsShareSlot(_ lhs: SchoolTestResult, _ rhs: SchoolTestResult) -> Bool {
+        Calendar.current.isDate(lhs.date, inSameDayAs: rhs.date)
+            && schoolTestResultsShareStep(lhs, rhs)
+    }
+
+    private func schoolTestResultsShareStep(_ lhs: SchoolTestResult, _ rhs: SchoolTestResult) -> Bool {
+        if let lhsStepID = lhs.stepID, let rhsStepID = rhs.stepID {
+            return lhsStepID == rhsStepID
+        }
+        if let lhsStepID = lhs.stepID {
+            return schoolTestResultTitle(rhs.stepTitle, matchesStepID: lhsStepID)
+        }
+        if let rhsStepID = rhs.stepID {
+            return schoolTestResultTitle(lhs.stepTitle, matchesStepID: rhsStepID)
+        }
+        return lhs.stepTitle == rhs.stepTitle
+    }
+
+    private func schoolTestResultTitle(_ title: String, matchesStepID stepID: String) -> Bool {
+        guard let step = wordSteps.first(where: { $0.id == stepID }) else {
+            return false
+        }
+        return [
+            step.title(language: .japanese),
+            step.title(language: .english)
+        ].contains(title)
     }
 
     func sendReviewWordsToHome(_ wordIDs: Set<UUID>, stepID: String) {
