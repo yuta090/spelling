@@ -107,8 +107,6 @@ struct TestSessionView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(decision.rawValue)
                     .font(.headline)
-                Text("OCR: \(candidates.first?.text ?? "-")")
-                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(16)

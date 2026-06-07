@@ -573,10 +573,40 @@ private struct ParentStepChooserRow: View {
     }
 }
 
+private enum ParentRecordDetailSheet: String, Identifiable {
+    case appTests
+    case handwriting
+    case allHistory
+
+    var id: String { rawValue }
+
+    func title(language: AppLanguage) -> String {
+        switch self {
+        case .appTests:
+            return language.text(japanese: "アプリのテスト結果", english: "App Test Results")
+        case .handwriting:
+            return language.text(japanese: "手書き一覧", english: "Handwriting")
+        case .allHistory:
+            return language.text(japanese: "すべての履歴", english: "All History")
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .appTests:
+            return "checklist.checked"
+        case .handwriting:
+            return "pencil.and.scribble"
+        case .allHistory:
+            return "clock.arrow.circlepath"
+        }
+    }
+}
+
 private struct ParentRecordsWorkspace: View {
     @EnvironmentObject private var model: AppModel
-    @State private var showingAppRecords = false
     @State private var showingOtherSteps = false
+    @State private var presentedRecordDetail: ParentRecordDetailSheet?
     var language: AppLanguage
 
     private var orderedSteps: [WordStep] {
@@ -638,20 +668,15 @@ private struct ParentRecordsWorkspace: View {
                 }
             }
 
-            DisclosureGroup(isExpanded: $showingAppRecords) {
-                VStack(spacing: 14) {
-                    AnswerReviewPanel(language: language)
-                    LearningHistoryPanel(language: language)
-                    HandwritingListPanel(language: language)
-                }
-                .padding(.top, 8)
-            } label: {
-                ParentAppRecordDisclosureHeader(language: language)
+            ParentRecordDetailLauncher(language: language) { detail in
+                presentedRecordDetail = detail
             }
-            .padding(14)
-            .background(.white.opacity(0.88))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+            .environmentObject(model)
+        }
+        .sheet(item: $presentedRecordDetail) { detail in
+            ParentRecordDetailSheetView(detail: detail, language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
         }
     }
 }
@@ -688,35 +713,271 @@ private struct ParentOtherStepRecordsHeader: View {
     }
 }
 
-private struct ParentAppRecordDisclosureHeader: View {
+private struct ParentRecordDetailLauncher: View {
     @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+    var open: (ParentRecordDetailSheet) -> Void
+
+    private var handwritingCount: Int {
+        model.practiceSamples.count + model.attempts.filter { $0.drawingData != nil }.count
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                Image(systemName: "folder.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(ParentPalette.primary)
+                    .frame(width: 38, height: 38)
+                    .background(ParentPalette.primarySoft)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(language.text(japanese: "詳しく見る", english: "Details"))
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                }
+
+                Spacer()
+            }
+
+            HStack(spacing: 10) {
+                ParentRecordDetailButton(
+                    detail: .appTests,
+                    count: model.attempts.count,
+                    language: language
+                ) {
+                    open(.appTests)
+                }
+
+                ParentRecordDetailButton(
+                    detail: .handwriting,
+                    count: handwritingCount,
+                    language: language
+                ) {
+                    open(.handwriting)
+                }
+
+                ParentRecordDetailButton(
+                    detail: .allHistory,
+                    count: model.attempts.count + model.practiceSamples.count + model.schoolTestResults.count,
+                    language: language
+                ) {
+                    open(.allHistory)
+                }
+            }
+        }
+        .padding(14)
+        .background(.white.opacity(0.88))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+    }
+}
+
+private struct ParentRecordDetailButton: View {
+    var detail: ParentRecordDetailSheet
+    var count: Int
+    var language: AppLanguage
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: detail.systemImage)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(ParentPalette.primary)
+                    .frame(width: 32, height: 32)
+                    .background(ParentPalette.primarySoft)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(detail.title(language: language))
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                    Text(language.text(japanese: "\(count)件", english: "\(count) items"))
+                        .font(.caption.monospacedDigit().weight(.bold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer(minLength: 0)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, minHeight: 58)
+            .padding(.horizontal, 12)
+            .background(ParentPalette.surfaceTint)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+    }
+}
+
+private struct ParentRecordDetailSheetView: View {
+    @Environment(\.dismiss) private var dismiss
+    var detail: ParentRecordDetailSheet
     var language: AppLanguage
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "chart.bar.xaxis")
-                .font(.title3.weight(.bold))
-                .foregroundStyle(ParentPalette.primary)
-                .frame(width: 38, height: 38)
-                .background(ParentPalette.primarySoft)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+        NavigationStack {
+            ZStack {
+                ParentBackground()
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(language.text(japanese: "アプリの履歴", english: "App History"))
-                    .font(.headline.weight(.heavy))
-                    .foregroundStyle(ParentPalette.ink)
+                ScrollView {
+                    detailPanel
+                        .padding(22)
+                }
+            }
+            .navigationTitle(detail.title(language: language))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "閉じる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                    .tapFeedback()
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var detailPanel: some View {
+        switch detail {
+        case .appTests:
+            ParentAppTestResultsPanel(language: language)
+        case .handwriting:
+            HandwritingListPanel(language: language)
+        case .allHistory:
+            LearningHistoryPanel(language: language)
+        }
+    }
+}
+
+private struct ParentAppTestResultsPanel: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    private var attempts: [SpellingAttempt] {
+        Array(model.attempts.reversed())
+    }
+
+    private var correctCount: Int {
+        model.attempts.filter { $0.decision == .autoCorrect || $0.parentReviewDecision == .approved }.count
+    }
+
+    var body: some View {
+        ParentPanel(
+            title: language.text(japanese: "アプリのテスト結果", english: "App Test Results"),
+            systemImage: "checklist.checked"
+        ) {
+            HStack(spacing: 12) {
+                SettingValueRow(
+                    title: language.text(japanese: "回答", english: "Answers"),
+                    value: "\(model.attempts.count)"
+                )
+                SettingValueRow(
+                    title: language.text(japanese: "正解", english: "Correct"),
+                    value: "\(correctCount)"
+                )
+                SettingValueRow(
+                    title: language.text(japanese: "見直し", english: "Review"),
+                    value: "\(model.reviewWords.count)"
+                )
             }
 
-            Spacer()
-
-            Text("\(model.attempts.count + model.practiceSamples.count)")
-                .font(.headline.monospacedDigit().weight(.heavy))
-                .foregroundStyle(ParentPalette.primary)
-                .padding(.vertical, 6)
-                .padding(.horizontal, 10)
-                .background(ParentPalette.primarySoft)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+            if attempts.isEmpty {
+                ContentUnavailableView(
+                    language.text(japanese: "まだアプリのテスト結果はありません", english: "No app test results yet"),
+                    systemImage: "checklist",
+                    description: Text(language.text(japanese: "子供がテストをするとここに表示されます。", english: "App test answers will appear here."))
+                )
+                .frame(minHeight: 260)
+            } else {
+                LazyVStack(spacing: 12) {
+                    ForEach(attempts) { attempt in
+                        ParentAppTestResultRow(attempt: attempt, language: language)
+                    }
+                }
+            }
         }
+    }
+}
+
+private struct ParentAppTestResultRow: View {
+    var attempt: SpellingAttempt
+    var language: AppLanguage
+
+    private var isCleared: Bool {
+        attempt.parentReviewDecision == .approved
+            || (attempt.parentReviewDecision == .unreviewed && attempt.decision == .autoCorrect)
+    }
+
+    private var tint: Color {
+        isCleared ? ParentPalette.success : ParentPalette.warning
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack(spacing: 10) {
+                Image(systemName: isCleared ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(tint)
+                    .frame(width: 34, height: 34)
+                    .background(tint.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(attempt.word)
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                    Text(formattedLocalizedDateTime(attempt.date, language: language))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Text(attempt.parentReviewDecision == .unreviewed ? attempt.decision.label(language: language) : attempt.parentReviewDecision.label(language: language))
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(tint)
+                    .padding(.vertical, 5)
+                    .padding(.horizontal, 8)
+                    .background(tint.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+
+            if !attempt.recognizedText.isEmpty {
+                Text("OCR: \(attempt.recognizedText)")
+                    .font(.caption.monospaced().weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            if let drawingData = attempt.drawingData {
+                DrawingPreview(drawingData: drawingData)
+                    .frame(height: 150)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+                    )
+            }
+        }
+        .padding(10)
+        .background(ParentPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 

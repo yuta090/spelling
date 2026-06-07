@@ -545,12 +545,6 @@ struct SpellingSessionView: View {
                 }
 
                 Spacer()
-
-                if mode != .test {
-                    Text(language.text(japanese: "OCR: ", english: "OCR: ") + (candidates.first?.text.isEmpty == false ? candidates.first?.text ?? "-" : "-"))
-                        .font(.subheadline.monospaced().weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
             }
             .frame(maxWidth: 760)
             .padding(14)
@@ -2525,9 +2519,6 @@ private struct TestAttemptResultCard: View {
                     Text(attempt.word)
                         .font(.title2.weight(.bold))
                         .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
-                    Text("OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)")
-                        .font(.caption.monospaced().weight(.semibold))
-                        .foregroundStyle(.secondary)
                 }
 
                 Spacer()

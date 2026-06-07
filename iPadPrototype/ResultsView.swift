@@ -41,9 +41,6 @@ struct ResultsView: View {
                                 EffortCard(language: language)
                                     .environmentObject(model)
                             }
-
-                            RecentAttemptsCard(language: language)
-                                .environmentObject(model)
                         }
                         .padding(.bottom, 12)
                     }
@@ -73,14 +70,6 @@ struct ResultsView: View {
                 .foregroundStyle(Color(red: 0.75, green: 0.22, blue: 0.08))
 
             Spacer()
-
-            Button {
-                model.resetResults()
-            } label: {
-                Label(language.text(japanese: "リセット", english: "Reset"), systemImage: "trash")
-            }
-            .buttonStyle(.bordered)
-            .tapFeedback()
 
             Button {
                 dismiss()
@@ -159,46 +148,7 @@ private struct EffortCard: View {
         ResultCard(title: language.text(japanese: "がんばりポイント", english: "Effort Points"), systemImage: "star.fill") {
             VStack(spacing: 12) {
                 ResultValueRow(title: language.text(japanese: "正解した単語", english: "Correct words"), value: "\(model.todaysCorrectCount)")
-                ResultValueRow(title: language.text(japanese: "まちがえた単語", english: "Review words"), value: "\(model.reviewWords.count)")
-                ResultValueRow(title: language.text(japanese: "回答回数", english: "Attempts"), value: "\(model.todaysAttempts.count)")
-            }
-        }
-    }
-}
-
-private struct RecentAttemptsCard: View {
-    @EnvironmentObject private var model: AppModel
-    var language: AppLanguage
-
-    var body: some View {
-        ResultCard(title: language.text(japanese: "最近の判定", english: "Recent Checks"), systemImage: "checklist") {
-            if model.attempts.isEmpty {
-                Text(language.text(japanese: "まだ結果はありません。", english: "No results yet."))
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, minHeight: 110, alignment: .center)
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(Array(model.attempts.reversed().prefix(10))) { attempt in
-                        HStack(spacing: 12) {
-                            Text(attempt.word)
-                                .font(.headline.weight(.bold))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Text(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)
-                                .font(.subheadline.monospaced().weight(.semibold))
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-
-                            Text(attempt.decision.label(language: language))
-                                .font(.subheadline.weight(.bold))
-                                .foregroundStyle(attempt.decision == .autoCorrect ? .green : .red)
-                                .frame(width: 110, alignment: .trailing)
-                        }
-                        .padding(.vertical, 9)
-                        Divider()
-                    }
-                }
+                ResultValueRow(title: language.text(japanese: "もう一度やる単語", english: "Try again"), value: "\(model.reviewWords.count)")
             }
         }
     }
