@@ -821,19 +821,21 @@ private struct ParentStepRecordCard: View {
         guard let latestSchoolResult else {
             return language.text(japanese: "結果なし", english: "No result")
         }
-        if latestSchoolResult.score == latestSchoolResult.total {
-            return language.text(japanese: "\(latestSchoolResult.total)/\(latestSchoolResult.total) 正解", english: "\(latestSchoolResult.total)/\(latestSchoolResult.total) correct")
-        }
         return formattedLocalizedDate(latestSchoolResult.date, language: language)
     }
 
     private var appResultText: String {
-        language.text(japanese: "\(learnedCount)単語OK", english: "\(learnedCount) words OK")
+        guard appTestSessionCount > 0 else {
+            return language.text(japanese: "未テスト", english: "Not tested")
+        }
+        return language.text(japanese: "\(learnedCount)単語 正解", english: "\(learnedCount) correct")
     }
 
     private var appResultDetail: String {
-        let testCount = language.text(japanese: "テスト\(appTestSessionCount)回", english: "\(appTestSessionCount) tests")
-        return language.text(japanese: "\(step.words.count)単語中・\(testCount)", english: "of \(step.words.count) words ・ \(testCount)")
+        guard appTestSessionCount > 0 else {
+            return language.text(japanese: "アプリテストなし", english: "No app test yet")
+        }
+        return language.text(japanese: "全\(step.words.count)単語・\(appTestSessionCount)回実施", english: "\(step.words.count) words ・ \(appTestSessionCount) tests")
     }
 
     private var schoolScoreColor: Color {
@@ -984,7 +986,7 @@ private struct ParentStepRecordCard: View {
 
             HStack(spacing: 10) {
                 ParentStepSourceSummaryTile(
-                    title: language.text(japanese: "アプリ", english: "App"),
+                    title: language.text(japanese: "アプリのテスト", english: "App Test"),
                     value: appResultText,
                     detail: appResultDetail,
                     systemImage: "brain.head.profile",
@@ -992,7 +994,7 @@ private struct ParentStepRecordCard: View {
                 )
 
                 ParentStepSourceSummaryTile(
-                    title: language.text(japanese: "学校", english: "School"),
+                    title: language.text(japanese: "学校のテスト", english: "School Test"),
                     value: schoolScoreText,
                     detail: schoolScoreDetail,
                     systemImage: "graduationcap.fill",
