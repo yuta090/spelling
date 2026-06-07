@@ -2732,7 +2732,8 @@ private struct PracticeSampleGroupReviewCard: View {
                         )
                     }
                 }
-                .padding(.vertical, 1)
+                .padding(.top, 5)
+                .padding(.bottom, 2)
             }
         }
         .padding(12)
@@ -2752,9 +2753,22 @@ private struct PracticeSampleAttemptTile: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label(language.text(japanese: "\(round)かいめ", english: "Round \(round)"), systemImage: "pencil.line")
-                .font(.headline.monospacedDigit().weight(.heavy))
-                .foregroundStyle(Color(red: 0.48, green: 0.30, blue: 0.72))
+            HStack(spacing: 6) {
+                Image(systemName: "pencil.line")
+                    .font(.system(size: 14, weight: .heavy))
+                Text(language.text(japanese: "\(round)かいめ", english: "Round \(round)"))
+                    .font(.system(size: 17, weight: .heavy, design: .rounded))
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.74)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .foregroundStyle(Color(red: 0.48, green: 0.30, blue: 0.72))
+            .padding(.horizontal, 9)
+            .padding(.vertical, 6)
+            .background(Color(red: 0.94, green: 0.90, blue: 1.0))
+            .clipShape(Capsule())
+            .frame(minHeight: 32, alignment: .center)
 
             PracticeDrawingPreview(
                 drawingData: sample.drawingData,
