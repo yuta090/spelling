@@ -805,6 +805,16 @@ private struct ParentStepRecordCard: View {
             && model.homeReviewWordIDs == reviewWordIDs
     }
 
+    private var isSelectedStep: Bool {
+        step.id == model.selectedWordStepID
+    }
+
+    private var cardTitle: String {
+        isSelectedStep
+            ? language.text(japanese: "結果まとめ", english: "Results Summary")
+            : step.title(language: language)
+    }
+
     private var schoolScoreText: String {
         guard let latestSchoolResult else {
             return language.text(japanese: "未入力", english: "Not entered")
@@ -917,7 +927,7 @@ private struct ParentStepRecordCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(step.title(language: language))
+                    Text(cardTitle)
                         .font(.title2.monospacedDigit().weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
                     Label(
@@ -933,7 +943,7 @@ private struct ParentStepRecordCard: View {
 
                 Spacer()
 
-                if step.id == model.selectedWordStepID {
+                if isSelectedStep {
                     Label(language.text(japanese: "選択中", english: "Selected"), systemImage: "checkmark.circle.fill")
                         .font(.caption.weight(.heavy))
                         .foregroundStyle(ParentPalette.primary)
@@ -1022,7 +1032,7 @@ private struct ParentStepRecordCard: View {
                 )
 
                 if let selectedSchoolResult {
-                    SchoolTestResultCard(result: selectedSchoolResult, language: language)
+                    SchoolTestResultCard(result: selectedSchoolResult, language: language, showsStepTitle: false)
                         .environmentObject(model)
                 }
             }
@@ -1052,9 +1062,9 @@ private struct ParentStepRecordCard: View {
                 .lineLimit(2)
         }
         .padding(12)
-        .background(Color.white.opacity(step.id == model.selectedWordStepID ? 0.96 : 0.92))
+        .background(Color.white.opacity(isSelectedStep ? 0.96 : 0.92))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: .black.opacity(step.id == model.selectedWordStepID ? 0.09 : 0.05), radius: step.id == model.selectedWordStepID ? 14 : 9, x: 0, y: 6)
+        .shadow(color: .black.opacity(isSelectedStep ? 0.09 : 0.05), radius: isSelectedStep ? 14 : 9, x: 0, y: 6)
         .onAppear {
             prepareSchoolDefaultsIfNeeded()
             selectDefaultSchoolResultIfNeeded()
@@ -1837,6 +1847,7 @@ private struct SchoolTestResultCard: View {
     @EnvironmentObject private var model: AppModel
     var result: SchoolTestResult
     var language: AppLanguage
+    var showsStepTitle = true
 
     private var missedCount: Int {
         max(result.total - result.score, 0)
@@ -1886,14 +1897,16 @@ private struct SchoolTestResultCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(result.stepTitle.isEmpty ? language.text(japanese: "ステップ未設定", english: "No step") : result.stepTitle)
-                    .font(.headline.weight(.heavy))
-                    .foregroundStyle(ParentPalette.ink)
+                if showsStepTitle {
+                    Text(result.stepTitle.isEmpty ? language.text(japanese: "ステップ未設定", english: "No step") : result.stepTitle)
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                }
                 Text(language.text(
                     japanese: "テスト日 \(result.date.formatted(date: .abbreviated, time: .omitted))",
                     english: "Test date \(result.date.formatted(date: .abbreviated, time: .omitted))"
                 ))
-                    .font(.caption.weight(.bold))
+                    .font((showsStepTitle ? Font.caption : Font.headline).weight(.bold))
                     .foregroundStyle(.secondary)
 
                 if !result.missedWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
