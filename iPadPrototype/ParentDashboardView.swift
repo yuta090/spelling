@@ -1724,7 +1724,7 @@ private struct SchoolTestResultDatePicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Label(language.text(japanese: "見る結果の日付", english: "Result Date"), systemImage: "calendar")
+                Label(language.text(japanese: "学校テストの日付を選ぶ", english: "Choose School Test Date"), systemImage: "calendar")
                     .font(.subheadline.weight(.heavy))
                     .foregroundStyle(ParentPalette.primary)
 
