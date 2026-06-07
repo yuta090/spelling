@@ -599,7 +599,8 @@ private struct ParentRecordsWorkspace: View {
             ParentPanel(
                 title: language.text(japanese: "ステップ別の結果", english: "Step Results"),
                 systemImage: "rectangle.stack.fill",
-                tint: ParentPalette.primary
+                tint: ParentPalette.primary,
+                showsHeader: false
             ) {
                 if orderedSteps.isEmpty {
                     ContentUnavailableView(
@@ -1947,20 +1948,24 @@ private struct ParentPanel<Content: View>: View {
     var title: String
     var systemImage: String
     var tint: Color = ParentPalette.primary
+    var showsHeader = true
     var content: Content
 
-    init(title: String, systemImage: String, tint: Color = ParentPalette.primary, @ViewBuilder content: () -> Content) {
+    init(title: String, systemImage: String, tint: Color = ParentPalette.primary, showsHeader: Bool = true, @ViewBuilder content: () -> Content) {
         self.title = title
         self.systemImage = systemImage
         self.tint = tint
+        self.showsHeader = showsHeader
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label(title, systemImage: systemImage)
-                .font(.headline.weight(.bold))
-                .foregroundStyle(tint)
+            if showsHeader {
+                Label(title, systemImage: systemImage)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(tint)
+            }
 
             content
         }
