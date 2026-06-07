@@ -132,7 +132,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
         case .words:
             return language.text(japanese: "単語登録", english: "Words")
         case .records:
-            return language.text(japanese: "記録", english: "Records")
+            return language.text(japanese: "結果を見る", english: "Results")
         case .settings:
             return language.text(japanese: "設定", english: "Settings")
         }
@@ -145,7 +145,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
         case .words:
             return language.text(japanese: "ステップを準備", english: "Prepare steps")
         case .records:
-            return language.text(japanese: "成績と履歴", english: "Results & history")
+            return language.text(japanese: "学校テスト・アプリ", english: "School & app")
         case .settings:
             return language.text(japanese: "出題と音声", english: "Prompts & voice")
         }
@@ -597,7 +597,7 @@ private struct ParentRecordsWorkspace: View {
     var body: some View {
         VStack(spacing: 14) {
             ParentPanel(
-                title: language.text(japanese: "記録", english: "Records"),
+                title: language.text(japanese: "ステップ別の結果", english: "Step Results"),
                 systemImage: "rectangle.stack.fill",
                 tint: ParentPalette.primary
             ) {
@@ -605,7 +605,7 @@ private struct ParentRecordsWorkspace: View {
                     ContentUnavailableView(
                         language.text(japanese: "まだステップがありません", english: "No steps yet"),
                         systemImage: "rectangle.stack.fill",
-                        description: Text(language.text(japanese: "単語を登録すると、日付ごとのステップ記録が作られます。", english: "Register words to create step records by date."))
+                        description: Text(language.text(japanese: "単語を登録すると、日付ごとのステップを確認できます。", english: "Register words to view steps by date."))
                     )
                     .frame(minHeight: 240)
                 } else if let selectedStep {
@@ -704,12 +704,12 @@ private struct ParentAppRecordDisclosureHeader: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(language.text(japanese: "アプリの記録を見る", english: "View App Records"))
+                Text(language.text(japanese: "練習・テストの履歴を見る", english: "View Practice & Test History"))
                     .font(.headline.weight(.heavy))
                     .foregroundStyle(ParentPalette.ink)
                 Text(language.text(
-                    japanese: "成績・手書き・学習履歴は必要な時だけ開きます。",
-                    english: "Open results, handwriting, and history only when needed."
+                    japanese: "アプリ内で書いた内容や判定履歴を確認します。",
+                    english: "Review handwriting and app decisions when needed."
                 ))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -844,7 +844,7 @@ private struct ParentStepRecordCard: View {
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "状態", english: "Status"),
                 title: language.text(japanese: "このステップはOK", english: "This step looks good"),
-                message: language.text(japanese: "アプリと学校テストの記録はそろっています。別の日の結果が返ってきたら記録できます。", english: "App and school records are complete. Record another test date if needed."),
+                message: language.text(japanese: "アプリ結果と学校テスト結果はそろっています。別の日の結果も追加できます。", english: "App and school results are complete. You can add another test date if needed."),
                 buttonTitle: nil,
                 systemImage: "checkmark.seal.fill",
                 tint: ParentPalette.success,
@@ -890,8 +890,8 @@ private struct ParentStepRecordCard: View {
 
         return ParentStepRecordPrimaryAction(
             eyebrow: language.text(japanese: "状態", english: "Status"),
-            title: language.text(japanese: "記録を確認しました", english: "Records checked"),
-            message: language.text(japanese: "再テストなど別の日の結果があれば記録できます。", english: "Record another test date if needed."),
+            title: language.text(japanese: "このステップは確認済み", english: "This step is checked"),
+            message: language.text(japanese: "学校テストがもう一度返ってきたら、別の日の結果も追加できます。", english: "Add another school test result if a retest comes back."),
             buttonTitle: nil,
             systemImage: "eye.fill",
             tint: ParentPalette.primary,
@@ -1055,7 +1055,7 @@ private struct ParentStepRecordCard: View {
                         showingSchoolEntry = true
                     }
                 } label: {
-                    Label(language.text(japanese: "別の日の結果を記録", english: "Record Another Date"), systemImage: "square.and.pencil")
+                    Label(language.text(japanese: "別の日の学校テストを追加", english: "Add Another School Test"), systemImage: "square.and.pencil")
                         .font(.subheadline.weight(.bold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 9)
