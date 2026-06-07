@@ -153,6 +153,7 @@ struct HomeView: View {
                 CharacterPickerSheet(language: language)
                     .environmentObject(model)
                     .presentationDetents([.large])
+                    .presentationContentInteraction(.scrolls)
                     .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showingStepPicker) {
@@ -1996,28 +1997,26 @@ private struct CharacterPickerSheet: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-                let listHeight = max(geometry.size.height - 144, 220)
-
                 ZStack {
                     HomeBackground()
 
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 14) {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(language.text(japanese: "なかまをえらぼう", english: "Choose a Buddy"))
-                                    .font(.system(size: 32, weight: .heavy, design: .rounded))
-                                    .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
-                                Text(language.text(japanese: "れんしゅうでコインをためて、なかまをふやせます。", english: "Practice to earn coins and unlock buddies."))
-                                    .font(.subheadline.weight(.bold))
-                                    .foregroundStyle(.secondary)
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack(spacing: 14) {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(language.text(japanese: "なかまをえらぼう", english: "Choose a Buddy"))
+                                        .font(.system(size: 32, weight: .heavy, design: .rounded))
+                                        .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
+                                    Text(language.text(japanese: "れんしゅうでコインをためて、なかまをふやせます。", english: "Practice to earn coins and unlock buddies."))
+                                        .font(.subheadline.weight(.bold))
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+
+                                HomeCoinBadge(coins: model.rewardCoins, language: language)
                             }
 
-                            Spacer()
-
-                            HomeCoinBadge(coins: model.rewardCoins, language: language)
-                        }
-
-                        ScrollView {
                             LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
                                 ForEach(HomeRewardCharacter.catalog) { character in
                                     CharacterPickerCard(
@@ -2037,18 +2036,15 @@ private struct CharacterPickerSheet: View {
                             }
                             .padding(.vertical, 2)
                             .padding(.bottom, 28)
-                            .frame(maxWidth: .infinity, minHeight: listHeight, alignment: .topLeading)
-                            .background(Color.white.opacity(0.001))
-                            .contentShape(Rectangle())
                         }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: listHeight)
+                        .frame(maxWidth: 820, minHeight: geometry.size.height, alignment: .top)
+                        .padding(28)
+                        .frame(maxWidth: .infinity, alignment: .top)
                         .background(Color.white.opacity(0.001))
                         .contentShape(Rectangle())
-                        .scrollIndicators(.visible)
                     }
-                    .frame(maxWidth: 820, maxHeight: .infinity, alignment: .top)
-                    .padding(28)
+                    .scrollIndicators(.visible)
+                    .scrollBounceBehavior(.basedOnSize)
                 }
             }
             .toolbar {
@@ -2088,35 +2084,38 @@ private struct CharacterPickerCard: View {
     }
 
     var body: some View {
-        Button(action: action) {
-            VStack(spacing: 6) {
-                RewardCharacterAvatar(character: character)
-                    .frame(width: 58, height: 58)
-                    .opacity(canUnlock ? 1 : 0.46)
+        VStack(spacing: 6) {
+            RewardCharacterAvatar(character: character)
+                .frame(width: 58, height: 58)
+                .opacity(canUnlock ? 1 : 0.46)
 
-                Text(character.name(language: language))
-                    .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.56)
+            Text(character.name(language: language))
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                .lineLimit(1)
+                .minimumScaleFactor(0.56)
 
-                statePill
-            }
-            .frame(maxWidth: .infinity, minHeight: 108)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 6)
-            .background(.white.opacity(canUnlock ? 0.92 : 0.64))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(borderColor, lineWidth: isSelected ? 2.5 : 1.2)
-            )
-            .shadow(color: .black.opacity(canUnlock ? 0.05 : 0.02), radius: 6, x: 0, y: 4)
+            statePill
         }
-        .buttonStyle(.plain)
-        .tapFeedback()
-        .disabled(!canUnlock)
+        .frame(maxWidth: .infinity, minHeight: 108)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 6)
+        .background(.white.opacity(canUnlock ? 0.92 : 0.64))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(borderColor, lineWidth: isSelected ? 2.5 : 1.2)
+        )
+        .shadow(color: .black.opacity(canUnlock ? 0.05 : 0.02), radius: 6, x: 0, y: 4)
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .onTapGesture {
+            guard canUnlock else {
+                return
+            }
+            action()
+        }
         .accessibilityLabel(accessibilityText)
+        .accessibilityAddTraits(canUnlock ? .isButton : .isStaticText)
     }
 
     @ViewBuilder
