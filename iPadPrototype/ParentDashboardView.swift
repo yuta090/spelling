@@ -789,7 +789,10 @@ private struct ParentStepRecordCard: View {
         guard let latestSchoolResult else {
             return language.text(japanese: "未入力", english: "Not entered")
         }
-        return "\(latestSchoolResult.score)/\(latestSchoolResult.total)"
+        if latestSchoolResult.score == latestSchoolResult.total {
+            return language.text(japanese: "満点", english: "Perfect")
+        }
+        return language.text(japanese: "\(latestSchoolResult.score)問正解", english: "\(latestSchoolResult.score) correct")
     }
 
     private var schoolTestTotal: Int {
@@ -821,7 +824,7 @@ private struct ParentStepRecordCard: View {
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "状態", english: "Status"),
                 title: language.text(japanese: "このステップはOK", english: "This step looks good"),
-                message: language.text(japanese: "アプリと学校テストの記録はそろっています。必要なら結果だけ追加できます。", english: "App and school records are complete. Add another result only if needed."),
+                message: language.text(japanese: "アプリと学校テストの記録はそろっています。別の日の結果が返ってきたら記録できます。", english: "App and school records are complete. Record another test date if needed."),
                 buttonTitle: nil,
                 systemImage: "checkmark.seal.fill",
                 tint: Color(red: 0.20, green: 0.62, blue: 0.24),
@@ -856,7 +859,7 @@ private struct ParentStepRecordCard: View {
         return ParentStepRecordPrimaryAction(
             eyebrow: language.text(japanese: "状態", english: "Status"),
             title: language.text(japanese: "記録を確認しました", english: "Records checked"),
-            message: language.text(japanese: "必要なら学校テスト結果を追加できます。", english: "Add another school result if needed."),
+            message: language.text(japanese: "再テストなど別の日の結果があれば記録できます。", english: "Record another test date if needed."),
             buttonTitle: nil,
             systemImage: "eye.fill",
             tint: Color(red: 0.13, green: 0.40, blue: 0.78),
@@ -875,8 +878,14 @@ private struct ParentStepRecordCard: View {
                     Text(step.title(language: language))
                         .font(.title2.monospacedDigit().weight(.heavy))
                         .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
-                    Text(formattedStepDate(step.registeredDate, language: language))
-                        .font(.subheadline.weight(.semibold))
+                    Label(
+                        language.text(
+                            japanese: "単語登録日 \(formattedStepDate(step.registeredDate, language: language))",
+                            english: "Words added \(formattedStepDate(step.registeredDate, language: language))"
+                        ),
+                        systemImage: "calendar"
+                    )
+                    .font(.caption.weight(.bold))
                         .foregroundStyle(.secondary)
                 }
 
@@ -1006,7 +1015,7 @@ private struct ParentStepRecordCard: View {
                         showingSchoolEntry = true
                     }
                 } label: {
-                    Label(language.text(japanese: "学校テスト結果を追加", english: "Add School Test"), systemImage: "square.and.pencil")
+                    Label(language.text(japanese: "別の日の結果を記録", english: "Record Another Date"), systemImage: "square.and.pencil")
                         .font(.subheadline.weight(.bold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 9)
@@ -1671,6 +1680,24 @@ private struct SchoolTestResultCard: View {
     var result: SchoolTestResult
     var language: AppLanguage
 
+    private var missedCount: Int {
+        max(result.total - result.score, 0)
+    }
+
+    private var scoreHeadline: String {
+        if result.score == result.total {
+            return language.text(japanese: "満点", english: "Perfect")
+        }
+        return language.text(japanese: "\(result.score)問正解", english: "\(result.score) correct")
+    }
+
+    private var scoreDetail: String {
+        if result.score == result.total {
+            return language.text(japanese: "\(result.total)問すべて正解", english: "All \(result.total) correct")
+        }
+        return language.text(japanese: "\(missedCount)問見直し", english: "\(missedCount) to review")
+    }
+
     private var scoreColor: Color {
         let ratio = Double(result.score) / Double(max(result.total, 1))
         if ratio >= 0.9 {
@@ -1684,24 +1711,33 @@ private struct SchoolTestResultCard: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            VStack(spacing: 2) {
-                Text("\(result.score)")
-                    .font(.system(size: 34, weight: .heavy, design: .rounded))
-                    .monospacedDigit()
-                Text("/ \(result.total)")
-                    .font(.headline.monospacedDigit().weight(.bold))
+            VStack(spacing: 4) {
+                Text(scoreHeadline)
+                    .font(.system(size: result.score == result.total ? 24 : 21, weight: .heavy, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.68)
+                Text(scoreDetail)
+                    .font(.caption.weight(.heavy))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.70)
             }
             .foregroundStyle(scoreColor)
-            .frame(width: 82)
+            .frame(width: 118)
             .padding(.vertical, 8)
             .background(scoreColor.opacity(0.10))
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(result.stepTitle.isEmpty ? language.text(japanese: "学校テスト", english: "School Test") : result.stepTitle)
+                Text(language.text(japanese: "学校テスト結果", english: "School Test Result"))
                     .font(.headline.weight(.heavy))
                     .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
-                Text(result.date.formatted(date: .abbreviated, time: .omitted))
+                Text(
+                    "\(result.stepTitle.isEmpty ? language.text(japanese: "ステップ未設定", english: "No step") : result.stepTitle) ・ " +
+                    language.text(
+                        japanese: "テスト日 \(result.date.formatted(date: .abbreviated, time: .omitted))",
+                        english: "Test date \(result.date.formatted(date: .abbreviated, time: .omitted))"
+                    )
+                )
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.secondary)
 
