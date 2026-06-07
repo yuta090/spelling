@@ -4132,10 +4132,7 @@ private struct ParentGradingPanel: View {
             } else {
                 VStack(alignment: .leading, spacing: 12) {
                     GradingWorkHeader(
-                        filter: $sessionFilter,
                         activeSession: activeSession,
-                        filteredCount: filteredSessions.count,
-                        totalCount: sessions.count,
                         language: language
                     )
 
@@ -4148,14 +4145,18 @@ private struct ParentGradingPanel: View {
                         .frame(minHeight: 260)
                     } else {
                         ViewThatFits(in: .horizontal) {
-                            HStack(alignment: .top, spacing: 12) {
-                                ParentGradingSessionPicker(
-                                    sessions: filteredSessions,
-                                    selectedID: activeSession?.id,
-                                    language: language,
-                                    select: { selectedSessionID = $0 }
-                                )
-                                .frame(width: 220)
+                            HStack(alignment: .top, spacing: 10) {
+                                VStack(spacing: 8) {
+                                    ParentGradingFilterPicker(filter: $sessionFilter, language: language)
+
+                                    ParentGradingSessionPicker(
+                                        sessions: filteredSessions,
+                                        selectedID: activeSession?.id,
+                                        language: language,
+                                        select: { selectedSessionID = $0 }
+                                    )
+                                }
+                                .frame(width: 172)
 
                                 ScrollView {
                                     if let activeSession {
@@ -4167,17 +4168,19 @@ private struct ParentGradingPanel: View {
                                             .environmentObject(model)
                                     }
                                 }
-                                .frame(maxHeight: 760)
+                                .frame(maxWidth: .infinity, maxHeight: 700)
                             }
 
                             VStack(alignment: .leading, spacing: 12) {
+                                ParentGradingFilterPicker(filter: $sessionFilter, language: language)
+
                                 ParentGradingSessionPicker(
                                     sessions: filteredSessions,
                                     selectedID: activeSession?.id,
                                     language: language,
                                     select: { selectedSessionID = $0 }
                                 )
-                                .frame(maxHeight: 180)
+                                .frame(maxHeight: 160)
 
                                 ScrollView {
                                     if let activeSession {
@@ -4211,7 +4214,6 @@ private struct ParentGradingPanel: View {
 
 private enum ParentGradingSessionFilter: String, CaseIterable, Identifiable {
     case unreviewed
-    case today
     case all
 
     var id: String { rawValue }
@@ -4220,8 +4222,6 @@ private enum ParentGradingSessionFilter: String, CaseIterable, Identifiable {
         switch self {
         case .unreviewed:
             return language.text(japanese: "未採点", english: "Ungraded")
-        case .today:
-            return language.text(japanese: "今日", english: "Today")
         case .all:
             return language.text(japanese: "すべて", english: "All")
         }
@@ -4231,8 +4231,6 @@ private enum ParentGradingSessionFilter: String, CaseIterable, Identifiable {
         switch self {
         case .unreviewed:
             return sessions.filter { $0.unreviewedCount > 0 }
-        case .today:
-            return sessions.filter { Calendar.current.isDateInToday($0.date) }
         case .all:
             return sessions
         }
@@ -4242,8 +4240,6 @@ private enum ParentGradingSessionFilter: String, CaseIterable, Identifiable {
         switch self {
         case .unreviewed:
             return language.text(japanese: "未採点はありません", english: "No ungraded sessions")
-        case .today:
-            return language.text(japanese: "今日の記録はありません", english: "No sessions today")
         case .all:
             return language.text(japanese: "記録がありません", english: "No sessions")
         }
@@ -4253,8 +4249,6 @@ private enum ParentGradingSessionFilter: String, CaseIterable, Identifiable {
         switch self {
         case .unreviewed:
             return language.text(japanese: "採点が必要なものだけ、ここに出ます。", english: "Only sessions that need grading appear here.")
-        case .today:
-            return language.text(japanese: "今日、練習かテストをすると表示されます。", english: "Practice or test today to show sessions here.")
         case .all:
             return language.text(japanese: "練習やテストをすると表示されます。", english: "Practice or test to show sessions here.")
         }
@@ -4262,10 +4256,7 @@ private enum ParentGradingSessionFilter: String, CaseIterable, Identifiable {
 }
 
 private struct GradingWorkHeader: View {
-    @Binding var filter: ParentGradingSessionFilter
     var activeSession: ParentGradingSession?
-    var filteredCount: Int
-    var totalCount: Int
     var language: AppLanguage
 
     private var unreviewedCount: Int {
@@ -4290,40 +4281,28 @@ private struct GradingWorkHeader: View {
         HStack(spacing: 14) {
             VStack(alignment: .leading, spacing: 5) {
                 Text(title)
-                    .font(.system(size: 28, weight: .heavy, design: .rounded))
+                    .font(.system(size: 22, weight: .heavy, design: .rounded))
                     .foregroundStyle(ParentPalette.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                 Text(subtitle)
-                    .font(.headline.weight(.bold))
+                    .font(.subheadline.weight(.bold))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
 
             Spacer(minLength: 8)
 
-            VStack(alignment: .trailing, spacing: 8) {
-                HStack(alignment: .firstTextBaseline, spacing: 5) {
-                    Text("\(unreviewedCount)")
-                        .font(.system(size: 34, weight: .heavy, design: .rounded))
-                        .monospacedDigit()
-                    Text(language.text(japanese: "件", english: "left"))
-                        .font(.headline.weight(.heavy))
-                }
-                .foregroundStyle(unreviewedCount > 0 ? ParentPalette.warning : ParentPalette.success)
-
-                Picker("", selection: $filter) {
-                    ForEach(ParentGradingSessionFilter.allCases) { filter in
-                        Text(filter.title(language: language)).tag(filter)
-                    }
-                }
-                .labelsHidden()
-                .pickerStyle(.segmented)
-                .frame(width: 260)
-                .accessibilityLabel(language.text(japanese: "採点記録の表示", english: "Grading session filter"))
+            HStack(alignment: .firstTextBaseline, spacing: 5) {
+                Text("\(unreviewedCount)")
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .monospacedDigit()
+                Text(language.text(japanese: "件", english: "left"))
+                    .font(.subheadline.weight(.heavy))
             }
+            .foregroundStyle(unreviewedCount > 0 ? ParentPalette.warning : ParentPalette.success)
         }
-        .padding(14)
+        .padding(10)
         .background(
             LinearGradient(
                 colors: [
@@ -4338,9 +4317,25 @@ private struct GradingWorkHeader: View {
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(language.text(
-            japanese: "\(title)。\(subtitle)。未採点 \(unreviewedCount) 件。表示 \(filteredCount) / \(totalCount)。",
-            english: "\(title). \(subtitle). \(unreviewedCount) ungraded. Showing \(filteredCount) of \(totalCount)."
+            japanese: "\(title)。\(subtitle)。未採点 \(unreviewedCount) 件。",
+            english: "\(title). \(subtitle). \(unreviewedCount) ungraded."
         ))
+    }
+}
+
+private struct ParentGradingFilterPicker: View {
+    @Binding var filter: ParentGradingSessionFilter
+    var language: AppLanguage
+
+    var body: some View {
+        Picker("", selection: $filter) {
+            ForEach(ParentGradingSessionFilter.allCases) { filter in
+                Text(filter.title(language: language)).tag(filter)
+            }
+        }
+        .labelsHidden()
+        .pickerStyle(.segmented)
+        .accessibilityLabel(language.text(japanese: "採点記録の表示", english: "Grading session filter"))
     }
 }
 
@@ -4459,12 +4454,13 @@ private struct ParentGradingSessionChip: View {
         HStack(spacing: 9) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(session.title(language: language))
-                    .font(.subheadline.weight(.heavy))
+                    .font(.caption.weight(.heavy))
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                 Text(formattedLocalizedDateTime(session.date, language: language))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
+                    .lineLimit(1)
             }
 
             Spacer(minLength: 4)
@@ -4478,9 +4474,9 @@ private struct ParentGradingSessionChip: View {
             .frame(width: 42)
         }
         .foregroundStyle(isSelected ? .white : session.kind.tint)
-        .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 10)
+        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+        .padding(.vertical, 6)
+        .padding(.horizontal, 8)
         .background(isSelected ? session.kind.tint : Color.white.opacity(0.88))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(isSelected ? 0.08 : 0.04), radius: 7, x: 0, y: 4)
@@ -4506,23 +4502,32 @@ private struct ParentGradingSessionCard: View {
         return session.samples.filter { $0.parentReviewDecision == .unreviewed }
     }
 
+    private var gradingColumns: [GridItem] {
+        [
+            GridItem(.flexible(minimum: 250), spacing: 10, alignment: .top),
+            GridItem(.flexible(minimum: 250), spacing: 10, alignment: .top)
+        ]
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center, spacing: 12) {
                 Image(systemName: session.kind.systemImage)
-                    .font(.title2.weight(.bold))
+                    .font(.headline.weight(.bold))
                     .foregroundStyle(.white)
-                    .frame(width: 44, height: 44)
+                    .frame(width: 36, height: 36)
                     .background(ParentPalette.primary)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(session.title(language: language))
-                        .font(.title2.weight(.heavy))
+                        .font(.headline.weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
+                        .lineLimit(1)
                     Text(formattedLocalizedDateTime(session.date, language: language))
-                        .font(.caption.weight(.semibold))
+                        .font(.caption2.weight(.semibold))
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
 
                 Spacer()
@@ -4531,15 +4536,15 @@ private struct ParentGradingSessionCard: View {
                     ? language.text(japanese: "あと \(session.unreviewedCount)件", english: "\(session.unreviewedCount) left")
                     : language.text(japanese: "採点済み", english: "Done")
                 )
-                .font(.headline.monospacedDigit().weight(.heavy))
+                .font(.subheadline.monospacedDigit().weight(.heavy))
                 .foregroundStyle(session.unreviewedCount > 0 ? ParentPalette.warning : ParentPalette.success)
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
                 .background((session.unreviewedCount > 0 ? ParentPalette.warningSoft : ParentPalette.successSoft))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
-            VStack(spacing: 12) {
+            LazyVGrid(columns: gradingColumns, alignment: .leading, spacing: 10) {
                 ForEach(visibleAttempts) { attempt in
                     ParentAttemptGradingCard(attempt: attempt, language: language)
                         .transition(.opacity.combined(with: .move(edge: .trailing)))
@@ -4553,7 +4558,7 @@ private struct ParentGradingSessionCard: View {
             .animation(.easeInOut(duration: 0.22), value: visibleAttempts.map(\.id))
             .animation(.easeInOut(duration: 0.22), value: visibleSamples.map(\.id))
         }
-        .padding(12)
+        .padding(10)
         .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
@@ -4596,7 +4601,7 @@ private struct ParentAttemptGradingCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             GradingItemHeader(
                 word: attempt.word,
                 decision: attempt.parentReviewDecision,
@@ -4605,15 +4610,7 @@ private struct ParentAttemptGradingCard: View {
             )
 
             if let drawingData = attempt.drawingData {
-                DrawingPreview(drawingData: drawingData, topPadding: 100, bottomPadding: 190)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 220)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.22), lineWidth: 1)
-                    )
+                GradingDrawingPreview(drawingData: drawingData)
             }
 
             if isApproved {
@@ -4650,7 +4647,8 @@ private struct ParentAttemptGradingCard: View {
                 )
             }
         }
-        .padding(12)
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .background(gradingBackground(for: attempt.parentReviewDecision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(alignment: .topTrailing) {
@@ -4719,7 +4717,7 @@ private struct ParentPracticeGradingCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             GradingItemHeader(
                 word: sample.word,
                 decision: sample.parentReviewDecision,
@@ -4727,15 +4725,7 @@ private struct ParentPracticeGradingCard: View {
                 detail: modeLabel
             )
 
-            DrawingPreview(drawingData: sample.drawingData, topPadding: 100, bottomPadding: 190)
-                .frame(maxWidth: .infinity)
-                .frame(height: 220)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray.opacity(0.22), lineWidth: 1)
-                )
+            GradingDrawingPreview(drawingData: sample.drawingData)
 
             if isApproved {
                 ParentApprovedBanner(language: language)
@@ -4771,7 +4761,8 @@ private struct ParentPracticeGradingCard: View {
                 )
             }
         }
-        .padding(12)
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .background(gradingBackground(for: sample.parentReviewDecision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(alignment: .topTrailing) {
@@ -4827,7 +4818,7 @@ private struct GradingItemHeader: View {
         HStack(alignment: .center, spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(word)
-                    .font(.system(size: 28, weight: .heavy, design: .rounded))
+                    .font(.system(size: 22, weight: .heavy, design: .rounded))
                     .foregroundStyle(ParentPalette.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -4859,38 +4850,136 @@ private struct ParentReviewButtons: View {
     var approve: () -> Void
     var needsPractice: () -> Void
 
-    var body: some View {
-        HStack(spacing: 10) {
-            Button(action: approve) {
-                Label(
-                    pendingDecision == .approved ? language.text(japanese: "OK 保存中", english: "Saving OK") : "OK",
-                    systemImage: pendingDecision == .approved || decision == .approved ? "checkmark.seal.fill" : "checkmark.circle.fill"
-                )
-                    .font(.headline.weight(.bold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 9)
-                    .scaleEffect(pendingDecision == .approved ? 1.04 : 1)
-            }
-            .buttonStyle(.borderedProminent)
-            .tapFeedback()
-            .tint(ParentPalette.success)
-            .allowsHitTesting(pendingDecision == nil)
+    private var visualDecision: ParentReviewDecision {
+        decision == .unreviewed ? .approved : decision
+    }
 
-            Button(action: needsPractice) {
-                Label(
-                    pendingDecision == .needsPractice ? language.text(japanese: "直そう 保存中", english: "Saving Fix") : language.text(japanese: "直そう", english: "Needs Fix"),
-                    systemImage: pendingDecision == .needsPractice ? "pencil.circle.fill" : "pencil.and.scribble"
-                )
-                    .font(.headline.weight(.bold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 9)
-                    .scaleEffect(pendingDecision == .needsPractice ? 1.04 : 1)
-            }
-            .buttonStyle(.bordered)
-            .tapFeedback()
-            .tint(ParentPalette.warning)
-            .allowsHitTesting(pendingDecision == nil)
+    var body: some View {
+        HStack(spacing: 0) {
+            ParentReviewToggleButton(
+                title: pendingDecision == .approved ? language.text(japanese: "保存中", english: "Saving") : "OK",
+                systemImage: "checkmark.circle.fill",
+                tint: ParentPalette.success,
+                isSelected: visualDecision == .approved,
+                isPending: pendingDecision == .approved,
+                action: approve
+            )
+
+            ParentReviewToggleButton(
+                title: pendingDecision == .needsPractice ? language.text(japanese: "保存中", english: "Saving") : language.text(japanese: "直そう", english: "Fix"),
+                systemImage: "pencil.and.scribble",
+                tint: ParentPalette.warning,
+                isSelected: visualDecision == .needsPractice,
+                isPending: pendingDecision == .needsPractice,
+                action: needsPractice
+            )
         }
+        .padding(4)
+        .background(Color.white.opacity(0.82))
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .stroke(Color.black.opacity(0.08), lineWidth: 1)
+        )
+        .allowsHitTesting(pendingDecision == nil)
+    }
+}
+
+private struct ParentReviewToggleButton: View {
+    var title: String
+    var systemImage: String
+    var tint: Color
+    var isSelected: Bool
+    var isPending: Bool
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+                .font(.subheadline.weight(.heavy))
+                .lineLimit(1)
+                .minimumScaleFactor(0.76)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 8)
+                .foregroundStyle(isSelected ? .white : tint)
+                .background(isSelected ? tint : Color.clear)
+                .clipShape(Capsule())
+                .scaleEffect(isPending ? 1.04 : 1)
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+    }
+}
+
+private struct GradingDrawingPreview: View {
+    var drawingData: Data
+    var height: CGFloat = 172
+
+    var body: some View {
+        ZStack {
+            DrawingPreview(
+                drawingData: drawingData,
+                horizontalPadding: 80,
+                topPadding: 135,
+                bottomPadding: 200
+            )
+            .frame(maxWidth: .infinity)
+
+            GradingFourLineGuide()
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: height)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.gray.opacity(0.22), lineWidth: 1)
+        )
+    }
+}
+
+private struct GradingFourLineGuide: View {
+    var body: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width
+            let height = proxy.size.height
+            let lineStart: CGFloat = 14
+            let lineEnd = max(width - 14, lineStart)
+            let top = height * 0.22
+            let mid = height * 0.40
+            let baseline = height * 0.66
+            let descender = height * 0.84
+
+            Canvas { context, _ in
+                strokeLine(from: lineStart, to: lineEnd, y: top, color: .blue.opacity(0.12), width: 1, in: &context)
+                strokeLine(from: lineStart, to: lineEnd, y: mid, color: .blue.opacity(0.20), width: 1, dash: [8, 10], in: &context)
+                strokeLine(from: lineStart, to: lineEnd, y: baseline, color: .red.opacity(0.42), width: 1.4, in: &context)
+                strokeLine(from: lineStart, to: lineEnd, y: descender, color: .blue.opacity(0.12), width: 1, in: &context)
+            }
+        }
+        .allowsHitTesting(false)
+    }
+
+    private func strokeLine(
+        from start: CGFloat,
+        to end: CGFloat,
+        y: CGFloat,
+        color: Color,
+        width: CGFloat,
+        dash: [CGFloat] = [],
+        in context: inout GraphicsContext
+    ) {
+        var path = Path()
+        path.move(to: CGPoint(x: start, y: y))
+        path.addLine(to: CGPoint(x: end, y: y))
+        context.stroke(
+            path,
+            with: .color(color),
+            style: StrokeStyle(lineWidth: width, lineCap: .round, dash: dash)
+        )
     }
 }
 
