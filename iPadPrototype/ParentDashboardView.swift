@@ -771,13 +771,17 @@ private struct ParentStepRecordCard: View {
                     }
                     return attemptIsCleared(attempt) ? nil : word.text
                 }
+                let unansweredWords = step.words.compactMap { word -> String? in
+                    latestByWord[normalize(word.text)] == nil ? word.text : nil
+                }
 
                 return ParentStepAppTestSummary(
                     sessionID: sessionID,
                     date: firstDate,
                     correct: correctCount,
                     total: step.words.count,
-                    missedWords: missedWords
+                    missedWords: missedWords,
+                    unansweredWords: unansweredWords
                 )
             }
             .sorted { $0.date > $1.date }
@@ -1806,6 +1810,7 @@ private struct ParentStepAppTestSummary: Equatable {
     var correct: Int
     var total: Int
     var missedWords: [String]
+    var unansweredWords: [String]
 
     var id: String {
         "app-\(sessionID.uuidString)"
@@ -1987,19 +1992,64 @@ private struct ParentStepAppTestResultCard: View {
     var language: AppLanguage
 
     private var scoreHeadline: String {
-        if summary.correct == summary.total {
+        if summary.correct == summary.total && summary.unansweredWords.isEmpty {
             return language.text(japanese: "全問正解", english: "All Correct")
+        }
+        if !summary.unansweredWords.isEmpty {
+            return language.text(
+                japanese: "\(summary.correct)/\(max(summary.total, 1)) 正解 ・ \(summary.unansweredWords.count)問未回答",
+                english: "\(summary.correct)/\(max(summary.total, 1)) correct, \(summary.unansweredWords.count) unanswered"
+            )
         }
         return language.text(japanese: "\(summary.correct)/\(max(summary.total, 1)) 正解", english: "\(summary.correct)/\(max(summary.total, 1)) correct")
     }
 
     private var scoreColor: Color {
-        summary.correct == summary.total ? ParentPalette.success : ParentPalette.warning
+        summary.correct == summary.total && summary.unansweredWords.isEmpty ? ParentPalette.success : ParentPalette.warning
+    }
+
+    private var statusIconName: String {
+        if summary.correct == summary.total && summary.unansweredWords.isEmpty {
+            return "checkmark.circle.fill"
+        }
+        if !summary.unansweredWords.isEmpty {
+            return "questionmark.circle.fill"
+        }
+        return "exclamationmark.circle.fill"
+    }
+
+    private var detailRows: [(text: String, color: Color)] {
+        var rows: [(String, Color)] = []
+        if !summary.missedWords.isEmpty {
+            rows.append((
+                language.text(
+                    japanese: "まちがい: \(summary.missedWords.joined(separator: " / "))",
+                    english: "Missed: \(summary.missedWords.joined(separator: " / "))"
+                ),
+                ParentPalette.warning
+            ))
+        }
+        if !summary.unansweredWords.isEmpty {
+            rows.append((
+                language.text(
+                    japanese: "未回答: \(summary.unansweredWords.joined(separator: " / "))",
+                    english: "Unanswered: \(summary.unansweredWords.joined(separator: " / "))"
+                ),
+                ParentPalette.neutral
+            ))
+        }
+        if rows.isEmpty {
+            rows.append((
+                language.text(japanese: "アプリではまちがいなし", english: "No misses in the app"),
+                .secondary
+            ))
+        }
+        return rows
     }
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
+            Image(systemName: statusIconName)
                 .font(.title3.weight(.heavy))
                 .foregroundStyle(scoreColor)
                 .frame(width: 40, height: 40)
@@ -2011,14 +2061,11 @@ private struct ParentStepAppTestResultCard: View {
                     .font(.headline.monospacedDigit().weight(.heavy))
                     .foregroundStyle(scoreColor)
                     .lineLimit(1)
-                if summary.missedWords.isEmpty {
-                    Text(language.text(japanese: "アプリでは間違いなし", english: "No misses in the app"))
+                    .minimumScaleFactor(0.78)
+                ForEach(Array(detailRows.enumerated()), id: \.offset) { _, row in
+                    Text(row.text)
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text(summary.missedWords.joined(separator: " / "))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(ParentPalette.warning)
+                        .foregroundStyle(row.color)
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
                 }
