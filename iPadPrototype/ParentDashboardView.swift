@@ -952,9 +952,9 @@ private struct ParentStepRecordCard: View {
 
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
-                title: language.text(japanese: "復習 \(reviewWords.count)単語", english: "\(reviewWords.count) review words"),
-                message: language.text(japanese: "\(reviewWords.count)単語をホームの復習に追加します。", english: "\(reviewWords.count) words will be added to Home review."),
-                buttonTitle: language.text(japanese: "ホームに出す", english: "Show on Home"),
+                title: language.text(japanese: "見直しが必要な単語 \(reviewWords.count)語", english: "\(reviewWords.count) words need review"),
+                message: language.text(japanese: "この\(reviewWords.count)語を子供ホームの練習に出します。", english: "Send these \(reviewWords.count) words to Kid Home practice."),
+                buttonTitle: language.text(japanese: "子供ホームに出す", english: "Send to Kid Home"),
                 systemImage: "arrow.counterclockwise.circle.fill",
                 tint: ParentPalette.warning,
                 kind: .reviewWords,
