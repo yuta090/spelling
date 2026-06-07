@@ -936,7 +936,7 @@ private struct ParentStepRecordCard: View {
             if reviewWordsAreOnHome {
                 return ParentStepRecordPrimaryAction(
                     eyebrow: language.text(japanese: "準備できました", english: "Ready"),
-                    title: language.text(japanese: "復習 \(reviewWords.count)単語を表示中", english: "\(reviewWords.count) words on Home"),
+                    title: language.text(japanese: "\(reviewWords.count)語をホームに出しました", english: "\(reviewWords.count) words sent to Home"),
                     message: "",
                     buttonTitle: nil,
                     systemImage: "checkmark.circle.fill",
