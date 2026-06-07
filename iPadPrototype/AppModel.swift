@@ -96,6 +96,12 @@ final class AppModel: ObservableObject {
         selectedWordStep?.words ?? words
     }
 
+    var totalLearnedWordCount: Int {
+        let practicedWords = practiceSamples.map { normalize($0.word) }
+        let testedWords = attempts.map { normalize($0.word) }
+        return Set((practicedWords + testedWords).filter { !$0.isEmpty }).count
+    }
+
     var testWordsForSelectedStep: [SpellingWord] {
         guard let selectedWordStep else {
             return words

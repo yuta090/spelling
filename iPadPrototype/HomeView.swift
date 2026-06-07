@@ -70,6 +70,7 @@ struct HomeView: View {
                         language: language,
                         canPractice: !selectedPracticeWords.isEmpty,
                         canTest: !model.nextTestWords.isEmpty,
+                        totalLearnedWordCount: model.totalLearnedWordCount,
                         hasPracticeResume: activePracticeResumeState != nil,
                         remainingPracticeCount: activePracticeRemainingCount,
                         isReviewPractice: isHomeReviewActive,
@@ -264,6 +265,7 @@ private struct ChildMissionPanel: View {
     var language: AppLanguage
     var canPractice: Bool
     var canTest: Bool
+    var totalLearnedWordCount: Int
     var hasPracticeResume: Bool
     var remainingPracticeCount: Int?
     var isReviewPractice: Bool
@@ -324,6 +326,7 @@ private struct ChildMissionPanel: View {
                     .accessibilityLabel(language.text(japanese: "\(character.name(language: language))を選ぶ", english: "Choose \(character.name(language: language))"))
 
                     HomeCoinBadge(coins: coinBalance, language: language)
+                    HomeLearnedWordBadge(count: totalLearnedWordCount, language: language)
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -1763,6 +1766,36 @@ private struct HomeCoinBadge: View {
                 .stroke(Color(red: 0.95, green: 0.70, blue: 0.28), lineWidth: 1)
         )
         .accessibilityLabel(language.text(japanese: "\(coins)コイン", english: "\(coins) coins"))
+    }
+}
+
+private struct HomeLearnedWordBadge: View {
+    var count: Int
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack(spacing: 5) {
+                Image(systemName: "book.fill")
+                    .font(.caption.weight(.heavy))
+                Text(language.text(japanese: "これまで", english: "learned"))
+                    .font(.caption2.weight(.heavy))
+            }
+
+            Text(language.text(japanese: "\(max(count, 0))こ", english: "\(max(count, 0)) words"))
+                .font(.headline.monospacedDigit().weight(.heavy))
+        }
+        .foregroundStyle(Color(red: 0.12, green: 0.34, blue: 0.66))
+        .frame(minWidth: 92)
+        .padding(.vertical, 7)
+        .padding(.horizontal, 10)
+        .background(Color(red: 0.90, green: 0.96, blue: 1.0).opacity(0.96))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.62, green: 0.78, blue: 0.96), lineWidth: 1)
+        )
+        .accessibilityLabel(language.text(japanese: "これまで学習した単語 \(count)個", english: "\(count) learned words"))
     }
 }
 
