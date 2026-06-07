@@ -844,7 +844,7 @@ private struct ParentStepRecordCard: View {
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "状態", english: "Status"),
                 title: language.text(japanese: "このステップはOK", english: "This step looks good"),
-                message: language.text(japanese: "アプリ結果と学校テスト結果はそろっています。別の日の結果も追加できます。", english: "App and school results are complete. You can add another test date if needed."),
+                message: language.text(japanese: "アプリのテスト結果と学校テスト結果はそろっています。別の日の結果も追加できます。", english: "App test and school test results are complete. You can add another test date if needed."),
                 buttonTitle: nil,
                 systemImage: "checkmark.seal.fill",
                 tint: ParentPalette.success,
@@ -959,7 +959,7 @@ private struct ParentStepRecordCard: View {
                     tint: ParentPalette.primary
                 )
                 ParentStepMetricPill(
-                    title: language.text(japanese: "テスト回数", english: "App Tests"),
+                    title: language.text(japanese: "アプリのテスト回数", english: "App Test Count"),
                     value: language.text(japanese: "\(appTestSessionCount)回", english: "\(appTestSessionCount) times"),
                     systemImage: "checklist.checked",
                     tint: ParentPalette.primary
@@ -3761,7 +3761,7 @@ private struct LearningHistoryPanel: View {
         ) {
             HStack(spacing: 12) {
                 SettingValueRow(
-                    title: language.text(japanese: "テスト回答", english: "Test answers"),
+                    title: language.text(japanese: "アプリのテスト結果", english: "App Test Results"),
                     value: "\(model.attempts.count)"
                 )
                 SettingValueRow(
@@ -3775,8 +3775,8 @@ private struct LearningHistoryPanel: View {
             }
 
             Text(language.text(
-                japanese: "アプリ内の練習・テストと、学校で返ってきた結果を時系列で保存しています。",
-                english: "Saved records include app practice, app tests, and school test results."
+                japanese: "アプリの練習・テスト結果と、学校で返ってきた結果を時系列で保存しています。",
+                english: "Saved records include app practice, app test results, and school test results."
             ))
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(.secondary)

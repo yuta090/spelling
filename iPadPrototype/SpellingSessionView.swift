@@ -2404,7 +2404,7 @@ private struct TestSessionResultsView: View {
 
             VStack(spacing: 18) {
                 HStack {
-                    Label(language.text(japanese: "テスト結果", english: "Test Results"), systemImage: "checklist")
+                    Label(language.text(japanese: "アプリのテスト結果", english: "App Test Results"), systemImage: "checklist")
                         .font(.title2.weight(.bold))
                         .foregroundStyle(Color(red: 0.12, green: 0.31, blue: 0.70))
 
@@ -2485,7 +2485,7 @@ private struct TestSessionResultsView: View {
                     ContentUnavailableView(
                         language.text(japanese: "まだ結果がありません", english: "No results yet"),
                         systemImage: "checklist",
-                        description: Text(language.text(japanese: "テストを進めるとここに表示されます。", english: "Test answers will appear here."))
+                        description: Text(language.text(japanese: "アプリのテストを進めるとここに表示されます。", english: "App test answers will appear here."))
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(.white.opacity(0.72))
