@@ -2037,9 +2037,14 @@ private struct CharacterPickerSheet: View {
                             }
                             .padding(.vertical, 2)
                             .padding(.bottom, 28)
+                            .frame(maxWidth: .infinity, minHeight: listHeight, alignment: .topLeading)
+                            .background(Color.white.opacity(0.001))
+                            .contentShape(Rectangle())
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: listHeight)
+                        .background(Color.white.opacity(0.001))
+                        .contentShape(Rectangle())
                         .scrollIndicators(.visible)
                     }
                     .frame(maxWidth: 820, maxHeight: .infinity, alignment: .top)
