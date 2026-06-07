@@ -296,12 +296,6 @@ private struct ParentCurrentStepCard: View {
         .padding(12)
         .background(.white.opacity(0.86))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(Color(red: 0.13, green: 0.40, blue: 0.78))
-                .frame(width: 5)
-                .padding(.vertical, 12)
-        }
         .shadow(color: .black.opacity(0.07), radius: 12, x: 0, y: 6)
         .sheet(isPresented: $showingStepChooser) {
             ParentStepChooserSheet(
@@ -732,6 +726,7 @@ private struct ParentStepRecordCard: View {
     @State private var showingSchoolEntry = false
     @State private var testDate = Date()
     @State private var missedSchoolWordIDs = Set<UUID>()
+    @State private var selectedSchoolResultID: UUID?
     @State private var note = ""
     var step: WordStep
     var language: AppLanguage
@@ -750,6 +745,17 @@ private struct ParentStepRecordCard: View {
 
     private var latestSchoolResult: SchoolTestResult? {
         schoolResults.first
+    }
+
+    private var selectedSchoolResult: SchoolTestResult? {
+        guard !schoolResults.isEmpty else {
+            return nil
+        }
+        if let selectedSchoolResultID,
+           let result = schoolResults.first(where: { $0.id == selectedSchoolResultID }) {
+            return result
+        }
+        return schoolResults.first
     }
 
     private var carryOverReviewWords: [SpellingWord] {
@@ -780,6 +786,16 @@ private struct ParentStepRecordCard: View {
 
     private var reviewWords: [SpellingWord] {
         model.unresolvedReviewWords(for: step)
+    }
+
+    private var reviewWordIDs: Set<UUID> {
+        Set(reviewWords.map(\.id))
+    }
+
+    private var reviewWordsAreOnHome: Bool {
+        !reviewWordIDs.isEmpty
+            && model.selectedWordStepID == step.id
+            && model.focusedPracticeWordIDs == reviewWordIDs
     }
 
     private var schoolScoreText: String {
@@ -842,6 +858,18 @@ private struct ParentStepRecordCard: View {
         }
 
         if !reviewWords.isEmpty {
+            if reviewWordsAreOnHome {
+                return ParentStepRecordPrimaryAction(
+                    eyebrow: language.text(japanese: "準備できました", english: "Ready"),
+                    title: language.text(japanese: "復習をホームに出しました", english: "Review is on Home"),
+                    message: language.text(japanese: "子供メニューで、間違えた単語だけを練習できます。", english: "The child can practice only missed words from Home."),
+                    buttonTitle: nil,
+                    systemImage: "checkmark.circle.fill",
+                    tint: Color(red: 0.20, green: 0.62, blue: 0.24),
+                    kind: .none
+                )
+            }
+
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
                 title: language.text(japanese: "復習する単語をホームに出す", english: "Send review words to Home"),
@@ -998,9 +1026,17 @@ private struct ParentStepRecordCard: View {
                 }
             }
 
-            if let latestSchoolResult {
-                SchoolTestResultCard(result: latestSchoolResult, language: language)
-                    .environmentObject(model)
+            if !schoolResults.isEmpty {
+                SchoolTestResultDatePicker(
+                    results: schoolResults,
+                    selectedID: $selectedSchoolResultID,
+                    language: language
+                )
+
+                if let selectedSchoolResult {
+                    SchoolTestResultCard(result: selectedSchoolResult, language: language)
+                        .environmentObject(model)
+                }
             }
 
             if showingSchoolEntry {
@@ -1028,17 +1064,15 @@ private struct ParentStepRecordCard: View {
                 .lineLimit(2)
         }
         .padding(12)
-        .background(step.id == model.selectedWordStepID ? Color(red: 0.95, green: 0.98, blue: 1.0) : Color.white.opacity(0.92))
+        .background(Color.white.opacity(step.id == model.selectedWordStepID ? 0.96 : 0.92))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(step.id == model.selectedWordStepID ? Color(red: 0.13, green: 0.40, blue: 0.78) : Color(red: 0.20, green: 0.58, blue: 0.24).opacity(0.55))
-                .frame(width: 5)
-                .padding(.vertical, 12)
-        }
         .shadow(color: .black.opacity(step.id == model.selectedWordStepID ? 0.09 : 0.05), radius: step.id == model.selectedWordStepID ? 14 : 9, x: 0, y: 6)
         .onAppear {
             prepareSchoolDefaultsIfNeeded()
+            selectDefaultSchoolResultIfNeeded()
+        }
+        .onChange(of: schoolResults.map(\.id)) { _, _ in
+            selectDefaultSchoolResultIfNeeded()
         }
     }
 
@@ -1116,8 +1150,10 @@ private struct ParentStepRecordCard: View {
                 showingSchoolEntry = true
             }
         case .reviewWords:
-            model.selectedWordStepID = step.id
-            model.focusedPracticeWordIDs = Set(reviewWords.map(\.id))
+            withAnimation(.spring(response: 0.24, dampingFraction: 0.86)) {
+                model.selectedWordStepID = step.id
+                model.focusedPracticeWordIDs = reviewWordIDs
+            }
         case .none:
             break
         }
@@ -1138,6 +1174,14 @@ private struct ParentStepRecordCard: View {
         missedSchoolWordIDs = missedSchoolWordIDs.filter { validIDs.contains($0) }
     }
 
+    private func selectDefaultSchoolResultIfNeeded() {
+        let resultIDs = Set(schoolResults.map(\.id))
+        if let selectedSchoolResultID, resultIDs.contains(selectedSchoolResultID) {
+            return
+        }
+        selectedSchoolResultID = schoolResults.first?.id
+    }
+
     private func saveSchoolResult() {
         let missedWordsText = missedSchoolWords.map(\.text).joined(separator: "\n")
         let result = SchoolTestResult(
@@ -1150,6 +1194,7 @@ private struct ParentStepRecordCard: View {
             note: note.trimmingCharacters(in: .whitespacesAndNewlines)
         )
         model.addSchoolTestResult(result)
+        selectedSchoolResultID = result.id
         testDate = Date()
         missedSchoolWordIDs.removeAll()
         note = ""
@@ -1664,6 +1709,91 @@ private struct SchoolTestResultPanel: View {
     }
 }
 
+private struct SchoolTestResultDatePicker: View {
+    var results: [SchoolTestResult]
+    @Binding var selectedID: UUID?
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label(language.text(japanese: "見る結果の日付", english: "Result Date"), systemImage: "calendar")
+                    .font(.subheadline.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+
+                Spacer()
+
+                if results.count > 1 {
+                    Text(language.text(japanese: "\(results.count)日分", english: "\(results.count) dates"))
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 8)
+                        .background(Color(red: 0.96, green: 0.91, blue: 1.0))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(results) { result in
+                        SchoolTestResultDateButton(
+                            result: result,
+                            isSelected: result.id == selectedID || (selectedID == nil && result.id == results.first?.id),
+                            language: language
+                        ) {
+                            withAnimation(.easeInOut(duration: 0.14)) {
+                                selectedID = result.id
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 1)
+            }
+        }
+        .padding(10)
+        .background(Color.white.opacity(0.72))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .black.opacity(0.035), radius: 7, x: 0, y: 4)
+    }
+}
+
+private struct SchoolTestResultDateButton: View {
+    var result: SchoolTestResult
+    var isSelected: Bool
+    var language: AppLanguage
+    var action: () -> Void
+
+    private var scoreText: String {
+        if result.score == result.total {
+            return language.text(japanese: "満点", english: "Perfect")
+        }
+        return language.text(japanese: "\(result.score)問正解", english: "\(result.score) correct")
+    }
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(result.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.subheadline.weight(.heavy))
+                    .lineLimit(1)
+                Text(scoreText)
+                    .font(.caption.weight(.bold))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(isSelected ? .white : Color(red: 0.24, green: 0.22, blue: 0.34))
+            .padding(.vertical, 8)
+            .padding(.horizontal, 11)
+            .background(isSelected ? Color(red: 0.56, green: 0.34, blue: 0.78) : Color.white.opacity(0.92))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .shadow(color: .black.opacity(isSelected ? 0.08 : 0.035), radius: 7, x: 0, y: 4)
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
 private struct SchoolTestResultCard: View {
     @EnvironmentObject private var model: AppModel
     var result: SchoolTestResult
@@ -1908,12 +2038,6 @@ private struct ParentWordStepCard: View {
             .padding(12)
             .background(isSelected ? Color(red: 0.92, green: 0.97, blue: 1.0) : Color(red: 0.98, green: 0.99, blue: 0.97))
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(isSelected ? Color(red: 0.13, green: 0.40, blue: 0.78) : Color.clear)
-                    .frame(width: 5)
-                    .padding(.vertical, 10)
-            }
             .shadow(color: .black.opacity(isSelected ? 0.07 : 0.04), radius: 8, x: 0, y: 4)
         }
         .buttonStyle(.plain)
@@ -2654,12 +2778,6 @@ private struct GradingWorkHeader: View {
             )
         )
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(unreviewedCount > 0 ? Color(red: 0.90, green: 0.45, blue: 0.12) : Color(red: 0.20, green: 0.62, blue: 0.24))
-                .frame(width: 5)
-                .padding(.vertical, 12)
-        }
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(language.text(
@@ -2815,12 +2933,6 @@ private struct ParentGradingSessionChip: View {
         .padding(.horizontal, 10)
         .background(isSelected ? session.kind.tint : Color.white.opacity(0.88))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(isSelected ? .white.opacity(0.86) : session.kind.tint.opacity(0.70))
-                .frame(width: 4)
-                .padding(.vertical, 9)
-        }
         .shadow(color: .black.opacity(isSelected ? 0.08 : 0.04), radius: 7, x: 0, y: 4)
     }
 }
@@ -2990,12 +3102,6 @@ private struct ParentAttemptGradingCard: View {
         .padding(12)
         .background(gradingBackground(for: attempt.parentReviewDecision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(reviewTint(for: attempt.parentReviewDecision).opacity(attempt.parentReviewDecision == .unreviewed ? 0.36 : 0.92))
-                .frame(width: 5)
-                .padding(.vertical, 12)
-        }
         .overlay(alignment: .topTrailing) {
             if let pendingReviewDecision {
                 ParentReviewActionToast(decision: pendingReviewDecision, language: language)
@@ -3116,12 +3222,6 @@ private struct ParentPracticeGradingCard: View {
         .padding(12)
         .background(gradingBackground(for: sample.parentReviewDecision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(reviewTint(for: sample.parentReviewDecision).opacity(sample.parentReviewDecision == .unreviewed ? 0.36 : 0.92))
-                .frame(width: 5)
-                .padding(.vertical, 12)
-        }
         .overlay(alignment: .topTrailing) {
             if let pendingReviewDecision {
                 ParentReviewActionToast(decision: pendingReviewDecision, language: language)
