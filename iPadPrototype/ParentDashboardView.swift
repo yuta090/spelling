@@ -817,6 +817,13 @@ private struct ParentStepRecordCard: View {
         return language.text(japanese: "\(latestSchoolResult.score)問正解", english: "\(latestSchoolResult.score) correct")
     }
 
+    private var schoolScoreColor: Color {
+        guard let latestSchoolResult else {
+            return ParentPalette.ink
+        }
+        return latestSchoolResult.score == latestSchoolResult.total ? ParentPalette.success : ParentPalette.warning
+    }
+
     private var schoolTestTotal: Int {
         step.words.count
     }
@@ -973,7 +980,8 @@ private struct ParentStepRecordCard: View {
                     title: language.text(japanese: "学校テスト", english: "School Test"),
                     value: schoolScoreText,
                     systemImage: "graduationcap.fill",
-                    tint: ParentPalette.primary
+                    tint: ParentPalette.primary,
+                    valueTint: schoolScoreColor
                 )
             }
 
@@ -1437,6 +1445,7 @@ private struct ParentStepMetricPill: View {
     var value: String
     var systemImage: String
     var tint: Color
+    var valueTint: Color = ParentPalette.ink
 
     var body: some View {
         HStack(spacing: 9) {
@@ -1454,7 +1463,7 @@ private struct ParentStepMetricPill: View {
                     .lineLimit(1)
                 Text(value)
                     .font(.headline.monospacedDigit().weight(.heavy))
-                    .foregroundStyle(ParentPalette.ink)
+                    .foregroundStyle(valueTint)
                     .lineLimit(1)
                     .minimumScaleFactor(0.70)
             }
@@ -1771,21 +1780,30 @@ private struct SchoolTestResultDateButton: View {
         return language.text(japanese: "\(result.score)問正解", english: "\(result.score) correct")
     }
 
+    private var scoreColor: Color {
+        result.score == result.total ? ParentPalette.success : ParentPalette.warning
+    }
+
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(result.date.formatted(date: .abbreviated, time: .omitted))
                     .font(.subheadline.weight(.heavy))
+                    .foregroundStyle(ParentPalette.ink)
                     .lineLimit(1)
                 Text(scoreText)
                     .font(.caption.weight(.bold))
+                    .foregroundStyle(scoreColor)
                     .lineLimit(1)
             }
-            .foregroundStyle(isSelected ? .white : ParentPalette.ink)
             .padding(.vertical, 8)
             .padding(.horizontal, 11)
-            .background(isSelected ? ParentPalette.primary : Color.white.opacity(0.92))
+            .background(isSelected ? scoreColor.opacity(0.13) : Color.white.opacity(0.92))
             .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isSelected ? scoreColor.opacity(0.52) : .clear, lineWidth: isSelected ? 2 : 1)
+            )
             .shadow(color: .black.opacity(isSelected ? 0.08 : 0.035), radius: 7, x: 0, y: 4)
         }
         .buttonStyle(.plain)
