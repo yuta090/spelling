@@ -2677,18 +2677,18 @@ private struct ParentNewStepSheet: View {
         parseWordListEntries(from: rawWords)
     }
 
-    private var sampleWordListText: String {
+    private var demoWordListText: String {
         """
         cat | ねこ
-        friend | 友[とも]だち
-        school | 学校[がっこう]
+        dog | いぬ
+        sun | たいよう
         """
     }
 
     private var wordInputPlaceholder: String {
         language.text(
-            japanese: "例:\ncat | ねこ\nfriend | 友[とも]だち\nschool | 学校[がっこう]",
-            english: "Example:\ncat | cat\nfriend | friend\nschool | school"
+            japanese: "例:\ncat | ねこ\ndog | いぬ\nsun | たいよう",
+            english: "Example:\ncat | cat\ndog | dog\nsun | sun"
         )
     }
 
@@ -2757,9 +2757,9 @@ private struct ParentNewStepSheet: View {
                             Spacer()
 
                             Button {
-                                copySampleWordList()
+                                appendDemoWords()
                             } label: {
-                                Label(language.text(japanese: "ルビ例をコピー", english: "Copy Ruby Sample"), systemImage: "doc.on.doc.fill")
+                                Label(language.text(japanese: "デモ単語を挿入", english: "Insert Demo Words"), systemImage: "plus.circle.fill")
                                     .font(.caption.weight(.heavy))
                             }
                             .buttonStyle(.bordered)
@@ -2877,12 +2877,16 @@ private struct ParentNewStepSheet: View {
         )
     }
 
-    private func copySampleWordList() {
-        UIPasteboard.general.string = sampleWordListText
+    private func appendDemoWords() {
+        let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
+        rawWords = currentText.isEmpty
+            ? demoWordListText
+            : currentText + "\n" + demoWordListText
+
         statusSucceeded = true
         statusMessage = language.text(
-            japanese: "ルビつきのサンプルをコピーしました。入力欄に貼り付けて試せます。",
-            english: "Copied the sample. Paste it into the editor to try it."
+            japanese: "デモ単語を入力欄に追加しました。必要に応じて書き換えてください。",
+            english: "Added demo words to the editor. Edit them as needed."
         )
     }
 
@@ -3038,18 +3042,18 @@ private struct ParentWordListPanel: View {
         model.selectedWordStep
     }
 
-    private var sampleWordListText: String {
+    private var demoWordListText: String {
         """
         cat | ねこ
-        friend | 友[とも]だち
-        school | 学校[がっこう]
+        dog | いぬ
+        sun | たいよう
         """
     }
 
     private var wordInputPlaceholder: String {
         language.text(
-            japanese: "例:\ncat | ねこ\nfriend | 友[とも]だち\nschool | 学校[がっこう]",
-            english: "Example:\ncat | cat\nfriend | friend\nschool | school"
+            japanese: "例:\ncat | ねこ\ndog | いぬ\nsun | たいよう",
+            english: "Example:\ncat | cat\ndog | dog\nsun | sun"
         )
     }
 
@@ -3093,9 +3097,9 @@ private struct ParentWordListPanel: View {
                     Spacer()
 
                     Button {
-                        copySampleWordList()
+                        appendDemoWords()
                     } label: {
-                        Label(language.text(japanese: "ルビ例をコピー", english: "Copy Ruby Sample"), systemImage: "doc.on.doc.fill")
+                        Label(language.text(japanese: "デモ単語を挿入", english: "Insert Demo Words"), systemImage: "plus.circle.fill")
                             .font(.caption.weight(.heavy))
                     }
                     .buttonStyle(.bordered)
@@ -3220,12 +3224,16 @@ private struct ParentWordListPanel: View {
         )
     }
 
-    private func copySampleWordList() {
-        UIPasteboard.general.string = sampleWordListText
+    private func appendDemoWords() {
+        let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
+        rawWords = currentText.isEmpty
+            ? demoWordListText
+            : currentText + "\n" + demoWordListText
+
         importSucceeded = true
         importMessage = language.text(
-            japanese: "ルビつきのサンプルをコピーしました。入力欄に貼り付けて試せます。",
-            english: "Copied the sample. Paste it into the editor to try it."
+            japanese: "デモ単語を入力欄に追加しました。必要に応じて書き換えてください。",
+            english: "Added demo words to the editor. Edit them as needed."
         )
     }
 
