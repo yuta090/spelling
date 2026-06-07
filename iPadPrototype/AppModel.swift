@@ -120,6 +120,10 @@ final class AppModel: ObservableObject {
         todayStepProgress(for: testWordsForSelectedStep)
     }
 
+    func todayProgress(for step: WordStep) -> TodayStepProgress {
+        todayStepProgress(for: step.words)
+    }
+
     var nextTestWords: [SpellingWord] {
         let testWords = testWordsForSelectedStep
         let progress = todayStepProgress(for: testWords)
