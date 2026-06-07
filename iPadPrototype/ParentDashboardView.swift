@@ -1833,6 +1833,8 @@ private struct SchoolTestResultDateButton: View {
 
 private struct SchoolTestResultCard: View {
     @EnvironmentObject private var model: AppModel
+    @State private var showingDeleteConfirmation = false
+
     var result: SchoolTestResult
     var language: AppLanguage
     var showsStepTitle = true
@@ -1911,7 +1913,7 @@ private struct SchoolTestResultCard: View {
             Spacer()
 
             Button {
-                model.deleteSchoolTestResult(result)
+                showingDeleteConfirmation = true
             } label: {
                 Image(systemName: "trash")
                     .font(.headline.weight(.bold))
@@ -1926,6 +1928,20 @@ private struct SchoolTestResultCard: View {
         .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
+        .alert(
+            language.text(japanese: "テスト結果を削除しますか？", english: "Delete this test result?"),
+            isPresented: $showingDeleteConfirmation
+        ) {
+            Button(language.text(japanese: "削除", english: "Delete"), role: .destructive) {
+                model.deleteSchoolTestResult(result)
+            }
+            Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {}
+        } message: {
+            Text(language.text(
+                japanese: "この学校テスト結果は元に戻せません。",
+                english: "This school test result cannot be restored."
+            ))
+        }
     }
 }
 
