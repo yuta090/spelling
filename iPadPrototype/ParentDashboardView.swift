@@ -35,7 +35,9 @@ struct ParentDashboardView: View {
                 VStack(spacing: 18) {
                     header
                     ParentSectionSwitcher(selectedSection: $selectedSection, language: language)
-                    ParentCurrentStepCard(language: language)
+                    if selectedSection == .words || selectedSection == .records {
+                        ParentCurrentStepCard(language: language)
+                    }
 
                     GeometryReader { proxy in
                         ScrollView {
@@ -145,7 +147,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
         case .words:
             return language.text(japanese: "ステップを準備", english: "Prepare steps")
         case .records:
-            return language.text(japanese: "学校テスト・アプリ", english: "School & app")
+            return language.text(japanese: "学校とアプリ", english: "School & app")
         case .settings:
             return language.text(japanese: "出題と音声", english: "Prompts & voice")
         }
@@ -587,7 +589,7 @@ private enum ParentRecordDetailSheet: String, Identifiable {
         case .handwriting:
             return language.text(japanese: "手書き一覧", english: "Handwriting")
         case .allHistory:
-            return language.text(japanese: "すべての履歴", english: "All History")
+            return language.text(japanese: "すべての記録", english: "All Records")
         }
     }
 
@@ -606,6 +608,7 @@ private enum ParentRecordDetailSheet: String, Identifiable {
 private struct ParentRecordsWorkspace: View {
     @EnvironmentObject private var model: AppModel
     @State private var showingOtherSteps = false
+    @State private var showingMoreRecords = false
     @State private var presentedRecordDetail: ParentRecordDetailSheet?
     var language: AppLanguage
 
@@ -668,15 +671,46 @@ private struct ParentRecordsWorkspace: View {
                 }
             }
 
-            ParentRecordDetailLauncher(language: language) { detail in
-                presentedRecordDetail = detail
+            if !orderedSteps.isEmpty {
+                DisclosureGroup(isExpanded: $showingMoreRecords) {
+                    ParentRecordDetailLauncher(language: language) { detail in
+                        presentedRecordDetail = detail
+                    }
+                    .padding(.top, 8)
+                } label: {
+                    ParentMoreRecordsHeader(language: language)
+                }
+                .padding(12)
+                .background(.white.opacity(0.82))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 4)
             }
-            .environmentObject(model)
         }
         .sheet(item: $presentedRecordDetail) { detail in
             ParentRecordDetailSheetView(detail: detail, language: language)
                 .environmentObject(model)
                 .presentationDetents([.large])
+        }
+    }
+}
+
+private struct ParentMoreRecordsHeader: View {
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "archivebox.fill")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(ParentPalette.primary)
+                .frame(width: 34, height: 34)
+                .background(ParentPalette.primarySoft)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            Text(language.text(japanese: "その他の記録", english: "Other Records"))
+                .font(.headline.weight(.heavy))
+                .foregroundStyle(ParentPalette.ink)
+
+            Spacer()
         }
     }
 }
@@ -714,37 +748,14 @@ private struct ParentOtherStepRecordsHeader: View {
 }
 
 private struct ParentRecordDetailLauncher: View {
-    @EnvironmentObject private var model: AppModel
     var language: AppLanguage
     var open: (ParentRecordDetailSheet) -> Void
 
-    private var handwritingCount: Int {
-        model.practiceSamples.count + model.attempts.filter { $0.drawingData != nil }.count
-    }
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
-                Image(systemName: "folder.fill")
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(ParentPalette.primary)
-                    .frame(width: 38, height: 38)
-                    .background(ParentPalette.primarySoft)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(language.text(japanese: "詳しく見る", english: "Details"))
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(ParentPalette.ink)
-                }
-
-                Spacer()
-            }
-
+        VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
                 ParentRecordDetailButton(
                     detail: .appTests,
-                    count: model.attempts.count,
                     language: language
                 ) {
                     open(.appTests)
@@ -752,7 +763,6 @@ private struct ParentRecordDetailLauncher: View {
 
                 ParentRecordDetailButton(
                     detail: .handwriting,
-                    count: handwritingCount,
                     language: language
                 ) {
                     open(.handwriting)
@@ -760,7 +770,6 @@ private struct ParentRecordDetailLauncher: View {
 
                 ParentRecordDetailButton(
                     detail: .allHistory,
-                    count: model.attempts.count + model.practiceSamples.count + model.schoolTestResults.count,
                     language: language
                 ) {
                     open(.allHistory)
@@ -768,15 +777,13 @@ private struct ParentRecordDetailLauncher: View {
             }
         }
         .padding(14)
-        .background(.white.opacity(0.88))
+        .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
     }
 }
 
 private struct ParentRecordDetailButton: View {
     var detail: ParentRecordDetailSheet
-    var count: Int
     var language: AppLanguage
     var action: () -> Void
 
@@ -796,9 +803,6 @@ private struct ParentRecordDetailButton: View {
                         .foregroundStyle(ParentPalette.ink)
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
-                    Text(language.text(japanese: "\(count)件", english: "\(count) items"))
-                        .font(.caption.monospacedDigit().weight(.bold))
-                        .foregroundStyle(.secondary)
                 }
 
                 Spacer(minLength: 0)
@@ -984,6 +988,7 @@ private struct ParentAppTestResultRow: View {
 private struct ParentStepRecordCard: View {
     @EnvironmentObject private var model: AppModel
     @State private var showingSchoolEntry = false
+    @State private var showingResultHistory = false
     @State private var testDate = Date()
     @State private var missedSchoolWordIDs = Set<UUID>()
     @State private var selectedResultItemID: String?
@@ -1062,10 +1067,6 @@ private struct ParentStepRecordCard: View {
         return resultTimelineItems.first
     }
 
-    private var carryOverReviewWords: [SpellingWord] {
-        model.carryOverReviewWords(for: step)
-    }
-
     private var latestAttemptsByWord: [String: SpellingAttempt] {
         var latest: [String: SpellingAttempt] = [:]
         for attempt in stepAttempts.sorted(by: { $0.date < $1.date }) {
@@ -1124,16 +1125,9 @@ private struct ParentStepRecordCard: View {
 
     private var appResultText: String {
         guard appTestSessionCount > 0 else {
-            return language.text(japanese: "未テスト", english: "Not tested")
+            return language.text(japanese: "未実施", english: "Not yet")
         }
-        return language.text(japanese: "\(learnedCount)単語 正解", english: "\(learnedCount) correct")
-    }
-
-    private var appResultDetail: String {
-        guard appTestSessionCount > 0 else {
-            return language.text(japanese: "アプリテストなし", english: "No app test yet")
-        }
-        return language.text(japanese: "全\(step.words.count)単語・\(appTestSessionCount)回実施", english: "\(step.words.count) words ・ \(appTestSessionCount) tests")
+        return language.text(japanese: "\(learnedCount)語できた", english: "\(learnedCount) learned")
     }
 
     private var schoolScoreColor: Color {
@@ -1209,7 +1203,7 @@ private struct ParentStepRecordCard: View {
                     kind: .none,
                     infoTitle: language.text(japanese: "復習のしくみ", english: "How Review Works"),
                     infoMessage: language.text(
-                        japanese: "学校テストやアプリで間違えた単語だけをホームに出して、まとめて練習できます。",
+                        japanese: "学校のテスト結果やアプリで間違えた単語だけをホームに出して、まとめて練習できます。",
                         english: "Only words missed in school or app tests are sent to Home for focused review."
                     )
                 )
@@ -1225,7 +1219,7 @@ private struct ParentStepRecordCard: View {
                 kind: .reviewWords,
                 infoTitle: language.text(japanese: "復習のしくみ", english: "How Review Works"),
                 infoMessage: language.text(
-                    japanese: "学校テストやアプリで間違えた単語だけをホームに出して、まとめて練習できます。",
+                    japanese: "学校のテスト結果やアプリで間違えた単語だけをホームに出して、まとめて練習できます。",
                     english: "Only words missed in school or app tests are sent to Home for focused review."
                 )
             )
@@ -1286,7 +1280,7 @@ private struct ParentStepRecordCard: View {
                 ParentStepSourceSummaryTile(
                     title: language.text(japanese: "アプリのテスト", english: "App Test"),
                     value: appResultText,
-                    detail: appResultDetail,
+                    detail: nil,
                     systemImage: "brain.head.profile",
                     tint: ParentPalette.primary
                 )
@@ -1301,53 +1295,18 @@ private struct ParentStepRecordCard: View {
                 )
             }
 
-            if !carryOverReviewWords.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label(language.text(japanese: "復習に出る単語", english: "Review Words"), systemImage: "arrow.forward.circle.fill")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(ParentPalette.primary)
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(carryOverReviewWords) { word in
-                                Text(word.text)
-                                    .font(.headline.weight(.heavy))
-                                    .foregroundStyle(ParentPalette.primary)
-                                    .padding(.vertical, 6)
-                                    .padding(.horizontal, 10)
-                                    .background(ParentPalette.primarySoft)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
-                        }
-                    }
-                }
-                .padding(10)
-                .background(ParentPalette.surfaceTint)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-
             if !resultTimelineItems.isEmpty {
-                ParentStepTestTimelinePicker(
-                    items: resultTimelineItems,
-                    selectedID: selectedResultItem?.id,
-                    language: language
-                ) { itemID in
-                    selectedResultItemID = itemID
+                Button {
+                    showingResultHistory = true
+                } label: {
+                    Label(language.text(japanese: "結果の履歴を開く", english: "Open Result History"), systemImage: "clock.arrow.circlepath")
+                        .font(.subheadline.weight(.heavy))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 9)
                 }
-
-                if let selectedResultItem {
-                    switch selectedResultItem.source {
-                    case .app:
-                        if let appSummary = selectedResultItem.appSummary {
-                            ParentStepAppTestResultCard(summary: appSummary, language: language)
-                        }
-                    case .school:
-                        if let schoolResult = selectedResultItem.schoolResult {
-                            SchoolTestResultCard(result: schoolResult, language: language, showsStepTitle: false)
-                                .environmentObject(model)
-                        }
-                    }
-                }
+                .buttonStyle(.bordered)
+                .tapFeedback()
+                .tint(ParentPalette.primary)
             }
 
             if showingSchoolEntry {
@@ -1379,6 +1338,15 @@ private struct ParentStepRecordCard: View {
         }
         .onChange(of: resultTimelineItems.map(\.id)) { _, _ in
             selectDefaultResultItemIfNeeded()
+        }
+        .sheet(isPresented: $showingResultHistory) {
+            ParentStepResultHistorySheet(
+                items: resultTimelineItems,
+                selectedID: $selectedResultItemID,
+                language: language
+            )
+            .environmentObject(model)
+            .presentationDetents([.large])
         }
     }
 
@@ -1497,6 +1465,84 @@ private struct ParentStepRecordCard: View {
         note = ""
         prepareSchoolDefaultsIfNeeded()
         showingSchoolEntry = false
+    }
+}
+
+private struct ParentStepResultHistorySheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var model: AppModel
+    var items: [ParentStepTestTimelineItem]
+    @Binding var selectedID: String?
+    var language: AppLanguage
+
+    private var selectedItem: ParentStepTestTimelineItem? {
+        if let selectedID, let item = items.first(where: { $0.id == selectedID }) {
+            return item
+        }
+        return items.first
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                ParentBackground()
+
+                ScrollView {
+                    VStack(spacing: 14) {
+                        if items.isEmpty {
+                            ContentUnavailableView(
+                                language.text(japanese: "まだ結果はありません", english: "No results yet"),
+                                systemImage: "clock",
+                                description: Text(language.text(japanese: "アプリか学校の結果が入るとここに表示されます。", english: "App or school results will appear here."))
+                            )
+                            .frame(minHeight: 280)
+                        } else {
+                            ParentStepTestTimelinePicker(
+                                items: items,
+                                selectedID: selectedItem?.id,
+                                language: language
+                            ) { itemID in
+                                selectedID = itemID
+                            }
+
+                            if let selectedItem {
+                                switch selectedItem.source {
+                                case .app:
+                                    if let appSummary = selectedItem.appSummary {
+                                        ParentStepAppTestResultCard(summary: appSummary, language: language)
+                                    }
+                                case .school:
+                                    if let schoolResult = selectedItem.schoolResult {
+                                        SchoolTestResultCard(result: schoolResult, language: language, showsStepTitle: false)
+                                            .environmentObject(model)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(22)
+                }
+            }
+            .navigationTitle(language.text(japanese: "結果の履歴", english: "Result History"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "閉じる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                    .tapFeedback()
+                }
+            }
+        }
+        .onAppear {
+            if let selectedID, items.contains(where: { $0.id == selectedID }) {
+                return
+            }
+            selectedID = items.first?.id
+        }
     }
 }
 
@@ -1656,7 +1702,7 @@ private struct ParentSchoolMissedWordPicker: View {
                 ParentInfoButton(
                     title: language.text(japanese: "間違えた単語の選び方", english: "How to Choose Missed Words"),
                     message: language.text(
-                        japanese: "最初はすべて正解として扱います。学校テストで間違えた単語だけタップしてください。選んだ単語はホームの復習に出せます。",
+                        japanese: "最初はすべて正解として扱います。学校のテストで間違えた単語だけタップしてください。選んだ単語はホームの復習に出せます。",
                         english: "All words start as correct. Tap only the words missed on the school test. Selected words can be sent to Home review."
                     ),
                     tint: ParentPalette.primary
@@ -1987,7 +2033,7 @@ private struct SchoolTestResultPanel: View {
 
             if sortedResults.isEmpty {
                 ContentUnavailableView(
-                    language.text(japanese: "まだ学校テスト結果がありません", english: "No school test results yet"),
+                    language.text(japanese: "まだ学校のテスト結果がありません", english: "No school test results yet"),
                     systemImage: "graduationcap",
                     description: Text(language.text(japanese: "返ってきたら点数を入れます。", english: "Enter the score when it comes back."))
                 )
@@ -2017,7 +2063,7 @@ private struct SchoolTestResultPanel: View {
         }
         .sheet(isPresented: $showingStepChooser) {
             ParentStepChooserSheet(
-                title: language.text(japanese: "学校テストのステップを選ぶ", english: "Choose School Test Step"),
+                title: language.text(japanese: "学校結果のステップを選ぶ", english: "Choose School Test Step"),
                 language: language,
                 selectedStepID: selectedStepID
             ) { step in
@@ -2105,7 +2151,7 @@ private enum ParentStepTestTimelineSource {
         case .app:
             return language.text(japanese: "アプリテスト", english: "App test")
         case .school:
-            return language.text(japanese: "学校テスト", english: "School test")
+            return language.text(japanese: "学校結果", english: "School result")
         }
     }
 }
@@ -2457,7 +2503,7 @@ private struct SchoolTestResultCard: View {
             .buttonStyle(.bordered)
             .tapFeedback()
             .tint(ParentPalette.danger)
-            .accessibilityLabel(language.text(japanese: "学校テスト結果を削除", english: "Delete school test result"))
+            .accessibilityLabel(language.text(japanese: "学校のテスト結果を削除", english: "Delete school test result"))
         }
         .padding(12)
         .background(ParentPalette.surfaceTint)
@@ -2473,7 +2519,7 @@ private struct SchoolTestResultCard: View {
             Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {}
         } message: {
             Text(language.text(
-                japanese: "この学校テスト結果は元に戻せません。",
+                japanese: "この学校のテスト結果は元に戻せません。",
                 english: "This school test result cannot be restored."
             ))
         }
@@ -4996,8 +5042,8 @@ private struct LearningHistoryPanel: View {
             LearningHistoryEntry(
                 id: "school-\(result.id.uuidString)",
                 date: result.date,
-                word: result.stepTitle.isEmpty ? language.text(japanese: "学校テスト", english: "School Test") : result.stepTitle,
-                modeLabel: language.text(japanese: "学校テスト", english: "School Test"),
+                word: result.stepTitle.isEmpty ? language.text(japanese: "学校結果", english: "School Result") : result.stepTitle,
+                modeLabel: language.text(japanese: "学校結果", english: "School Result"),
                 detail: "\(result.score)/\(result.total)" + (result.missedWords.isEmpty ? "" : " ・ \(result.missedWords)"),
                 systemImage: "graduationcap.fill",
                 tint: ParentPalette.primary,
@@ -5023,7 +5069,7 @@ private struct LearningHistoryPanel: View {
                     value: "\(model.practiceSamples.count)"
                 )
                 SettingValueRow(
-                    title: language.text(japanese: "学校テスト", english: "School"),
+                    title: language.text(japanese: "学校結果", english: "School"),
                     value: "\(model.schoolTestResults.count)"
                 )
             }

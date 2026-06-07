@@ -501,23 +501,6 @@ private struct ChildMissionPanel: View {
                     english: "Today \(progress.clearedCount) of \(progress.totalWords)"
                 ))
 
-            if carryOverCount > 0 {
-                HStack(spacing: 8) {
-                    Image(systemName: "arrow.counterclockwise.circle.fill")
-                        .font(.headline.weight(.bold))
-                    Text(language.text(japanese: "まえのステップから \(carryOverCount)こ", english: "\(carryOverCount) from the last step"))
-                        .font(.headline.monospacedDigit().weight(.heavy))
-                    Text(language.text(japanese: "テストにでる", english: "in the test"))
-                        .font(.subheadline.weight(.bold))
-                }
-                .foregroundStyle(Color(red: 0.74, green: 0.34, blue: 0.06))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(Color(red: 1.0, green: 0.94, blue: 0.84))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-
             Button(action: startPractice) {
                 Label(
                     primaryButtonTitle,
