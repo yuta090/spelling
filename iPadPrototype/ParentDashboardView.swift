@@ -869,22 +869,32 @@ private struct ParentStepRecordCard: View {
                 return ParentStepRecordPrimaryAction(
                     eyebrow: language.text(japanese: "準備できました", english: "Ready"),
                     title: language.text(japanese: "復習をホームに出しました", english: "Review is on Home"),
-                    message: language.text(japanese: "子供メニューで、間違えた単語だけを練習できます。", english: "The child can practice only missed words from Home."),
+                    message: language.text(japanese: "子供メニューに表示中です。", english: "Shown on the child Home screen."),
                     buttonTitle: nil,
                     systemImage: "checkmark.circle.fill",
                     tint: ParentPalette.success,
-                    kind: .none
+                    kind: .none,
+                    infoTitle: language.text(japanese: "復習のしくみ", english: "How Review Works"),
+                    infoMessage: language.text(
+                        japanese: "学校テストやアプリで間違えた単語だけをホームに出して、まとめて練習できます。",
+                        english: "Only words missed in school or app tests are sent to Home for focused review."
+                    )
                 )
             }
 
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
                 title: language.text(japanese: "復習する単語をホームに出す", english: "Send review words to Home"),
-                message: language.text(japanese: "間違えた単語だけを子供メニューから練習できるようにします。", english: "Let the child practice only the words that need review."),
+                message: language.text(japanese: "ホームの復習に追加します。", english: "Add these to Home review."),
                 buttonTitle: language.text(japanese: "復習に出す", english: "Use for Review"),
                 systemImage: "arrow.counterclockwise.circle.fill",
                 tint: ParentPalette.warning,
-                kind: .reviewWords
+                kind: .reviewWords,
+                infoTitle: language.text(japanese: "復習のしくみ", english: "How Review Works"),
+                infoMessage: language.text(
+                    japanese: "学校テストやアプリで間違えた単語だけをホームに出して、まとめて練習できます。",
+                    english: "Only words missed in school or app tests are sent to Home for focused review."
+                )
             )
         }
 
@@ -1224,6 +1234,45 @@ private struct ParentStepRecordPrimaryAction {
     var systemImage: String
     var tint: Color
     var kind: ParentStepRecordPrimaryActionKind
+    var infoTitle: String? = nil
+    var infoMessage: String? = nil
+}
+
+private struct ParentInfoButton: View {
+    @State private var showingInfo = false
+    var title: String
+    var message: String
+    var tint: Color
+
+    var body: some View {
+        Button {
+            showingInfo = true
+        } label: {
+            Image(systemName: "info.circle.fill")
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(tint)
+                .frame(width: 28, height: 28)
+                .background(tint.opacity(0.12))
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .accessibilityLabel(title)
+        .popover(isPresented: $showingInfo, arrowEdge: .top) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(title)
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(ParentPalette.ink)
+                Text(message)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(16)
+            .frame(width: 310, alignment: .leading)
+            .background(ParentPalette.surfaceRaised)
+        }
+    }
 }
 
 private struct ParentStepRecordPrimaryActionCard: View {
@@ -1244,11 +1293,22 @@ private struct ParentStepRecordPrimaryActionCard: View {
                 Text(action.eyebrow)
                     .font(.caption.weight(.heavy))
                     .foregroundStyle(action.tint)
-                Text(action.title)
-                    .font(.title3.weight(.heavy))
-                    .foregroundStyle(ParentPalette.ink)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.76)
+                HStack(spacing: 6) {
+                    Text(action.title)
+                        .font(.title3.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.76)
+                        .layoutPriority(1)
+
+                    if let infoTitle = action.infoTitle, let infoMessage = action.infoMessage {
+                        ParentInfoButton(
+                            title: infoTitle,
+                            message: infoMessage,
+                            tint: action.tint
+                        )
+                    }
+                }
                 Text(action.message)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
@@ -1320,6 +1380,15 @@ private struct ParentSchoolMissedWordPicker: View {
                     .font(.headline.weight(.heavy))
                     .foregroundStyle(ParentPalette.primary)
 
+                ParentInfoButton(
+                    title: language.text(japanese: "間違えた単語の選び方", english: "How to Choose Missed Words"),
+                    message: language.text(
+                        japanese: "最初はすべて正解として扱います。学校テストで間違えた単語だけタップしてください。選んだ単語は復習候補になります。",
+                        english: "All words start as correct. Tap only the words missed on the school test. Selected words become review candidates."
+                    ),
+                    tint: ParentPalette.primary
+                )
+
                 Spacer()
 
                 if !selectedWordIDs.isEmpty {
@@ -1336,13 +1405,6 @@ private struct ParentSchoolMissedWordPicker: View {
                     .tint(ParentPalette.success)
                 }
             }
-
-            Text(language.text(
-                japanese: "初期はすべて正解です。間違えた単語だけタップしてください。",
-                english: "All words start as correct. Tap only the missed words."
-            ))
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
 
             LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
                 ForEach(words) { word in
