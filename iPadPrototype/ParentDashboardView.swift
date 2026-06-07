@@ -2397,6 +2397,16 @@ private struct ParentNewStepSheet: View {
         targetStep?.title(language: language) ?? language.text(japanese: "新しいステップ", english: "New Step")
     }
 
+    private var datePickerLocale: Locale {
+        Locale(identifier: language == .japanese ? "ja_JP" : "en_US")
+    }
+
+    private var datePickerCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = datePickerLocale
+        return calendar
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -2430,14 +2440,31 @@ private struct ParentNewStepSheet: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
 
-                        DatePicker(
-                            language.text(japanese: "登録日", english: "Date"),
-                            selection: $stepDate,
-                            displayedComponents: .date
+                        HStack(spacing: 12) {
+                            Label(language.text(japanese: "登録日", english: "Date"), systemImage: "calendar")
+                                .font(.headline.weight(.bold))
+                                .foregroundStyle(ParentPalette.ink)
+
+                            Spacer()
+
+                            DatePicker(
+                                "",
+                                selection: $stepDate,
+                                displayedComponents: .date
+                            )
+                            .labelsHidden()
+                            .datePickerStyle(.compact)
+                            .environment(\.locale, datePickerLocale)
+                            .environment(\.calendar, datePickerCalendar)
+                            .tint(ParentPalette.primary)
+                        }
+                        .padding(12)
+                        .background(ParentPalette.surfaceTint)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(ParentPalette.primary.opacity(0.14), lineWidth: 1)
                         )
-                        .datePickerStyle(.compact)
-                        .font(.headline.weight(.bold))
-                        .tint(ParentPalette.primary)
 
                         TextEditor(text: $rawWords)
                             .font(.title3.monospaced())
