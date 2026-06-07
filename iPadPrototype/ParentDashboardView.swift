@@ -1452,29 +1452,25 @@ private struct ParentStepMetricPill: View {
             Image(systemName: systemImage)
                 .font(.headline.weight(.bold))
                 .foregroundStyle(tint)
-                .frame(width: 30, height: 30)
+                .frame(width: 32, height: 32)
                 .background(tint.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                Text(value)
-                    .font(.headline.monospacedDigit().weight(.heavy))
-                    .foregroundStyle(valueTint)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.70)
-            }
+            Text(value)
+                .font(.title3.monospacedDigit().weight(.heavy))
+                .foregroundStyle(valueTint)
+                .lineLimit(1)
+                .minimumScaleFactor(0.64)
 
             Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, minHeight: 56)
+        .frame(maxWidth: .infinity, minHeight: 48)
         .padding(.horizontal, 10)
         .background(Color.white.opacity(0.82))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.035), radius: 7, x: 0, y: 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title): \(value)")
     }
 }
 
