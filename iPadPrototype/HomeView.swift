@@ -110,6 +110,9 @@ struct HomeView: View {
                         DispatchQueue.main.async {
                             activeMode = .test
                         }
+                    },
+                    onPracticeRetryWords: { words in
+                        startPracticeAgain(words: words)
                     }
                 )
             }
@@ -160,6 +163,23 @@ struct HomeView: View {
     private func startPractice() {
         clearPracticeResumeIfWordsChanged()
         activeMode = .practice
+    }
+
+    private func startPracticeAgain(words: [String]) {
+        let wordTexts = Set(words.map { normalize($0) })
+        let activeIDs = Set(model.activeWords.map(\.id))
+        let retryIDs = Set(model.activeWords.filter { wordTexts.contains(normalize($0.text)) }.map(\.id))
+        guard !retryIDs.isEmpty else {
+            return
+        }
+
+        selectedPracticeWordIDs = retryIDs
+        lastPracticeWordIDs = activeIDs
+        practiceResumeState = nil
+        activeMode = nil
+        DispatchQueue.main.async {
+            activeMode = .practice
+        }
     }
 
     private func sessionWords(for mode: SessionMode) -> [SpellingWord] {

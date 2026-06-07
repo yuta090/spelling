@@ -11,6 +11,7 @@ struct SpellingSessionView: View {
     private let onPracticeProgressChange: (PracticeSessionResumeState?) -> Void
     private let onPracticeCompleted: () -> Void
     private let onPracticeStartTest: () -> Void
+    private let onPracticeRetryWords: ([String]) -> Void
     @State private var sessionWords: [SpellingWord]
 
     @State private var index = 0
@@ -44,12 +45,14 @@ struct SpellingSessionView: View {
         resumeState: PracticeSessionResumeState? = nil,
         onPracticeProgressChange: @escaping (PracticeSessionResumeState?) -> Void = { _ in },
         onPracticeCompleted: @escaping () -> Void = {},
-        onPracticeStartTest: @escaping () -> Void = {}
+        onPracticeStartTest: @escaping () -> Void = {},
+        onPracticeRetryWords: @escaping ([String]) -> Void = { _ in }
     ) {
         self.mode = mode
         self.onPracticeProgressChange = onPracticeProgressChange
         self.onPracticeCompleted = onPracticeCompleted
         self.onPracticeStartTest = onPracticeStartTest
+        self.onPracticeRetryWords = onPracticeRetryWords
 
         let orderedWords = mode == .test ? words.shuffled() : words
         let maxIndex = max(orderedWords.count - 1, 0)
@@ -211,6 +214,7 @@ struct SpellingSessionView: View {
                     samples: sessionPracticeSamples,
                     language: language,
                     onStartTest: mode == .practice && !sessionWords.isEmpty ? onPracticeStartTest : nil,
+                    onPracticeRetry: mode == .practice ? onPracticeRetryWords : nil,
                     onDone: {
                         dismiss()
                     }
@@ -2044,11 +2048,13 @@ private struct PracticeSessionReviewView: View {
     var samples: [PracticeSample]
     var language: AppLanguage
     var onStartTest: (() -> Void)?
+    var onPracticeRetry: (([String]) -> Void)?
     var onDone: () -> Void
 
     @State private var showingCelebration = false
     @State private var celebrationSeed = 0
     @State private var testButtonPulse = false
+    @State private var selectedRetryWords = Set<String>()
 
     private var sampleGroups: [PracticeSampleGroup] {
         groupedPracticeSamples(samples)
@@ -2059,6 +2065,10 @@ private struct PracticeSessionReviewView: View {
             japanese: "\(sampleGroups.count)こ・\(samples.count)かい書きました",
             english: "\(sampleGroups.count) words ・ \(samples.count) writes"
         )
+    }
+
+    private var selectedRetryWordsInOrder: [String] {
+        sampleGroups.map(\.word).filter { selectedRetryWords.contains($0) }
     }
 
     var body: some View {
@@ -2144,7 +2154,14 @@ private struct PracticeSessionReviewView: View {
                     ScrollView {
                         VStack(spacing: 14) {
                             ForEach(sampleGroups) { group in
-                                PracticeSampleGroupReviewCard(group: group, language: language)
+                                PracticeSampleGroupReviewCard(
+                                    group: group,
+                                    language: language,
+                                    canSelect: onPracticeRetry != nil,
+                                    isSelected: selectedRetryWords.contains(group.word)
+                                ) {
+                                    toggleRetrySelection(group.word)
+                                }
                             }
                         }
                         .padding(.vertical, 4)
@@ -2152,8 +2169,18 @@ private struct PracticeSessionReviewView: View {
                 }
 
                 HStack(spacing: 16) {
-                    Color.clear
-                        .frame(width: 220)
+                    if let onPracticeRetry {
+                        PracticeRetrySelectedButton(
+                            count: selectedRetryWords.count,
+                            language: language,
+                            disabled: selectedRetryWords.isEmpty
+                        ) {
+                            onPracticeRetry(selectedRetryWordsInOrder)
+                        }
+                    } else {
+                        Color.clear
+                            .frame(width: 220)
+                    }
 
                     Spacer(minLength: 0)
 
@@ -2189,6 +2216,18 @@ private struct PracticeSessionReviewView: View {
         }
     }
 
+    private func toggleRetrySelection(_ word: String) {
+        guard onPracticeRetry != nil else {
+            return
+        }
+
+        if selectedRetryWords.contains(word) {
+            selectedRetryWords.remove(word)
+        } else {
+            selectedRetryWords.insert(word)
+        }
+    }
+
     private func groupedPracticeSamples(_ samples: [PracticeSample]) -> [PracticeSampleGroup] {
         var groups: [PracticeSampleGroup] = []
 
@@ -2201,6 +2240,42 @@ private struct PracticeSessionReviewView: View {
         }
 
         return groups
+    }
+}
+
+private struct PracticeRetrySelectedButton: View {
+    var count: Int
+    var language: AppLanguage
+    var disabled: Bool
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 9) {
+                Image(systemName: disabled ? "hand.tap.fill" : "arrow.clockwise.circle.fill")
+                    .font(.system(size: 20, weight: .heavy))
+                Text(disabled
+                     ? language.text(japanese: "えらんで練習", english: "Pick to Retry")
+                     : language.text(japanese: "\(count)こ もう一回", english: "Retry \(count)")
+                )
+                .font(.system(size: 20, weight: .heavy, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.74)
+            }
+            .foregroundStyle(disabled ? Color(red: 0.48, green: 0.42, blue: 0.58) : .white)
+            .frame(width: 220)
+            .padding(.vertical, 15)
+            .background(disabled ? Color(red: 0.94, green: 0.91, blue: 0.98) : Color(red: 0.48, green: 0.30, blue: 0.76))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(disabled ? Color(red: 0.75, green: 0.68, blue: 0.86) : Color(red: 0.38, green: 0.22, blue: 0.64), lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .disabled(disabled)
+        .accessibilityLabel(language.text(japanese: "\(count)個をもう一回練習", english: "Retry \(count) words"))
     }
 }
 
@@ -2722,13 +2797,24 @@ private struct PracticeSampleGroup: Identifiable {
 private struct PracticeSampleGroupReviewCard: View {
     var group: PracticeSampleGroup
     var language: AppLanguage
+    var canSelect = false
+    var isSelected = false
+    var onToggle: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(group.word)
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                HStack(spacing: 9) {
+                    if canSelect {
+                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                            .font(.title3.weight(.heavy))
+                            .foregroundStyle(isSelected ? Color(red: 0.48, green: 0.30, blue: 0.76) : Color(red: 0.58, green: 0.62, blue: 0.70))
+                    }
+
+                    Text(group.word)
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                }
                 Spacer()
                 Label(language.text(japanese: "\(group.samples.count)かい", english: "\(group.samples.count) writes"), systemImage: "rectangle.grid.1x2.fill")
                     .font(.caption.weight(.bold))
@@ -2750,12 +2836,19 @@ private struct PracticeSampleGroupReviewCard: View {
             }
         }
         .padding(12)
-        .background(.white.opacity(0.90))
+        .background(isSelected ? Color(red: 0.95, green: 0.90, blue: 1.0) : .white.opacity(0.90))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
+                .stroke(isSelected ? Color(red: 0.48, green: 0.30, blue: 0.76) : Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: isSelected ? 2 : 1)
         )
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .onTapGesture {
+            if canSelect {
+                onToggle()
+            }
+        }
+        .accessibilityAddTraits(canSelect && isSelected ? .isSelected : [])
     }
 }
 
