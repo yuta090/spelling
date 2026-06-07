@@ -734,9 +734,7 @@ private struct ParentStepRecordCard: View {
     @EnvironmentObject private var model: AppModel
     @State private var showingSchoolEntry = false
     @State private var testDate = Date()
-    @State private var score = 0
-    @State private var total = 0
-    @State private var missedWords = ""
+    @State private var missedSchoolWordIDs = Set<UUID>()
     @State private var note = ""
     var step: WordStep
     var language: AppLanguage
@@ -792,6 +790,18 @@ private struct ParentStepRecordCard: View {
             return language.text(japanese: "未入力", english: "Not entered")
         }
         return "\(latestSchoolResult.score)/\(latestSchoolResult.total)"
+    }
+
+    private var schoolTestTotal: Int {
+        step.words.count
+    }
+
+    private var missedSchoolWords: [SpellingWord] {
+        step.words.filter { missedSchoolWordIDs.contains($0.id) }
+    }
+
+    private var schoolTestScore: Int {
+        max(schoolTestTotal - missedSchoolWords.count, 0)
     }
 
     private var primaryAction: ParentStepRecordPrimaryAction {
@@ -855,7 +865,7 @@ private struct ParentStepRecordCard: View {
     }
 
     private var canSaveSchoolResult: Bool {
-        total > 0 && score >= 0 && score <= total
+        schoolTestTotal > 0
     }
 
     var body: some View {
@@ -908,8 +918,8 @@ private struct ParentStepRecordCard: View {
                     tint: Color(red: 0.20, green: 0.58, blue: 0.24)
                 )
                 ParentStepMetricPill(
-                    title: language.text(japanese: "アプリテスト", english: "App Tests"),
-                    value: "\(appTestSessionCount)",
+                    title: language.text(japanese: "テスト回数", english: "App Tests"),
+                    value: language.text(japanese: "\(appTestSessionCount)回", english: "\(appTestSessionCount) times"),
                     systemImage: "checklist.checked",
                     tint: Color(red: 0.13, green: 0.40, blue: 0.78)
                 )
@@ -1021,9 +1031,6 @@ private struct ParentStepRecordCard: View {
         .onAppear {
             prepareSchoolDefaultsIfNeeded()
         }
-        .onChange(of: total) { _, newTotal in
-            score = min(score, max(newTotal, 1))
-        }
     }
 
     private var schoolEntryForm: some View {
@@ -1038,36 +1045,18 @@ private struct ParentStepRecordCard: View {
                 .datePickerStyle(.compact)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                Stepper(value: $total, in: 1...50) {
-                    SettingValueRow(
-                        title: language.text(japanese: "満点", english: "Total"),
-                        value: "\(total)"
-                    )
-                }
-            }
-
-            Stepper(value: $score, in: 0...max(total, 1)) {
-                SettingValueRow(
-                    title: language.text(japanese: "正解", english: "Correct"),
-                    value: "\(score)"
+                ParentSchoolScorePreview(
+                    score: schoolTestScore,
+                    total: schoolTestTotal,
+                    language: language
                 )
             }
 
-            VStack(alignment: .leading, spacing: 6) {
-                Label(language.text(japanese: "学校で間違えた単語", english: "Missed at school"), systemImage: "text.badge.xmark")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.secondary)
-                TextEditor(text: $missedWords)
-                    .font(.body.monospaced())
-                    .frame(height: 66)
-                    .padding(8)
-                    .background(Color.white.opacity(0.92))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.purple.opacity(0.16), lineWidth: 1)
-                    )
-            }
+            ParentSchoolMissedWordPicker(
+                words: step.words,
+                selectedWordIDs: $missedSchoolWordIDs,
+                language: language
+            )
 
             VStack(alignment: .leading, spacing: 6) {
                 Label(language.text(japanese: "メモ", english: "Note"), systemImage: "note.text")
@@ -1136,26 +1125,24 @@ private struct ParentStepRecordCard: View {
     }
 
     private func prepareSchoolDefaultsIfNeeded() {
-        guard total <= 0 else {
-            return
-        }
-        total = max(step.words.count, 1)
-        score = total
+        let validIDs = Set(step.words.map(\.id))
+        missedSchoolWordIDs = missedSchoolWordIDs.filter { validIDs.contains($0) }
     }
 
     private func saveSchoolResult() {
+        let missedWordsText = missedSchoolWords.map(\.text).joined(separator: "\n")
         let result = SchoolTestResult(
             date: testDate,
             stepID: step.id,
             stepTitle: step.title(language: language),
-            score: score,
-            total: total,
-            missedWords: missedWords.trimmingCharacters(in: .whitespacesAndNewlines),
+            score: schoolTestScore,
+            total: schoolTestTotal,
+            missedWords: missedWordsText,
             note: note.trimmingCharacters(in: .whitespacesAndNewlines)
         )
         model.addSchoolTestResult(result)
         testDate = Date()
-        missedWords = ""
+        missedSchoolWordIDs.removeAll()
         note = ""
         prepareSchoolDefaultsIfNeeded()
         showingSchoolEntry = false
@@ -1227,6 +1214,167 @@ private struct ParentStepRecordPrimaryActionCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: 8)
                 .stroke(action.tint.opacity(0.22), lineWidth: 1)
+        )
+    }
+}
+
+private struct ParentSchoolScorePreview: View {
+    var score: Int
+    var total: Int
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: score == total ? "checkmark.seal.fill" : "graduationcap.fill")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(score == total ? Color(red: 0.20, green: 0.62, blue: 0.24) : Color(red: 0.90, green: 0.45, blue: 0.12))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(language.text(japanese: "点数", english: "Score"))
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+                Text("\(score)/\(total)")
+                    .font(.headline.monospacedDigit().weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+            }
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(Color.white.opacity(0.88))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.purple.opacity(0.16), lineWidth: 1)
+        )
+    }
+}
+
+private struct ParentSchoolMissedWordPicker: View {
+    var words: [SpellingWord]
+    @Binding var selectedWordIDs: Set<UUID>
+    var language: AppLanguage
+
+    private var columns: [GridItem] {
+        [GridItem(.adaptive(minimum: 145), spacing: 8)]
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack(spacing: 10) {
+                Label(language.text(japanese: "間違えた単語を選ぶ", english: "Choose missed words"), systemImage: "text.badge.xmark")
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.56, green: 0.34, blue: 0.78))
+
+                Spacer()
+
+                if !selectedWordIDs.isEmpty {
+                    Button {
+                        withAnimation(.spring(response: 0.22, dampingFraction: 0.84)) {
+                            selectedWordIDs.removeAll()
+                        }
+                    } label: {
+                        Label(language.text(japanese: "全問正解に戻す", english: "All correct"), systemImage: "checkmark.seal.fill")
+                            .font(.caption.weight(.heavy))
+                    }
+                    .buttonStyle(.bordered)
+                    .tapFeedback()
+                    .tint(Color(red: 0.20, green: 0.62, blue: 0.24))
+                }
+            }
+
+            Text(language.text(
+                japanese: "初期はすべて正解です。間違えた単語だけタップしてください。",
+                english: "All words start as correct. Tap only the missed words."
+            ))
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                ForEach(words) { word in
+                    ParentSchoolWordChoiceButton(
+                        word: word,
+                        isMissed: selectedWordIDs.contains(word.id),
+                        language: language
+                    ) {
+                        toggle(word)
+                    }
+                }
+            }
+        }
+        .padding(10)
+        .background(Color.white.opacity(0.72))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.purple.opacity(0.14), lineWidth: 1)
+        )
+    }
+
+    private func toggle(_ word: SpellingWord) {
+        withAnimation(.spring(response: 0.22, dampingFraction: 0.84)) {
+            if selectedWordIDs.contains(word.id) {
+                selectedWordIDs.remove(word.id)
+            } else {
+                selectedWordIDs.insert(word.id)
+            }
+        }
+    }
+}
+
+private struct ParentSchoolWordChoiceButton: View {
+    var word: SpellingWord
+    var isMissed: Bool
+    var language: AppLanguage
+    var action: () -> Void
+
+    private var tint: Color {
+        isMissed ? Color(red: 0.90, green: 0.45, blue: 0.12) : Color(red: 0.20, green: 0.62, blue: 0.24)
+    }
+
+    private var promptText: String {
+        word.promptText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: isMissed ? "xmark.circle.fill" : "checkmark.circle.fill")
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(tint)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(word.text)
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.34))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+
+                    if !promptText.isEmpty {
+                        Text(promptText)
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.70)
+                    }
+                }
+
+                Spacer(minLength: 0)
+            }
+            .frame(minHeight: 52)
+            .padding(.horizontal, 10)
+            .background(isMissed ? Color(red: 1.0, green: 0.94, blue: 0.84) : Color(red: 0.90, green: 0.97, blue: 0.88))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(tint.opacity(isMissed ? 0.55 : 0.22), lineWidth: isMissed ? 2 : 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .accessibilityLabel(
+            isMissed
+                ? language.text(japanese: "\(word.text) は間違い", english: "\(word.text) marked missed")
+                : language.text(japanese: "\(word.text) は正解", english: "\(word.text) marked correct")
         )
     }
 }
