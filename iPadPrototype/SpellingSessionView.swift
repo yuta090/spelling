@@ -109,6 +109,10 @@ struct SpellingSessionView: View {
         practiceRepeatIndex >= practiceRepetitionCount - 1
     }
 
+    private var isPracticeRepeatAdvanceButton: Bool {
+        mode == .practice && capturesPracticeSamples && !isLastPracticeRepeat
+    }
+
     private var guideLabels: [String] {
         if language == .japanese {
             return ["トップライン", "ミッドライン", "ベースライン", "ディセンダーライン"]
@@ -507,7 +511,10 @@ struct SpellingSessionView: View {
                         title: practiceNextButtonTitle,
                         systemImage: practiceNextButtonIcon,
                         style: .primary,
-                        funTapAnimations: mode == .practice
+                        funTapAnimations: isPracticeRepeatAdvanceButton,
+                        canPlayFunTapAnimation: {
+                            hasCurrentDrawingInk
+                        }
                     ) {
                         celebrateThenMoveNext()
                     }
@@ -1631,43 +1638,68 @@ private enum SessionButtonStyleKind {
 }
 
 private enum PracticeButtonTapEffectStyle: CaseIterable {
-    case bounce
-    case wiggle
-    case hop
-    case glow
-    case ring
-    case stars
-    case coin
-    case sweep
-    case check
-    case dots
+    case goldPop
+    case blueShower
+    case pinkTwinkle
+    case greenGlow
+    case violetSpray
+    case orangeComet
+    case rainbowTrail
+    case pearlDust
+    case bigStar
+    case sideBurst
 
     static func random() -> PracticeButtonTapEffectStyle {
-        allCases.randomElement() ?? .bounce
+        allCases.randomElement() ?? .goldPop
     }
 
     var tint: Color {
         switch self {
-        case .bounce:
+        case .goldPop:
             return Color(red: 0.95, green: 0.70, blue: 0.08)
-        case .wiggle:
-            return Color(red: 0.80, green: 0.34, blue: 0.78)
-        case .hop:
-            return Color(red: 0.22, green: 0.66, blue: 0.28)
-        case .glow:
+        case .blueShower:
             return Color(red: 0.22, green: 0.62, blue: 0.96)
-        case .ring:
-            return Color(red: 0.98, green: 0.56, blue: 0.12)
-        case .stars:
-            return Color(red: 1.0, green: 0.76, blue: 0.10)
-        case .coin:
-            return Color(red: 0.96, green: 0.62, blue: 0.06)
-        case .sweep:
-            return Color.white
-        case .check:
-            return Color(red: 0.18, green: 0.68, blue: 0.28)
-        case .dots:
+        case .pinkTwinkle:
+            return Color(red: 0.95, green: 0.34, blue: 0.76)
+        case .greenGlow:
+            return Color(red: 0.24, green: 0.72, blue: 0.35)
+        case .violetSpray:
             return Color(red: 0.52, green: 0.38, blue: 0.88)
+        case .orangeComet:
+            return Color(red: 0.98, green: 0.56, blue: 0.12)
+        case .rainbowTrail:
+            return Color(red: 0.28, green: 0.64, blue: 0.96)
+        case .pearlDust:
+            return Color.white
+        case .bigStar:
+            return Color(red: 1.0, green: 0.76, blue: 0.10)
+        case .sideBurst:
+            return Color(red: 0.42, green: 0.76, blue: 0.95)
+        }
+    }
+
+    var accent: Color {
+        switch self {
+        case .goldPop:
+            return Color(red: 1.0, green: 0.88, blue: 0.28)
+        case .blueShower:
+            return Color(red: 0.72, green: 0.88, blue: 1.0)
+        case .pinkTwinkle:
+            return Color(red: 1.0, green: 0.74, blue: 0.92)
+        case .greenGlow:
+            return Color(red: 0.78, green: 0.95, blue: 0.38)
+        case .violetSpray:
+            return Color(red: 0.92, green: 0.80, blue: 1.0)
+        case .orangeComet:
+            return Color(red: 1.0, green: 0.82, blue: 0.26)
+        case .rainbowTrail:
+            return Color(red: 0.96, green: 0.42, blue: 0.62)
+        case .pearlDust:
+            return Color(red: 1.0, green: 0.90, blue: 0.55)
+        case .bigStar:
+            return Color(red: 0.98, green: 0.52, blue: 0.12)
+        case .sideBurst:
+            return Color(red: 1.0, green: 0.78, blue: 0.24)
         }
     }
 
@@ -1675,37 +1707,90 @@ private enum PracticeButtonTapEffectStyle: CaseIterable {
         guard active, !reduceMotion else {
             return 1
         }
-        switch self {
-        case .bounce:
-            return 1.08
-        case .hop:
-            return 1.04
-        case .glow, .ring, .stars, .coin, .sweep, .check, .dots:
-            return 1.02
-        case .wiggle:
-            return 1.01
-        }
+        return self == .bigStar ? 1.04 : 1.02
     }
 
     func rotation(active: Bool, reduceMotion: Bool) -> Double {
-        guard active, !reduceMotion else {
-            return 0
-        }
-        switch self {
-        case .wiggle:
-            return -4
-        case .coin:
-            return 2
-        default:
-            return 0
-        }
+        0
     }
 
     func yOffset(active: Bool, reduceMotion: Bool) -> CGFloat {
-        guard active, !reduceMotion else {
-            return 0
+        0
+    }
+
+    var particles: [ButtonSparkleParticle] {
+        switch self {
+        case .goldPop:
+            return [
+                .init(startX: 0.48, startY: 0.45, dx: -82, dy: -54, size: 18, delay: 0.00, symbol: "sparkles", color: tint, rotation: -22),
+                .init(startX: 0.52, startY: 0.46, dx: -24, dy: -72, size: 24, delay: 0.03, symbol: "star.fill", color: accent, rotation: 18),
+                .init(startX: 0.56, startY: 0.48, dx: 74, dy: -48, size: 18, delay: 0.06, symbol: "sparkle", color: tint, rotation: 28),
+                .init(startX: 0.50, startY: 0.54, dx: 28, dy: 42, size: 15, delay: 0.08, symbol: "sparkles", color: accent, rotation: -12)
+            ]
+        case .blueShower:
+            return [
+                .init(startX: 0.30, startY: 0.40, dx: -48, dy: -68, size: 17, delay: 0.01, symbol: "sparkle", color: accent, rotation: -20),
+                .init(startX: 0.45, startY: 0.42, dx: -8, dy: -82, size: 22, delay: 0.04, symbol: "sparkles", color: tint, rotation: 12),
+                .init(startX: 0.58, startY: 0.43, dx: 42, dy: -74, size: 16, delay: 0.07, symbol: "star.fill", color: accent, rotation: 24),
+                .init(startX: 0.72, startY: 0.46, dx: 70, dy: -42, size: 15, delay: 0.10, symbol: "sparkle", color: tint, rotation: -18)
+            ]
+        case .pinkTwinkle:
+            return [
+                .init(startX: 0.44, startY: 0.45, dx: -70, dy: -36, size: 17, delay: 0.00, symbol: "sparkles", color: tint, rotation: -24),
+                .init(startX: 0.52, startY: 0.44, dx: 0, dy: -78, size: 20, delay: 0.03, symbol: "sparkle", color: accent, rotation: 16),
+                .init(startX: 0.58, startY: 0.48, dx: 76, dy: -34, size: 17, delay: 0.06, symbol: "sparkles", color: tint, rotation: 24),
+                .init(startX: 0.52, startY: 0.56, dx: -18, dy: 44, size: 15, delay: 0.09, symbol: "star.fill", color: accent, rotation: -12)
+            ]
+        case .greenGlow:
+            return [
+                .init(startX: 0.34, startY: 0.46, dx: -58, dy: -48, size: 16, delay: 0.00, symbol: "sparkle", color: tint, rotation: -16),
+                .init(startX: 0.46, startY: 0.44, dx: -12, dy: -74, size: 20, delay: 0.04, symbol: "sparkles", color: accent, rotation: 18),
+                .init(startX: 0.61, startY: 0.45, dx: 48, dy: -60, size: 16, delay: 0.08, symbol: "star.fill", color: tint, rotation: 28),
+                .init(startX: 0.68, startY: 0.55, dx: 78, dy: 26, size: 14, delay: 0.11, symbol: "sparkle", color: accent, rotation: -24)
+            ]
+        case .violetSpray:
+            return [
+                .init(startX: 0.26, startY: 0.50, dx: -72, dy: -18, size: 16, delay: 0.00, symbol: "sparkles", color: tint, rotation: -18),
+                .init(startX: 0.42, startY: 0.45, dx: -34, dy: -64, size: 18, delay: 0.03, symbol: "sparkle", color: accent, rotation: 18),
+                .init(startX: 0.58, startY: 0.45, dx: 34, dy: -64, size: 18, delay: 0.06, symbol: "sparkles", color: tint, rotation: -24),
+                .init(startX: 0.74, startY: 0.50, dx: 72, dy: -18, size: 16, delay: 0.09, symbol: "star.fill", color: accent, rotation: 26)
+            ]
+        case .orangeComet:
+            return [
+                .init(startX: 0.34, startY: 0.58, dx: -60, dy: 22, size: 14, delay: 0.00, symbol: "sparkle", color: accent, rotation: -16),
+                .init(startX: 0.46, startY: 0.48, dx: -12, dy: -62, size: 17, delay: 0.02, symbol: "sparkles", color: tint, rotation: 16),
+                .init(startX: 0.56, startY: 0.44, dx: 46, dy: -82, size: 22, delay: 0.05, symbol: "star.fill", color: accent, rotation: 34),
+                .init(startX: 0.62, startY: 0.48, dx: 92, dy: -42, size: 16, delay: 0.08, symbol: "sparkle", color: tint, rotation: 28)
+            ]
+        case .rainbowTrail:
+            return [
+                .init(startX: 0.22, startY: 0.48, dx: -42, dy: -34, size: 14, delay: 0.00, symbol: "sparkle", color: Color(red: 0.28, green: 0.64, blue: 0.96), rotation: -22),
+                .init(startX: 0.38, startY: 0.47, dx: -20, dy: -68, size: 17, delay: 0.03, symbol: "sparkles", color: Color(red: 0.40, green: 0.78, blue: 0.38), rotation: 14),
+                .init(startX: 0.54, startY: 0.45, dx: 24, dy: -76, size: 19, delay: 0.06, symbol: "star.fill", color: Color(red: 1.0, green: 0.74, blue: 0.18), rotation: 24),
+                .init(startX: 0.70, startY: 0.48, dx: 62, dy: -36, size: 15, delay: 0.09, symbol: "sparkle", color: Color(red: 0.96, green: 0.42, blue: 0.62), rotation: -16)
+            ]
+        case .pearlDust:
+            return [
+                .init(startX: 0.40, startY: 0.44, dx: -54, dy: -44, size: 15, delay: 0.00, symbol: "sparkle", color: accent, rotation: -14),
+                .init(startX: 0.49, startY: 0.45, dx: -12, dy: -70, size: 17, delay: 0.04, symbol: "sparkles", color: tint, rotation: 16),
+                .init(startX: 0.57, startY: 0.45, dx: 44, dy: -58, size: 15, delay: 0.08, symbol: "sparkle", color: accent, rotation: 20),
+                .init(startX: 0.64, startY: 0.56, dx: 66, dy: 20, size: 14, delay: 0.11, symbol: "star.fill", color: Color(red: 0.76, green: 0.90, blue: 1.0), rotation: -18)
+            ]
+        case .bigStar:
+            return [
+                .init(startX: 0.50, startY: 0.46, dx: 0, dy: -68, size: 30, delay: 0.00, symbol: "star.fill", color: tint, rotation: 18),
+                .init(startX: 0.42, startY: 0.50, dx: -72, dy: -26, size: 17, delay: 0.05, symbol: "sparkles", color: accent, rotation: -18),
+                .init(startX: 0.58, startY: 0.50, dx: 72, dy: -26, size: 17, delay: 0.07, symbol: "sparkle", color: tint, rotation: 22),
+                .init(startX: 0.50, startY: 0.58, dx: 0, dy: 44, size: 14, delay: 0.10, symbol: "sparkles", color: accent, rotation: -10)
+            ]
+        case .sideBurst:
+            return [
+                .init(startX: 0.18, startY: 0.36, dx: -54, dy: -30, size: 15, delay: 0.00, symbol: "sparkle", color: tint, rotation: -20),
+                .init(startX: 0.20, startY: 0.64, dx: -58, dy: 22, size: 15, delay: 0.04, symbol: "sparkles", color: accent, rotation: 18),
+                .init(startX: 0.82, startY: 0.36, dx: 54, dy: -30, size: 15, delay: 0.02, symbol: "star.fill", color: accent, rotation: 22),
+                .init(startX: 0.80, startY: 0.64, dx: 58, dy: 22, size: 15, delay: 0.06, symbol: "sparkle", color: tint, rotation: -16)
+            ]
         }
-        return self == .hop ? -8 : 0
     }
 }
 
@@ -1715,8 +1800,9 @@ private struct SessionControlButton: View {
     var systemImage: String
     var style: SessionButtonStyleKind
     var funTapAnimations = false
+    var canPlayFunTapAnimation: () -> Bool = { true }
     var action: () -> Void
-    @State private var tapEffectStyle = PracticeButtonTapEffectStyle.bounce
+    @State private var tapEffectStyle = PracticeButtonTapEffectStyle.goldPop
     @State private var tapEffectActive = false
     @State private var tapEffectSeed = 0
     @State private var isWaitingForFunTapAction = false
@@ -1801,14 +1887,10 @@ private struct SessionControlButton: View {
         )
         .overlay {
             if funTapAnimations && tapEffectActive {
-                ZStack {
-                    GuaranteedPracticeTapFlash(tint: tapEffectStyle.tint)
-                    PracticeButtonTapEffectOverlay(
-                        style: tapEffectStyle,
-                        seed: tapEffectSeed
-                    )
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                PracticeButtonTapEffectOverlay(
+                    style: tapEffectStyle,
+                    seed: tapEffectSeed
+                )
             }
         }
         .shadow(color: shadowColor, radius: style == .finish ? 12 : 8, x: 0, y: 5)
@@ -1821,7 +1903,7 @@ private struct SessionControlButton: View {
             return
         }
 
-        guard funTapAnimations, !reduceMotion else {
+        guard funTapAnimations, canPlayFunTapAnimation(), !reduceMotion else {
             action()
             return
         }
@@ -1837,7 +1919,7 @@ private struct SessionControlButton: View {
     }
 
     private func triggerFunTapAnimationIfNeeded() {
-        guard funTapAnimations, !reduceMotion else {
+        guard funTapAnimations, canPlayFunTapAnimation(), !reduceMotion else {
             return
         }
 
@@ -1862,36 +1944,16 @@ private struct SessionControlButton: View {
     }
 }
 
-private struct GuaranteedPracticeTapFlash: View {
-    var tint: Color
-
-    var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                tint.opacity(0.28),
-                                Color.white.opacity(0.12)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.white.opacity(0.72), lineWidth: 2)
-
-                Image(systemName: "sparkles")
-                    .font(.system(size: 24, weight: .heavy))
-                    .foregroundStyle(.white)
-                    .shadow(color: tint.opacity(0.40), radius: 4, x: 0, y: 2)
-                    .position(x: proxy.size.width - 26, y: 22)
-            }
-        }
-        .allowsHitTesting(false)
-    }
+private struct ButtonSparkleParticle {
+    var startX: CGFloat
+    var startY: CGFloat
+    var dx: CGFloat
+    var dy: CGFloat
+    var size: CGFloat
+    var delay: Double
+    var symbol: String
+    var color: Color
+    var rotation: Double
 }
 
 private struct PracticeButtonTapEffectOverlay: View {
@@ -1900,33 +1962,31 @@ private struct PracticeButtonTapEffectOverlay: View {
     @State private var active = false
 
     var body: some View {
-        ZStack {
-            switch style {
-            case .bounce:
-                TapPopMarks(active: active, tint: style.tint, symbols: ["sparkles", "star.fill", "sparkles"])
-            case .wiggle:
-                TapSideMarks(active: active, tint: style.tint)
-            case .hop:
-                TapHopArc(active: active, tint: style.tint)
-            case .glow:
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(style.tint.opacity(active ? 0.85 : 0), lineWidth: active ? 5 : 1)
-                    .blur(radius: active ? 4 : 0)
-                    .scaleEffect(active ? 1.05 : 0.94)
-            case .ring:
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(style.tint.opacity(active ? 0 : 0.75), lineWidth: active ? 1 : 5)
-                    .scaleEffect(active ? 1.18 : 0.88)
-            case .stars:
-                TapPopMarks(active: active, tint: style.tint, symbols: ["star.fill", "sparkle", "star.fill"])
-            case .coin:
-                TapCoinBurst(active: active, tint: style.tint)
-            case .sweep:
-                TapShineSweep(active: active)
-            case .check:
-                TapCheckBadge(active: active, tint: style.tint)
-            case .dots:
-                TapDotBurst(active: active, tint: style.tint)
+        GeometryReader { proxy in
+            ZStack {
+                ForEach(Array(style.particles.enumerated()), id: \.offset) { _, particle in
+                    Image(systemName: particle.symbol)
+                        .font(.system(size: particle.size, weight: .heavy))
+                        .foregroundStyle(particle.color)
+                        .shadow(color: particle.color.opacity(0.28), radius: 4, x: 0, y: 2)
+                        .scaleEffect(active ? 1.16 : 0.24)
+                        .rotationEffect(.degrees(active ? particle.rotation : -particle.rotation * 0.25))
+                        .opacity(active ? 0 : 1)
+                        .position(
+                            x: proxy.size.width * particle.startX + (active ? particle.dx : 0),
+                            y: proxy.size.height * particle.startY + (active ? particle.dy : 0)
+                        )
+                        .animation(.easeOut(duration: 0.42).delay(particle.delay), value: active)
+                }
+
+                Image(systemName: "sparkles")
+                    .font(.system(size: 22, weight: .heavy))
+                    .foregroundStyle(.white)
+                    .shadow(color: style.tint.opacity(0.42), radius: 5, x: 0, y: 2)
+                    .scaleEffect(active ? 1.28 : 0.52)
+                    .opacity(active ? 0 : 0.94)
+                    .position(x: proxy.size.width - 28, y: proxy.size.height * 0.50)
+                    .animation(.easeOut(duration: 0.28), value: active)
             }
         }
         .id(seed)
@@ -1936,167 +1996,6 @@ private struct PracticeButtonTapEffectOverlay: View {
             Task { @MainActor in
                 await Task.yield()
                 active = true
-            }
-        }
-    }
-}
-
-private struct TapPopMarks: View {
-    var active: Bool
-    var tint: Color
-    var symbols: [String]
-
-    var body: some View {
-        GeometryReader { proxy in
-            ForEach(Array(symbols.enumerated()), id: \.offset) { item in
-                Image(systemName: item.element)
-                    .font(.system(size: item.offset == 1 ? 24 : 18, weight: .bold))
-                    .foregroundStyle(tint)
-                    .scaleEffect(active ? 1.1 : 0.2)
-                    .opacity(active ? 0 : 1)
-                    .position(
-                        x: proxy.size.width * [0.18, 0.50, 0.82][item.offset],
-                        y: active ? -8 : proxy.size.height * 0.50
-                    )
-                    .animation(.easeOut(duration: 0.38).delay(Double(item.offset) * 0.035), value: active)
-            }
-        }
-    }
-}
-
-private struct TapSideMarks: View {
-    var active: Bool
-    var tint: Color
-
-    var body: some View {
-        GeometryReader { proxy in
-            ForEach(0..<4, id: \.self) { item in
-                Capsule()
-                    .fill(tint.opacity(0.82))
-                    .frame(width: 18, height: 4)
-                    .rotationEffect(.degrees(item % 2 == 0 ? -18 : 18))
-                    .position(
-                        x: item < 2 ? (active ? 8 : proxy.size.width * 0.22) : (active ? proxy.size.width - 8 : proxy.size.width * 0.78),
-                        y: item % 2 == 0 ? proxy.size.height * 0.28 : proxy.size.height * 0.72
-                    )
-                    .opacity(active ? 0 : 1)
-                    .animation(.easeOut(duration: 0.32).delay(Double(item) * 0.02), value: active)
-            }
-        }
-    }
-}
-
-private struct TapHopArc: View {
-    var active: Bool
-    var tint: Color
-
-    var body: some View {
-        GeometryReader { proxy in
-            ForEach(0..<3, id: \.self) { item in
-                Circle()
-                    .fill(tint.opacity(0.84))
-                    .frame(width: 10 + CGFloat(item) * 3, height: 10 + CGFloat(item) * 3)
-                    .position(
-                        x: proxy.size.width * (0.36 + CGFloat(item) * 0.14),
-                        y: active ? -8 : proxy.size.height * 0.44
-                    )
-                    .opacity(active ? 0 : 1)
-                    .animation(.easeOut(duration: 0.36).delay(Double(item) * 0.04), value: active)
-            }
-        }
-    }
-}
-
-private struct TapCoinBurst: View {
-    var active: Bool
-    var tint: Color
-
-    var body: some View {
-        GeometryReader { proxy in
-            ForEach(0..<3, id: \.self) { item in
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(red: 1.0, green: 0.88, blue: 0.22), Color(red: 0.94, green: 0.58, blue: 0.05)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(.white)
-                }
-                .frame(width: 22, height: 22)
-                .position(
-                    x: proxy.size.width * (0.32 + CGFloat(item) * 0.18),
-                    y: active ? proxy.size.height * 0.10 : proxy.size.height * 0.52
-                )
-                .rotationEffect(.degrees(active ? 22 : -20))
-                .opacity(active ? 0 : 1)
-                .shadow(color: tint.opacity(0.20), radius: 3, x: 0, y: 2)
-                .animation(.easeOut(duration: 0.40).delay(Double(item) * 0.035), value: active)
-            }
-        }
-    }
-}
-
-private struct TapShineSweep: View {
-    var active: Bool
-
-    var body: some View {
-        GeometryReader { proxy in
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        colors: [.clear, .white.opacity(0.70), .clear],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .frame(width: 60, height: proxy.size.height * 1.8)
-                .rotationEffect(.degrees(18))
-                .offset(x: active ? proxy.size.width + 60 : -90, y: -proxy.size.height * 0.30)
-                .animation(.easeOut(duration: 0.34), value: active)
-        }
-    }
-}
-
-private struct TapCheckBadge: View {
-    var active: Bool
-    var tint: Color
-
-    var body: some View {
-        GeometryReader { proxy in
-            Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 34, weight: .bold))
-                .foregroundStyle(tint)
-                .background(Circle().fill(.white.opacity(0.92)).frame(width: 36, height: 36))
-                .position(x: proxy.size.width - 22, y: 14)
-                .scaleEffect(active ? 1 : 0.2)
-                .opacity(active ? 1 : 0)
-                .animation(.spring(response: 0.24, dampingFraction: 0.58), value: active)
-        }
-    }
-}
-
-private struct TapDotBurst: View {
-    var active: Bool
-    var tint: Color
-
-    var body: some View {
-        GeometryReader { proxy in
-            ForEach(0..<8, id: \.self) { item in
-                let angle = Double(item) / 8.0 * Double.pi * 2
-                Circle()
-                    .fill(item % 2 == 0 ? tint : Color(red: 1.0, green: 0.72, blue: 0.12))
-                    .frame(width: 8, height: 8)
-                    .position(
-                        x: proxy.size.width / 2 + (active ? CGFloat(cos(angle)) * 92 : 0),
-                        y: proxy.size.height / 2 + (active ? CGFloat(sin(angle)) * 42 : 0)
-                    )
-                    .opacity(active ? 0 : 1)
-                    .animation(.easeOut(duration: 0.38).delay(Double(item) * 0.012), value: active)
             }
         }
     }
