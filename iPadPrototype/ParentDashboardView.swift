@@ -1854,16 +1854,13 @@ private struct SchoolTestResultCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(language.text(japanese: "学校テスト結果", english: "School Test Result"))
+                Text(result.stepTitle.isEmpty ? language.text(japanese: "ステップ未設定", english: "No step") : result.stepTitle)
                     .font(.headline.weight(.heavy))
                     .foregroundStyle(ParentPalette.ink)
-                Text(
-                    "\(result.stepTitle.isEmpty ? language.text(japanese: "ステップ未設定", english: "No step") : result.stepTitle) ・ " +
-                    language.text(
-                        japanese: "テスト日 \(result.date.formatted(date: .abbreviated, time: .omitted))",
-                        english: "Test date \(result.date.formatted(date: .abbreviated, time: .omitted))"
-                    )
-                )
+                Text(language.text(
+                    japanese: "テスト日 \(result.date.formatted(date: .abbreviated, time: .omitted))",
+                    english: "Test date \(result.date.formatted(date: .abbreviated, time: .omitted))"
+                ))
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.secondary)
 
