@@ -23,6 +23,14 @@ struct HomeView: View {
         selectedPracticeWords.map(\.id)
     }
 
+    private var activeHomeReviewWordIDs: Set<UUID> {
+        model.homeReviewWordIDs.intersection(Set(model.activeWords.map(\.id)))
+    }
+
+    private var isHomeReviewActive: Bool {
+        !activeHomeReviewWordIDs.isEmpty
+    }
+
     private var activePracticeResumeState: PracticeSessionResumeState? {
         guard let practiceResumeState,
               practiceResumeState.wordIDs == selectedPracticeWordIDsInOrder,
@@ -64,6 +72,7 @@ struct HomeView: View {
                         canTest: !model.nextTestWords.isEmpty,
                         hasPracticeResume: activePracticeResumeState != nil,
                         remainingPracticeCount: activePracticeRemainingCount,
+                        isReviewPractice: isHomeReviewActive,
                         character: selectedCharacter,
                         coinBalance: model.rewardCoins,
                         startPractice: startPractice,
@@ -257,6 +266,7 @@ private struct ChildMissionPanel: View {
     var canTest: Bool
     var hasPracticeResume: Bool
     var remainingPracticeCount: Int?
+    var isReviewPractice: Bool
     var character: HomeRewardCharacter
     var coinBalance: Int
     var startPractice: () -> Void
@@ -269,7 +279,13 @@ private struct ChildMissionPanel: View {
             return language.text(japanese: "たんごがない", english: "No words")
         }
         if let remainingPracticeCount {
-            return language.text(japanese: "あと \(remainingPracticeCount)こ れんしゅう", english: "\(remainingPracticeCount) left")
+            if isReviewPractice {
+                return language.text(japanese: "あと \(remainingPracticeCount)こ ふくしゅう", english: "\(remainingPracticeCount) review left")
+            }
+            return language.text(japanese: "あと \(remainingPracticeCount)こ れんしゅう", english: "\(remainingPracticeCount) practice left")
+        }
+        if isReviewPractice {
+            return language.text(japanese: "\(practiceCount)こ ふくしゅう", english: "\(practiceCount) review words")
         }
         if carryOverCount > 0 {
             return language.text(japanese: "\(practiceCount)こ + ふくしゅう\(carryOverCount)こ", english: "\(practiceCount) + \(carryOverCount) review")
@@ -282,6 +298,17 @@ private struct ChildMissionPanel: View {
             return 0
         }
         return Double(progress.clearedCount) / Double(progress.totalWords)
+    }
+
+    private var primaryButtonTitle: String {
+        if hasPracticeResume {
+            return isReviewPractice
+                ? language.text(japanese: "ふくしゅうのつづき", english: "Continue Review")
+                : language.text(japanese: "つづきから", english: "Continue")
+        }
+        return isReviewPractice
+            ? language.text(japanese: "ふくしゅうする", english: "Review")
+            : language.text(japanese: "はじめる", english: "Start")
     }
 
     var body: some View {
@@ -348,7 +375,7 @@ private struct ChildMissionPanel: View {
 
             Button(action: startPractice) {
                 Label(
-                    hasPracticeResume ? language.text(japanese: "つづきから", english: "Continue") : language.text(japanese: "はじめる", english: "Start"),
+                    primaryButtonTitle,
                     systemImage: hasPracticeResume ? "arrow.forward.circle.fill" : "play.fill"
                 )
                     .font(.system(size: 34, weight: .heavy, design: .rounded))
