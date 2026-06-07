@@ -1726,7 +1726,7 @@ private struct SchoolTestResultDatePicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Label(language.text(japanese: "テスト日", english: "Date"), systemImage: "calendar")
+                Label(language.text(japanese: "学校テスト", english: "School Test"), systemImage: "graduationcap.fill")
                     .font(.subheadline.weight(.heavy))
                     .foregroundStyle(ParentPalette.primary)
 
@@ -1787,7 +1787,7 @@ private struct SchoolTestResultDateButton: View {
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 3) {
-                Text(result.date.formatted(date: .abbreviated, time: .omitted))
+                Text(formattedLocalizedDate(result.date, language: language))
                     .font(.subheadline.weight(.heavy))
                     .foregroundStyle(ParentPalette.ink)
                     .lineLimit(1)
@@ -1871,7 +1871,7 @@ private struct SchoolTestResultCard: View {
                         .font(.headline.weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
                 }
-                Text(result.date.formatted(date: .abbreviated, time: .omitted))
+                Text(formattedLocalizedDate(result.date, language: language))
                     .font((showsStepTitle ? Font.caption : Font.headline).weight(.bold))
                     .foregroundStyle(.secondary)
 
@@ -2814,7 +2814,7 @@ private enum ParentGradingSessionKind: Equatable {
     func title(number: Int, language: AppLanguage) -> String {
         switch self {
         case .test:
-            return language.text(japanese: "テスト \(number)回目", english: "Test #\(number)")
+            return language.text(japanese: "アプリのテスト \(number)回目", english: "App Test #\(number)")
         case .practice:
             return language.text(japanese: "れんしゅう \(number)回目", english: "Practice #\(number)")
         case .review:
@@ -2924,7 +2924,7 @@ private struct ParentGradingSessionChip: View {
                     .font(.subheadline.weight(.heavy))
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
-                Text(session.date.formatted(date: .abbreviated, time: .shortened))
+                Text(formattedLocalizedDateTime(session.date, language: language))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
             }
@@ -2982,7 +2982,7 @@ private struct ParentGradingSessionCard: View {
                     Text(session.title(language: language))
                         .font(.title2.weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
-                    Text(session.date.formatted(date: .abbreviated, time: .shortened))
+                    Text(formattedLocalizedDateTime(session.date, language: language))
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
@@ -3725,7 +3725,7 @@ private struct LearningHistoryPanel: View {
                 id: "test-\(attempt.id.uuidString)",
                 date: attempt.date,
                 word: attempt.word,
-                modeLabel: language.text(japanese: "テスト", english: "Test"),
+                modeLabel: language.text(japanese: "アプリのテスト", english: "App Test"),
                 detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
                 systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
                 tint: attempt.decision == .autoCorrect ? ParentPalette.success : ParentPalette.warning,
@@ -3838,7 +3838,7 @@ private struct HandwritingListPanel: View {
                 id: "test-writing-\(attempt.id.uuidString)",
                 date: attempt.date,
                 word: attempt.word,
-                modeLabel: language.text(japanese: "テスト", english: "Test"),
+                modeLabel: language.text(japanese: "アプリのテスト", english: "App Test"),
                 detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
                 systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
                 tint: attempt.decision == .autoCorrect ? ParentPalette.success : ParentPalette.warning,
@@ -3924,7 +3924,7 @@ private struct ParentHandwritingListCard: View {
                     Text(entry.word)
                         .font(.title2.weight(.bold))
                         .foregroundStyle(ParentPalette.ink)
-                    Text("\(entry.modeLabel) ・ \(entry.date.formatted(date: .abbreviated, time: .shortened))")
+                    Text("\(entry.modeLabel) ・ \(formattedLocalizedDateTime(entry.date, language: language))")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
                     Text(entry.detail)
@@ -3971,7 +3971,7 @@ private struct LearningHistoryCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(entry.word)
                         .font(.headline.weight(.bold))
-                    Text("\(entry.modeLabel) ・ \(entry.date.formatted(date: .abbreviated, time: .shortened))")
+                    Text("\(entry.modeLabel) ・ \(formattedLocalizedDateTime(entry.date, language: language))")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                     Text(entry.detail)
@@ -4015,8 +4015,8 @@ private struct ReviewAttemptSummaryCard: View {
                     Text(summary.word)
                         .font(.headline.weight(.bold))
                     Text(language.text(
-                        japanese: "最新: \(attempt.date.formatted(date: .omitted, time: .shortened)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
-                        english: "Latest: \(attempt.date.formatted(date: .omitted, time: .shortened)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)"
+                        japanese: "最新: \(formattedLocalizedTime(attempt.date, language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
+                        english: "Latest: \(formattedLocalizedTime(attempt.date, language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)"
                     ))
                     .font(.caption.monospaced().weight(.semibold))
                     .foregroundStyle(.secondary)
@@ -4098,7 +4098,7 @@ private struct ParentPracticeSampleCard: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(sample.word)
                         .font(.headline.weight(.bold))
-                    Text("\(modeLabel) ・ \(sample.date.formatted(date: .omitted, time: .shortened))")
+                    Text("\(modeLabel) ・ \(formattedLocalizedTime(sample.date, language: language))")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }

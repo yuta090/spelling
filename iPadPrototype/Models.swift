@@ -153,6 +153,24 @@ func formattedStepDate(_ date: Date, language: AppLanguage) -> String {
     return formatter.string(from: date)
 }
 
+func formattedLocalizedDate(_ date: Date, language: AppLanguage) -> String {
+    formattedStepDate(date, language: language)
+}
+
+func formattedLocalizedDateTime(_ date: Date, language: AppLanguage) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = language == .japanese ? Locale(identifier: "ja_JP") : Locale(identifier: "en_US")
+    formatter.dateFormat = language == .japanese ? "yyyy年M月d日 H:mm" : "MMM d, yyyy h:mm a"
+    return formatter.string(from: date)
+}
+
+func formattedLocalizedTime(_ date: Date, language: AppLanguage) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = language == .japanese ? Locale(identifier: "ja_JP") : Locale(identifier: "en_US")
+    formatter.dateFormat = language == .japanese ? "H:mm" : "h:mm a"
+    return formatter.string(from: date)
+}
+
 enum GradeDecision: String, Equatable, Codable {
     case autoCorrect
     case autoIncorrect

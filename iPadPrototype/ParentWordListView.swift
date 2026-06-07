@@ -5,6 +5,10 @@ struct ParentWordListView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var rawWords = ""
 
+    private var language: AppLanguage {
+        model.settings.appLanguage
+    }
+
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
@@ -64,7 +68,10 @@ struct ParentWordListView: View {
                                 )
                             }
                         }
-                        Text("Registered: \(word.registeredAt.formatted(date: .abbreviated, time: .omitted))")
+                        Text(language.text(
+                            japanese: "登録日: \(formattedLocalizedDate(word.registeredAt, language: language))",
+                            english: "Registered: \(formattedLocalizedDate(word.registeredAt, language: language))"
+                        ))
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
                     }
