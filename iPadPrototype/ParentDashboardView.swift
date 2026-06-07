@@ -2662,6 +2662,181 @@ private struct ParentNewStepButton: View {
     }
 }
 
+private func formattedImportedWordLine(_ word: String, knownWords: [SpellingWord]) -> String {
+    let normalized = normalize(word)
+    guard !normalized.isEmpty else {
+        return ""
+    }
+
+    if let prompt = knownPrompt(for: normalized, in: knownWords) {
+        return "\(normalized) | \(prompt)"
+    }
+
+    if let prompt = BasicJapaneseWordPrompt.prompt(for: normalized) {
+        return "\(normalized) | \(prompt)"
+    }
+
+    return normalized
+}
+
+private func knownPrompt(for word: String, in knownWords: [SpellingWord]) -> String? {
+    knownWords
+        .first { normalize($0.text) == word && !$0.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }?
+        .promptText
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+}
+
+private enum BasicJapaneseWordPrompt {
+    private static let prompts: [String: String] = [
+        "a": "ひとつの",
+        "about": "について",
+        "after": "あとで",
+        "again": "もういちど",
+        "all": "すべて",
+        "also": "また",
+        "and": "そして",
+        "animal": "どうぶつ",
+        "apple": "りんご",
+        "around": "まわり",
+        "baby": "あかちゃん",
+        "bad": "よくない",
+        "bag": "かばん",
+        "banana": "バナナ",
+        "be": "である",
+        "bear": "くま",
+        "beautiful": "うつくしい",
+        "because": "なぜなら",
+        "bed": "ベッド",
+        "before": "まえに",
+        "big": "おおきい",
+        "bird": "とり",
+        "black": "くろ",
+        "blue": "あお",
+        "book": "ほん",
+        "boy": "おとこのこ",
+        "bread": "パン",
+        "brother": "きょうだい",
+        "brown": "ちゃいろ",
+        "bus": "バス",
+        "cake": "ケーキ",
+        "car": "くるま",
+        "cat": "ねこ",
+        "chair": "いす",
+        "cheese": "チーズ",
+        "class": "クラス",
+        "cloud": "くも",
+        "cold": "さむい",
+        "color": "いろ",
+        "come": "くる",
+        "cow": "うし",
+        "day": "ひ",
+        "desk": "つくえ",
+        "dog": "いぬ",
+        "door": "ドア",
+        "drink": "のむ",
+        "duck": "あひる",
+        "eat": "たべる",
+        "egg": "たまご",
+        "family": "かぞく",
+        "father": "おとうさん",
+        "fish": "さかな",
+        "flower": "はな",
+        "food": "たべもの",
+        "friend": "ともだち",
+        "frog": "かえる",
+        "game": "ゲーム",
+        "girl": "おんなのこ",
+        "go": "いく",
+        "good": "よい",
+        "grandfather": "おじいさん",
+        "grandmother": "おばあさん",
+        "grass": "くさ",
+        "grape": "ぶどう",
+        "green": "みどり",
+        "happy": "うれしい",
+        "home": "いえ",
+        "homework": "しゅくだい",
+        "horse": "うま",
+        "hot": "あつい",
+        "house": "いえ",
+        "i": "わたし",
+        "juice": "ジュース",
+        "jump": "とぶ",
+        "lesson": "レッスン",
+        "lion": "ライオン",
+        "little": "ちいさい",
+        "long": "ながい",
+        "meat": "にく",
+        "milk": "ミルク",
+        "monkey": "さる",
+        "month": "つき",
+        "moon": "つき",
+        "mother": "おかあさん",
+        "mountain": "やま",
+        "mouse": "ねずみ",
+        "name": "なまえ",
+        "night": "よる",
+        "ocean": "うみ",
+        "one": "いち",
+        "orange": "オレンジ",
+        "paper": "かみ",
+        "peach": "もも",
+        "pear": "なし",
+        "pen": "ペン",
+        "pencil": "えんぴつ",
+        "pig": "ぶた",
+        "pink": "ピンク",
+        "play": "あそぶ",
+        "purple": "むらさき",
+        "rabbit": "うさぎ",
+        "rain": "あめ",
+        "read": "よむ",
+        "red": "あか",
+        "rice": "ごはん",
+        "river": "かわ",
+        "room": "へや",
+        "run": "はしる",
+        "sad": "かなしい",
+        "school": "がっこう",
+        "sea": "うみ",
+        "sheep": "ひつじ",
+        "short": "みじかい",
+        "sing": "うたう",
+        "sister": "しまい",
+        "sky": "そら",
+        "sleep": "ねる",
+        "small": "ちいさい",
+        "snow": "ゆき",
+        "soup": "スープ",
+        "star": "ほし",
+        "student": "せいと",
+        "sun": "たいよう",
+        "swim": "およぐ",
+        "table": "テーブル",
+        "tall": "せがたかい",
+        "teacher": "せんせい",
+        "test": "テスト",
+        "tiger": "トラ",
+        "today": "きょう",
+        "tomorrow": "あした",
+        "tree": "き",
+        "walk": "あるく",
+        "water": "みず",
+        "week": "しゅう",
+        "white": "しろ",
+        "window": "まど",
+        "wind": "かぜ",
+        "write": "かく",
+        "year": "とし",
+        "yellow": "きいろ",
+        "you": "あなた"
+    ]
+
+    static func prompt(for word: String) -> String? {
+        prompts[word]
+    }
+}
+
 private struct ParentNewStepSheet: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
@@ -2931,8 +3106,8 @@ private struct ParentNewStepSheet: View {
                     } else {
                         statusSucceeded = true
                         statusMessage = language.text(
-                            japanese: "\(addedCount)単語を追加しました。",
-                            english: "Added \(addedCount) words."
+                            japanese: "\(addedCount)単語を追加しました。日本語がわかる単語は自動で付けました。",
+                            english: "Added \(addedCount) words. Japanese hints were added when available."
                         )
                     }
                 }
@@ -2968,9 +3143,10 @@ private struct ParentNewStepSheet: View {
         }
 
         let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
+        let importedLines = additions.map { formattedImportedWordLine($0, knownWords: model.words) }
         rawWords = currentText.isEmpty
-            ? additions.joined(separator: "\n")
-            : currentText + "\n" + additions.joined(separator: "\n")
+            ? importedLines.joined(separator: "\n")
+            : currentText + "\n" + importedLines.joined(separator: "\n")
 
         return additions.count
     }
@@ -3278,8 +3454,8 @@ private struct ParentWordListPanel: View {
                     } else {
                         importSucceeded = true
                         importMessage = language.text(
-                            japanese: "\(addedCount)単語をこのステップに追加しました。保存前に読み間違いを直してください。",
-                            english: "Added \(addedCount) words to this step. Edit misread words before saving."
+                            japanese: "\(addedCount)単語をこのステップに追加しました。日本語と読み間違いを確認して保存してください。",
+                            english: "Added \(addedCount) words to this step. Check Japanese hints and misreads before saving."
                         )
                     }
                 }
@@ -3315,9 +3491,10 @@ private struct ParentWordListPanel: View {
         }
 
         let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
+        let importedLines = additions.map { formattedImportedWordLine($0, knownWords: model.words) }
         rawWords = currentText.isEmpty
-            ? additions.joined(separator: "\n")
-            : currentText + "\n" + additions.joined(separator: "\n")
+            ? importedLines.joined(separator: "\n")
+            : currentText + "\n" + importedLines.joined(separator: "\n")
 
         return additions.count
     }
@@ -3597,8 +3774,8 @@ private struct ParentLegacyWordListPanel: View {
                     } else {
                         importSucceeded = true
                         importMessage = language.text(
-                            japanese: "\(addedCount)単語を下に追加しました。保存前に余分な単語や読み間違いを直してください。",
-                            english: "Added \(addedCount) words below. Edit extra or misread words before saving."
+                            japanese: "\(addedCount)単語を下に追加しました。日本語と読み間違いを確認して保存してください。",
+                            english: "Added \(addedCount) words below. Check Japanese hints and misreads before saving."
                         )
                     }
                 }
@@ -3635,9 +3812,10 @@ private struct ParentLegacyWordListPanel: View {
         }
 
         let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
+        let importedLines = additions.map { formattedImportedWordLine($0, knownWords: model.words) }
         rawWords = currentText.isEmpty
-            ? additions.joined(separator: "\n")
-            : currentText + "\n" + additions.joined(separator: "\n")
+            ? importedLines.joined(separator: "\n")
+            : currentText + "\n" + importedLines.joined(separator: "\n")
 
         return additions.count
     }
