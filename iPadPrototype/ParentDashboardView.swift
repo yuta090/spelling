@@ -1183,15 +1183,15 @@ private struct ParentStepRecordCard: View {
         if latestSchoolResult == nil {
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
-                title: language.text(japanese: "学校テストを入れる", english: "Enter school test"),
-                message: language.text(japanese: "点数と間違えた単語を入れると、復習すべきか判断できます。", english: "Enter score and missed words to decide whether review is needed."),
-                buttonTitle: language.text(japanese: "入れる", english: "Enter"),
+                title: language.text(japanese: "学校のテスト結果を入力", english: "Enter school test result"),
+                message: language.text(japanese: "点数と間違えた単語を入力すると、復習すべきか判断できます。", english: "Enter score and missed words to decide whether review is needed."),
+                buttonTitle: language.text(japanese: "結果を入力", english: "Enter result"),
                 systemImage: "graduationcap.fill",
                 tint: ParentPalette.primary,
                 kind: .enterSchoolTest,
-                infoTitle: language.text(japanese: "学校テストについて", english: "About school tests"),
+                infoTitle: language.text(japanese: "学校のテスト結果について", english: "About school test results"),
                 infoMessage: language.text(
-                    japanese: "点数と間違えた単語を入れると、次に復習する単語を選びやすくなります。",
+                    japanese: "点数と間違えた単語を入力すると、次に復習する単語を選びやすくなります。",
                     english: "Entering the score and missed words makes it easier to choose what to review next."
                 )
             )
@@ -1359,7 +1359,7 @@ private struct ParentStepRecordCard: View {
                         showingSchoolEntry = true
                     }
                 } label: {
-                    Label(language.text(japanese: "別の日も入れる", english: "Add Another Date"), systemImage: "square.and.pencil")
+                    Label(language.text(japanese: "別の日の結果を入力", english: "Enter Another Date"), systemImage: "square.and.pencil")
                         .font(.subheadline.weight(.bold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 9)
@@ -1851,7 +1851,7 @@ private struct SchoolTestResultPanel: View {
 
     var body: some View {
         ParentPanel(
-            title: language.text(japanese: "学校テスト", english: "School Test"),
+            title: language.text(japanese: "学校のテスト結果を入力", english: "Enter School Test Result"),
             systemImage: "graduationcap.fill",
             tint: ParentPalette.primary
         ) {
@@ -1958,7 +1958,7 @@ private struct SchoolTestResultPanel: View {
                     Button {
                         saveResult()
                     } label: {
-                        Label(language.text(japanese: "学校テストを保存", english: "Save School Test"), systemImage: "square.and.arrow.down.fill")
+                        Label(language.text(japanese: "学校のテスト結果を保存", english: "Save School Test Result"), systemImage: "square.and.arrow.down.fill")
                     }
                     .buttonStyle(.borderedProminent)
             .tapFeedback()
