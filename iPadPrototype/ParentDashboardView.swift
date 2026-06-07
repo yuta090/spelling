@@ -869,7 +869,7 @@ private struct ParentStepRecordCard: View {
                 return ParentStepRecordPrimaryAction(
                     eyebrow: language.text(japanese: "準備できました", english: "Ready"),
                     title: language.text(japanese: "復習をホームに出しました", english: "Review is on Home"),
-                    message: language.text(japanese: "子供メニューに表示中です。", english: "Shown on the child Home screen."),
+                    message: language.text(japanese: "\(reviewWords.count)単語が子供メニューに表示中です。", english: "\(reviewWords.count) words are shown on the child Home screen."),
                     buttonTitle: nil,
                     systemImage: "checkmark.circle.fill",
                     tint: ParentPalette.success,
@@ -884,8 +884,8 @@ private struct ParentStepRecordCard: View {
 
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
-                title: language.text(japanese: "復習する単語をホームに出す", english: "Send review words to Home"),
-                message: language.text(japanese: "ホームの復習に追加します。", english: "Add these to Home review."),
+                title: language.text(japanese: "間違えた単語をホームに出す", english: "Send Missed Words to Home"),
+                message: language.text(japanese: "\(reviewWords.count)単語をホームの復習に追加します。", english: "\(reviewWords.count) words will be added to Home review."),
                 buttonTitle: language.text(japanese: "復習に出す", english: "Use for Review"),
                 systemImage: "arrow.counterclockwise.circle.fill",
                 tint: ParentPalette.warning,
@@ -1014,35 +1014,6 @@ private struct ParentStepRecordCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
-            if !reviewWords.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label(language.text(japanese: "ふりかえり候補", english: "Review Words"), systemImage: "arrow.counterclockwise")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(ParentPalette.warning)
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(reviewWords) { word in
-                                Text(word.text)
-                                    .font(.headline.weight(.heavy))
-                                    .foregroundStyle(ParentPalette.warning)
-                                    .padding(.vertical, 6)
-                                    .padding(.horizontal, 10)
-                                    .background(ParentPalette.warningSoft)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
-                        }
-                    }
-
-                    Text(language.text(
-                        japanese: "この候補だけをホームに出せます。",
-                        english: "These candidates can be sent to Home."
-                    ))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                }
-            }
-
             if !schoolResults.isEmpty {
                 SchoolTestResultDatePicker(
                     results: schoolResults,
@@ -1136,8 +1107,8 @@ private struct ParentStepRecordCard: View {
 
             HStack {
                 Text(language.text(
-                    japanese: "間違えた単語は、このステップのふりかえり候補に出ます。",
-                    english: "Missed words appear as review candidates for this step."
+                    japanese: "保存後、間違えた単語をホームの復習に出せます。",
+                    english: "After saving, missed words can be sent to Home review."
                 ))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -1383,8 +1354,8 @@ private struct ParentSchoolMissedWordPicker: View {
                 ParentInfoButton(
                     title: language.text(japanese: "間違えた単語の選び方", english: "How to Choose Missed Words"),
                     message: language.text(
-                        japanese: "最初はすべて正解として扱います。学校テストで間違えた単語だけタップしてください。選んだ単語は復習候補になります。",
-                        english: "All words start as correct. Tap only the words missed on the school test. Selected words become review candidates."
+                        japanese: "最初はすべて正解として扱います。学校テストで間違えた単語だけタップしてください。選んだ単語はホームの復習に出せます。",
+                        english: "All words start as correct. Tap only the words missed on the school test. Selected words can be sent to Home review."
                     ),
                     tint: ParentPalette.primary
                 )
