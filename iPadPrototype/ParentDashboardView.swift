@@ -670,12 +670,9 @@ private struct ParentOtherStepRecordsHeader: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(language.text(japanese: "ほかのステップを見る", english: "View Other Steps"))
+                Text(language.text(japanese: "ほかのステップ", english: "Other Steps"))
                     .font(.headline.weight(.heavy))
                     .foregroundStyle(ParentPalette.ink)
-                Text(language.text(japanese: "必要なときだけ開きます。", english: "Open only when needed."))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
             }
 
             Spacer()
@@ -705,15 +702,9 @@ private struct ParentAppRecordDisclosureHeader: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(language.text(japanese: "練習・テストの履歴を見る", english: "View Practice & Test History"))
+                Text(language.text(japanese: "アプリの履歴", english: "App History"))
                     .font(.headline.weight(.heavy))
                     .foregroundStyle(ParentPalette.ink)
-                Text(language.text(
-                    japanese: "アプリ内で書いた内容や判定履歴を確認します。",
-                    english: "Review handwriting and app decisions when needed."
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
             }
 
             Spacer()
@@ -855,7 +846,7 @@ private struct ParentStepRecordCard: View {
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "状態", english: "Status"),
                 title: language.text(japanese: "このステップはOK", english: "This step looks good"),
-                message: language.text(japanese: "アプリのテスト結果と学校テスト結果はそろっています。別の日の結果も追加できます。", english: "App test and school test results are complete. You can add another test date if needed."),
+                message: "",
                 buttonTitle: nil,
                 systemImage: "checkmark.seal.fill",
                 tint: ParentPalette.success,
@@ -866,12 +857,17 @@ private struct ParentStepRecordCard: View {
         if latestSchoolResult == nil {
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
-                title: language.text(japanese: "学校テスト結果を入れる", english: "Enter school test result"),
+                title: language.text(japanese: "学校テストを入れる", english: "Enter school test"),
                 message: language.text(japanese: "点数と間違えた単語を入れると、復習すべきか判断できます。", english: "Enter score and missed words to decide whether review is needed."),
-                buttonTitle: language.text(japanese: "結果を入れる", english: "Enter Result"),
+                buttonTitle: language.text(japanese: "入れる", english: "Enter"),
                 systemImage: "graduationcap.fill",
                 tint: ParentPalette.primary,
-                kind: .enterSchoolTest
+                kind: .enterSchoolTest,
+                infoTitle: language.text(japanese: "学校テストについて", english: "About school tests"),
+                infoMessage: language.text(
+                    japanese: "点数と間違えた単語を入れると、次に復習する単語を選びやすくなります。",
+                    english: "Entering the score and missed words makes it easier to choose what to review next."
+                )
             )
         }
 
@@ -880,7 +876,7 @@ private struct ParentStepRecordCard: View {
                 return ParentStepRecordPrimaryAction(
                     eyebrow: language.text(japanese: "準備できました", english: "Ready"),
                     title: language.text(japanese: "復習をホームに出しました", english: "Review is on Home"),
-                    message: language.text(japanese: "\(reviewWords.count)単語が子供メニューに表示中です。", english: "\(reviewWords.count) words are shown on the child Home screen."),
+                    message: "",
                     buttonTitle: nil,
                     systemImage: "checkmark.circle.fill",
                     tint: ParentPalette.success,
@@ -895,7 +891,7 @@ private struct ParentStepRecordCard: View {
 
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
-                title: language.text(japanese: "間違えた単語をホームに出す", english: "Send Missed Words to Home"),
+                title: language.text(japanese: "復習に出す", english: "Use for Review"),
                 message: language.text(japanese: "\(reviewWords.count)単語をホームの復習に追加します。", english: "\(reviewWords.count) words will be added to Home review."),
                 buttonTitle: language.text(japanese: "復習に出す", english: "Use for Review"),
                 systemImage: "arrow.counterclockwise.circle.fill",
@@ -912,7 +908,7 @@ private struct ParentStepRecordCard: View {
         return ParentStepRecordPrimaryAction(
             eyebrow: language.text(japanese: "状態", english: "Status"),
             title: language.text(japanese: "このステップは確認済み", english: "This step is checked"),
-            message: language.text(japanese: "学校テストがもう一度返ってきたら、別の日の結果も追加できます。", english: "Add another school test result if a retest comes back."),
+            message: "",
             buttonTitle: nil,
             systemImage: "eye.fill",
             tint: ParentPalette.primary,
@@ -931,35 +927,23 @@ private struct ParentStepRecordCard: View {
                     Text(cardTitle)
                         .font(.title2.monospacedDigit().weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
-                    Label(
-                        language.text(
-                            japanese: "単語登録日 \(formattedStepDate(step.registeredDate, language: language))",
-                            english: "Words added \(formattedStepDate(step.registeredDate, language: language))"
-                        ),
-                        systemImage: "calendar"
-                    )
-                    .font(.caption.weight(.bold))
-                        .foregroundStyle(.secondary)
+                    if !isSelectedStep {
+                        Label(formattedStepDate(step.registeredDate, language: language), systemImage: "calendar")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 Spacer()
 
-                if isSelectedStep {
-                    Label(language.text(japanese: "選択中", english: "Selected"), systemImage: "checkmark.circle.fill")
-                        .font(.caption.weight(.heavy))
-                        .foregroundStyle(ParentPalette.primary)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 9)
-                        .background(ParentPalette.primarySoft)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                } else {
+                if !isSelectedStep {
                     Button {
                         model.selectedWordStepID = step.id
                     } label: {
-                        Label(language.text(japanese: "このステップを選ぶ", english: "Select Step"), systemImage: "cursorarrow.rays")
+                        Label(language.text(japanese: "選ぶ", english: "Select"), systemImage: "cursorarrow.rays")
                     }
                     .buttonStyle(.bordered)
-            .tapFeedback()
+                    .tapFeedback()
                     .font(.caption.weight(.bold))
                     .tint(ParentPalette.primary)
                 }
@@ -974,13 +958,13 @@ private struct ParentStepRecordCard: View {
 
             HStack(spacing: 10) {
                 ParentStepMetricPill(
-                    title: language.text(japanese: "覚えた単語", english: "Learned"),
+                    title: language.text(japanese: "覚えた", english: "Learned"),
                     value: "\(learnedCount)/\(step.words.count)",
                     systemImage: "brain.head.profile",
                     tint: ParentPalette.primary
                 )
                 ParentStepMetricPill(
-                    title: language.text(japanese: "アプリのテスト回数", english: "App Test Count"),
+                    title: language.text(japanese: "アプリのテスト", english: "App Tests"),
                     value: language.text(japanese: "\(appTestSessionCount)回", english: "\(appTestSessionCount) times"),
                     systemImage: "checklist.checked",
                     tint: ParentPalette.primary
@@ -995,7 +979,7 @@ private struct ParentStepRecordCard: View {
 
             if !carryOverReviewWords.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
-                    Label(language.text(japanese: "前ステップから自動で出る", english: "Auto-added from previous step"), systemImage: "arrow.forward.circle.fill")
+                    Label(language.text(japanese: "復習に出る単語", english: "Review Words"), systemImage: "arrow.forward.circle.fill")
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(ParentPalette.primary)
 
@@ -1012,13 +996,6 @@ private struct ParentStepRecordCard: View {
                             }
                         }
                     }
-
-                    Text(language.text(
-                        japanese: "このステップのテストに、復習として自動で混ざります。",
-                        english: "These words are automatically included in this step's test."
-                    ))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
                 }
                 .padding(10)
                 .background(ParentPalette.surfaceTint)
@@ -1047,7 +1024,7 @@ private struct ParentStepRecordCard: View {
                         showingSchoolEntry = true
                     }
                 } label: {
-                    Label(language.text(japanese: "別の日の学校テストを追加", english: "Add Another School Test"), systemImage: "square.and.pencil")
+                    Label(language.text(japanese: "別の日も入れる", english: "Add Another Date"), systemImage: "square.and.pencil")
                         .font(.subheadline.weight(.bold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 9)
@@ -1056,11 +1033,6 @@ private struct ParentStepRecordCard: View {
                 .tapFeedback()
                 .tint(ParentPalette.primary)
             }
-
-            Text(step.words.map(\.text).joined(separator: " / "))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
         }
         .padding(12)
         .background(Color.white.opacity(isSelectedStep ? 0.96 : 0.92))
@@ -1117,15 +1089,6 @@ private struct ParentStepRecordCard: View {
             }
 
             HStack {
-                Text(language.text(
-                    japanese: "保存後、間違えた単語をホームの復習に出せます。",
-                    english: "After saving, missed words can be sent to Home review."
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-                Spacer()
-
                 Button {
                     saveSchoolResult()
                 } label: {
@@ -1136,6 +1099,7 @@ private struct ParentStepRecordCard: View {
                 .tint(ParentPalette.primary)
                 .disabled(!canSaveSchoolResult)
             }
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(12)
         .background(ParentPalette.surfaceTint)
@@ -1271,9 +1235,6 @@ private struct ParentStepRecordPrimaryActionCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(action.eyebrow)
-                    .font(.caption.weight(.heavy))
-                    .foregroundStyle(action.tint)
                 HStack(spacing: 6) {
                     Text(action.title)
                         .font(.title3.weight(.heavy))
@@ -1290,10 +1251,6 @@ private struct ParentStepRecordPrimaryActionCard: View {
                         )
                     }
                 }
-                Text(action.message)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
             }
 
             Spacer(minLength: 8)
@@ -1378,7 +1335,7 @@ private struct ParentSchoolMissedWordPicker: View {
                             selectedWordIDs.removeAll()
                         }
                     } label: {
-                        Label(language.text(japanese: "全問正解に戻す", english: "All correct"), systemImage: "checkmark.seal.fill")
+                        Label(language.text(japanese: "全問OK", english: "All OK"), systemImage: "checkmark.seal.fill")
                             .font(.caption.weight(.heavy))
                     }
                     .buttonStyle(.bordered)
@@ -1542,13 +1499,6 @@ private struct SchoolTestResultPanel: View {
             systemImage: "graduationcap.fill",
             tint: ParentPalette.primary
         ) {
-            Text(language.text(
-                japanese: "学校で返ってきたスペリングテストの結果を、アプリの練習記録とは別に保存します。",
-                english: "Save school spelling test results separately from app practice records."
-            ))
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
-
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .top, spacing: 12) {
                     DatePicker(
@@ -1683,7 +1633,7 @@ private struct SchoolTestResultPanel: View {
                 ContentUnavailableView(
                     language.text(japanese: "まだ学校テスト結果がありません", english: "No school test results yet"),
                     systemImage: "graduationcap",
-                    description: Text(language.text(japanese: "学校のテストが返ってきたら、ここに点数を入れます。", english: "Enter scores here when school tests come back."))
+                    description: Text(language.text(japanese: "返ってきたら点数を入れます。", english: "Enter the score when it comes back."))
                 )
                 .frame(minHeight: 220)
             } else {
@@ -1767,7 +1717,7 @@ private struct SchoolTestResultDatePicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Label(language.text(japanese: "学校テストの日付を選ぶ", english: "Choose School Test Date"), systemImage: "calendar")
+                Label(language.text(japanese: "テスト日", english: "Date"), systemImage: "calendar")
                     .font(.subheadline.weight(.heavy))
                     .foregroundStyle(ParentPalette.primary)
 
@@ -1903,10 +1853,7 @@ private struct SchoolTestResultCard: View {
                         .font(.headline.weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
                 }
-                Text(language.text(
-                    japanese: "テスト日 \(result.date.formatted(date: .abbreviated, time: .omitted))",
-                    english: "Test date \(result.date.formatted(date: .abbreviated, time: .omitted))"
-                ))
+                Text(result.date.formatted(date: .abbreviated, time: .omitted))
                     .font((showsStepTitle ? Font.caption : Font.headline).weight(.bold))
                     .foregroundStyle(.secondary)
 
