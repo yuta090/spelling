@@ -128,6 +128,9 @@ struct HomeView: View {
         .onChange(of: model.activeWords.map(\.id)) { _, _ in
             syncPracticeSelectionIfNeeded()
         }
+        .onChange(of: model.homeReviewWordIDs) { _, _ in
+            syncPracticeSelectionIfNeeded()
+        }
         .onChange(of: model.focusedPracticeWordIDs) { _, _ in
             applyFocusedPracticeSelectionIfNeeded()
         }
@@ -154,6 +157,10 @@ struct HomeView: View {
 
     private func syncPracticeSelectionIfNeeded() {
         let activeIDs = Set(model.activeWords.map(\.id))
+        if applyHomeReviewSelectionIfNeeded(activeIDs: activeIDs) {
+            return
+        }
+
         if applyFocusedPracticeSelectionIfNeeded(activeIDs: activeIDs) {
             return
         }
@@ -167,6 +174,20 @@ struct HomeView: View {
         selectedPracticeWordIDs = activeIDs
         lastPracticeWordIDs = activeIDs
         clearPracticeResumeIfWordsChanged()
+    }
+
+    @discardableResult
+    private func applyHomeReviewSelectionIfNeeded(activeIDs: Set<UUID>? = nil) -> Bool {
+        let activeIDs = activeIDs ?? Set(model.activeWords.map(\.id))
+        let reviewIDs = model.homeReviewWordIDs.intersection(activeIDs)
+        guard !reviewIDs.isEmpty else {
+            return false
+        }
+
+        selectedPracticeWordIDs = reviewIDs
+        lastPracticeWordIDs = activeIDs
+        clearPracticeResumeIfWordsChanged()
+        return true
     }
 
     @discardableResult

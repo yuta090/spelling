@@ -41,6 +41,10 @@ final class AppModel: ObservableObject {
         didSet { saveUnlockedCharacterIDs() }
     }
 
+    @Published var homeReviewWordIDs: Set<UUID> {
+        didSet { saveHomeReviewWordIDs() }
+    }
+
     @Published var focusedPracticeWordIDs = Set<UUID>()
 
     static let practiceCoinReward = 3
@@ -56,6 +60,7 @@ final class AppModel: ObservableObject {
     private let rewardCoinsKey = "spellingTrainer.rewardCoins"
     private let selectedCharacterIDKey = "spellingTrainer.selectedCharacterID"
     private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
+    private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
 
     init() {
         let loadedWords = Self.load([SpellingWord].self, key: wordsKey) ?? [
@@ -73,6 +78,7 @@ final class AppModel: ObservableObject {
         rewardCoins = max(Self.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
         let initialUnlockedCharacterIDs = (Self.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
         unlockedCharacterIDs = initialUnlockedCharacterIDs
+        homeReviewWordIDs = Self.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
         let savedCharacterID = UserDefaults.standard.string(forKey: selectedCharacterIDKey) ?? Self.defaultCharacterID
         selectedCharacterID = initialUnlockedCharacterIDs.contains(savedCharacterID) ? savedCharacterID : Self.defaultCharacterID
         ensureSelectedWordStepStillExists()
@@ -429,6 +435,11 @@ final class AppModel: ObservableObject {
         schoolTestResults.removeAll { $0.id == result.id }
     }
 
+    func sendReviewWordsToHome(_ wordIDs: Set<UUID>, stepID: String) {
+        selectedWordStepID = stepID
+        homeReviewWordIDs = wordIDs
+    }
+
     func awardPracticeCoins(_ amount: Int = AppModel.practiceCoinReward) {
         rewardCoins = max(rewardCoins + max(amount, 0), 0)
     }
@@ -494,6 +505,10 @@ final class AppModel: ObservableObject {
 
     private func saveUnlockedCharacterIDs() {
         Self.save(unlockedCharacterIDs, key: unlockedCharacterIDsKey)
+    }
+
+    private func saveHomeReviewWordIDs() {
+        Self.save(homeReviewWordIDs, key: homeReviewWordIDsKey)
     }
 
     private func ensureSelectedWordStepStillExists() {

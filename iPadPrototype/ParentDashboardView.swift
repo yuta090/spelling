@@ -802,7 +802,7 @@ private struct ParentStepRecordCard: View {
     private var reviewWordsAreOnHome: Bool {
         !reviewWordIDs.isEmpty
             && model.selectedWordStepID == step.id
-            && model.focusedPracticeWordIDs == reviewWordIDs
+            && model.homeReviewWordIDs == reviewWordIDs
     }
 
     private var schoolScoreText: String {
@@ -1139,8 +1139,7 @@ private struct ParentStepRecordCard: View {
             }
         case .reviewWords:
             withAnimation(.spring(response: 0.24, dampingFraction: 0.86)) {
-                model.selectedWordStepID = step.id
-                model.focusedPracticeWordIDs = reviewWordIDs
+                model.sendReviewWordsToHome(reviewWordIDs, stepID: step.id)
             }
         case .none:
             break
