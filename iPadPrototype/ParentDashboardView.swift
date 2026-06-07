@@ -814,12 +814,31 @@ private struct ParentStepRecordCard: View {
         if latestSchoolResult.score == latestSchoolResult.total {
             return language.text(japanese: "満点", english: "Perfect")
         }
-        return language.text(japanese: "\(latestSchoolResult.score)問正解", english: "\(latestSchoolResult.score) correct")
+        return language.text(japanese: "\(latestSchoolResult.score)/\(latestSchoolResult.total) 正解", english: "\(latestSchoolResult.score)/\(latestSchoolResult.total) correct")
+    }
+
+    private var schoolScoreDetail: String {
+        guard let latestSchoolResult else {
+            return language.text(japanese: "結果なし", english: "No result")
+        }
+        if latestSchoolResult.score == latestSchoolResult.total {
+            return language.text(japanese: "\(latestSchoolResult.total)/\(latestSchoolResult.total) 正解", english: "\(latestSchoolResult.total)/\(latestSchoolResult.total) correct")
+        }
+        return formattedLocalizedDate(latestSchoolResult.date, language: language)
+    }
+
+    private var appResultText: String {
+        language.text(japanese: "\(learnedCount)単語OK", english: "\(learnedCount) words OK")
+    }
+
+    private var appResultDetail: String {
+        let testCount = language.text(japanese: "テスト\(appTestSessionCount)回", english: "\(appTestSessionCount) tests")
+        return language.text(japanese: "\(step.words.count)単語中・\(testCount)", english: "of \(step.words.count) words ・ \(testCount)")
     }
 
     private var schoolScoreColor: Color {
         guard let latestSchoolResult else {
-            return ParentPalette.ink
+            return ParentPalette.neutral
         }
         return latestSchoolResult.score == latestSchoolResult.total ? ParentPalette.success : ParentPalette.warning
     }
@@ -882,7 +901,7 @@ private struct ParentStepRecordCard: View {
             if reviewWordsAreOnHome {
                 return ParentStepRecordPrimaryAction(
                     eyebrow: language.text(japanese: "準備できました", english: "Ready"),
-                    title: language.text(japanese: "ホームに出しました", english: "Shown on Home"),
+                    title: language.text(japanese: "復習 \(reviewWords.count)単語を表示中", english: "\(reviewWords.count) words on Home"),
                     message: "",
                     buttonTitle: nil,
                     systemImage: "checkmark.circle.fill",
@@ -898,7 +917,7 @@ private struct ParentStepRecordCard: View {
 
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "まずやること", english: "First Action"),
-                title: language.text(japanese: "復習が必要です", english: "Review Needed"),
+                title: language.text(japanese: "復習 \(reviewWords.count)単語", english: "\(reviewWords.count) review words"),
                 message: language.text(japanese: "\(reviewWords.count)単語をホームの復習に追加します。", english: "\(reviewWords.count) words will be added to Home review."),
                 buttonTitle: language.text(japanese: "ホームに出す", english: "Show on Home"),
                 systemImage: "arrow.counterclockwise.circle.fill",
@@ -964,23 +983,20 @@ private struct ParentStepRecordCard: View {
             }
 
             HStack(spacing: 10) {
-                ParentStepMetricPill(
-                    title: language.text(japanese: "覚えた", english: "Learned"),
-                    value: "\(learnedCount)/\(step.words.count)",
+                ParentStepSourceSummaryTile(
+                    title: language.text(japanese: "アプリ", english: "App"),
+                    value: appResultText,
+                    detail: appResultDetail,
                     systemImage: "brain.head.profile",
                     tint: ParentPalette.primary
                 )
-                ParentStepMetricPill(
-                    title: language.text(japanese: "アプリのテスト", english: "App Tests"),
-                    value: language.text(japanese: "\(appTestSessionCount)回", english: "\(appTestSessionCount) times"),
-                    systemImage: "checklist.checked",
-                    tint: ParentPalette.primary
-                )
-                ParentStepMetricPill(
-                    title: language.text(japanese: "学校テスト", english: "School Test"),
+
+                ParentStepSourceSummaryTile(
+                    title: language.text(japanese: "学校", english: "School"),
                     value: schoolScoreText,
+                    detail: schoolScoreDetail,
                     systemImage: "graduationcap.fill",
-                    tint: ParentPalette.primary,
+                    tint: schoolScoreColor,
                     valueTint: schoolScoreColor
                 )
             }
@@ -1440,37 +1456,52 @@ private struct ParentSchoolWordChoiceButton: View {
     }
 }
 
-private struct ParentStepMetricPill: View {
+private struct ParentStepSourceSummaryTile: View {
     var title: String
     var value: String
+    var detail: String
     var systemImage: String
     var tint: Color
     var valueTint: Color = ParentPalette.ink
 
     var body: some View {
-        HStack(spacing: 9) {
+        HStack(spacing: 10) {
             Image(systemName: systemImage)
                 .font(.headline.weight(.bold))
                 .foregroundStyle(tint)
-                .frame(width: 32, height: 32)
+                .frame(width: 36, height: 36)
                 .background(tint.opacity(0.12))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
-            Text(value)
-                .font(.title3.monospacedDigit().weight(.heavy))
-                .foregroundStyle(valueTint)
-                .lineLimit(1)
-                .minimumScaleFactor(0.64)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(tint)
+                    .lineLimit(1)
+
+                Text(value)
+                    .font(.title3.monospacedDigit().weight(.heavy))
+                    .foregroundStyle(valueTint)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.64)
+
+                Text(detail)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.70)
+            }
 
             Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, minHeight: 48)
-        .padding(.horizontal, 10)
+        .frame(maxWidth: .infinity, minHeight: 70)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
         .background(Color.white.opacity(0.82))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.035), radius: 7, x: 0, y: 4)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(title): \(value)")
+        .accessibilityLabel("\(title): \(value), \(detail)")
     }
 }
 
@@ -1761,7 +1792,7 @@ private struct SchoolTestResultDateButton: View {
         if result.score == result.total {
             return language.text(japanese: "満点", english: "Perfect")
         }
-        return language.text(japanese: "\(result.score)問正解", english: "\(result.score) correct")
+        return language.text(japanese: "\(result.score)/\(result.total) 正解", english: "\(result.score)/\(result.total) correct")
     }
 
     private var scoreColor: Color {
@@ -1810,7 +1841,7 @@ private struct SchoolTestResultCard: View {
         if result.score == result.total {
             return language.text(japanese: "満点", english: "Perfect")
         }
-        return language.text(japanese: "\(result.score)問正解", english: "\(result.score) correct")
+        return language.text(japanese: "\(result.score)/\(result.total) 正解", english: "\(result.score)/\(result.total) correct")
     }
 
     private var scoreDetail: String {
