@@ -2858,14 +2858,15 @@ private struct ParentNewStepSheet: View {
         """
         cat | ねこ
         dog | いぬ
-        sun | たいよう
+        name | 名前[なまえ]
+        school | 学校[がっこう]
         """
     }
 
     private var wordInputPlaceholder: String {
         language.text(
-            japanese: "例:\ncat | ねこ\ndog | いぬ\nsun | たいよう",
-            english: "Example:\ncat | cat\ndog | dog\nsun | sun"
+            japanese: "例:\ncat | ねこ\ndog | いぬ\nname | 名前[なまえ]\nschool | 学校[がっこう]",
+            english: "Example:\ncat | cat\ndog | dog\nname | name\nschool | school"
         )
     }
 
@@ -3224,14 +3225,15 @@ private struct ParentWordListPanel: View {
         """
         cat | ねこ
         dog | いぬ
-        sun | たいよう
+        name | 名前[なまえ]
+        school | 学校[がっこう]
         """
     }
 
     private var wordInputPlaceholder: String {
         language.text(
-            japanese: "例:\ncat | ねこ\ndog | いぬ\nsun | たいよう",
-            english: "Example:\ncat | cat\ndog | dog\nsun | sun"
+            japanese: "例:\ncat | ねこ\ndog | いぬ\nname | 名前[なまえ]\nschool | 学校[がっこう]",
+            english: "Example:\ncat | cat\ndog | dog\nname | name\nschool | school"
         )
     }
 
