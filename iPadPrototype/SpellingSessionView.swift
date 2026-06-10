@@ -2488,6 +2488,13 @@ private struct TestSessionResultsView: View {
         !attempts.isEmpty && correctCount == attempts.count
     }
 
+    private var attemptColumns: [GridItem] {
+        [
+            GridItem(.flexible(minimum: 260), spacing: 12, alignment: .top),
+            GridItem(.flexible(minimum: 260), spacing: 12, alignment: .top)
+        ]
+    }
+
     var body: some View {
         ZStack {
             if showingCompletionCelebration {
@@ -2508,14 +2515,6 @@ private struct TestSessionResultsView: View {
                         .font(.headline.monospacedDigit().weight(.bold))
                         .foregroundStyle(.secondary)
                 }
-
-                ChildTaskBanner(
-                    title: language.text(japanese: "結果を見よう", english: "Review Your Results"),
-                    message: language.text(japanese: "できた単語と、あとで直す単語をたしかめよう。", english: "Check the words you got and the words to fix later."),
-                    systemImage: "checklist.checked",
-                    tint: Color(red: 0.14, green: 0.38, blue: 0.76),
-                    compact: true
-                )
 
                 VStack(spacing: 10) {
                     if isPerfect {
@@ -2586,7 +2585,7 @@ private struct TestSessionResultsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 } else {
                     ScrollView {
-                        VStack(spacing: 14) {
+                        LazyVGrid(columns: attemptColumns, alignment: .leading, spacing: 12) {
                             ForEach(attempts) { attempt in
                                 TestAttemptResultCard(attempt: attempt, language: language)
                             }
@@ -2626,12 +2625,14 @@ private struct TestAttemptResultCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(attempt.word)
-                        .font(.title2.weight(.bold))
+                        .font(.title3.weight(.bold))
                         .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
                 }
 
                 Spacer()
@@ -2640,13 +2641,15 @@ private struct TestAttemptResultCard: View {
                     attempt.decision.label(language: language),
                     systemImage: isCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill"
                 )
-                .font(.caption.weight(.bold))
+                .font(.caption2.weight(.bold))
                 .foregroundStyle(isCorrect ? Color.green : Color.orange)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
             }
 
             if let drawingData = attempt.drawingData {
                 PracticeDrawingPreview(drawingData: drawingData)
-                    .frame(height: 210)
+                    .frame(height: 156)
                     .background(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
@@ -2655,7 +2658,8 @@ private struct TestAttemptResultCard: View {
                     )
             }
         }
-        .padding(12)
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .background(.white.opacity(0.90))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
