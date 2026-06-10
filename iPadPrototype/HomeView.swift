@@ -60,6 +60,35 @@ struct HomeView: View {
         HomeRewardCharacter.character(id: model.selectedCharacterID)
     }
 
+    private var latestTestButtonSummary: HomeLatestTestButtonSummary? {
+        let sourceKeys = Set(model.testWordsForSelectedStep.map { normalize($0.text) })
+        guard !sourceKeys.isEmpty else {
+            return nil
+        }
+
+        let relatedAttempts = model.attempts.filter { sourceKeys.contains(normalize($0.word)) }
+        let sessions = Dictionary(grouping: relatedAttempts, by: \.sessionID)
+            .compactMap { sessionID, attempts -> HomeLatestTestButtonSummary? in
+                let sortedAttempts = attempts.sorted { $0.date < $1.date }
+                guard let date = sortedAttempts.last?.date else {
+                    return nil
+                }
+
+                return HomeLatestTestButtonSummary(
+                    sessionID: sessionID,
+                    date: date,
+                    score: sortedAttempts.filter { $0.decision == .autoCorrect }.count
+                )
+            }
+            .sorted { $0.date < $1.date }
+
+        guard let latest = sessions.last else {
+            return nil
+        }
+
+        return latest.numbered(sessions.count)
+    }
+
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
@@ -86,6 +115,7 @@ struct HomeView: View {
                             hasPracticeResume: activePracticeResumeState != nil,
                             remainingPracticeCount: activePracticeRemainingCount,
                             isReviewPractice: isHomeReviewActive,
+                            latestTestSummary: latestTestButtonSummary,
                             character: selectedCharacter,
                             startPractice: startPractice,
                             showWords: { showingWordPreview = true },
@@ -378,6 +408,7 @@ private struct ChildMissionPanel: View {
     var hasPracticeResume: Bool
     var remainingPracticeCount: Int?
     var isReviewPractice: Bool
+    var latestTestSummary: HomeLatestTestButtonSummary?
     var character: HomeRewardCharacter
     var startPractice: () -> Void
     var showWords: () -> Void
@@ -441,6 +472,10 @@ private struct ChildMissionPanel: View {
 
     private var isPrimaryButtonDisabled: Bool {
         !canPractice
+    }
+
+    private var testButtonTitle: String {
+        latestTestSummary?.title(language: language) ?? language.text(japanese: "テスト", english: "Test")
     }
 
     private var primaryButtonTint: Color {
@@ -530,7 +565,7 @@ private struct ChildMissionPanel: View {
                 )
 
                 MissionSmallButton(
-                    title: language.text(japanese: "テスト", english: "Test"),
+                    title: testButtonTitle,
                     systemImage: "checklist.checked",
                     tint: Color(red: 0.20, green: 0.58, blue: 0.24),
                     disabled: !canTest,
@@ -549,6 +584,29 @@ private struct ChildMissionPanel: View {
     }
 }
 
+private struct HomeLatestTestButtonSummary: Equatable {
+    var sessionID: UUID
+    var date: Date
+    var score: Int
+    var attemptNumber: Int = 0
+
+    func numbered(_ number: Int) -> HomeLatestTestButtonSummary {
+        HomeLatestTestButtonSummary(
+            sessionID: sessionID,
+            date: date,
+            score: score,
+            attemptNumber: number
+        )
+    }
+
+    func title(language: AppLanguage) -> String {
+        language.text(
+            japanese: "\(attemptNumber)回め \(score)点",
+            english: "#\(attemptNumber) \(score) pts"
+        )
+    }
+}
+
 private struct MissionSmallButton: View {
     var title: String
     var systemImage: String
@@ -560,6 +618,8 @@ private struct MissionSmallButton: View {
         Button(action: action) {
             Label(title, systemImage: systemImage)
                 .font(.title3.weight(.heavy))
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
         }
