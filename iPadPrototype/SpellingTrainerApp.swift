@@ -13,9 +13,15 @@ struct SpellingTrainerApp: App {
 }
 
 private struct TapFeedbackModifier: ViewModifier {
+    private let hitSlop: CGFloat = 10
+
     func body(content: Content) -> some View {
         content
+            .padding(.horizontal, hitSlop)
+            .padding(.vertical, hitSlop)
             .contentShape(Rectangle())
+            .padding(.horizontal, -hitSlop)
+            .padding(.vertical, -hitSlop)
     }
 }
 
