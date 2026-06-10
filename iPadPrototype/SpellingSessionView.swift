@@ -182,6 +182,13 @@ struct SpellingSessionView: View {
         mode == .test && model.settings.testPromptMode.showsPromptText
     }
 
+    private var isCanvasInputEnabled: Bool {
+        if mode != .test {
+            return true
+        }
+        return decision == nil && !isChecking && remainingSeconds > 0 && !showingTestResults
+    }
+
     private var testPromptTitle: String {
         switch model.settings.testPromptMode {
         case .audioOnly:
@@ -265,7 +272,8 @@ struct SpellingSessionView: View {
                         mode: mode.canvasMode,
                         guideLabels: guideLabels,
                         sampleText: mode.showsWord ? currentWord.text : nil,
-                        capture: drawingCapture
+                        capture: drawingCapture,
+                        isInputEnabled: isCanvasInputEnabled
                     )
                     .id(canvasResetID)
                     .frame(maxHeight: capturesPracticeSamples && practiceRepetitionCount > 1 ? 300 : 330)

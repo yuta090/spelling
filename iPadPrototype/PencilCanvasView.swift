@@ -9,6 +9,7 @@ final class DrawingCapture: ObservableObject {
 struct PencilCanvasView: UIViewRepresentable {
     @Binding var drawing: PKDrawing
     var capture: DrawingCapture? = nil
+    var isInputEnabled = true
 
     func makeCoordinator() -> Coordinator {
         Coordinator(drawing: $drawing, capture: capture)
@@ -20,12 +21,14 @@ struct PencilCanvasView: UIViewRepresentable {
         canvas.backgroundColor = .clear
         canvas.isOpaque = false
         canvas.drawingPolicy = .anyInput
+        canvas.isUserInteractionEnabled = isInputEnabled
         canvas.tool = PKInkingTool(.pen, color: .label, width: 7)
         return canvas
     }
 
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
         context.coordinator.capture = capture
+        uiView.isUserInteractionEnabled = isInputEnabled
         if uiView.drawing.dataRepresentation() != drawing.dataRepresentation() {
             uiView.drawing = drawing
             capture?.latestDrawing = drawing
