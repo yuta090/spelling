@@ -2199,14 +2199,6 @@ private struct PracticeSessionReviewView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                ChildTaskBanner(
-                    title: language.text(japanese: "書いたものを見てみよう", english: "Check Your Writing"),
-                    message: language.text(japanese: "自分が書いた単語を見て、できたところをたしかめよう。", english: "Look at the words you wrote and check your work."),
-                    systemImage: "eye.fill",
-                    tint: Color(red: 0.48, green: 0.30, blue: 0.76),
-                    compact: true
-                )
-
                 VStack(spacing: 8) {
                     HStack(spacing: 10) {
                         Image(systemName: "sparkles")
@@ -2218,9 +2210,6 @@ private struct PracticeSessionReviewView: View {
                     Text(language.text(japanese: "がんばったね！", english: "Great effort!"))
                         .font(.system(size: 34, weight: .heavy, design: .rounded))
                         .foregroundStyle(Color(red: 0.82, green: 0.22, blue: 0.07))
-                    Text(language.text(japanese: "自分が書いた単語を見てみよう", english: "Look over the words you wrote"))
-                        .font(.system(size: 24, weight: .heavy, design: .rounded))
-                        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
                     Text(language.text(
                         japanese: "あとで保護者メニューでも見られるので、アドバイスをもらえます。",
                         english: "Parents can see these later and give advice."
