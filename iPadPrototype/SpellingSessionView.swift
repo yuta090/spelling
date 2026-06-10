@@ -246,7 +246,7 @@ struct SpellingSessionView: View {
                 VStack(spacing: 18) {
                     header
 
-                    if mode != .practice {
+                    if mode == .review {
                         ChildTaskBanner(
                             title: taskBannerTitle,
                             message: taskBannerMessage,
