@@ -725,21 +725,76 @@ final class AppModel: ObservableObject {
         ) ?? day
     }
 
-    private static func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
+    nonisolated private static func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
+        if let fileData = loadFileData(for: key),
+           let value = try? JSONDecoder().decode(type, from: fileData) {
+            return value
+        }
+
         guard let data = UserDefaults.standard.data(forKey: key) else {
             return nil
         }
-        return try? JSONDecoder().decode(type, from: data)
+        guard let value = try? JSONDecoder().decode(type, from: data) else {
+            return nil
+        }
+
+        migrateLegacyUserDefaultsData(data, key: key)
+        return value
     }
 
-    private static func save<T: Encodable & Sendable>(_ value: T, key: String) {
+    nonisolated private static func save<T: Encodable & Sendable>(_ value: T, key: String) {
         persistenceQueue.async {
             autoreleasepool {
                 guard let data = try? JSONEncoder().encode(value) else {
                     return
                 }
-                UserDefaults.standard.set(data, forKey: key)
+                writeFileData(data, key: key)
             }
         }
+    }
+
+    nonisolated private static func migrateLegacyUserDefaultsData(_ data: Data, key: String) {
+        persistenceQueue.async {
+            autoreleasepool {
+                writeFileData(data, key: key)
+            }
+        }
+    }
+
+    nonisolated private static func loadFileData(for key: String) -> Data? {
+        guard let url = storageURL(for: key, createDirectory: false) else {
+            return nil
+        }
+        return try? Data(contentsOf: url)
+    }
+
+    nonisolated private static func writeFileData(_ data: Data, key: String) {
+        guard let url = storageURL(for: key, createDirectory: true) else {
+            return
+        }
+
+        do {
+            try data.write(to: url, options: [.atomic])
+            UserDefaults.standard.removeObject(forKey: key)
+        } catch {
+            UserDefaults.standard.set(data, forKey: key)
+        }
+    }
+
+    nonisolated private static func storageURL(for key: String, createDirectory: Bool) -> URL? {
+        guard let baseURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+
+        let directoryURL = baseURL.appendingPathComponent("SpellingTrainer", isDirectory: true)
+        if createDirectory {
+            try? FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        }
+
+        let safeName = key
+            .map { character -> Character in
+                character.isLetter || character.isNumber ? character : "_"
+            }
+        return directoryURL.appendingPathComponent(String(safeName)).appendingPathExtension("json")
     }
 }
