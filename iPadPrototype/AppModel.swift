@@ -61,6 +61,10 @@ final class AppModel: ObservableObject {
     private let selectedCharacterIDKey = "spellingTrainer.selectedCharacterID"
     private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
+    nonisolated private static let persistenceQueue = DispatchQueue(
+        label: "com.local.SpellingTrainer.persistence",
+        qos: .utility
+    )
 
     init() {
         let loadedWords = Self.load([SpellingWord].self, key: wordsKey) ?? [
@@ -728,8 +732,14 @@ final class AppModel: ObservableObject {
         return try? JSONDecoder().decode(type, from: data)
     }
 
-    private static func save<T: Encodable>(_ value: T, key: String) {
-        let data = try? JSONEncoder().encode(value)
-        UserDefaults.standard.set(data, forKey: key)
+    private static func save<T: Encodable & Sendable>(_ value: T, key: String) {
+        persistenceQueue.async {
+            autoreleasepool {
+                guard let data = try? JSONEncoder().encode(value) else {
+                    return
+                }
+                UserDefaults.standard.set(data, forKey: key)
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-struct SpellingWord: Identifiable, Equatable, Codable {
+struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var text: String
     var promptText = ""
@@ -33,7 +33,7 @@ struct SpellingWord: Identifiable, Equatable, Codable {
     }
 }
 
-struct WordStep: Identifiable, Equatable {
+struct WordStep: Identifiable, Equatable, Sendable {
     var id: String
     var number: Int
     var registeredDate: Date
@@ -44,7 +44,7 @@ struct WordStep: Identifiable, Equatable {
     }
 }
 
-struct TodayStepProgress: Equatable {
+struct TodayStepProgress: Equatable, Sendable {
     var totalWords: Int
     var clearedWords: [SpellingWord]
     var remainingWords: [SpellingWord]
@@ -64,7 +64,7 @@ struct TodayStepProgress: Equatable {
     }
 }
 
-struct SchoolTestResult: Identifiable, Equatable, Codable {
+struct SchoolTestResult: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var date = Date()
     var stepID: String?
@@ -118,14 +118,14 @@ struct SchoolTestResult: Identifiable, Equatable, Codable {
     }
 }
 
-struct OCRCandidate: Equatable {
+struct OCRCandidate: Equatable, Sendable {
     var text: String
     var normalizedText: String
     var confidence: Float
     var isFallback: Bool = false
 }
 
-enum AppLanguage: String, CaseIterable, Identifiable, Codable {
+enum AppLanguage: String, CaseIterable, Identifiable, Codable, Sendable {
     case japanese
     case english
 
@@ -175,7 +175,7 @@ func formattedLocalizedTime(_ date: Date, language: AppLanguage) -> String {
     return formatter.string(from: date)
 }
 
-enum GradeDecision: String, Equatable, Codable {
+enum GradeDecision: String, Equatable, Codable, Sendable {
     case autoCorrect
     case autoIncorrect
     case needsReview
@@ -202,7 +202,7 @@ enum GradeDecision: String, Equatable, Codable {
     }
 }
 
-enum ParentReviewDecision: String, Equatable, Codable {
+enum ParentReviewDecision: String, Equatable, Codable, Sendable {
     case unreviewed
     case approved
     case needsPractice
@@ -219,7 +219,7 @@ enum ParentReviewDecision: String, Equatable, Codable {
     }
 }
 
-struct SpellingAttempt: Identifiable, Equatable, Codable {
+struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var word: String
     var recognizedText: String
@@ -283,7 +283,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable {
     }
 }
 
-struct PracticeSample: Identifiable, Equatable, Codable {
+struct PracticeSample: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var word: String
     var drawingData: Data
@@ -342,14 +342,14 @@ struct PracticeSample: Identifiable, Equatable, Codable {
     }
 }
 
-struct PracticeSessionResumeState: Equatable {
+struct PracticeSessionResumeState: Equatable, Sendable {
     var wordIDs: [UUID]
     var index: Int
     var repeatIndex: Int
     var sessionID: UUID
 }
 
-struct TestSettings: Equatable, Codable {
+struct TestSettings: Equatable, Codable, Sendable {
     var appLanguage: AppLanguage = .japanese
     var language = "en-US"
     var testPromptMode: TestPromptMode = .audioOnly
@@ -388,7 +388,7 @@ struct TestSettings: Equatable, Codable {
     }
 }
 
-enum TestPromptMode: String, CaseIterable, Identifiable, Codable {
+enum TestPromptMode: String, CaseIterable, Identifiable, Codable, Sendable {
     case audioOnly
     case textOnly
     case audioAndText
@@ -436,7 +436,7 @@ enum TestPromptMode: String, CaseIterable, Identifiable, Codable {
     }
 }
 
-enum SessionMode: String, Identifiable {
+enum SessionMode: String, Identifiable, Sendable {
     case practice
     case test
     case review
@@ -521,7 +521,7 @@ func normalize(_ text: String) -> String {
     return String(text.lowercased().filter { allowed.contains($0) })
 }
 
-struct WordListEntry: Equatable {
+struct WordListEntry: Equatable, Sendable {
     var text: String
     var promptText: String?
 }
