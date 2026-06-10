@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 
 @MainActor
 final class AppModel: ObservableObject {
@@ -51,6 +52,7 @@ final class AppModel: ObservableObject {
     static let defaultCharacterID = "bear"
     static let defaultUnlockedCharacterIDs: Set<String> = ["bear", "cat", "dog"]
 
+    private let persistenceStore: AppPersistenceStore
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
     private let practiceSamplesKey = "spellingTrainer.practiceSamples"
@@ -61,29 +63,27 @@ final class AppModel: ObservableObject {
     private let selectedCharacterIDKey = "spellingTrainer.selectedCharacterID"
     private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
-    nonisolated private static let persistenceQueue = DispatchQueue(
-        label: "com.local.SpellingTrainer.persistence",
-        qos: .utility
-    )
 
-    init() {
-        let loadedWords = Self.load([SpellingWord].self, key: wordsKey) ?? [
+    init(persistenceStore: AppPersistenceStore = AppPersistenceStore()) {
+        self.persistenceStore = persistenceStore
+
+        let loadedWords = persistenceStore.load([SpellingWord].self, key: wordsKey) ?? [
             SpellingWord(text: "cat", promptText: "ねこ"),
             SpellingWord(text: "dog", promptText: "いぬ"),
             SpellingWord(text: "friend", promptText: "友[とも]だち"),
             SpellingWord(text: "school", promptText: "学校[がっこう]")
         ]
         words = loadedWords
-        attempts = Self.load([SpellingAttempt].self, key: attemptsKey) ?? []
-        practiceSamples = Self.load([PracticeSample].self, key: practiceSamplesKey) ?? []
-        schoolTestResults = Self.load([SchoolTestResult].self, key: schoolTestResultsKey) ?? []
-        settings = Self.load(TestSettings.self, key: settingsKey) ?? TestSettings()
-        selectedWordStepID = UserDefaults.standard.string(forKey: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
-        rewardCoins = max(Self.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
-        let initialUnlockedCharacterIDs = (Self.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
+        attempts = persistenceStore.load([SpellingAttempt].self, key: attemptsKey) ?? []
+        practiceSamples = persistenceStore.load([PracticeSample].self, key: practiceSamplesKey) ?? []
+        schoolTestResults = persistenceStore.load([SchoolTestResult].self, key: schoolTestResultsKey) ?? []
+        settings = persistenceStore.load(TestSettings.self, key: settingsKey) ?? TestSettings()
+        selectedWordStepID = persistenceStore.load(String.self, key: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
+        rewardCoins = max(persistenceStore.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
+        let initialUnlockedCharacterIDs = (persistenceStore.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
         unlockedCharacterIDs = initialUnlockedCharacterIDs
-        homeReviewWordIDs = Self.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
-        let savedCharacterID = UserDefaults.standard.string(forKey: selectedCharacterIDKey) ?? Self.defaultCharacterID
+        homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
+        let savedCharacterID = persistenceStore.load(String.self, key: selectedCharacterIDKey) ?? Self.defaultCharacterID
         selectedCharacterID = initialUnlockedCharacterIDs.contains(savedCharacterID) ? savedCharacterID : Self.defaultCharacterID
         ensureSelectedWordStepStillExists()
     }
@@ -608,43 +608,43 @@ final class AppModel: ObservableObject {
     }
 
     private func saveWords() {
-        Self.save(words, key: wordsKey)
+        persistenceStore.save(words, key: wordsKey)
     }
 
     private func saveAttempts() {
-        Self.save(attempts, key: attemptsKey)
+        persistenceStore.save(attempts, key: attemptsKey)
     }
 
     private func savePracticeSamples() {
-        Self.save(practiceSamples, key: practiceSamplesKey)
+        persistenceStore.save(practiceSamples, key: practiceSamplesKey)
     }
 
     private func saveSchoolTestResults() {
-        Self.save(schoolTestResults, key: schoolTestResultsKey)
+        persistenceStore.save(schoolTestResults, key: schoolTestResultsKey)
     }
 
     private func saveSettings() {
-        Self.save(settings, key: settingsKey)
+        persistenceStore.save(settings, key: settingsKey)
     }
 
     private func saveSelectedWordStepID() {
-        UserDefaults.standard.set(selectedWordStepID, forKey: selectedWordStepIDKey)
+        persistenceStore.save(selectedWordStepID, key: selectedWordStepIDKey)
     }
 
     private func saveRewardCoins() {
-        Self.save(max(rewardCoins, 0), key: rewardCoinsKey)
+        persistenceStore.save(max(rewardCoins, 0), key: rewardCoinsKey)
     }
 
     private func saveSelectedCharacterID() {
-        UserDefaults.standard.set(selectedCharacterID, forKey: selectedCharacterIDKey)
+        persistenceStore.save(selectedCharacterID, key: selectedCharacterIDKey)
     }
 
     private func saveUnlockedCharacterIDs() {
-        Self.save(unlockedCharacterIDs, key: unlockedCharacterIDsKey)
+        persistenceStore.save(unlockedCharacterIDs, key: unlockedCharacterIDsKey)
     }
 
     private func saveHomeReviewWordIDs() {
-        Self.save(homeReviewWordIDs, key: homeReviewWordIDsKey)
+        persistenceStore.save(homeReviewWordIDs, key: homeReviewWordIDsKey)
     }
 
     private func ensureSelectedWordStepStillExists() {
@@ -725,63 +725,170 @@ final class AppModel: ObservableObject {
         ) ?? day
     }
 
-    nonisolated private static func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
-        if let fileData = loadFileData(for: key),
-           let value = try? JSONDecoder().decode(type, from: fileData) {
+}
+
+@Model
+final class PersistentJSONRecord {
+    @Attribute(.unique) var key: String
+    @Attribute(.externalStorage) var data: Data
+    var updatedAt: Date
+
+    init(key: String, data: Data, updatedAt: Date = Date()) {
+        self.key = key
+        self.data = data
+        self.updatedAt = updatedAt
+    }
+}
+
+final class AppPersistenceStore: @unchecked Sendable {
+    private let container: ModelContainer
+    private let mirrorsToLegacyStorage: Bool
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
+    private static let persistenceQueue = DispatchQueue(
+        label: "com.local.SpellingTrainer.swiftDataPersistence",
+        qos: .utility
+    )
+
+    init() {
+        let schema = Schema([PersistentJSONRecord.self])
+        let configuration = ModelConfiguration("SpellingTrainerData", schema: schema)
+
+        do {
+            container = try ModelContainer(for: schema, configurations: [configuration])
+            mirrorsToLegacyStorage = false
+        } catch {
+            let fallbackConfiguration = ModelConfiguration(
+                "SpellingTrainerDataFallback",
+                schema: schema,
+                isStoredInMemoryOnly: true
+            )
+            container = try! ModelContainer(for: schema, configurations: [fallbackConfiguration])
+            mirrorsToLegacyStorage = true
+        }
+    }
+
+    func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
+        if let data = loadSwiftDataRecordData(for: key),
+           let value = try? decoder.decode(type, from: data) {
             return value
         }
 
-        guard let data = UserDefaults.standard.data(forKey: key) else {
-            return nil
+        if let legacyString = loadLegacyString(for: key),
+           let value = legacyString as? T {
+            if let data = try? encoder.encode(legacyString) {
+                writeSwiftDataRecordData(data, key: key, removeLegacyData: true)
+            }
+            return value
         }
-        guard let value = try? JSONDecoder().decode(type, from: data) else {
+
+        guard let legacyData = loadLegacyData(for: key),
+              let value = try? decoder.decode(type, from: legacyData) else {
             return nil
         }
 
-        migrateLegacyUserDefaultsData(data, key: key)
+        writeSwiftDataRecordData(legacyData, key: key, removeLegacyData: true)
         return value
     }
 
-    nonisolated private static func save<T: Encodable & Sendable>(_ value: T, key: String) {
-        persistenceQueue.async {
+    func save<T: Encodable & Sendable>(_ value: T, key: String) {
+        guard let data = try? encoder.encode(value) else {
+            return
+        }
+
+        writeSwiftDataRecordData(data, key: key, removeLegacyData: true)
+    }
+
+    private func loadSwiftDataRecordData(for key: String) -> Data? {
+        let context = ModelContext(container)
+        var descriptor = FetchDescriptor<PersistentJSONRecord>(
+            predicate: #Predicate { record in
+                record.key == key
+            }
+        )
+        descriptor.fetchLimit = 1
+
+        guard let record = try? context.fetch(descriptor).first else {
+            return nil
+        }
+        return record.data
+    }
+
+    private func writeSwiftDataRecordData(_ data: Data, key: String, removeLegacyData: Bool) {
+        let container = container
+        let mirrorsToLegacyStorage = mirrorsToLegacyStorage
+        Self.persistenceQueue.async {
             autoreleasepool {
-                guard let data = try? JSONEncoder().encode(value) else {
-                    return
+                let context = ModelContext(container)
+                var descriptor = FetchDescriptor<PersistentJSONRecord>(
+                    predicate: #Predicate { record in
+                        record.key == key
+                    }
+                )
+                descriptor.fetchLimit = 1
+
+                if let record = try? context.fetch(descriptor).first {
+                    record.data = data
+                    record.updatedAt = Date()
+                } else {
+                    context.insert(PersistentJSONRecord(key: key, data: data))
                 }
-                writeFileData(data, key: key)
+
+                do {
+                    try context.save()
+                    if mirrorsToLegacyStorage {
+                        Self.writeLegacyFileData(data, key: key)
+                    } else if removeLegacyData {
+                        Self.removeLegacyData(for: key)
+                    }
+                } catch {
+                    Self.writeLegacyFileData(data, key: key)
+                }
             }
         }
     }
 
-    nonisolated private static func migrateLegacyUserDefaultsData(_ data: Data, key: String) {
-        persistenceQueue.async {
-            autoreleasepool {
-                writeFileData(data, key: key)
-            }
+    private func loadLegacyData(for key: String) -> Data? {
+        if let fileData = Self.loadLegacyFileData(for: key) {
+            return fileData
         }
+
+        return UserDefaults.standard.data(forKey: key)
     }
 
-    nonisolated private static func loadFileData(for key: String) -> Data? {
-        guard let url = storageURL(for: key, createDirectory: false) else {
+    private func loadLegacyString(for key: String) -> String? {
+        UserDefaults.standard.string(forKey: key)
+    }
+
+    private static func loadLegacyFileData(for key: String) -> Data? {
+        guard let url = legacyStorageURL(for: key, createDirectory: false) else {
             return nil
         }
         return try? Data(contentsOf: url)
     }
 
-    nonisolated private static func writeFileData(_ data: Data, key: String) {
-        guard let url = storageURL(for: key, createDirectory: true) else {
+    private static func writeLegacyFileData(_ data: Data, key: String) {
+        guard let url = legacyStorageURL(for: key, createDirectory: true) else {
+            UserDefaults.standard.set(data, forKey: key)
             return
         }
 
         do {
             try data.write(to: url, options: [.atomic])
-            UserDefaults.standard.removeObject(forKey: key)
         } catch {
             UserDefaults.standard.set(data, forKey: key)
         }
     }
 
-    nonisolated private static func storageURL(for key: String, createDirectory: Bool) -> URL? {
+    private static func removeLegacyData(for key: String) {
+        UserDefaults.standard.removeObject(forKey: key)
+        guard let url = legacyStorageURL(for: key, createDirectory: false) else {
+            return
+        }
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    private static func legacyStorageURL(for key: String, createDirectory: Bool) -> URL? {
         guard let baseURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
