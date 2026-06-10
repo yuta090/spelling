@@ -4616,7 +4616,7 @@ private struct ParentAttemptGradingCard: View {
             )
 
             if let drawingData = attempt.drawingData {
-                GradingDrawingPreview(drawingData: drawingData)
+                GradingDrawingPreview(drawingData: drawingData, mode: .test)
             }
 
             if isApproved {
@@ -4731,7 +4731,7 @@ private struct ParentPracticeGradingCard: View {
                 detail: modeLabel
             )
 
-            GradingDrawingPreview(drawingData: sample.drawingData)
+            GradingDrawingPreview(drawingData: sample.drawingData, mode: .practice)
 
             if isApproved {
                 ParentApprovedBanner(language: language)
@@ -4888,6 +4888,7 @@ private struct ParentReviewButtons: View {
                 .stroke(Color.black.opacity(0.08), lineWidth: 1)
         )
         .allowsHitTesting(pendingDecision == nil)
+        .zIndex(1)
     }
 }
 
@@ -4906,6 +4907,7 @@ private struct ParentReviewToggleButton: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.76)
                 .frame(maxWidth: .infinity)
+                .frame(minHeight: 44)
                 .padding(.vertical, 8)
                 .padding(.horizontal, 8)
                 .foregroundStyle(isSelected ? .white : tint)
@@ -4914,27 +4916,48 @@ private struct ParentReviewToggleButton: View {
                 .scaleEffect(isPending ? 1.04 : 1)
         }
         .buttonStyle(.plain)
+        .contentShape(Capsule())
         .tapFeedback()
     }
 }
 
 private struct GradingDrawingPreview: View {
     var drawingData: Data
+    var mode: PracticeMode
     var height: CGFloat = 172
 
-    var body: some View {
-        ZStack {
-            DrawingPreview(
-                drawingData: drawingData,
-                horizontalPadding: 80,
-                topPadding: 135,
-                bottomPadding: 200
-            )
-            .frame(maxWidth: .infinity)
+    private var canvasSize: CGSize {
+        let defaultSize = CGSize(width: 960, height: mode == .practice ? 300 : 330)
+        guard let drawing = try? PKDrawing(data: drawingData), !drawing.bounds.isNull, !drawing.bounds.isEmpty else {
+            return defaultSize
+        }
 
-            GradingFourLineGuide()
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+        return CGSize(
+            width: max(defaultSize.width, drawing.bounds.maxX + 80),
+            height: defaultSize.height
+        )
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let fittedRect = fittedCanvasRect(in: proxy.size, canvasSize: canvasSize)
+
+            ZStack {
+                Color.white
+
+                GradingAlignedDrawingImage(
+                    drawingData: drawingData,
+                    canvasSize: canvasSize
+                )
+                .frame(width: fittedRect.width, height: fittedRect.height)
+                .position(x: fittedRect.midX, y: fittedRect.midY)
+                .allowsHitTesting(false)
+
+                FourLineGuide(mode: mode, labels: ["", "", "", ""])
+                    .frame(width: fittedRect.width, height: fittedRect.height)
+                    .position(x: fittedRect.midX, y: fittedRect.midY)
+                    .allowsHitTesting(false)
+            }
         }
         .frame(maxWidth: .infinity)
         .frame(height: height)
@@ -4944,47 +4967,57 @@ private struct GradingDrawingPreview: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.gray.opacity(0.22), lineWidth: 1)
         )
-    }
-}
-
-private struct GradingFourLineGuide: View {
-    var body: some View {
-        GeometryReader { proxy in
-            let width = proxy.size.width
-            let height = proxy.size.height
-            let lineStart: CGFloat = 14
-            let lineEnd = max(width - 14, lineStart)
-            let top = height * 0.22
-            let mid = height * 0.40
-            let baseline = height * 0.66
-            let descender = height * 0.84
-
-            Canvas { context, _ in
-                strokeLine(from: lineStart, to: lineEnd, y: top, color: .blue.opacity(0.12), width: 1, in: &context)
-                strokeLine(from: lineStart, to: lineEnd, y: mid, color: .blue.opacity(0.20), width: 1, dash: [8, 10], in: &context)
-                strokeLine(from: lineStart, to: lineEnd, y: baseline, color: .red.opacity(0.42), width: 1.4, in: &context)
-                strokeLine(from: lineStart, to: lineEnd, y: descender, color: .blue.opacity(0.12), width: 1, in: &context)
-            }
-        }
+        .contentShape(RoundedRectangle(cornerRadius: 8))
         .allowsHitTesting(false)
     }
 
-    private func strokeLine(
-        from start: CGFloat,
-        to end: CGFloat,
-        y: CGFloat,
-        color: Color,
-        width: CGFloat,
-        dash: [CGFloat] = [],
-        in context: inout GraphicsContext
-    ) {
-        var path = Path()
-        path.move(to: CGPoint(x: start, y: y))
-        path.addLine(to: CGPoint(x: end, y: y))
-        context.stroke(
-            path,
-            with: .color(color),
-            style: StrokeStyle(lineWidth: width, lineCap: .round, dash: dash)
+    private func fittedCanvasRect(in containerSize: CGSize, canvasSize: CGSize) -> CGRect {
+        guard containerSize.width > 0,
+              containerSize.height > 0,
+              canvasSize.width > 0,
+              canvasSize.height > 0 else {
+            return .zero
+        }
+
+        let scale = min(
+            containerSize.width / canvasSize.width,
+            containerSize.height / canvasSize.height
+        )
+        let size = CGSize(
+            width: canvasSize.width * scale,
+            height: canvasSize.height * scale
+        )
+
+        return CGRect(
+            x: (containerSize.width - size.width) / 2,
+            y: (containerSize.height - size.height) / 2,
+            width: size.width,
+            height: size.height
+        )
+    }
+}
+
+private struct GradingAlignedDrawingImage: UIViewRepresentable {
+    var drawingData: Data
+    var canvasSize: CGSize
+
+    func makeUIView(context: Context) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.backgroundColor = .clear
+        imageView.contentMode = .scaleToFill
+        imageView.isUserInteractionEnabled = false
+        return imageView
+    }
+
+    func updateUIView(_ imageView: UIImageView, context: Context) {
+        guard let drawing = try? PKDrawing(data: drawingData) else {
+            imageView.image = nil
+            return
+        }
+
+        imageView.image = drawing.image(
+            from: CGRect(origin: .zero, size: canvasSize),
+            scale: UIScreen.main.scale
         )
     }
 }
