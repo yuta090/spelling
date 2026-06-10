@@ -164,17 +164,16 @@ struct HomeView: View {
             .toolbar(.hidden, for: .navigationBar)
         }
         .onAppear {
-            syncPracticeSelectionIfNeeded()
-            applyFocusedPracticeSelectionIfNeeded()
+            schedulePracticeSelectionSync()
         }
         .onChange(of: model.activeWords.map(\.id)) { _, _ in
-            syncPracticeSelectionIfNeeded()
+            schedulePracticeSelectionSync()
         }
         .onChange(of: model.homeReviewWordIDs) { _, _ in
-            syncPracticeSelectionIfNeeded()
+            schedulePracticeSelectionSync()
         }
         .onChange(of: model.focusedPracticeWordIDs) { _, _ in
-            applyFocusedPracticeSelectionIfNeeded()
+            schedulePracticeSelectionSync()
         }
         .onChange(of: selectedPracticeWordIDs) { _, _ in
             clearCompletedPracticeRoundIfWordsChanged()
@@ -241,6 +240,12 @@ struct HomeView: View {
             return model.nextTestWords
         case .review:
             return model.todayStepProgress.remainingWords
+        }
+    }
+
+    private func schedulePracticeSelectionSync() {
+        DispatchQueue.main.async {
+            syncPracticeSelectionIfNeeded()
         }
     }
 
@@ -526,7 +531,7 @@ private struct ChildMissionPanel: View {
 
                 MissionSmallButton(
                     title: language.text(japanese: "テスト", english: "Test"),
-                    systemImage: "checkmark.clipboard.fill",
+                    systemImage: "checklist.checked",
                     tint: Color(red: 0.20, green: 0.58, blue: 0.24),
                     disabled: !canTest,
                     action: startTest

@@ -299,11 +299,13 @@ struct SpellingSessionView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
-            loadSessionPracticeSamplesIfNeeded()
-            clampPracticeRepeatIndexIfNeeded()
-            resetTimer()
-            startTimerIfNeeded()
-            showSpeakerHintIfNeeded()
+            DispatchQueue.main.async {
+                loadSessionPracticeSamplesIfNeeded()
+                clampPracticeRepeatIndexIfNeeded()
+                resetTimer()
+                startTimerIfNeeded()
+                showSpeakerHintIfNeeded()
+            }
         }
         .onDisappear {
             stopTimer()
@@ -2286,7 +2288,7 @@ private struct PracticeStartTestButton: View {
                     Circle()
                         .fill(Color.white.opacity(reduceMotion ? 0.22 : (isAnimating ? 0.28 : 0.18)))
                         .frame(width: 42, height: 42)
-                    Image(systemName: "checkmark.clipboard.fill")
+                    Image(systemName: "checklist.checked")
                         .font(.system(size: 22, weight: .heavy))
                         .offset(y: reduceMotion ? 0 : (isAnimating ? -1.5 : 1))
                 }

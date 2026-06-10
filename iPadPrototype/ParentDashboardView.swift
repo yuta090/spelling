@@ -4200,15 +4200,19 @@ private struct ParentGradingPanel: View {
                     }
                 }
                 .onAppear {
-                    if selectedSessionID == nil {
-                        selectedSessionID = filteredSessions.first?.id
-                    }
+                    scheduleSelectedSessionSync(filteredSessions.map(\.id))
                 }
                 .onChange(of: filteredSessions.map(\.id)) { _, ids in
-                    if selectedSessionID == nil || !(ids.contains(selectedSessionID ?? "")) {
-                        selectedSessionID = ids.first
-                    }
+                    scheduleSelectedSessionSync(ids)
                 }
+            }
+        }
+    }
+
+    private func scheduleSelectedSessionSync(_ ids: [String]) {
+        DispatchQueue.main.async {
+            if selectedSessionID == nil || !(ids.contains(selectedSessionID ?? "")) {
+                selectedSessionID = ids.first
             }
         }
     }
