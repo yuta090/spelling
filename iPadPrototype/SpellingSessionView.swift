@@ -189,6 +189,21 @@ struct SpellingSessionView: View {
         return decision == nil && !isChecking && remainingSeconds > 0 && !showingTestResults
     }
 
+    private var canEditCanvas: Bool {
+        if mode != .test {
+            return true
+        }
+        return decision != .timeExpired && !isChecking && !showingTestResults
+    }
+
+    private var canUndoCanvas: Bool {
+        canEditCanvas && !currentInkDrawing.strokes.isEmpty
+    }
+
+    private var canClearCanvas: Bool {
+        canEditCanvas && hasCurrentDrawingInk
+    }
+
     private var testPromptTitle: String {
         switch model.settings.testPromptMode {
         case .audioOnly:
@@ -453,13 +468,13 @@ struct SpellingSessionView: View {
         HStack(spacing: 18) {
             if mode == .test {
                 if decision == .rewrite {
-                    SessionControlButton(
-                        title: language.text(japanese: "消す", english: "Clear"),
-                        systemImage: "eraser.fill",
-                        style: .secondary
-                    ) {
-                        clearCanvas()
-                    }
+                    CanvasEditControls(
+                        language: language,
+                        canUndo: canUndoCanvas,
+                        canClear: canClearCanvas,
+                        undo: undoLastStroke,
+                        clearAll: clearCanvas
+                    )
 
                     Spacer()
 
@@ -481,18 +496,20 @@ struct SpellingSessionView: View {
                         moveNext()
                     }
                 } else {
-                    SessionControlButton(
-                        title: language.text(japanese: "消す", english: "Clear"),
-                        systemImage: "eraser.fill",
-                        style: .secondary
-                    ) {
-                        clearCanvas()
-                    }
+                    CanvasEditControls(
+                        language: language,
+                        canUndo: canUndoCanvas,
+                        canClear: canClearCanvas,
+                        undo: undoLastStroke,
+                        clearAll: clearCanvas
+                    )
 
                     SessionControlButton(
                         title: language.text(japanese: "パス", english: "Pass"),
                         systemImage: "forward.fill",
-                        style: .secondary
+                        style: .secondary,
+                        minWidth: 118,
+                        horizontalPadding: 16
                     ) {
                         passWord()
                     }
@@ -511,13 +528,13 @@ struct SpellingSessionView: View {
                     .disabled(isChecking)
                 }
             } else {
-                SessionControlButton(
-                    title: language.text(japanese: "消す", english: "Clear"),
-                    systemImage: "eraser.fill",
-                    style: .secondary
-                ) {
-                    clearCanvas()
-                }
+                CanvasEditControls(
+                    language: language,
+                    canUndo: canUndoCanvas,
+                    canClear: canClearCanvas,
+                    undo: undoLastStroke,
+                    clearAll: clearCanvas
+                )
 
                 Spacer()
 
@@ -589,15 +606,38 @@ struct SpellingSessionView: View {
     }
 
     private func clearCanvas() {
-        drawing = PKDrawing()
-        drawingCapture.latestDrawing = PKDrawing()
+        let shouldRestartTestTimer = mode == .test && decision == .rewrite
+        setCanvasDrawing(PKDrawing())
         canvasResetID = UUID()
         decision = nil
         candidates = []
-        if mode == .test {
+        if shouldRestartTestTimer {
             resetTimer()
             startTimerIfNeeded()
         }
+    }
+
+    private func undoLastStroke() {
+        let activeDrawing = currentInkDrawing
+        guard !activeDrawing.strokes.isEmpty else {
+            return
+        }
+
+        let updatedDrawing = PKDrawing(strokes: Array(activeDrawing.strokes.dropLast()))
+        let shouldRestartTestTimer = mode == .test && decision == .rewrite
+        setCanvasDrawing(updatedDrawing)
+        canvasResetID = UUID()
+        decision = nil
+        candidates = []
+        if shouldRestartTestTimer {
+            resetTimer()
+            startTimerIfNeeded()
+        }
+    }
+
+    private func setCanvasDrawing(_ newDrawing: PKDrawing) {
+        drawing = newDrawing
+        drawingCapture.latestDrawing = newDrawing
     }
 
     private func moveNext() {
@@ -1645,6 +1685,66 @@ private enum SessionButtonStyleKind {
     case finish
 }
 
+private struct CanvasEditControls: View {
+    var language: AppLanguage
+    var canUndo: Bool
+    var canClear: Bool
+    var undo: () -> Void
+    var clearAll: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            CanvasEditButton(
+                title: language.text(japanese: "1つもどす", english: "Undo"),
+                systemImage: "arrow.uturn.backward",
+                isEnabled: canUndo,
+                action: undo
+            )
+
+            CanvasEditButton(
+                title: language.text(japanese: "ぜんぶ消す", english: "Clear All"),
+                systemImage: "eraser.fill",
+                isEnabled: canClear,
+                action: clearAll
+            )
+        }
+        .accessibilityElement(children: .contain)
+    }
+}
+
+private struct CanvasEditButton: View {
+    var title: String
+    var systemImage: String
+    var isEnabled: Bool
+    var action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Label(title, systemImage: systemImage)
+                .font(.headline.weight(.heavy))
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+                .padding(.vertical, 16)
+                .padding(.horizontal, 8)
+                .frame(width: 138)
+                .foregroundStyle(isEnabled ? Color(red: 0.13, green: 0.34, blue: 0.75) : Color(red: 0.48, green: 0.54, blue: 0.62))
+                .background(isEnabled ? Color(red: 0.91, green: 0.96, blue: 1.0) : Color(red: 0.94, green: 0.96, blue: 0.98))
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(isEnabled ? Color(red: 0.60, green: 0.76, blue: 0.96) : Color(red: 0.78, green: 0.84, blue: 0.90), lineWidth: 2)
+                )
+        }
+        .buttonStyle(.plain)
+        .contentShape(Capsule())
+        .tapFeedback(scale: 0.94)
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1 : 0.62)
+    }
+}
+
 private enum PracticeButtonTapEffectStyle: CaseIterable {
     case goldPop
     case blueShower
@@ -1807,6 +1907,8 @@ private struct SessionControlButton: View {
     var title: String
     var systemImage: String
     var style: SessionButtonStyleKind
+    var minWidth: CGFloat = 190
+    var horizontalPadding: CGFloat = 24
     var funTapAnimations = false
     var canPlayFunTapAnimation: () -> Bool = { true }
     var action: () -> Void
@@ -1877,11 +1979,12 @@ private struct SessionControlButton: View {
         } label: {
             Label(title, systemImage: systemImage)
                 .font(.title3.weight(.bold))
-                .frame(minWidth: 190)
+                .frame(minWidth: minWidth)
                 .padding(.vertical, 15)
-                .padding(.horizontal, 24)
+                .padding(.horizontal, horizontalPadding)
         }
         .buttonStyle(.plain)
+        .contentShape(RoundedRectangle(cornerRadius: 8))
         .tapFeedback()
         .foregroundStyle(foregroundColor)
         .background(background)
