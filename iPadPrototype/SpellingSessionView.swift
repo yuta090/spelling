@@ -343,8 +343,12 @@ struct SpellingSessionView: View {
             } label: {
                 Label(language.text(japanese: "ホームにもどる", english: "Home"), systemImage: "house.fill")
                     .font(.headline.weight(.bold))
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 10)
+                    .contentShape(Capsule())
             }
             .buttonStyle(.plain)
+            .contentShape(Capsule())
             .tapFeedback()
             .foregroundStyle(Color(red: 0.10, green: 0.32, blue: 0.74))
 
@@ -456,8 +460,10 @@ struct SpellingSessionView: View {
                     .scaleEffect(showingSpeakerHint && speakerHintPhase ? 1.08 : 1)
             }
             .frame(width: mode == .test ? 82 : 58, height: mode == .test ? 82 : 58)
+            .contentShape(Circle())
         }
         .buttonStyle(.plain)
+        .contentShape(Circle())
         .tapFeedback()
         .disabled(mode == .test && replayCount >= model.settings.maxReplays)
         .opacity(mode == .test && replayCount >= model.settings.maxReplays ? 0.45 : 1)
@@ -1736,6 +1742,7 @@ private struct CanvasEditButton: View {
                     Capsule()
                         .stroke(isEnabled ? Color(red: 0.60, green: 0.76, blue: 0.96) : Color(red: 0.78, green: 0.84, blue: 0.90), lineWidth: 2)
                 )
+                .contentShape(Capsule())
         }
         .buttonStyle(.plain)
         .contentShape(Capsule())
@@ -1982,20 +1989,21 @@ private struct SessionControlButton: View {
                 .frame(minWidth: minWidth)
                 .padding(.vertical, 15)
                 .padding(.horizontal, horizontalPadding)
+                .foregroundStyle(foregroundColor)
+                .background(background)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(borderColor, lineWidth: style == .primary ? 0 : 2)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
         .contentShape(RoundedRectangle(cornerRadius: 8))
         .tapFeedback()
-        .foregroundStyle(foregroundColor)
-        .background(background)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
         .scaleEffect(tapEffectStyle.scale(active: tapEffectActive, reduceMotion: reduceMotion))
         .rotationEffect(.degrees(tapEffectStyle.rotation(active: tapEffectActive, reduceMotion: reduceMotion)))
         .offset(y: tapEffectStyle.yOffset(active: tapEffectActive, reduceMotion: reduceMotion))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(borderColor, lineWidth: style == .primary ? 0 : 2)
-        )
         .overlay {
             if funTapAnimations && tapEffectActive {
                 PracticeButtonTapEffectOverlay(
@@ -2367,8 +2375,10 @@ private struct PracticeRetrySelectedButton: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(disabled ? Color(red: 0.75, green: 0.68, blue: 0.86) : Color(red: 0.38, green: 0.22, blue: 0.64), lineWidth: 1.5)
             )
+            .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
+        .contentShape(RoundedRectangle(cornerRadius: 8))
         .tapFeedback()
         .disabled(disabled)
         .accessibilityLabel(language.text(japanese: "\(count)個をもう一回練習", english: "Retry \(count) words"))
@@ -2431,8 +2441,10 @@ private struct PracticeStartTestButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .shadow(color: Color.green.opacity(reduceMotion ? 0.18 : (isAnimating ? 0.25 : 0.16)), radius: reduceMotion ? 8 : (isAnimating ? 12 : 7), x: 0, y: reduceMotion ? 7 : (isAnimating ? 8 : 6))
             .scaleEffect(reduceMotion ? 1 : (isAnimating ? 1.012 : 1))
+            .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
+        .contentShape(RoundedRectangle(cornerRadius: 8))
         .tapFeedback()
         .accessibilityLabel(language.text(japanese: "テストしてみる", english: "Try the test"))
     }
@@ -2455,8 +2467,10 @@ private struct PracticeReviewHomeButton: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color(red: 0.70, green: 0.80, blue: 0.94), lineWidth: 1.5)
                 )
+                .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
+        .contentShape(RoundedRectangle(cornerRadius: 8))
         .tapFeedback()
     }
 }
@@ -2588,9 +2602,11 @@ private struct TestSessionResultsView: View {
                         .font(.title3.weight(.bold))
                         .frame(minWidth: 240)
                         .padding(.vertical, 14)
+                        .contentShape(RoundedRectangle(cornerRadius: 8))
                 }
                 .buttonStyle(.borderedProminent)
-            .tapFeedback()
+                .contentShape(RoundedRectangle(cornerRadius: 8))
+                .tapFeedback()
             }
         }
         .onAppear {

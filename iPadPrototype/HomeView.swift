@@ -517,8 +517,10 @@ private struct ChildMissionPanel: View {
                         .padding(.horizontal, 10)
                         .background(Color(red: 0.91, green: 0.96, blue: 1.0).opacity(0.90))
                         .clipShape(Capsule())
+                        .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
+                    .contentShape(Capsule())
                     .tapFeedback()
                     .disabled(!canSwitchSteps)
                     .accessibilityLabel(language.text(japanese: "\(stepTitle)を変える", english: "Change \(stepTitle)"))
@@ -549,8 +551,10 @@ private struct ChildMissionPanel: View {
                     .font(.system(size: 34, weight: .heavy, design: .rounded))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 18)
+                    .contentShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.borderedProminent)
+            .contentShape(RoundedRectangle(cornerRadius: 8))
             .tapFeedback()
             .tint(primaryButtonTint)
             .disabled(isPrimaryButtonDisabled)
@@ -601,8 +605,8 @@ private struct HomeLatestTestButtonSummary: Equatable {
 
     func title(language: AppLanguage) -> String {
         language.text(
-            japanese: "\(attemptNumber)回め \(score)点",
-            english: "#\(attemptNumber) \(score) pts"
+            japanese: "テスト \(attemptNumber)回め \(score)点",
+            english: "Test #\(attemptNumber) \(score) pts"
         )
     }
 }
@@ -620,11 +624,13 @@ private struct MissionSmallButton: View {
                 .font(.title3.weight(.heavy))
                 .lineLimit(1)
                 .minimumScaleFactor(0.72)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, minHeight: 54)
                 .padding(.vertical, 14)
+                .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.bordered)
-            .tapFeedback()
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .tapFeedback()
         .tint(tint)
         .disabled(disabled)
     }
@@ -776,8 +782,10 @@ private struct ChildStepPickerCard: View {
                     .stroke(isSelected ? Color(red: 0.16, green: 0.42, blue: 0.84) : Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: isSelected ? 2 : 1)
             )
             .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 6)
+            .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
+        .contentShape(RoundedRectangle(cornerRadius: 8))
         .tapFeedback()
         .accessibilityLabel("\(step.title(language: language))。\(step.words.count)。\(statusText)")
     }
@@ -944,16 +952,22 @@ private struct PracticeRetryPickerSheet: View {
                                 selectedIDs = Set(words.map(\.id))
                             } label: {
                                 Label(language.text(japanese: "ぜんぶ", english: "All"), systemImage: "checkmark.square.fill")
+                                    .frame(minHeight: 44)
+                                    .contentShape(Capsule())
                             }
                             .buttonStyle(.bordered)
+                            .contentShape(Capsule())
                             .tapFeedback()
 
                             Button {
                                 selectedIDs = []
                             } label: {
                                 Label(language.text(japanese: "はずす", english: "Clear"), systemImage: "square")
+                                    .frame(minHeight: 44)
+                                    .contentShape(Capsule())
                             }
                             .buttonStyle(.bordered)
+                            .contentShape(Capsule())
                             .tapFeedback()
 
                             Spacer(minLength: 0)
@@ -965,8 +979,10 @@ private struct PracticeRetryPickerSheet: View {
                                 .font(.system(size: 30, weight: .heavy, design: .rounded))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
+                                .contentShape(RoundedRectangle(cornerRadius: 8))
                         }
                         .buttonStyle(.borderedProminent)
+                        .contentShape(RoundedRectangle(cornerRadius: 8))
                         .tapFeedback()
                         .tint(Color(red: 0.16, green: 0.42, blue: 0.84))
                         .disabled(selectedCount == 0)
@@ -1048,8 +1064,10 @@ private struct PracticeWordSelectionSummaryPanel: View {
                     .font(.headline.weight(.heavy))
                     .padding(.vertical, 10)
                     .padding(.horizontal, 12)
+                    .contentShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.borderedProminent)
+            .contentShape(RoundedRectangle(cornerRadius: 8))
             .tapFeedback()
             .tint(Color(red: 0.49, green: 0.30, blue: 0.78))
             .disabled(words.isEmpty)
@@ -1173,17 +1191,23 @@ private struct PracticeWordPickerPanel: View {
                         selectedIDs = Set(words.map(\.id))
                     } label: {
                         Label(language.text(japanese: "ぜんぶチェック", english: "Select All"), systemImage: "checkmark.square.fill")
+                            .frame(minHeight: 44)
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.bordered)
-            .tapFeedback()
+                    .contentShape(Capsule())
+                    .tapFeedback()
 
                     Button {
                         selectedIDs = []
                     } label: {
                         Label(language.text(japanese: "チェックをはずす", english: "Clear"), systemImage: "square")
+                            .frame(minHeight: 44)
+                            .contentShape(Capsule())
                     }
                     .buttonStyle(.bordered)
-            .tapFeedback()
+                    .contentShape(Capsule())
+                    .tapFeedback()
 
                     Spacer()
                 }
@@ -1238,9 +1262,11 @@ private struct PracticeWordToggleChip: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(isSelected ? Color(red: 0.57, green: 0.38, blue: 0.82) : Color(red: 0.78, green: 0.82, blue: 0.90), lineWidth: isSelected ? 2 : 1)
             )
+            .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
-            .tapFeedback()
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .tapFeedback()
         .accessibilityLabel(language.text(japanese: "\(word.text)を\(isSelected ? "えらんでいます" : "えらんでいません")", english: "\(word.text) is \(isSelected ? "selected" : "not selected")"))
     }
 }
@@ -1384,9 +1410,11 @@ private struct StepSelectorChip: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(isSelected ? Color(red: 0.16, green: 0.40, blue: 0.82) : Color(red: 0.65, green: 0.78, blue: 0.95), lineWidth: 1)
             )
+            .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
-            .tapFeedback()
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .tapFeedback()
         .accessibilityLabel("\(step.title(language: language)), \(formattedStepDate(step.registeredDate, language: language))")
     }
 }
@@ -1428,9 +1456,11 @@ private struct HomeActionCard: View {
             )
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .shadow(color: colors.last?.opacity(disabled ? 0 : 0.24) ?? .clear, radius: 12, x: 0, y: 8)
+            .contentShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
-            .tapFeedback()
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .tapFeedback()
         .disabled(disabled)
     }
 }
@@ -1505,8 +1535,10 @@ private struct TodayProgressCard: View {
                     .font(.headline.weight(.bold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
+                    .contentShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.borderedProminent)
+            .contentShape(RoundedRectangle(cornerRadius: 8))
             .tapFeedback()
             .tint(Color(red: 0.52, green: 0.35, blue: 0.76))
             .disabled(!canReviewRemaining)
@@ -2866,6 +2898,7 @@ private struct HomeIconButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color(red: 0.54, green: 0.70, blue: 0.94).opacity(0.55), lineWidth: 1)
             )
+            .contentShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
