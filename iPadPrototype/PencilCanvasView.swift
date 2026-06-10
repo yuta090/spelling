@@ -52,6 +52,11 @@ struct PencilCanvasView: UIViewRepresentable {
 }
 
 extension PKDrawing {
+    enum PreviewHorizontalAlignment {
+        case centered
+        case leftAnchored
+    }
+
     func spellingImage(defaultBounds: CGRect, scale: CGFloat = 3) -> UIImage {
         let drawingBounds = bounds.isNull || bounds.isEmpty ? defaultBounds : bounds.insetBy(dx: -90, dy: -70)
         let strokeImage = image(from: drawingBounds, scale: scale)
@@ -67,18 +72,44 @@ extension PKDrawing {
         scale: CGFloat = 2,
         horizontalPadding: CGFloat = 90,
         topPadding: CGFloat = 170,
-        bottomPadding: CGFloat = 210
+        bottomPadding: CGFloat = 210,
+        horizontalAlignment: PreviewHorizontalAlignment = .centered,
+        minimumAspectRatio: CGFloat? = nil,
+        rightPadding: CGFloat? = nil
     ) -> UIImage? {
         guard !bounds.isNull, !bounds.isEmpty else {
             return nil
         }
 
-        let drawingBounds = CGRect(
-            x: bounds.minX - horizontalPadding,
-            y: bounds.minY - topPadding,
-            width: bounds.width + horizontalPadding * 2,
-            height: bounds.height + topPadding + bottomPadding
-        )
+        let drawingBounds: CGRect
+        let cropHeight = bounds.height + topPadding + bottomPadding
+        switch horizontalAlignment {
+        case .centered:
+            let cropWidth = max(
+                bounds.width + horizontalPadding * 2,
+                cropHeight * (minimumAspectRatio ?? 0)
+            )
+            drawingBounds = CGRect(
+                x: bounds.midX - cropWidth / 2,
+                y: bounds.minY - topPadding,
+                width: cropWidth,
+                height: cropHeight
+            )
+        case .leftAnchored:
+            let left = bounds.minX - horizontalPadding
+            let naturalWidth = bounds.maxX + (rightPadding ?? horizontalPadding) - left
+            let cropWidth = max(
+                naturalWidth,
+                cropHeight * (minimumAspectRatio ?? 0)
+            )
+            drawingBounds = CGRect(
+                x: left,
+                y: bounds.minY - topPadding,
+                width: cropWidth,
+                height: cropHeight
+            )
+        }
+
         let strokeImage = image(from: drawingBounds, scale: scale)
         let renderer = UIGraphicsImageRenderer(size: strokeImage.size)
 

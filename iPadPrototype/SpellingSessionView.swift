@@ -2986,9 +2986,12 @@ private struct PracticeSampleAttemptTile: View {
 
             PracticeDrawingPreview(
                 drawingData: sample.drawingData,
-                horizontalPadding: 90,
+                horizontalPadding: 36,
                 topPadding: 180,
-                bottomPadding: 230
+                bottomPadding: 230,
+                horizontalAlignment: .leftAnchored,
+                minimumAspectRatio: 1.32,
+                rightPadding: 160
             )
             .frame(height: 176)
             .background(.white)
@@ -3016,6 +3019,9 @@ private struct PracticeDrawingPreview: UIViewRepresentable {
     var horizontalPadding: CGFloat = 80
     var topPadding: CGFloat = 90
     var bottomPadding: CGFloat = 150
+    var horizontalAlignment: PKDrawing.PreviewHorizontalAlignment = .centered
+    var minimumAspectRatio: CGFloat?
+    var rightPadding: CGFloat?
 
     func makeUIView(context: Context) -> UIImageView {
         let imageView = UIImageView()
@@ -3029,7 +3035,10 @@ private struct PracticeDrawingPreview: UIViewRepresentable {
             imageView.image = drawing.previewImage(
                 horizontalPadding: horizontalPadding,
                 topPadding: topPadding,
-                bottomPadding: bottomPadding
+                bottomPadding: bottomPadding,
+                horizontalAlignment: horizontalAlignment,
+                minimumAspectRatio: minimumAspectRatio,
+                rightPadding: rightPadding
             )
         } else {
             imageView.image = nil
