@@ -38,6 +38,8 @@ struct SpellingSessionView: View {
     @State private var showingSpeakerHint = false
     @State private var speakerHintPhase = false
     @State private var didShowSpeakerHint = false
+    @State private var pendingTestGradeCount = 0
+    @State private var shouldShowTestResultsAfterGrading = false
 
     init(
         mode: SessionMode,
@@ -495,12 +497,15 @@ struct SpellingSessionView: View {
                     Spacer()
 
                     SessionControlButton(
-                        title: index == sessionWords.count - 1 ? language.text(japanese: "おわる", english: "Finish") : language.text(japanese: "つぎへ", english: "Next"),
-                        systemImage: index == sessionWords.count - 1 ? "star.fill" : "arrow.right",
+                        title: isChecking
+                            ? language.text(japanese: "まってね", english: "Saving")
+                            : (index == sessionWords.count - 1 ? language.text(japanese: "おわる", english: "Finish") : language.text(japanese: "つぎへ", english: "Next")),
+                        systemImage: isChecking ? "hourglass" : (index == sessionWords.count - 1 ? "star.fill" : "arrow.right"),
                         style: index == sessionWords.count - 1 ? .finish : .primary
                     ) {
                         moveNext()
                     }
+                    .disabled(isChecking)
                 } else {
                     CanvasEditControls(
                         language: language,
@@ -674,9 +679,7 @@ struct SpellingSessionView: View {
                     showingPracticeReview = true
                 }
             } else if mode == .test {
-                withAnimation(.easeInOut(duration: 0.18)) {
-                    showingTestResults = true
-                }
+                finishTestWhenGradesAreReady()
             } else {
                 dismiss()
             }
@@ -927,55 +930,113 @@ struct SpellingSessionView: View {
     }
 
     private func checkAnswer() {
-        guard decision == nil else {
+        guard decision == nil, !isChecking else {
             return
         }
         stopTimer()
-        isChecking = true
-        let latestDrawing = drawingCapture.latestDrawing
-        let image = latestDrawing.spellingImage(defaultBounds: CGRect(x: 0, y: 0, width: 1000, height: 260))
 
-        Task {
-            defer { isChecking = false }
-            do {
-                let recognized = try await VisionSpellingOCR(language: model.settings.language).recognize(image, expected: currentWord.text)
-                let hasInk = !latestDrawing.bounds.isNull && !latestDrawing.bounds.isEmpty
-                let grade = OCRGrader(settings: model.settings).grade(candidates: recognized, expected: currentWord.text, hasInk: hasInk)
-                candidates = recognized
-                if grade == .rewrite {
-                    decision = .rewrite
-                    return
-                }
+        let submittedWord = currentWord.text
+        let submittedDrawing = currentInkDrawing
+        guard hasInk(submittedDrawing) else {
+            candidates = []
+            decision = .rewrite
+            return
+        }
+
+        let submittedAt = Date()
+        let submittedDrawingData = submittedDrawing.dataRepresentation()
+        let isFinalWord = index == sessionWords.count - 1
+        enqueueTestGrade(
+            word: submittedWord,
+            drawingData: submittedDrawingData,
+            submittedAt: submittedAt
+        )
+
+        if isFinalWord {
+            isChecking = true
+            shouldShowTestResultsAfterGrading = true
+            showTestResultsIfReady()
+        } else {
+            decision = nil
+            candidates = []
+            moveNext(saveDrawing: false)
+        }
+    }
+
+    private func enqueueTestGrade(word: String, drawingData: Data, submittedAt: Date) {
+        pendingTestGradeCount += 1
+        let recognitionLanguage = model.settings.language
+        let settings = model.settings
+        let sessionID = sessionID
+
+        Task.detached(priority: .utility) {
+            let result = await gradeTestDrawing(
+                word: word,
+                drawingData: drawingData,
+                recognitionLanguage: recognitionLanguage,
+                settings: settings
+            )
+
+            await MainActor.run {
                 let attempt = model.addAttempt(
-                    word: currentWord.text,
-                    recognizedText: recognized.first?.text ?? "",
-                    decision: grade,
-                    drawingData: latestDrawing.dataRepresentation(),
+                    word: word,
+                    recognizedText: result.recognizedText,
+                    decision: result.decision,
+                    drawingData: drawingData,
+                    date: submittedAt,
                     sessionID: sessionID
                 )
                 sessionAttempts.append(attempt)
-                decision = nil
-                moveNext()
-            } catch {
-                let hasInk = !latestDrawing.bounds.isNull && !latestDrawing.bounds.isEmpty
-                let fallbackDecision: GradeDecision = hasInk ? .needsReview : .rewrite
-                candidates = []
-                if fallbackDecision == .rewrite {
-                    decision = .rewrite
-                    return
-                }
-                let attempt = model.addAttempt(
-                    word: currentWord.text,
-                    recognizedText: "",
-                    decision: fallbackDecision,
-                    drawingData: latestDrawing.dataRepresentation(),
-                    sessionID: sessionID
-                )
-                sessionAttempts.append(attempt)
-                decision = nil
-                moveNext()
+                sessionAttempts.sort { $0.date < $1.date }
+                pendingTestGradeCount = max(pendingTestGradeCount - 1, 0)
+                showTestResultsIfReady()
             }
         }
+    }
+
+    private func showTestResultsIfReady() {
+        guard shouldShowTestResultsAfterGrading, pendingTestGradeCount == 0 else {
+            return
+        }
+
+        isChecking = false
+        shouldShowTestResultsAfterGrading = false
+        withAnimation(.easeInOut(duration: 0.18)) {
+            showingTestResults = true
+        }
+    }
+
+    private func finishTestWhenGradesAreReady() {
+        shouldShowTestResultsAfterGrading = true
+        if pendingTestGradeCount > 0 {
+            isChecking = true
+        }
+        showTestResultsIfReady()
+    }
+}
+
+private struct TestGradeResult: Sendable {
+    var recognizedText: String
+    var decision: GradeDecision
+}
+
+private func gradeTestDrawing(
+    word: String,
+    drawingData: Data,
+    recognitionLanguage: String,
+    settings: TestSettings
+) async -> TestGradeResult {
+    do {
+        let drawing = try PKDrawing(data: drawingData)
+        let image = drawing.spellingImage(defaultBounds: CGRect(x: 0, y: 0, width: 1000, height: 260))
+        let recognized = try await VisionSpellingOCR(language: recognitionLanguage).recognize(image, expected: word)
+        var grade = OCRGrader(settings: settings).grade(candidates: recognized, expected: word, hasInk: true)
+        if grade == .rewrite {
+            grade = .needsReview
+        }
+        return TestGradeResult(recognizedText: recognized.first?.text ?? "", decision: grade)
+    } catch {
+        return TestGradeResult(recognizedText: "", decision: .needsReview)
     }
 }
 

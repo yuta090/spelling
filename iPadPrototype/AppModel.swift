@@ -449,6 +449,7 @@ final class AppModel: ObservableObject {
         recognizedText: String,
         decision: GradeDecision,
         drawingData: Data? = nil,
+        date: Date = Date(),
         sessionID: UUID = UUID()
     ) -> SpellingAttempt {
         let attempt = SpellingAttempt(
@@ -456,6 +457,7 @@ final class AppModel: ObservableObject {
             recognizedText: normalize(recognizedText),
             decision: decision,
             drawingData: drawingData,
+            date: date,
             sessionID: sessionID
         )
         attempts.append(attempt)
