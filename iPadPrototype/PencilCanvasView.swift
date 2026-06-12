@@ -75,13 +75,14 @@ extension PKDrawing {
         bottomPadding: CGFloat = 210,
         horizontalAlignment: PreviewHorizontalAlignment = .centered,
         minimumAspectRatio: CGFloat? = nil,
+        targetAspectRatio: CGFloat? = nil,
         rightPadding: CGFloat? = nil
     ) -> UIImage? {
         guard !bounds.isNull, !bounds.isEmpty else {
             return nil
         }
 
-        let drawingBounds: CGRect
+        var drawingBounds: CGRect
         let cropHeight = bounds.height + topPadding + bottomPadding
         switch horizontalAlignment {
         case .centered:
@@ -110,6 +111,10 @@ extension PKDrawing {
             )
         }
 
+        if let targetAspectRatio, targetAspectRatio > 0 {
+            drawingBounds = drawingBounds.expanded(toAspectRatio: targetAspectRatio, horizontalAlignment: horizontalAlignment)
+        }
+
         let strokeImage = image(from: drawingBounds, scale: scale)
         let renderer = UIGraphicsImageRenderer(size: strokeImage.size)
 
@@ -118,5 +123,29 @@ extension PKDrawing {
             context.fill(CGRect(origin: .zero, size: strokeImage.size))
             strokeImage.draw(in: CGRect(origin: .zero, size: strokeImage.size))
         }
+    }
+}
+
+private extension CGRect {
+    func expanded(toAspectRatio targetAspectRatio: CGFloat, horizontalAlignment: PKDrawing.PreviewHorizontalAlignment) -> CGRect {
+        guard width > 0, height > 0 else {
+            return self
+        }
+
+        let currentAspectRatio = width / height
+        if currentAspectRatio < targetAspectRatio {
+            let newWidth = height * targetAspectRatio
+            let extraWidth = newWidth - width
+            switch horizontalAlignment {
+            case .centered:
+                return CGRect(x: minX - extraWidth / 2, y: minY, width: newWidth, height: height)
+            case .leftAnchored:
+                return CGRect(x: minX, y: minY, width: newWidth, height: height)
+            }
+        }
+
+        let newHeight = width / targetAspectRatio
+        let extraHeight = newHeight - height
+        return CGRect(x: minX, y: minY - extraHeight / 2, width: width, height: newHeight)
     }
 }

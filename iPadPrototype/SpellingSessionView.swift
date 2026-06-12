@@ -3030,6 +3030,11 @@ private struct PracticeSampleAttemptTile: View {
     var sample: PracticeSample
     var round: Int
     var language: AppLanguage
+    private let tileWidth: CGFloat = 248
+    private let previewHeight: CGFloat = 176
+    private var previewWidth: CGFloat {
+        tileWidth - 20
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -3052,14 +3057,15 @@ private struct PracticeSampleAttemptTile: View {
 
             PracticeDrawingPreview(
                 drawingData: sample.drawingData,
-                horizontalPadding: 36,
+                horizontalPadding: 56,
                 topPadding: 180,
                 bottomPadding: 230,
                 horizontalAlignment: .leftAnchored,
-                minimumAspectRatio: 1.32,
-                rightPadding: 160
+                targetAspectRatio: previewWidth / previewHeight,
+                rightPadding: 96
             )
-            .frame(height: 176)
+            .frame(width: previewWidth, height: previewHeight)
+            .clipped()
             .background(.white)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
@@ -3067,7 +3073,7 @@ private struct PracticeSampleAttemptTile: View {
                     .stroke(Color.gray.opacity(0.22), lineWidth: 1)
             )
         }
-        .frame(width: 232, alignment: .leading)
+        .frame(width: tileWidth, alignment: .leading)
         .padding(10)
         .background(Color(red: 0.97, green: 0.98, blue: 1.0))
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -3087,13 +3093,21 @@ private struct PracticeDrawingPreview: UIViewRepresentable {
     var bottomPadding: CGFloat = 150
     var horizontalAlignment: PKDrawing.PreviewHorizontalAlignment = .centered
     var minimumAspectRatio: CGFloat?
+    var targetAspectRatio: CGFloat?
     var rightPadding: CGFloat?
 
     func makeUIView(context: Context) -> UIImageView {
         let imageView = UIImageView()
         imageView.backgroundColor = .white
         imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        imageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return imageView
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UIImageView, context: Context) -> CGSize? {
+        CGSize(width: proposal.width ?? 228, height: proposal.height ?? 176)
     }
 
     func updateUIView(_ imageView: UIImageView, context: Context) {
@@ -3104,6 +3118,7 @@ private struct PracticeDrawingPreview: UIViewRepresentable {
                 bottomPadding: bottomPadding,
                 horizontalAlignment: horizontalAlignment,
                 minimumAspectRatio: minimumAspectRatio,
+                targetAspectRatio: targetAspectRatio,
                 rightPadding: rightPadding
             )
         } else {
