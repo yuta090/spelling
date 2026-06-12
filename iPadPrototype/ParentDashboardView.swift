@@ -3033,7 +3033,7 @@ private struct ParentNewStepSheet: View {
                 }
             }
             .sheet(isPresented: $showingWordCamera) {
-                WordCameraPicker { image in
+                WordCameraImportSheet(language: language) { image in
                     scanWordImage(image)
                 }
                 .ignoresSafeArea()
@@ -3378,7 +3378,7 @@ private struct ParentWordListPanel: View {
             reloadSelectedStep()
         }
         .sheet(isPresented: $showingWordCamera) {
-            WordCameraPicker { image in
+            WordCameraImportSheet(language: language) { image in
                 scanWordImage(image)
             }
             .ignoresSafeArea()
@@ -3730,7 +3730,7 @@ private struct ParentLegacyWordListPanel: View {
             rawWords = wordListEditorText(model.words)
         }
         .sheet(isPresented: $showingWordCamera) {
-            WordCameraPicker { image in
+            WordCameraImportSheet(language: language) { image in
                 scanWordImage(image)
             }
             .ignoresSafeArea()
@@ -3853,12 +3853,404 @@ private struct WordImportStatusBanner: View {
     }
 }
 
+private struct WordCameraImportSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var capturedImage: UIImage?
+    @State private var cropRect = WordImageCropRect.default
+    var language: AppLanguage
+    var onImage: (UIImage) -> Void
+
+    var body: some View {
+        Group {
+            if let capturedImage {
+                WordImageCropperView(
+                    image: capturedImage,
+                    language: language,
+                    cropRect: $cropRect,
+                    onScan: { croppedImage in
+                        onImage(croppedImage)
+                        dismiss()
+                    },
+                    onUseWholeImage: {
+                        onImage(capturedImage.normalizedForCropping())
+                        dismiss()
+                    },
+                    onRetake: {
+                        withAnimation(.easeInOut(duration: 0.18)) {
+                            cropRect = .default
+                            self.capturedImage = nil
+                        }
+                    },
+                    onCancel: {
+                        dismiss()
+                    }
+                )
+            } else {
+                WordCameraPicker(
+                    onImage: { image in
+                        withAnimation(.easeInOut(duration: 0.18)) {
+                            cropRect = .default
+                            capturedImage = image
+                        }
+                    },
+                    onCancel: {
+                        dismiss()
+                    }
+                )
+            }
+        }
+    }
+}
+
+private struct WordImageCropperView: View {
+    private let image: UIImage
+    var language: AppLanguage
+    @Binding var cropRect: WordImageCropRect
+    var onScan: (UIImage) -> Void
+    var onUseWholeImage: () -> Void
+    var onRetake: () -> Void
+    var onCancel: () -> Void
+    @State private var dragStartRect: WordImageCropRect?
+    @State private var resizeStartRect: WordImageCropRect?
+
+    init(
+        image: UIImage,
+        language: AppLanguage,
+        cropRect: Binding<WordImageCropRect>,
+        onScan: @escaping (UIImage) -> Void,
+        onUseWholeImage: @escaping () -> Void,
+        onRetake: @escaping () -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        self.image = image.normalizedForCropping()
+        self.language = language
+        _cropRect = cropRect
+        self.onScan = onScan
+        self.onUseWholeImage = onUseWholeImage
+        self.onRetake = onRetake
+        self.onCancel = onCancel
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                Button(action: onCancel) {
+                    Image(systemName: "xmark")
+                        .font(.title2.weight(.heavy))
+                        .frame(width: 48, height: 48)
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .tapFeedback()
+                .accessibilityLabel(language.text(japanese: "閉じる", english: "Close"))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(language.text(japanese: "読むところを合わせる", english: "Adjust Reading Area"))
+                        .font(.title2.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                    Text(language.text(japanese: "枠を動かして、単語だけを囲んでください。", english: "Move the frame around the words."))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+            .padding(.horizontal, 22)
+            .padding(.vertical, 16)
+            .background(ParentPalette.surface)
+
+            GeometryReader { proxy in
+                let container = CGRect(origin: .zero, size: proxy.size)
+                let imageFrame = aspectFitRect(imageSize: image.size, in: container.insetBy(dx: 22, dy: 18))
+                let cropFrame = cropRect.frame(in: imageFrame)
+
+                ZStack(alignment: .topLeading) {
+                    Color.black.opacity(0.92)
+
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: imageFrame.width, height: imageFrame.height)
+                        .position(x: imageFrame.midX, y: imageFrame.midY)
+
+                    WordCropDimmingShape(imageFrame: imageFrame, cropFrame: cropFrame)
+                        .fill(Color.black.opacity(0.48), style: FillStyle(eoFill: true))
+
+                    WordCropGridShape(cropFrame: cropFrame)
+                        .stroke(.white.opacity(0.62), style: StrokeStyle(lineWidth: 1.4, dash: [7, 7]))
+
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(.white, lineWidth: 3)
+                        .background(Color.white.opacity(0.001))
+                        .frame(width: cropFrame.width, height: cropFrame.height)
+                        .position(x: cropFrame.midX, y: cropFrame.midY)
+                        .contentShape(Rectangle())
+                        .gesture(moveCropGesture(imageFrame: imageFrame))
+
+                    ForEach(WordCropHandle.allCases) { handle in
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 38, height: 38)
+                            .overlay(
+                                Circle()
+                                    .stroke(ParentPalette.primary, lineWidth: 3)
+                            )
+                            .shadow(color: .black.opacity(0.25), radius: 7, x: 0, y: 3)
+                            .position(handle.position(in: cropFrame))
+                            .contentShape(Circle())
+                            .gesture(resizeCropGesture(handle: handle, imageFrame: imageFrame))
+                    }
+                }
+            }
+
+            HStack(spacing: 12) {
+                Button(action: onRetake) {
+                    Label(language.text(japanese: "撮り直す", english: "Retake"), systemImage: "camera.fill")
+                        .frame(minWidth: 128)
+                }
+                .buttonStyle(.bordered)
+                .tapFeedback()
+
+                Button(action: onUseWholeImage) {
+                    Label(language.text(japanese: "全体を使う", english: "Use Whole"), systemImage: "rectangle.expand.vertical")
+                        .frame(minWidth: 128)
+                }
+                .buttonStyle(.bordered)
+                .tapFeedback()
+
+                Spacer()
+
+                Button {
+                    onScan(image.cropped(to: cropRect))
+                } label: {
+                    Label(language.text(japanese: "この範囲で読み取り", english: "Scan This Area"), systemImage: "doc.text.viewfinder")
+                        .frame(minWidth: 210)
+                }
+                .buttonStyle(.borderedProminent)
+                .tapFeedback()
+                .tint(ParentPalette.primary)
+            }
+            .font(.headline.weight(.bold))
+            .padding(.horizontal, 22)
+            .padding(.vertical, 16)
+            .background(ParentPalette.surface)
+        }
+        .background(Color.black.opacity(0.92))
+    }
+
+    private func moveCropGesture(imageFrame: CGRect) -> some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                let start = dragStartRect ?? cropRect
+                dragStartRect = start
+                cropRect = start.moved(
+                    byX: value.translation.width / max(imageFrame.width, 1),
+                    y: value.translation.height / max(imageFrame.height, 1)
+                )
+            }
+            .onEnded { _ in
+                dragStartRect = nil
+            }
+    }
+
+    private func resizeCropGesture(handle: WordCropHandle, imageFrame: CGRect) -> some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onChanged { value in
+                let start = resizeStartRect ?? cropRect
+                resizeStartRect = start
+                cropRect = start.resized(
+                    handle: handle,
+                    deltaX: value.translation.width / max(imageFrame.width, 1),
+                    deltaY: value.translation.height / max(imageFrame.height, 1)
+                )
+            }
+            .onEnded { _ in
+                resizeStartRect = nil
+            }
+    }
+}
+
+private struct WordImageCropRect: Equatable {
+    var x: CGFloat
+    var y: CGFloat
+    var width: CGFloat
+    var height: CGFloat
+
+    static let `default` = WordImageCropRect(x: 0.08, y: 0.16, width: 0.84, height: 0.68)
+    private static let minimumSize: CGFloat = 0.12
+
+    func frame(in imageFrame: CGRect) -> CGRect {
+        CGRect(
+            x: imageFrame.minX + x * imageFrame.width,
+            y: imageFrame.minY + y * imageFrame.height,
+            width: width * imageFrame.width,
+            height: height * imageFrame.height
+        )
+    }
+
+    func moved(byX deltaX: CGFloat, y deltaY: CGFloat) -> WordImageCropRect {
+        WordImageCropRect(
+            x: min(max(x + deltaX, 0), 1 - width),
+            y: min(max(y + deltaY, 0), 1 - height),
+            width: width,
+            height: height
+        )
+    }
+
+    func resized(handle: WordCropHandle, deltaX: CGFloat, deltaY: CGFloat) -> WordImageCropRect {
+        var left = x
+        var top = y
+        var right = x + width
+        var bottom = y + height
+
+        switch handle {
+        case .topLeft:
+            left += deltaX
+            top += deltaY
+        case .topRight:
+            right += deltaX
+            top += deltaY
+        case .bottomLeft:
+            left += deltaX
+            bottom += deltaY
+        case .bottomRight:
+            right += deltaX
+            bottom += deltaY
+        }
+
+        left = min(max(left, 0), right - Self.minimumSize)
+        top = min(max(top, 0), bottom - Self.minimumSize)
+        right = max(min(right, 1), left + Self.minimumSize)
+        bottom = max(min(bottom, 1), top + Self.minimumSize)
+
+        return WordImageCropRect(
+            x: left,
+            y: top,
+            width: right - left,
+            height: bottom - top
+        )
+    }
+}
+
+private enum WordCropHandle: CaseIterable, Identifiable {
+    case topLeft
+    case topRight
+    case bottomLeft
+    case bottomRight
+
+    var id: Self { self }
+
+    func position(in frame: CGRect) -> CGPoint {
+        switch self {
+        case .topLeft:
+            return CGPoint(x: frame.minX, y: frame.minY)
+        case .topRight:
+            return CGPoint(x: frame.maxX, y: frame.minY)
+        case .bottomLeft:
+            return CGPoint(x: frame.minX, y: frame.maxY)
+        case .bottomRight:
+            return CGPoint(x: frame.maxX, y: frame.maxY)
+        }
+    }
+}
+
+private struct WordCropDimmingShape: Shape {
+    var imageFrame: CGRect
+    var cropFrame: CGRect
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.addRect(imageFrame)
+        path.addRoundedRect(in: cropFrame, cornerSize: CGSize(width: 8, height: 8))
+        return path
+    }
+}
+
+private struct WordCropGridShape: Shape {
+    var cropFrame: CGRect
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let thirdWidth = cropFrame.width / 3
+        let thirdHeight = cropFrame.height / 3
+
+        for index in 1...2 {
+            let x = cropFrame.minX + CGFloat(index) * thirdWidth
+            path.move(to: CGPoint(x: x, y: cropFrame.minY))
+            path.addLine(to: CGPoint(x: x, y: cropFrame.maxY))
+
+            let y = cropFrame.minY + CGFloat(index) * thirdHeight
+            path.move(to: CGPoint(x: cropFrame.minX, y: y))
+            path.addLine(to: CGPoint(x: cropFrame.maxX, y: y))
+        }
+
+        return path
+    }
+}
+
+private func aspectFitRect(imageSize: CGSize, in bounds: CGRect) -> CGRect {
+    guard imageSize.width > 0, imageSize.height > 0, bounds.width > 0, bounds.height > 0 else {
+        return bounds
+    }
+
+    let scale = min(bounds.width / imageSize.width, bounds.height / imageSize.height)
+    let width = imageSize.width * scale
+    let height = imageSize.height * scale
+
+    return CGRect(
+        x: bounds.midX - width / 2,
+        y: bounds.midY - height / 2,
+        width: width,
+        height: height
+    )
+}
+
+private extension UIImage {
+    func normalizedForCropping() -> UIImage {
+        guard imageOrientation != .up else {
+            return self
+        }
+
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = scale
+        let renderer = UIGraphicsImageRenderer(size: size, format: format)
+        return renderer.image { _ in
+            draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+
+    func cropped(to cropRect: WordImageCropRect) -> UIImage {
+        let normalizedImage = normalizedForCropping()
+        guard let cgImage = normalizedImage.cgImage else {
+            return normalizedImage
+        }
+
+        let imageBounds = CGRect(origin: .zero, size: normalizedImage.size)
+        let cropBounds = cropRect.frame(in: imageBounds)
+        let pixelRect = CGRect(
+            x: cropBounds.minX * normalizedImage.scale,
+            y: cropBounds.minY * normalizedImage.scale,
+            width: cropBounds.width * normalizedImage.scale,
+            height: cropBounds.height * normalizedImage.scale
+        )
+        .integral
+        .intersection(CGRect(x: 0, y: 0, width: cgImage.width, height: cgImage.height))
+
+        guard !pixelRect.isNull, pixelRect.width > 2, pixelRect.height > 2,
+              let croppedCGImage = cgImage.cropping(to: pixelRect) else {
+            return normalizedImage
+        }
+
+        return UIImage(cgImage: croppedCGImage, scale: normalizedImage.scale, orientation: .up)
+    }
+}
+
 private struct WordCameraPicker: UIViewControllerRepresentable {
     var onImage: (UIImage) -> Void
-    @Environment(\.dismiss) private var dismiss
+    var onCancel: () -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onImage: onImage, dismiss: dismiss)
+        Coordinator(onImage: onImage, onCancel: onCancel)
     }
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -3873,22 +4265,21 @@ private struct WordCameraPicker: UIViewControllerRepresentable {
 
     final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         var onImage: (UIImage) -> Void
-        var dismiss: DismissAction
+        var onCancel: () -> Void
 
-        init(onImage: @escaping (UIImage) -> Void, dismiss: DismissAction) {
+        init(onImage: @escaping (UIImage) -> Void, onCancel: @escaping () -> Void) {
             self.onImage = onImage
-            self.dismiss = dismiss
+            self.onCancel = onCancel
         }
 
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let image = info[.originalImage] as? UIImage {
                 onImage(image)
             }
-            dismiss()
         }
 
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            dismiss()
+            onCancel()
         }
     }
 }
