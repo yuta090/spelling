@@ -5357,30 +5357,29 @@ private struct GradingDrawingPreview: View {
         )
     }
 
-    private var drawingContentOffset: CGPoint {
-        storedCanvasSize?.contentOffset ?? .zero
-    }
-
     var body: some View {
         GeometryReader { proxy in
             let fittedRect = fittedCanvasRect(in: proxy.size, canvasSize: canvasSize)
+            let scale = canvasSize.width > 0 ? fittedRect.width / canvasSize.width : 1
 
             ZStack {
                 Color.white
 
-                GradingAlignedDrawingImage(
-                    drawingData: drawingData,
-                    canvasSize: canvasSize,
-                    contentOffset: drawingContentOffset
-                )
-                .frame(width: fittedRect.width, height: fittedRect.height)
-                .position(x: fittedRect.midX, y: fittedRect.midY)
-                .allowsHitTesting(false)
+                ZStack {
+                    FourLineGuide(mode: mode, labels: ["", "", "", ""])
+                        .frame(width: canvasSize.width, height: canvasSize.height)
+                        .allowsHitTesting(false)
 
-                FourLineGuide(mode: mode, labels: ["", "", "", ""])
-                    .frame(width: fittedRect.width, height: fittedRect.height)
-                    .position(x: fittedRect.midX, y: fittedRect.midY)
-                    .allowsHitTesting(false)
+                    StaticPencilCanvasView(drawingData: drawingData)
+                        .frame(width: canvasSize.width, height: canvasSize.height)
+                        .allowsHitTesting(false)
+                }
+                .frame(width: canvasSize.width, height: canvasSize.height)
+                .scaleEffect(scale, anchor: .topLeading)
+                .frame(width: fittedRect.width, height: fittedRect.height, alignment: .topLeading)
+                .position(x: fittedRect.midX, y: fittedRect.midY)
+                .clipped()
+                .allowsHitTesting(false)
             }
         }
         .frame(maxWidth: .infinity)
@@ -5417,33 +5416,6 @@ private struct GradingDrawingPreview: View {
             y: (containerSize.height - size.height) / 2,
             width: size.width,
             height: size.height
-        )
-    }
-}
-
-private struct GradingAlignedDrawingImage: UIViewRepresentable {
-    var drawingData: Data
-    var canvasSize: CGSize
-    var contentOffset: CGPoint
-
-    func makeUIView(context: Context) -> UIImageView {
-        let imageView = UIImageView()
-        imageView.backgroundColor = .clear
-        imageView.contentMode = .scaleToFill
-        imageView.clipsToBounds = true
-        imageView.isUserInteractionEnabled = false
-        return imageView
-    }
-
-    func updateUIView(_ imageView: UIImageView, context: Context) {
-        guard let drawing = try? PKDrawing(data: drawingData) else {
-            imageView.image = nil
-            return
-        }
-
-        imageView.image = drawing.image(
-            from: CGRect(origin: contentOffset, size: canvasSize),
-            scale: UIScreen.main.scale
         )
     }
 }
