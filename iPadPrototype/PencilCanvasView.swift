@@ -4,6 +4,7 @@ import UIKit
 
 final class DrawingCapture: ObservableObject {
     var latestDrawing = PKDrawing()
+    var latestContentOffset: CGPoint = .zero
 }
 
 struct PencilCanvasView: UIViewRepresentable {
@@ -23,15 +24,36 @@ struct PencilCanvasView: UIViewRepresentable {
         canvas.drawingPolicy = .anyInput
         canvas.isUserInteractionEnabled = isInputEnabled
         canvas.tool = PKInkingTool(.pen, color: .label, width: 7)
+        configureCanvas(canvas)
         return canvas
     }
 
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
         context.coordinator.capture = capture
+        configureCanvas(uiView)
         uiView.isUserInteractionEnabled = isInputEnabled
+        capture?.latestContentOffset = uiView.contentOffset
         if uiView.drawing.dataRepresentation() != drawing.dataRepresentation() {
             uiView.drawing = drawing
             capture?.latestDrawing = drawing
+            capture?.latestContentOffset = uiView.contentOffset
+        }
+    }
+
+    private func configureCanvas(_ canvas: PKCanvasView) {
+        canvas.contentInsetAdjustmentBehavior = .never
+        canvas.contentInset = .zero
+        canvas.scrollIndicatorInsets = .zero
+        canvas.bounces = false
+        canvas.alwaysBounceHorizontal = false
+        canvas.alwaysBounceVertical = false
+        canvas.minimumZoomScale = 1
+        canvas.maximumZoomScale = 1
+        if canvas.zoomScale != 1 {
+            canvas.zoomScale = 1
+        }
+        if canvas.contentOffset != .zero {
+            canvas.setContentOffset(.zero, animated: false)
         }
     }
 
@@ -47,6 +69,7 @@ struct PencilCanvasView: UIViewRepresentable {
         func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
             drawing = canvasView.drawing
             capture?.latestDrawing = canvasView.drawing
+            capture?.latestContentOffset = canvasView.contentOffset
         }
     }
 }

@@ -5338,22 +5338,27 @@ private struct GradingDrawingPreview: View {
 
     private var canvasSize: CGSize {
         let defaultSize = CGSize(width: 960, height: mode == .practice ? 300 : 330)
-        let storedSize = storedCanvasSize.flatMap { size -> CGSize? in
+        if let storedSize = storedCanvasSize.flatMap({ size -> CGSize? in
             guard size.isUsable else {
                 return nil
             }
-            return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
+            return size.cgSize
+        }) {
+            return storedSize
         }
 
         guard let drawing = try? PKDrawing(data: drawingData), !drawing.bounds.isNull, !drawing.bounds.isEmpty else {
-            return storedSize ?? defaultSize
+            return defaultSize
         }
 
-        let safeBounds = drawing.bounds.insetBy(dx: -90, dy: -90)
         return CGSize(
-            width: max(defaultSize.width, storedSize?.width ?? 0, safeBounds.maxX),
-            height: max(defaultSize.height, storedSize?.height ?? 0, safeBounds.maxY)
+            width: max(defaultSize.width, drawing.bounds.maxX + 80),
+            height: max(defaultSize.height, drawing.bounds.maxY + 20)
         )
+    }
+
+    private var drawingContentOffset: CGPoint {
+        storedCanvasSize?.contentOffset ?? .zero
     }
 
     var body: some View {
@@ -5365,7 +5370,8 @@ private struct GradingDrawingPreview: View {
 
                 GradingAlignedDrawingImage(
                     drawingData: drawingData,
-                    canvasSize: canvasSize
+                    canvasSize: canvasSize,
+                    contentOffset: drawingContentOffset
                 )
                 .frame(width: fittedRect.width, height: fittedRect.height)
                 .position(x: fittedRect.midX, y: fittedRect.midY)
@@ -5418,6 +5424,7 @@ private struct GradingDrawingPreview: View {
 private struct GradingAlignedDrawingImage: UIViewRepresentable {
     var drawingData: Data
     var canvasSize: CGSize
+    var contentOffset: CGPoint
 
     func makeUIView(context: Context) -> UIImageView {
         let imageView = UIImageView()
@@ -5435,7 +5442,7 @@ private struct GradingAlignedDrawingImage: UIViewRepresentable {
         }
 
         imageView.image = drawing.image(
-            from: CGRect(origin: .zero, size: canvasSize),
+            from: CGRect(origin: contentOffset, size: canvasSize),
             scale: UIScreen.main.scale
         )
     }

@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 
 struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
@@ -222,14 +223,49 @@ enum ParentReviewDecision: String, Equatable, Codable, Sendable {
 struct DrawingCanvasSize: Equatable, Codable, Sendable {
     var width: Double
     var height: Double
+    var contentOffsetX: Double
+    var contentOffsetY: Double
 
-    init(width: Double, height: Double) {
+    enum CodingKeys: String, CodingKey {
+        case width
+        case height
+        case contentOffsetX
+        case contentOffsetY
+    }
+
+    init(width: Double, height: Double, contentOffsetX: Double = 0, contentOffsetY: Double = 0) {
         self.width = width
         self.height = height
+        self.contentOffsetX = contentOffsetX
+        self.contentOffsetY = contentOffsetY
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        width = try container.decode(Double.self, forKey: .width)
+        height = try container.decode(Double.self, forKey: .height)
+        contentOffsetX = try container.decodeIfPresent(Double.self, forKey: .contentOffsetX) ?? 0
+        contentOffsetY = try container.decodeIfPresent(Double.self, forKey: .contentOffsetY) ?? 0
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(width, forKey: .width)
+        try container.encode(height, forKey: .height)
+        try container.encode(contentOffsetX, forKey: .contentOffsetX)
+        try container.encode(contentOffsetY, forKey: .contentOffsetY)
     }
 
     var isUsable: Bool {
         width > 0 && height > 0
+    }
+
+    var cgSize: CGSize {
+        CGSize(width: CGFloat(width), height: CGFloat(height))
+    }
+
+    var contentOffset: CGPoint {
+        CGPoint(x: CGFloat(contentOffsetX), y: CGFloat(contentOffsetY))
     }
 
     var aspectRatio: Double? {

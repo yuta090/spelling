@@ -128,9 +128,12 @@ struct SpellingSessionView: View {
         guard measuredWritingCanvasSize.width > 0, measuredWritingCanvasSize.height > 0 else {
             return nil
         }
+        let contentOffset = drawingCapture.latestContentOffset
         return DrawingCanvasSize(
             width: Double(measuredWritingCanvasSize.width),
-            height: Double(measuredWritingCanvasSize.height)
+            height: Double(measuredWritingCanvasSize.height),
+            contentOffsetX: Double(contentOffset.x),
+            contentOffsetY: Double(contentOffset.y)
         )
     }
 
