@@ -76,6 +76,7 @@ extension PKDrawing {
         horizontalAlignment: PreviewHorizontalAlignment = .centered,
         minimumAspectRatio: CGFloat? = nil,
         targetAspectRatio: CGFloat? = nil,
+        canvasSize: DrawingCanvasSize? = nil,
         rightPadding: CGFloat? = nil
     ) -> UIImage? {
         guard !bounds.isNull, !bounds.isEmpty else {
@@ -111,8 +112,9 @@ extension PKDrawing {
             )
         }
 
-        if let targetAspectRatio, targetAspectRatio > 0 {
-            drawingBounds = drawingBounds.expanded(toAspectRatio: targetAspectRatio, horizontalAlignment: horizontalAlignment)
+        let resolvedTargetAspectRatio = targetAspectRatio ?? canvasSize?.aspectRatio.map { CGFloat($0) }
+        if let resolvedTargetAspectRatio, resolvedTargetAspectRatio > 0 {
+            drawingBounds = drawingBounds.expanded(toAspectRatio: resolvedTargetAspectRatio, horizontalAlignment: horizontalAlignment)
         }
 
         let strokeImage = image(from: drawingBounds, scale: scale)

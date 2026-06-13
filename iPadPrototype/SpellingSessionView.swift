@@ -40,6 +40,7 @@ struct SpellingSessionView: View {
     @State private var didShowSpeakerHint = false
     @State private var pendingTestGradeCount = 0
     @State private var shouldShowTestResultsAfterGrading = false
+    @State private var measuredWritingCanvasSize: CGSize = .zero
 
     init(
         mode: SessionMode,
@@ -121,6 +122,16 @@ struct SpellingSessionView: View {
     private var writingCanvasHeight: CGFloat {
         let baseHeight: CGFloat = capturesPracticeSamples && practiceRepetitionCount > 1 ? 300 : 330
         return baseHeight * CGFloat(model.settings.writingAreaSize.heightMultiplier)
+    }
+
+    private var currentWritingCanvasSize: DrawingCanvasSize? {
+        guard measuredWritingCanvasSize.width > 0, measuredWritingCanvasSize.height > 0 else {
+            return nil
+        }
+        return DrawingCanvasSize(
+            width: Double(measuredWritingCanvasSize.width),
+            height: Double(measuredWritingCanvasSize.height)
+        )
     }
 
     private var guideLabels: [String] {
@@ -299,6 +310,12 @@ struct SpellingSessionView: View {
                     )
                     .id(canvasResetID)
                     .frame(height: writingCanvasHeight)
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .preference(key: WritingCanvasSizePreferenceKey.self, value: proxy.size)
+                        }
+                    )
 
                     if mode == .review {
                         ReviewHintPanel(word: currentWord.text, language: language)
@@ -340,6 +357,15 @@ struct SpellingSessionView: View {
         .onDisappear {
             stopTimer()
             showingSpeakerHint = false
+        }
+        .onPreferenceChange(WritingCanvasSizePreferenceKey.self) { size in
+            guard size.width > 0, size.height > 0 else {
+                return
+            }
+            guard measuredWritingCanvasSize != size else {
+                return
+            }
+            measuredWritingCanvasSize = size
         }
     }
 
@@ -760,6 +786,7 @@ struct SpellingSessionView: View {
         let sample = PracticeSample(
             word: normalize(currentWord.text),
             drawingData: latestDrawing.dataRepresentation(),
+            canvasSize: currentWritingCanvasSize,
             mode: mode.rawValue,
             sessionID: sessionID
         )
@@ -838,6 +865,7 @@ struct SpellingSessionView: View {
             recognizedText: "",
             decision: .needsReview,
             drawingData: drawingCapture.latestDrawing.dataRepresentation(),
+            canvasSize: currentWritingCanvasSize,
             sessionID: sessionID
         )
         sessionAttempts.append(attempt)
@@ -927,6 +955,7 @@ struct SpellingSessionView: View {
                 recognizedText: "",
                 decision: .timeExpired,
                 drawingData: latestDrawing.dataRepresentation(),
+                canvasSize: currentWritingCanvasSize,
                 sessionID: sessionID
             )
             sessionAttempts.append(attempt)
@@ -950,10 +979,12 @@ struct SpellingSessionView: View {
 
         let submittedAt = Date()
         let submittedDrawingData = submittedDrawing.dataRepresentation()
+        let submittedCanvasSize = currentWritingCanvasSize
         let isFinalWord = index == sessionWords.count - 1
         enqueueTestGrade(
             word: submittedWord,
             drawingData: submittedDrawingData,
+            canvasSize: submittedCanvasSize,
             submittedAt: submittedAt
         )
 
@@ -968,7 +999,7 @@ struct SpellingSessionView: View {
         }
     }
 
-    private func enqueueTestGrade(word: String, drawingData: Data, submittedAt: Date) {
+    private func enqueueTestGrade(word: String, drawingData: Data, canvasSize: DrawingCanvasSize?, submittedAt: Date) {
         pendingTestGradeCount += 1
         let recognitionLanguage = model.settings.language
         let settings = model.settings
@@ -988,6 +1019,7 @@ struct SpellingSessionView: View {
                     recognizedText: result.recognizedText,
                     decision: result.decision,
                     drawingData: drawingData,
+                    canvasSize: canvasSize,
                     date: submittedAt,
                     sessionID: sessionID
                 )
@@ -1023,6 +1055,17 @@ struct SpellingSessionView: View {
 private struct TestGradeResult: Sendable {
     var recognizedText: String
     var decision: GradeDecision
+}
+
+private struct WritingCanvasSizePreferenceKey: PreferenceKey {
+    static let defaultValue: CGSize = .zero
+
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        let next = nextValue()
+        if next.width > 0, next.height > 0 {
+            value = next
+        }
+    }
 }
 
 private func gradeTestDrawing(
@@ -2719,7 +2762,7 @@ private struct TestAttemptResultCard: View {
             }
 
             if let drawingData = attempt.drawingData {
-                PracticeDrawingPreview(drawingData: drawingData)
+                PracticeDrawingPreview(drawingData: drawingData, canvasSize: attempt.canvasSize)
                     .frame(height: 156)
                     .background(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -3062,6 +3105,7 @@ private struct PracticeSampleAttemptTile: View {
 
             PracticeDrawingPreview(
                 drawingData: sample.drawingData,
+                canvasSize: sample.canvasSize,
                 horizontalPadding: 56,
                 topPadding: 180,
                 bottomPadding: 230,
@@ -3093,6 +3137,7 @@ private struct PracticeSampleAttemptTile: View {
 
 private struct PracticeDrawingPreview: UIViewRepresentable {
     var drawingData: Data
+    var canvasSize: DrawingCanvasSize?
     var horizontalPadding: CGFloat = 80
     var topPadding: CGFloat = 90
     var bottomPadding: CGFloat = 150
@@ -3124,6 +3169,7 @@ private struct PracticeDrawingPreview: UIViewRepresentable {
                 horizontalAlignment: horizontalAlignment,
                 minimumAspectRatio: minimumAspectRatio,
                 targetAspectRatio: targetAspectRatio,
+                canvasSize: canvasSize,
                 rightPadding: rightPadding
             )
         } else {

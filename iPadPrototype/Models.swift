@@ -219,12 +219,34 @@ enum ParentReviewDecision: String, Equatable, Codable, Sendable {
     }
 }
 
+struct DrawingCanvasSize: Equatable, Codable, Sendable {
+    var width: Double
+    var height: Double
+
+    init(width: Double, height: Double) {
+        self.width = width
+        self.height = height
+    }
+
+    var isUsable: Bool {
+        width > 0 && height > 0
+    }
+
+    var aspectRatio: Double? {
+        guard isUsable else {
+            return nil
+        }
+        return width / height
+    }
+}
+
 struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var word: String
     var recognizedText: String
     var decision: GradeDecision
     var drawingData: Data?
+    var canvasSize: DrawingCanvasSize?
     var date = Date()
     var sessionID = UUID()
     var parentReviewDecision: ParentReviewDecision = .unreviewed
@@ -237,6 +259,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         case recognizedText
         case decision
         case drawingData
+        case canvasSize
         case date
         case sessionID
         case parentReviewDecision
@@ -250,6 +273,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         recognizedText: String,
         decision: GradeDecision,
         drawingData: Data? = nil,
+        canvasSize: DrawingCanvasSize? = nil,
         date: Date = Date(),
         sessionID: UUID = UUID(),
         parentReviewDecision: ParentReviewDecision = .unreviewed,
@@ -261,6 +285,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         self.recognizedText = recognizedText
         self.decision = decision
         self.drawingData = drawingData
+        self.canvasSize = canvasSize
         self.date = date
         self.sessionID = sessionID
         self.parentReviewDecision = parentReviewDecision
@@ -275,6 +300,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         recognizedText = try container.decodeIfPresent(String.self, forKey: .recognizedText) ?? ""
         decision = try container.decodeIfPresent(GradeDecision.self, forKey: .decision) ?? .needsReview
         drawingData = try container.decodeIfPresent(Data.self, forKey: .drawingData)
+        canvasSize = try container.decodeIfPresent(DrawingCanvasSize.self, forKey: .canvasSize)
         date = try container.decodeIfPresent(Date.self, forKey: .date) ?? Date()
         sessionID = try container.decodeIfPresent(UUID.self, forKey: .sessionID) ?? id
         parentReviewDecision = try container.decodeIfPresent(ParentReviewDecision.self, forKey: .parentReviewDecision) ?? .unreviewed
@@ -287,6 +313,7 @@ struct PracticeSample: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var word: String
     var drawingData: Data
+    var canvasSize: DrawingCanvasSize?
     var mode: String
     var date = Date()
     var sessionID = UUID()
@@ -298,6 +325,7 @@ struct PracticeSample: Identifiable, Equatable, Codable, Sendable {
         case id
         case word
         case drawingData
+        case canvasSize
         case mode
         case date
         case sessionID
@@ -310,6 +338,7 @@ struct PracticeSample: Identifiable, Equatable, Codable, Sendable {
         id: UUID = UUID(),
         word: String,
         drawingData: Data,
+        canvasSize: DrawingCanvasSize? = nil,
         mode: String,
         date: Date = Date(),
         sessionID: UUID = UUID(),
@@ -320,6 +349,7 @@ struct PracticeSample: Identifiable, Equatable, Codable, Sendable {
         self.id = id
         self.word = word
         self.drawingData = drawingData
+        self.canvasSize = canvasSize
         self.mode = mode
         self.date = date
         self.sessionID = sessionID
@@ -333,6 +363,7 @@ struct PracticeSample: Identifiable, Equatable, Codable, Sendable {
         id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         word = try container.decode(String.self, forKey: .word)
         drawingData = try container.decode(Data.self, forKey: .drawingData)
+        canvasSize = try container.decodeIfPresent(DrawingCanvasSize.self, forKey: .canvasSize)
         mode = try container.decodeIfPresent(String.self, forKey: .mode) ?? SessionMode.practice.rawValue
         date = try container.decodeIfPresent(Date.self, forKey: .date) ?? Date()
         sessionID = try container.decodeIfPresent(UUID.self, forKey: .sessionID) ?? id

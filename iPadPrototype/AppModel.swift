@@ -449,6 +449,7 @@ final class AppModel: ObservableObject {
         recognizedText: String,
         decision: GradeDecision,
         drawingData: Data? = nil,
+        canvasSize: DrawingCanvasSize? = nil,
         date: Date = Date(),
         sessionID: UUID = UUID()
     ) -> SpellingAttempt {
@@ -457,6 +458,7 @@ final class AppModel: ObservableObject {
             recognizedText: normalize(recognizedText),
             decision: decision,
             drawingData: drawingData,
+            canvasSize: canvasSize,
             date: date,
             sessionID: sessionID
         )

@@ -970,7 +970,7 @@ private struct ParentAppTestResultRow: View {
             }
 
             if let drawingData = attempt.drawingData {
-                DrawingPreview(drawingData: drawingData)
+                DrawingPreview(drawingData: drawingData, canvasSize: attempt.canvasSize)
                     .frame(maxWidth: .infinity)
                     .frame(height: 150)
                     .background(Color.white)
@@ -5025,7 +5025,7 @@ private struct ParentAttemptGradingCard: View {
             )
 
             if let drawingData = attempt.drawingData {
-                GradingDrawingPreview(drawingData: drawingData, mode: .test)
+                GradingDrawingPreview(drawingData: drawingData, mode: .test, storedCanvasSize: attempt.canvasSize)
             }
 
             if isApproved {
@@ -5140,7 +5140,7 @@ private struct ParentPracticeGradingCard: View {
                 detail: modeLabel
             )
 
-            GradingDrawingPreview(drawingData: sample.drawingData, mode: .practice)
+            GradingDrawingPreview(drawingData: sample.drawingData, mode: .practice, storedCanvasSize: sample.canvasSize)
 
             if isApproved {
                 ParentApprovedBanner(language: language)
@@ -5333,17 +5333,26 @@ private struct ParentReviewToggleButton: View {
 private struct GradingDrawingPreview: View {
     var drawingData: Data
     var mode: PracticeMode
+    var storedCanvasSize: DrawingCanvasSize?
     var height: CGFloat = 172
 
     private var canvasSize: CGSize {
         let defaultSize = CGSize(width: 960, height: mode == .practice ? 300 : 330)
-        guard let drawing = try? PKDrawing(data: drawingData), !drawing.bounds.isNull, !drawing.bounds.isEmpty else {
-            return defaultSize
+        let storedSize = storedCanvasSize.flatMap { size -> CGSize? in
+            guard size.isUsable else {
+                return nil
+            }
+            return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
         }
 
+        guard let drawing = try? PKDrawing(data: drawingData), !drawing.bounds.isNull, !drawing.bounds.isEmpty else {
+            return storedSize ?? defaultSize
+        }
+
+        let safeBounds = drawing.bounds.insetBy(dx: -90, dy: -90)
         return CGSize(
-            width: max(defaultSize.width, drawing.bounds.maxX + 80),
-            height: defaultSize.height
+            width: max(defaultSize.width, storedSize?.width ?? 0, safeBounds.maxX),
+            height: max(defaultSize.height, storedSize?.height ?? 0, safeBounds.maxY)
         )
     }
 
@@ -5414,6 +5423,7 @@ private struct GradingAlignedDrawingImage: UIViewRepresentable {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
         imageView.contentMode = .scaleToFill
+        imageView.clipsToBounds = true
         imageView.isUserInteractionEnabled = false
         return imageView
     }
@@ -5806,7 +5816,8 @@ private struct LearningHistoryPanel: View {
                 detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
                 systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
                 tint: attempt.decision == .autoCorrect ? ParentPalette.success : ParentPalette.warning,
-                drawingData: attempt.drawingData
+                drawingData: attempt.drawingData,
+                canvasSize: attempt.canvasSize
             )
         }
 
@@ -5823,7 +5834,8 @@ private struct LearningHistoryPanel: View {
                 detail: language.text(japanese: "手書き記録", english: "Handwriting saved"),
                 systemImage: "pencil.and.scribble",
                 tint: ParentPalette.primary,
-                drawingData: sample.drawingData
+                drawingData: sample.drawingData,
+                canvasSize: sample.canvasSize
             )
         }
 
@@ -5836,7 +5848,8 @@ private struct LearningHistoryPanel: View {
                 detail: "\(result.score)/\(result.total)" + (result.missedWords.isEmpty ? "" : " ・ \(result.missedWords)"),
                 systemImage: "graduationcap.fill",
                 tint: ParentPalette.primary,
-                drawingData: nil
+                drawingData: nil,
+                canvasSize: nil
             )
         }
 
@@ -5900,6 +5913,7 @@ private struct LearningHistoryEntry: Identifiable {
     var systemImage: String
     var tint: Color
     var drawingData: Data?
+    var canvasSize: DrawingCanvasSize?
 }
 
 private struct HandwritingListPanel: View {
@@ -5919,7 +5933,8 @@ private struct HandwritingListPanel: View {
                 detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
                 systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
                 tint: attempt.decision == .autoCorrect ? ParentPalette.success : ParentPalette.warning,
-                drawingData: drawingData
+                drawingData: drawingData,
+                canvasSize: attempt.canvasSize
             )
         }
 
@@ -5936,7 +5951,8 @@ private struct HandwritingListPanel: View {
                 detail: language.text(japanese: "手書き記録", english: "Handwriting saved"),
                 systemImage: "pencil.and.scribble",
                 tint: ParentPalette.primary,
-                drawingData: sample.drawingData
+                drawingData: sample.drawingData,
+                canvasSize: sample.canvasSize
             )
         }
 
@@ -6014,7 +6030,7 @@ private struct ParentHandwritingListCard: View {
             }
 
             if let drawingData = entry.drawingData {
-                DrawingPreview(drawingData: drawingData)
+                DrawingPreview(drawingData: drawingData, canvasSize: entry.canvasSize)
                     .frame(maxWidth: .infinity)
                     .frame(height: 220)
                     .background(Color.white)
@@ -6063,7 +6079,7 @@ private struct LearningHistoryCard: View {
             }
 
             if let drawingData = entry.drawingData {
-                DrawingPreview(drawingData: drawingData)
+                DrawingPreview(drawingData: drawingData, canvasSize: entry.canvasSize)
                     .frame(maxWidth: .infinity)
                     .frame(height: 140)
                     .background(Color.white)
@@ -6118,7 +6134,7 @@ private struct ReviewAttemptSummaryCard: View {
             }
 
             if let drawingData = attempt.drawingData {
-                DrawingPreview(drawingData: drawingData)
+                DrawingPreview(drawingData: drawingData, canvasSize: attempt.canvasSize)
                     .frame(maxWidth: .infinity)
                     .frame(height: 140)
                     .background(Color.white)
@@ -6192,7 +6208,7 @@ private struct ParentPracticeSampleCard: View {
                     .foregroundStyle(ParentPalette.primary)
             }
 
-            DrawingPreview(drawingData: sample.drawingData)
+            DrawingPreview(drawingData: sample.drawingData, canvasSize: sample.canvasSize)
                 .frame(maxWidth: .infinity)
                 .frame(height: 150)
                 .background(Color.white)
@@ -6228,6 +6244,7 @@ private struct ProgressRing: View {
 
 private struct DrawingPreview: UIViewRepresentable {
     var drawingData: Data
+    var canvasSize: DrawingCanvasSize?
     var horizontalPadding: CGFloat = 80
     var topPadding: CGFloat = 90
     var bottomPadding: CGFloat = 150
@@ -6236,7 +6253,14 @@ private struct DrawingPreview: UIViewRepresentable {
         let imageView = UIImageView()
         imageView.backgroundColor = .white
         imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        imageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return imageView
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UIImageView, context: Context) -> CGSize? {
+        CGSize(width: proposal.width ?? 260, height: proposal.height ?? 150)
     }
 
     func updateUIView(_ imageView: UIImageView, context: Context) {
@@ -6244,7 +6268,8 @@ private struct DrawingPreview: UIViewRepresentable {
             imageView.image = drawing.previewImage(
                 horizontalPadding: horizontalPadding,
                 topPadding: topPadding,
-                bottomPadding: bottomPadding
+                bottomPadding: bottomPadding,
+                canvasSize: canvasSize
             )
         } else {
             imageView.image = nil
