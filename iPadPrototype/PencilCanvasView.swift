@@ -85,21 +85,6 @@ struct PencilCanvasView: UIViewRepresentable {
     }
 }
 
-struct StaticPencilCanvasView: UIViewRepresentable {
-    var drawingData: Data
-
-    func makeUIView(context: Context) -> PKCanvasView {
-        let canvas = FixedCoordinatePKCanvasView()
-        configurePencilCanvas(canvas, isInputEnabled: false)
-        return canvas
-    }
-
-    func updateUIView(_ uiView: PKCanvasView, context: Context) {
-        configurePencilCanvas(uiView, isInputEnabled: false)
-        uiView.drawing = (try? PKDrawing(data: drawingData)) ?? PKDrawing()
-    }
-}
-
 extension PKDrawing {
     enum PreviewHorizontalAlignment {
         case centered

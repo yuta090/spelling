@@ -5360,23 +5360,17 @@ private struct GradingDrawingPreview: View {
     var body: some View {
         GeometryReader { proxy in
             let fittedRect = fittedCanvasRect(in: proxy.size, canvasSize: canvasSize)
-            let scale = canvasSize.width > 0 ? fittedRect.width / canvasSize.width : 1
 
             ZStack {
                 Color.white
 
-                ZStack {
-                    FourLineGuide(mode: mode, labels: ["", "", "", ""])
-                        .frame(width: canvasSize.width, height: canvasSize.height)
-                        .allowsHitTesting(false)
-
-                    StaticPencilCanvasView(drawingData: drawingData)
-                        .frame(width: canvasSize.width, height: canvasSize.height)
-                        .allowsHitTesting(false)
-                }
-                .frame(width: canvasSize.width, height: canvasSize.height)
-                .scaleEffect(scale, anchor: .topLeading)
-                .frame(width: fittedRect.width, height: fittedRect.height, alignment: .topLeading)
+                GradingCanvasSnapshotView(
+                    drawingData: drawingData,
+                    mode: mode,
+                    canvasSize: canvasSize,
+                    contentOffset: storedCanvasSize?.contentOffset ?? .zero
+                )
+                .frame(width: fittedRect.width, height: fittedRect.height)
                 .position(x: fittedRect.midX, y: fittedRect.midY)
                 .clipped()
                 .allowsHitTesting(false)
@@ -5395,28 +5389,116 @@ private struct GradingDrawingPreview: View {
     }
 
     private func fittedCanvasRect(in containerSize: CGSize, canvasSize: CGSize) -> CGRect {
-        guard containerSize.width > 0,
-              containerSize.height > 0,
-              canvasSize.width > 0,
-              canvasSize.height > 0 else {
-            return .zero
+        CanvasFitGeometry.fittedRect(in: containerSize, canvasSize: canvasSize)
+    }
+}
+
+private struct GradingCanvasSnapshotView: UIViewRepresentable {
+    var drawingData: Data
+    var mode: PracticeMode
+    var canvasSize: CGSize
+    var contentOffset: CGPoint
+
+    func makeUIView(context: Context) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.backgroundColor = .white
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.isUserInteractionEnabled = false
+        return imageView
+    }
+
+    func updateUIView(_ imageView: UIImageView, context: Context) {
+        imageView.image = WritingGuideSnapshotRenderer.image(
+            drawingData: drawingData,
+            mode: mode,
+            canvasSize: canvasSize,
+            contentOffset: contentOffset,
+            scale: UIScreen.main.scale
+        )
+    }
+}
+
+enum WritingGuideSnapshotRenderer {
+    static func image(
+        drawingData: Data,
+        mode: PracticeMode,
+        canvasSize: CGSize,
+        contentOffset: CGPoint = .zero,
+        scale: CGFloat = 2
+    ) -> UIImage? {
+        guard canvasSize.width > 0, canvasSize.height > 0 else {
+            return nil
         }
 
-        let scale = min(
-            containerSize.width / canvasSize.width,
-            containerSize.height / canvasSize.height
-        )
-        let size = CGSize(
-            width: canvasSize.width * scale,
-            height: canvasSize.height * scale
-        )
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = scale
+        format.opaque = true
+        let renderer = UIGraphicsImageRenderer(size: canvasSize, format: format)
+        let layout = WritingGuideLayout(size: canvasSize)
 
-        return CGRect(
-            x: (containerSize.width - size.width) / 2,
-            y: (containerSize.height - size.height) / 2,
-            width: size.width,
-            height: size.height
-        )
+        return renderer.image { context in
+            let cgContext = context.cgContext
+            UIColor.white.setFill()
+            cgContext.fill(CGRect(origin: .zero, size: canvasSize))
+
+            drawGuide(layout: layout, mode: mode, in: cgContext)
+
+            guard let drawing = try? PKDrawing(data: drawingData) else {
+                return
+            }
+
+            let drawingImage = drawing.image(
+                from: CGRect(origin: contentOffset, size: canvasSize),
+                scale: scale
+            )
+            drawingImage.draw(in: CGRect(origin: .zero, size: canvasSize))
+        }
+    }
+
+    private static func drawGuide(layout: WritingGuideLayout, mode: PracticeMode, in context: CGContext) {
+        let lineStart = layout.lineStart(for: mode)
+        let lineEnd = layout.lineEnd(for: mode)
+
+        if mode == .practice {
+            context.setFillColor(UIColor(red: 0.92, green: 0.97, blue: 1.0, alpha: 0.52).cgColor)
+            let bandPath = UIBezierPath(roundedRect: layout.practiceBandRect, cornerRadius: 24)
+            context.addPath(bandPath.cgPath)
+            context.fillPath()
+
+            drawLine(from: lineStart, to: lineEnd, y: layout.top, color: UIColor.systemBlue.withAlphaComponent(0.06), width: 1, in: context)
+            drawLine(from: lineStart, to: lineEnd, y: layout.mid, color: UIColor.systemBlue.withAlphaComponent(0.13), width: 1, dash: [8, 14], in: context)
+            drawLine(from: lineStart, to: lineEnd, y: layout.baseline, color: UIColor.systemRed.withAlphaComponent(0.46), width: 2.4, in: context)
+            drawLine(from: lineStart, to: lineEnd, y: layout.descender, color: UIColor.systemBlue.withAlphaComponent(0.07), width: 1, in: context)
+        } else {
+            let alpha: CGFloat = 0.38
+            drawLine(from: lineStart, to: lineEnd, y: layout.top, color: UIColor.systemBlue.withAlphaComponent(alpha * 0.20), width: 1, in: context)
+            drawLine(from: lineStart, to: lineEnd, y: layout.mid, color: UIColor.systemBlue.withAlphaComponent(alpha * 0.28), width: 1, dash: [10, 10], in: context)
+            drawLine(from: lineStart, to: lineEnd, y: layout.baseline, color: UIColor.systemRed.withAlphaComponent(alpha * 0.90), width: 1.5, in: context)
+            drawLine(from: lineStart, to: lineEnd, y: layout.descender, color: UIColor.systemBlue.withAlphaComponent(alpha * 0.20), width: 1, in: context)
+        }
+    }
+
+    private static func drawLine(
+        from start: CGFloat,
+        to end: CGFloat,
+        y: CGFloat,
+        color: UIColor,
+        width: CGFloat,
+        dash: [CGFloat] = [],
+        in context: CGContext
+    ) {
+        context.saveGState()
+        context.setStrokeColor(color.cgColor)
+        context.setLineWidth(width)
+        context.setLineCap(.round)
+        if !dash.isEmpty {
+            context.setLineDash(phase: 0, lengths: dash)
+        }
+        context.move(to: CGPoint(x: start, y: y))
+        context.addLine(to: CGPoint(x: end, y: y))
+        context.strokePath()
+        context.restoreGState()
     }
 }
 

@@ -6,6 +6,86 @@ enum PracticeMode {
     case test
 }
 
+struct WritingGuideLayout: Equatable {
+    static let topRatio: CGFloat = 0.22
+    static let midRatio: CGFloat = 0.40
+    static let baselineRatio: CGFloat = 0.66
+    static let descenderRatio: CGFloat = 0.84
+
+    var size: CGSize
+
+    var top: CGFloat {
+        size.height * Self.topRatio
+    }
+
+    var mid: CGFloat {
+        size.height * Self.midRatio
+    }
+
+    var baseline: CGFloat {
+        size.height * Self.baselineRatio
+    }
+
+    var descender: CGFloat {
+        size.height * Self.descenderRatio
+    }
+
+    func lineStart(for mode: PracticeMode) -> CGFloat {
+        mode == .practice ? 46 : 128
+    }
+
+    func lineEnd(for mode: PracticeMode) -> CGFloat {
+        size.width - (mode == .practice ? 46 : 24)
+    }
+
+    var practiceBandRect: CGRect {
+        CGRect(
+            x: 26,
+            y: top - 22,
+            width: max(size.width - 52, 0),
+            height: descender - top + 44
+        )
+    }
+}
+
+struct CanvasFitGeometry {
+    static func fittedRect(in containerSize: CGSize, canvasSize: CGSize) -> CGRect {
+        guard containerSize.width > 0,
+              containerSize.height > 0,
+              canvasSize.width > 0,
+              canvasSize.height > 0 else {
+            return .zero
+        }
+
+        let scale = scale(in: containerSize, canvasSize: canvasSize)
+        let size = CGSize(
+            width: canvasSize.width * scale,
+            height: canvasSize.height * scale
+        )
+
+        return CGRect(
+            x: (containerSize.width - size.width) / 2,
+            y: (containerSize.height - size.height) / 2,
+            width: size.width,
+            height: size.height
+        )
+    }
+
+    static func scale(in containerSize: CGSize, canvasSize: CGSize) -> CGFloat {
+        guard containerSize.width > 0,
+              containerSize.height > 0,
+              canvasSize.width > 0,
+              canvasSize.height > 0 else {
+            return 1
+        }
+
+        return min(
+            containerSize.width / canvasSize.width,
+            containerSize.height / canvasSize.height
+        )
+    }
+}
+
 struct GuidedWritingCanvas: View {
     @Binding var drawing: PKDrawing
     var mode: PracticeMode
@@ -65,48 +145,37 @@ struct FourLineGuide: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let height = proxy.size.height
-            let width = proxy.size.width
+            let layout = WritingGuideLayout(size: proxy.size)
             let alpha = mode == .practice ? 0.70 : 0.38
             let labelX: CGFloat = 108
-            let lineStart: CGFloat = mode == .practice ? 46 : 128
-            let lineEnd = width - (mode == .practice ? 46 : 24)
-            let top = height * 0.22
-            let mid = height * 0.40
-            let baseline = height * 0.66
-            let descender = height * 0.84
+            let lineStart = layout.lineStart(for: mode)
+            let lineEnd = layout.lineEnd(for: mode)
 
             Canvas { context, _ in
                 if mode == .practice {
-                    let bandRect = CGRect(
-                        x: 26,
-                        y: top - 22,
-                        width: max(width - 52, 0),
-                        height: descender - top + 44
-                    )
                     context.fill(
-                        Path(roundedRect: bandRect, cornerRadius: 24),
+                        Path(roundedRect: layout.practiceBandRect, cornerRadius: 24),
                         with: .color(Color(red: 0.92, green: 0.97, blue: 1.0).opacity(0.52))
                     )
 
-                    drawGuideLine(from: lineStart, to: lineEnd, y: top, color: .blue.opacity(0.06), width: 1, in: &context)
-                    drawGuideLine(from: lineStart, to: lineEnd, y: mid, color: .blue.opacity(0.13), width: 1, dash: [8, 14], in: &context)
-                    drawGuideLine(from: lineStart, to: lineEnd, y: baseline, color: .red.opacity(0.46), width: 2.4, in: &context)
-                    drawGuideLine(from: lineStart, to: lineEnd, y: descender, color: .blue.opacity(0.07), width: 1, in: &context)
+                    drawGuideLine(from: lineStart, to: lineEnd, y: layout.top, color: .blue.opacity(0.06), width: 1, in: &context)
+                    drawGuideLine(from: lineStart, to: lineEnd, y: layout.mid, color: .blue.opacity(0.13), width: 1, dash: [8, 14], in: &context)
+                    drawGuideLine(from: lineStart, to: lineEnd, y: layout.baseline, color: .red.opacity(0.46), width: 2.4, in: &context)
+                    drawGuideLine(from: lineStart, to: lineEnd, y: layout.descender, color: .blue.opacity(0.07), width: 1, in: &context)
                 } else {
-                    drawLabel(labels[safe: 0] ?? "", at: CGPoint(x: labelX, y: top), in: context)
-                    drawLabel(labels[safe: 1] ?? "", at: CGPoint(x: labelX, y: mid), in: context)
-                    drawLabel(labels[safe: 2] ?? "", at: CGPoint(x: labelX, y: baseline), in: context)
-                    drawLabel(labels[safe: 3] ?? "", at: CGPoint(x: labelX, y: descender), in: context)
+                    drawLabel(labels[safe: 0] ?? "", at: CGPoint(x: labelX, y: layout.top), in: context)
+                    drawLabel(labels[safe: 1] ?? "", at: CGPoint(x: labelX, y: layout.mid), in: context)
+                    drawLabel(labels[safe: 2] ?? "", at: CGPoint(x: labelX, y: layout.baseline), in: context)
+                    drawLabel(labels[safe: 3] ?? "", at: CGPoint(x: labelX, y: layout.descender), in: context)
 
                     var line = Path()
-                    line.move(to: CGPoint(x: lineStart, y: top))
-                    line.addLine(to: CGPoint(x: lineEnd, y: top))
+                    line.move(to: CGPoint(x: lineStart, y: layout.top))
+                    line.addLine(to: CGPoint(x: lineEnd, y: layout.top))
                     context.stroke(line, with: .color(.blue.opacity(alpha * 0.20)), lineWidth: 1)
 
                     var midLine = Path()
-                    midLine.move(to: CGPoint(x: lineStart, y: mid))
-                    midLine.addLine(to: CGPoint(x: lineEnd, y: mid))
+                    midLine.move(to: CGPoint(x: lineStart, y: layout.mid))
+                    midLine.addLine(to: CGPoint(x: lineEnd, y: layout.mid))
                     context.stroke(
                         midLine,
                         with: .color(.blue.opacity(alpha * 0.28)),
@@ -114,13 +183,13 @@ struct FourLineGuide: View {
                     )
 
                     var base = Path()
-                    base.move(to: CGPoint(x: lineStart, y: baseline))
-                    base.addLine(to: CGPoint(x: lineEnd, y: baseline))
+                    base.move(to: CGPoint(x: lineStart, y: layout.baseline))
+                    base.addLine(to: CGPoint(x: lineEnd, y: layout.baseline))
                     context.stroke(base, with: .color(.red.opacity(alpha * 0.90)), lineWidth: 1.5)
 
                     var desc = Path()
-                    desc.move(to: CGPoint(x: lineStart, y: descender))
-                    desc.addLine(to: CGPoint(x: lineEnd, y: descender))
+                    desc.move(to: CGPoint(x: lineStart, y: layout.descender))
+                    desc.addLine(to: CGPoint(x: lineEnd, y: layout.descender))
                     context.stroke(desc, with: .color(.blue.opacity(alpha * 0.20)), lineWidth: 1)
                 }
             }
