@@ -118,6 +118,11 @@ struct SpellingSessionView: View {
         mode == .practice && capturesPracticeSamples && !isLastPracticeRepeat
     }
 
+    private var writingCanvasHeight: CGFloat {
+        let baseHeight: CGFloat = capturesPracticeSamples && practiceRepetitionCount > 1 ? 300 : 330
+        return baseHeight * CGFloat(model.settings.writingAreaSize.heightMultiplier)
+    }
+
     private var guideLabels: [String] {
         if language == .japanese {
             return ["トップライン", "ミッドライン", "ベースライン", "ディセンダーライン"]
@@ -293,7 +298,7 @@ struct SpellingSessionView: View {
                         isInputEnabled: isCanvasInputEnabled
                     )
                     .id(canvasResetID)
-                    .frame(maxHeight: capturesPracticeSamples && practiceRepetitionCount > 1 ? 300 : 330)
+                    .frame(height: writingCanvasHeight)
 
                     if mode == .review {
                         ReviewHintPanel(word: currentWord.text, language: language)

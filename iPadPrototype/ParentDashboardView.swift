@@ -4348,6 +4348,21 @@ private struct TestSettingsPanel: View {
                 .fixedSize(horizontal: false, vertical: true)
             }
 
+            SettingBlock(title: language.text(japanese: "書く場所", english: "Writing Area")) {
+                Picker(language.text(japanese: "大きさ", english: "Size"), selection: $model.settings.writingAreaSize) {
+                    ForEach(WritingAreaSize.allCases) { size in
+                        Text(size.label(language: language)).tag(size)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel(language.text(japanese: "練習とテストの入力欄の大きさ", english: "Practice and test writing area size"))
+
+                Text(model.settings.writingAreaSize.description(language: language))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             SettingBlock(title: language.text(japanese: "テスト", english: "Test")) {
                 Stepper(value: $model.settings.secondsPerWord, in: 10...90, step: 5) {
                     SettingValueRow(

@@ -357,6 +357,7 @@ struct TestSettings: Equatable, Codable, Sendable {
     var secondsPerWord = 30
     var maxReplays = 2
     var practiceRepetitions = 3
+    var writingAreaSize: WritingAreaSize = .standard
     var autoCorrectConfidence: Float = 0.80
     var lowConfidence: Float = 0.35
 
@@ -368,6 +369,7 @@ struct TestSettings: Equatable, Codable, Sendable {
         case secondsPerWord
         case maxReplays
         case practiceRepetitions
+        case writingAreaSize
         case autoCorrectConfidence
         case lowConfidence
     }
@@ -383,8 +385,57 @@ struct TestSettings: Equatable, Codable, Sendable {
         secondsPerWord = try container.decodeIfPresent(Int.self, forKey: .secondsPerWord) ?? 30
         maxReplays = try container.decodeIfPresent(Int.self, forKey: .maxReplays) ?? 2
         practiceRepetitions = try container.decodeIfPresent(Int.self, forKey: .practiceRepetitions) ?? 3
+        writingAreaSize = try container.decodeIfPresent(WritingAreaSize.self, forKey: .writingAreaSize) ?? .standard
         autoCorrectConfidence = try container.decodeIfPresent(Float.self, forKey: .autoCorrectConfidence) ?? 0.80
         lowConfidence = try container.decodeIfPresent(Float.self, forKey: .lowConfidence) ?? 0.35
+    }
+}
+
+enum WritingAreaSize: String, CaseIterable, Identifiable, Codable, Sendable {
+    case compact
+    case standard
+    case large
+    case extraLarge
+
+    var id: String { rawValue }
+
+    var heightMultiplier: Double {
+        switch self {
+        case .compact:
+            return 0.95
+        case .standard:
+            return 1.0
+        case .large:
+            return 1.16
+        case .extraLarge:
+            return 1.32
+        }
+    }
+
+    func label(language: AppLanguage) -> String {
+        switch self {
+        case .compact:
+            return language.text(japanese: "小", english: "Small")
+        case .standard:
+            return language.text(japanese: "ふつう", english: "Normal")
+        case .large:
+            return language.text(japanese: "大", english: "Large")
+        case .extraLarge:
+            return language.text(japanese: "特大", english: "XL")
+        }
+    }
+
+    func description(language: AppLanguage) -> String {
+        switch self {
+        case .compact:
+            return language.text(japanese: "画面内に収まりやすい大きさです。", english: "Fits more comfortably on screen.")
+        case .standard:
+            return language.text(japanese: "いつもの大きさです。", english: "The default size.")
+        case .large:
+            return language.text(japanese: "少し大きく書けます。", english: "Gives more room to write.")
+        case .extraLarge:
+            return language.text(japanese: "大きく書きたい子向けです。", english: "Best for children who write big.")
+        }
     }
 }
 
