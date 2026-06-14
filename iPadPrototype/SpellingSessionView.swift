@@ -826,15 +826,10 @@ struct SpellingSessionView: View {
     }
 
     private func clearCanvas() {
-        let shouldRestartTestTimer = mode == .test && decision == .rewrite
         setCanvasDrawing(PKDrawing())
         canvasResetID = UUID()
         decision = nil
         candidates = []
-        if shouldRestartTestTimer {
-            resetTimer()
-            startTimerIfNeeded()
-        }
     }
 
     private func undoLastStroke() {
@@ -844,15 +839,10 @@ struct SpellingSessionView: View {
         }
 
         let updatedDrawing = PKDrawing(strokes: Array(activeDrawing.strokes.dropLast()))
-        let shouldRestartTestTimer = mode == .test && decision == .rewrite
         setCanvasDrawing(updatedDrawing)
         canvasResetID = UUID()
         decision = nil
         candidates = []
-        if shouldRestartTestTimer {
-            resetTimer()
-            startTimerIfNeeded()
-        }
     }
 
     private func setCanvasDrawing(_ newDrawing: PKDrawing) {
@@ -1297,7 +1287,7 @@ struct SpellingSessionView: View {
     }
 
     private func tickTimer() {
-        guard decision == nil, !isChecking else {
+        guard mode == .test, !isChecking, !showingTestResults, decision != .timeExpired else {
             return
         }
         remainingSeconds -= 1
@@ -1321,7 +1311,6 @@ struct SpellingSessionView: View {
         guard decision == nil, !isChecking else {
             return
         }
-        stopTimer()
 
         let submittedWord = currentWord.text
         let submittedDrawing = currentInkDrawing
@@ -1330,6 +1319,8 @@ struct SpellingSessionView: View {
             decision = .rewrite
             return
         }
+
+        stopTimer()
 
         let submittedAt = Date()
         let submittedDrawingData = submittedDrawing.dataRepresentation()
