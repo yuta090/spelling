@@ -41,6 +41,11 @@ struct SpellingSessionView: View {
     @State private var pendingTestGradeCount = 0
     @State private var shouldShowTestResultsAfterGrading = false
     @State private var measuredWritingCanvasSize: CGSize = .zero
+    @State private var compactPracticeDrawings: [UUID: PKDrawing] = [:]
+    @State private var compactPracticeCanvasSizes: [UUID: CGSize] = [:]
+    @State private var compactPracticeResetIDs: [UUID: UUID] = [:]
+    @State private var compactPracticeMissingWordIDs: Set<UUID> = []
+    @State private var practiceCelebrationCoinReward = AppModel.practiceCoinReward
 
     init(
         mode: SessionMode,
@@ -122,6 +127,47 @@ struct SpellingSessionView: View {
     private var writingCanvasHeight: CGFloat {
         let baseHeight: CGFloat = capturesPracticeSamples && practiceRepetitionCount > 1 ? 300 : 330
         return baseHeight * CGFloat(model.settings.writingAreaSize.heightMultiplier)
+    }
+
+    private var usesCompactPracticeGrid: Bool {
+        model.settings.writingAreaSize.usesTwoColumnPracticeLayout
+            && capturesPracticeSamples
+            && sessionWords.count > 1
+    }
+
+    private var compactPracticeCanvasHeight: CGFloat {
+        max(190, writingCanvasHeight)
+    }
+
+    private var compactPracticeBatchSize: Int {
+        usesCompactPracticeGrid ? 2 : 1
+    }
+
+    private var compactPracticeWords: [SpellingWord] {
+        guard usesCompactPracticeGrid, !sessionWords.isEmpty else {
+            return []
+        }
+        let start = min(max(index, 0), max(sessionWords.count - 1, 0))
+        let end = min(start + compactPracticeBatchSize, sessionWords.count)
+        return Array(sessionWords[start..<end])
+    }
+
+    private var compactPracticeWordIDs: [UUID] {
+        compactPracticeWords.map(\.id)
+    }
+
+    private var compactPracticeBatchEndIndex: Int {
+        min(index + max(compactPracticeWords.count, 1), sessionWords.count)
+    }
+
+    private var compactPracticeIsFinalBatch: Bool {
+        compactPracticeBatchEndIndex >= sessionWords.count
+    }
+
+    private var compactPracticeHasAnyInk: Bool {
+        compactPracticeWords.contains { word in
+            hasInk(compactPracticeDrawing(for: word))
+        }
     }
 
     private var currentWritingCanvasSize: DrawingCanvasSize? {
@@ -293,7 +339,11 @@ struct SpellingSessionView: View {
                         .frame(maxWidth: 760)
                     }
 
-                    wordHeader
+                    if usesCompactPracticeGrid {
+                        compactPracticeHeader
+                    } else {
+                        wordHeader
+                    }
 
                     if capturesPracticeSamples && practiceRepetitionCount > 1 {
                         PracticeRepeatGuide(
@@ -303,28 +353,37 @@ struct SpellingSessionView: View {
                         )
                     }
 
-                    GuidedWritingCanvas(
-                        drawing: $drawing,
-                        mode: mode.canvasMode,
-                        guideLabels: guideLabels,
-                        sampleText: mode.showsWord ? currentWord.text : nil,
-                        capture: drawingCapture,
-                        isInputEnabled: isCanvasInputEnabled
-                    )
-                    .id(canvasResetID)
-                    .frame(height: writingCanvasHeight)
-                    .background(
-                        GeometryReader { proxy in
-                            Color.clear
-                                .preference(key: WritingCanvasSizePreferenceKey.self, value: proxy.size)
-                        }
-                    )
+                    if usesCompactPracticeGrid {
+                        compactPracticeGrid
+                    } else {
+                        GuidedWritingCanvas(
+                            drawing: $drawing,
+                            mode: mode.canvasMode,
+                            guideLabels: guideLabels,
+                            sampleText: mode.showsWord ? currentWord.text : nil,
+                            capture: drawingCapture,
+                            isInputEnabled: isCanvasInputEnabled,
+                            minimumHeight: 0
+                        )
+                        .id(canvasResetID)
+                        .frame(height: writingCanvasHeight)
+                        .background(
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .preference(key: WritingCanvasSizePreferenceKey.self, value: proxy.size)
+                            }
+                        )
+                    }
 
                     if mode == .review {
                         ReviewHintPanel(word: currentWord.text, language: language)
                     }
 
-                    controls
+                    if usesCompactPracticeGrid {
+                        compactPracticeControls
+                    } else {
+                        controls
+                    }
                     resultPanel
                     Spacer(minLength: 0)
                 }
@@ -340,7 +399,7 @@ struct SpellingSessionView: View {
                     style: practiceCelebrationStyle,
                     language: language,
                     seed: sparkleSeed,
-                    coinReward: AppModel.practiceCoinReward
+                    coinReward: practiceCelebrationCoinReward
                 )
                     .transition(.opacity)
                     .zIndex(4)
@@ -421,6 +480,42 @@ struct SpellingSessionView: View {
         } else {
             practiceWordHeader
         }
+    }
+
+    private var compactPracticeHeader: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "rectangle.grid.2x2.fill")
+                .font(.title2.weight(.heavy))
+                .foregroundStyle(Color(red: 0.48, green: 0.30, blue: 0.76))
+                .frame(width: 52, height: 52)
+                .background(Color(red: 0.95, green: 0.90, blue: 1.0))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(language.text(japanese: "2こまとめて書こう", english: "Write Two at a Time"))
+                    .font(.system(size: 30, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.13, green: 0.24, blue: 0.42))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+
+                Text(compactPracticeWords.map(\.text).joined(separator: " / "))
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.32, blue: 0.70))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.70)
+            }
+
+            Spacer()
+        }
+        .frame(maxWidth: 1120)
+        .padding(.vertical, 9)
+        .padding(.horizontal, 14)
+        .background(.white.opacity(0.86))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(red: 0.78, green: 0.84, blue: 0.96), lineWidth: 1)
+        )
     }
 
     private var practiceWordHeader: some View {
@@ -504,6 +599,51 @@ struct SpellingSessionView: View {
         .disabled(mode == .test && replayCount >= model.settings.maxReplays)
         .opacity(mode == .test && replayCount >= model.settings.maxReplays ? 0.45 : 1)
         .accessibilityLabel(language.text(japanese: "発音を聞く", english: "Play word"))
+    }
+
+    private var compactPracticeGrid: some View {
+        LazyVGrid(columns: compactPracticeGridColumns, spacing: 14) {
+            ForEach(compactPracticeWords) { word in
+                CompactPracticeWritingCell(
+                    word: word,
+                    drawing: compactPracticeDrawingBinding(for: word),
+                    resetID: compactPracticeResetIDs[word.id] ?? word.id,
+                    canvasHeight: compactPracticeCanvasHeight,
+                    guideLabels: guideLabels,
+                    language: language,
+                    isMissing: compactPracticeMissingWordIDs.contains(word.id),
+                    onPlay: {
+                        speech.speak(word.text, language: model.settings.language, rate: model.settings.speechRate)
+                    },
+                    onClear: {
+                        clearCompactPracticeDrawing(for: word)
+                    },
+                    onMeasure: { size in
+                        guard size.width > 0, size.height > 0 else {
+                            return
+                        }
+                        compactPracticeCanvasSizes[word.id] = size
+                    }
+                )
+            }
+        }
+        .frame(maxWidth: 1120)
+        .onAppear {
+            prepareCompactPracticeBatch()
+        }
+        .onChange(of: compactPracticeWordIDs) { _, _ in
+            prepareCompactPracticeBatch()
+        }
+        .onChange(of: practiceRepeatIndex) { _, _ in
+            prepareCompactPracticeBatch()
+        }
+    }
+
+    private var compactPracticeGridColumns: [GridItem] {
+        [
+            GridItem(.flexible(minimum: 330), spacing: 14, alignment: .top),
+            GridItem(.flexible(minimum: 330), spacing: 14, alignment: .top)
+        ]
     }
 
     private var controls: some View {
@@ -600,6 +740,38 @@ struct SpellingSessionView: View {
         .frame(maxWidth: 760)
     }
 
+    private var compactPracticeControls: some View {
+        HStack(spacing: 16) {
+            SessionControlButton(
+                title: language.text(japanese: "この画面を消す", english: "Clear Page"),
+                systemImage: "eraser.fill",
+                style: .secondary,
+                minWidth: 170,
+                horizontalPadding: 18
+            ) {
+                clearCompactPracticeBatch()
+            }
+            .disabled(!compactPracticeHasAnyInk)
+
+            Spacer()
+
+            SessionControlButton(
+                title: compactPracticeNextButtonTitle,
+                systemImage: compactPracticeNextButtonIcon,
+                style: compactPracticeIsFinalBatch && isLastPracticeRepeat ? .finish : .primary,
+                minWidth: 230,
+                funTapAnimations: !isLastPracticeRepeat,
+                canPlayFunTapAnimation: {
+                    compactPracticeHasAnyInk
+                }
+            ) {
+                compactPracticeMoveNext()
+            }
+            .disabled(isAdvancing)
+        }
+        .frame(maxWidth: 1120)
+    }
+
     @ViewBuilder
     private var resultPanel: some View {
         if let decision, mode != .test || decision == .rewrite || decision == .timeExpired {
@@ -640,6 +812,9 @@ struct SpellingSessionView: View {
         case .rewrite:
             if mode == .test {
                 return language.text(japanese: "読みにくいかも。大きく書き直そう。", english: "Hard to read. Write it larger.")
+            }
+            if usesCompactPracticeGrid, !compactPracticeMissingWordIDs.isEmpty {
+                return language.text(japanese: "オレンジの欄にも単語を書いてね。", english: "Write in the orange-marked area too.")
             }
             if !hasCurrentDrawingInk {
                 return language.text(japanese: "まず、お手本を見て単語を書いてね。", english: "Write the word first.")
@@ -745,6 +920,24 @@ struct SpellingSessionView: View {
         return index == sessionWords.count - 1 ? "checklist" : "arrow.right"
     }
 
+    private var compactPracticeNextButtonTitle: String {
+        if !isLastPracticeRepeat {
+            return language.text(japanese: "\(practiceRepeatIndex + 2)かいめを書く", english: "Write round \(practiceRepeatIndex + 2)")
+        }
+        if compactPracticeIsFinalBatch {
+            return language.text(japanese: "チェックへ", english: "Review")
+        }
+        let count = min(compactPracticeBatchSize, max(sessionWords.count - compactPracticeBatchEndIndex, 1))
+        return language.text(japanese: "つぎの\(count)こへ", english: "Next \(count)")
+    }
+
+    private var compactPracticeNextButtonIcon: String {
+        if !isLastPracticeRepeat {
+            return "pencil.line"
+        }
+        return compactPracticeIsFinalBatch ? "checklist" : "arrow.right"
+    }
+
     private func celebrateThenMoveNext() {
         guard !isAdvancing else {
             return
@@ -762,6 +955,7 @@ struct SpellingSessionView: View {
         isAdvancing = true
         savePracticeDrawingIfNeeded()
         model.awardPracticeCoins()
+        practiceCelebrationCoinReward = AppModel.practiceCoinReward
         completedPracticeWordCount = practicedWordCountInSession()
         practiceCelebrationStyle = PracticeCelebrationStyle.random()
         sparkleSeed += 1
@@ -777,6 +971,163 @@ struct SpellingSessionView: View {
             }
             moveNext(saveDrawing: false)
             isAdvancing = false
+        }
+    }
+
+    private func compactPracticeMoveNext() {
+        guard !isAdvancing else {
+            return
+        }
+
+        guard requireCompactPracticeInk() else {
+            return
+        }
+
+        saveCompactPracticeDrawings()
+
+        if !isLastPracticeRepeat {
+            practiceRepeatIndex += 1
+            publishPracticeProgressIfNeeded()
+            clearCompactPracticeBatch()
+            return
+        }
+
+        let completedWords = compactPracticeWords.count
+        isAdvancing = true
+        model.awardPracticeCoins(AppModel.practiceCoinReward * completedWords)
+        practiceCelebrationCoinReward = AppModel.practiceCoinReward * completedWords
+        completedPracticeWordCount = practicedWordCountInSession()
+        practiceCelebrationStyle = PracticeCelebrationStyle.random()
+        sparkleSeed += 1
+
+        withAnimation(.easeOut(duration: 0.16)) {
+            showingSparkles = true
+        }
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_050_000_000)
+            withAnimation(.easeIn(duration: 0.18)) {
+                showingSparkles = false
+            }
+            finishCompactPracticeBatch()
+            isAdvancing = false
+        }
+    }
+
+    private func finishCompactPracticeBatch() {
+        if compactPracticeIsFinalBatch {
+            if mode == .practice {
+                onPracticeCompleted()
+            }
+            withAnimation(.easeInOut(duration: 0.18)) {
+                showingPracticeReview = true
+            }
+            return
+        }
+
+        index = compactPracticeBatchEndIndex
+        practiceRepeatIndex = 0
+        publishPracticeProgressIfNeeded()
+        clearCompactPracticeBatch()
+    }
+
+    private func prepareCompactPracticeBatch() {
+        let activeIDs = Set(compactPracticeWords.map(\.id))
+        guard !activeIDs.isEmpty else {
+            return
+        }
+
+        for id in activeIDs {
+            if compactPracticeDrawings[id] == nil {
+                compactPracticeDrawings[id] = PKDrawing()
+            }
+            if compactPracticeResetIDs[id] == nil {
+                compactPracticeResetIDs[id] = UUID()
+            }
+        }
+
+        compactPracticeDrawings = compactPracticeDrawings.filter { activeIDs.contains($0.key) }
+        compactPracticeCanvasSizes = compactPracticeCanvasSizes.filter { activeIDs.contains($0.key) }
+        compactPracticeResetIDs = compactPracticeResetIDs.filter { activeIDs.contains($0.key) }
+        compactPracticeMissingWordIDs = compactPracticeMissingWordIDs.intersection(activeIDs)
+    }
+
+    private func compactPracticeDrawing(for word: SpellingWord) -> PKDrawing {
+        compactPracticeDrawings[word.id] ?? PKDrawing()
+    }
+
+    private func compactPracticeDrawingBinding(for word: SpellingWord) -> Binding<PKDrawing> {
+        Binding(
+            get: {
+                compactPracticeDrawings[word.id] ?? PKDrawing()
+            },
+            set: { newDrawing in
+                compactPracticeDrawings[word.id] = newDrawing
+                if hasInk(newDrawing) {
+                    compactPracticeMissingWordIDs.remove(word.id)
+                    if compactPracticeMissingWordIDs.isEmpty, decision == .rewrite {
+                        decision = nil
+                    }
+                }
+            }
+        )
+    }
+
+    private func compactPracticeCanvasSize(for wordID: UUID) -> DrawingCanvasSize? {
+        guard let size = compactPracticeCanvasSizes[wordID], size.width > 0, size.height > 0 else {
+            return nil
+        }
+        return DrawingCanvasSize(width: Double(size.width), height: Double(size.height))
+    }
+
+    private func clearCompactPracticeDrawing(for word: SpellingWord) {
+        compactPracticeDrawings[word.id] = PKDrawing()
+        compactPracticeResetIDs[word.id] = UUID()
+        compactPracticeMissingWordIDs.remove(word.id)
+    }
+
+    private func clearCompactPracticeBatch() {
+        for word in compactPracticeWords {
+            compactPracticeDrawings[word.id] = PKDrawing()
+            compactPracticeResetIDs[word.id] = UUID()
+        }
+        compactPracticeMissingWordIDs.removeAll()
+    }
+
+    private func requireCompactPracticeInk() -> Bool {
+        let missingIDs = Set(compactPracticeWords.compactMap { word -> UUID? in
+            hasInk(compactPracticeDrawing(for: word)) ? nil : word.id
+        })
+
+        guard missingIDs.isEmpty else {
+            compactPracticeMissingWordIDs = missingIDs
+            candidates = []
+            withAnimation(.easeInOut(duration: 0.16)) {
+                decision = .rewrite
+            }
+            return false
+        }
+
+        compactPracticeMissingWordIDs.removeAll()
+        return true
+    }
+
+    private func saveCompactPracticeDrawings() {
+        for word in compactPracticeWords {
+            let latestDrawing = compactPracticeDrawing(for: word)
+            guard hasInk(latestDrawing) else {
+                continue
+            }
+
+            let sample = PracticeSample(
+                word: normalize(word.text),
+                drawingData: latestDrawing.dataRepresentation(),
+                canvasSize: compactPracticeCanvasSize(for: word.id),
+                mode: mode.rawValue,
+                sessionID: sessionID
+            )
+            model.addPracticeSample(sample)
+            sessionPracticeSamples.append(sample)
         }
     }
 
@@ -1275,6 +1626,105 @@ private struct TestProgressPill: View {
                 .stroke(Color(red: 0.48, green: 0.67, blue: 0.96), lineWidth: 1.5)
         )
         .accessibilityLabel(language.text(japanese: "\(current)問目 / \(total)問", english: "Question \(current) of \(total)"))
+    }
+}
+
+private struct CompactPracticeWritingCell: View {
+    var word: SpellingWord
+    @Binding var drawing: PKDrawing
+    var resetID: UUID
+    var canvasHeight: CGFloat
+    var guideLabels: [String]
+    var language: AppLanguage
+    var isMissing: Bool
+    var onPlay: () -> Void
+    var onClear: () -> Void
+    var onMeasure: (CGSize) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack(spacing: 10) {
+                Button(action: onPlay) {
+                    Image(systemName: "speaker.wave.2.fill")
+                        .font(.system(size: 20, weight: .heavy))
+                        .foregroundStyle(Color(red: 0.14, green: 0.34, blue: 0.76))
+                        .frame(width: 44, height: 44)
+                        .background(Color(red: 0.82, green: 0.90, blue: 1.0))
+                        .clipShape(Circle())
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .tapFeedback()
+                .accessibilityLabel(language.text(japanese: "\(word.text) の発音を聞く", english: "Play \(word.text)"))
+
+                Text(word.text)
+                    .font(.system(size: 34, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.08, green: 0.20, blue: 0.40))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.52)
+
+                Spacer(minLength: 6)
+
+                Button(action: onClear) {
+                    Label(language.text(japanese: "消す", english: "Clear"), systemImage: "eraser.fill")
+                        .font(.subheadline.weight(.heavy))
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(Color(red: 0.13, green: 0.34, blue: 0.75))
+                        .frame(width: 42, height: 42)
+                        .background(Color(red: 0.91, green: 0.96, blue: 1.0))
+                        .clipShape(Circle())
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .tapFeedback(scale: 0.94)
+                .accessibilityLabel(language.text(japanese: "\(word.text) を消す", english: "Clear \(word.text)"))
+            }
+
+            GuidedWritingCanvas(
+                drawing: $drawing,
+                mode: .practice,
+                guideLabels: guideLabels,
+                sampleText: word.text,
+                capture: nil,
+                isInputEnabled: true,
+                minimumHeight: 0
+            )
+            .id(resetID)
+            .frame(height: canvasHeight)
+            .background(
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            onMeasure(proxy.size)
+                        }
+                        .onChange(of: proxy.size) { _, newSize in
+                            onMeasure(newSize)
+                        }
+                }
+            )
+            .overlay(alignment: .topLeading) {
+                if isMissing {
+                    Label(language.text(japanese: "ここも書いてね", english: "Write here too"), systemImage: "exclamationmark.circle.fill")
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.85, green: 0.38, blue: 0.06))
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 10)
+                        .background(Color(red: 1.0, green: 0.94, blue: 0.84))
+                        .clipShape(Capsule())
+                        .padding(10)
+                        .allowsHitTesting(false)
+                }
+            }
+        }
+        .padding(12)
+        .background(.white.opacity(0.90))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isMissing ? Color(red: 0.94, green: 0.46, blue: 0.08) : Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: isMissing ? 2.5 : 1)
+        )
+        .shadow(color: Color(red: 0.30, green: 0.40, blue: 0.60).opacity(0.08), radius: 10, x: 0, y: 5)
+        .animation(.spring(response: 0.24, dampingFraction: 0.80), value: isMissing)
     }
 }
 

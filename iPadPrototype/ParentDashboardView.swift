@@ -4358,8 +4358,8 @@ private struct TestSettingsPanel: View {
                 .accessibilityLabel(language.text(japanese: "練習とテストの入力欄の大きさ", english: "Practice and test writing area size"))
 
                 Text(language.text(
-                    japanese: "練習とテストの入力欄に反映されます。\(model.settings.writingAreaSize.description(language: language))",
-                    english: "Applies to both practice and test writing areas. \(model.settings.writingAreaSize.description(language: language))"
+                    japanese: "書く欄の高さと、お手本の文字サイズに反映されます。\(model.settings.writingAreaSize.description(language: language))",
+                    english: "Changes the writing area height and model-word size. \(model.settings.writingAreaSize.description(language: language))"
                 ))
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)

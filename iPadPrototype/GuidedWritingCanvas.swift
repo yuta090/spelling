@@ -46,6 +46,14 @@ struct WritingGuideLayout: Equatable {
             height: descender - top + 44
         )
     }
+
+    var sampleTextFontSize: CGFloat {
+        min(max(size.height * 0.35, 58), 158)
+    }
+
+    var sampleTextYOffset: CGFloat {
+        size.height * 0.073
+    }
 }
 
 struct CanvasFitGeometry {
@@ -93,23 +101,29 @@ struct GuidedWritingCanvas: View {
     var sampleText: String?
     var capture: DrawingCapture? = nil
     var isInputEnabled = true
+    var minimumHeight: CGFloat = 285
 
     var body: some View {
         ZStack {
             FourLineGuide(mode: mode, labels: guideLabels)
             if let sampleText {
-                Text(sampleText)
-                    .font(.system(size: 104, weight: .regular, design: .rounded))
-                    .foregroundStyle(Color.black.opacity(0.30))
-                    .offset(y: 22)
-                    .minimumScaleFactor(0.35)
-                    .lineLimit(1)
-                    .padding(.horizontal, 130)
-                    .allowsHitTesting(false)
+                GeometryReader { proxy in
+                    let layout = WritingGuideLayout(size: proxy.size)
+
+                    Text(sampleText)
+                        .font(.system(size: layout.sampleTextFontSize, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.black.opacity(0.30))
+                        .offset(y: layout.sampleTextYOffset)
+                        .minimumScaleFactor(0.35)
+                        .lineLimit(1)
+                        .padding(.horizontal, mode == .practice ? 80 : 130)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .allowsHitTesting(false)
+                }
             }
             PencilCanvasView(drawing: $drawing, capture: capture, isInputEnabled: isInputEnabled)
         }
-        .frame(minHeight: 285)
+        .frame(minHeight: minimumHeight)
         .background(canvasBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay {

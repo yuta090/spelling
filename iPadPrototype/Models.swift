@@ -469,14 +469,18 @@ enum WritingAreaSize: String, CaseIterable, Identifiable, Codable, Sendable {
     var heightMultiplier: Double {
         switch self {
         case .compact:
-            return 0.95
+            return 0.66
         case .standard:
             return 1.0
         case .large:
-            return 1.16
+            return 1.28
         case .extraLarge:
-            return 1.32
+            return 1.55
         }
+    }
+
+    var usesTwoColumnPracticeLayout: Bool {
+        self == .compact
     }
 
     func label(language: AppLanguage) -> String {
@@ -495,11 +499,11 @@ enum WritingAreaSize: String, CaseIterable, Identifiable, Codable, Sendable {
     func description(language: AppLanguage) -> String {
         switch self {
         case .compact:
-            return language.text(japanese: "画面内に収まりやすい大きさです。", english: "Fits more comfortably on screen.")
+            return language.text(japanese: "練習では2列でまとめて書けます。テストは小さめの欄になります。", english: "Practice uses a two-column layout. Tests use a smaller writing area.")
         case .standard:
             return language.text(japanese: "いつもの大きさです。", english: "The default size.")
         case .large:
-            return language.text(japanese: "少し大きく書けます。", english: "Gives more room to write.")
+            return language.text(japanese: "大きめの文字で書けます。", english: "Gives a clearly larger writing area.")
         case .extraLarge:
             return language.text(japanese: "大きく書きたい子向けです。", english: "Best for children who write big.")
         }
