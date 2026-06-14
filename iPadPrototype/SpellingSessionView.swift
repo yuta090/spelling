@@ -129,6 +129,14 @@ struct SpellingSessionView: View {
         return baseHeight * CGFloat(model.settings.writingAreaSize.heightMultiplier)
     }
 
+    private var writingCanvasMaxWidth: CGFloat {
+        CGFloat(model.settings.writingAreaSize.singleCanvasMaxWidth)
+    }
+
+    private var compactPracticeGridMaxWidth: CGFloat {
+        CGFloat(model.settings.writingAreaSize.compactPracticeGridMaxWidth)
+    }
+
     private var usesCompactPracticeGrid: Bool {
         model.settings.writingAreaSize.usesTwoColumnPracticeLayout
             && capturesPracticeSamples
@@ -366,6 +374,7 @@ struct SpellingSessionView: View {
                             minimumHeight: 0
                         )
                         .id(canvasResetID)
+                        .frame(maxWidth: writingCanvasMaxWidth)
                         .frame(height: writingCanvasHeight)
                         .background(
                             GeometryReader { proxy in
@@ -627,7 +636,7 @@ struct SpellingSessionView: View {
                 )
             }
         }
-        .frame(maxWidth: 1120)
+        .frame(maxWidth: compactPracticeGridMaxWidth)
         .onAppear {
             prepareCompactPracticeBatch()
         }

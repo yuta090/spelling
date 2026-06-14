@@ -479,6 +479,23 @@ enum WritingAreaSize: String, CaseIterable, Identifiable, Codable, Sendable {
         }
     }
 
+    var singleCanvasMaxWidth: Double {
+        switch self {
+        case .compact:
+            return 760
+        case .standard:
+            return 920
+        case .large:
+            return 1040
+        case .extraLarge:
+            return 1160
+        }
+    }
+
+    var compactPracticeGridMaxWidth: Double {
+        1120
+    }
+
     var usesTwoColumnPracticeLayout: Bool {
         self == .compact
     }
@@ -501,7 +518,7 @@ enum WritingAreaSize: String, CaseIterable, Identifiable, Codable, Sendable {
         case .compact:
             return language.text(japanese: "練習では2列でまとめて書けます。テストは小さめの欄になります。", english: "Practice uses a two-column layout. Tests use a smaller writing area.")
         case .standard:
-            return language.text(japanese: "いつもの大きさです。", english: "The default size.")
+            return language.text(japanese: "広い画面でも大きくなりすぎない、いつもの大きさです。", english: "Default size that does not stretch too much on wider screens.")
         case .large:
             return language.text(japanese: "大きめの文字で書けます。", english: "Gives a clearly larger writing area.")
         case .extraLarge:
