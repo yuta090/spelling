@@ -2664,31 +2664,268 @@ private struct ParentNewStepButton: View {
     }
 }
 
-private func formattedImportedWordLine(_ word: String, knownWords: [SpellingWord]) -> String {
+/// カメラ取り込みの日本語訳オプション（親・子で共用）。設定に直接ひもづくので自動保存・次回適用。
+/// トグルを切り替えると、入力欄のテキストにもその場で日本語訳を付け直す。
+struct ImportJapaneseOptionsView: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+    @Binding var draftText: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle(isOn: $model.settings.importAttachJapanese) {
+                Label(
+                    language.text(japanese: "取り込み時に日本語訳をつける", english: "Add Japanese translation on import"),
+                    systemImage: "character.book.closed"
+                )
+                .font(.subheadline.weight(.bold))
+            }
+
+            if model.settings.importAttachJapanese {
+                Toggle(isOn: $model.settings.importUseKanji) {
+                    Label(
+                        language.text(japanese: "漢字をつかう（ふりがな付き）", english: "Use kanji (with furigana)"),
+                        systemImage: "textformat"
+                    )
+                    .font(.subheadline.weight(.semibold))
+                }
+                .padding(.leading, 4)
+            }
+        }
+        .tint(ParentPalette.primary)
+        .padding(12)
+        .background(ParentPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .onChange(of: model.settings.importAttachJapanese) { _, _ in reapply() }
+        .onChange(of: model.settings.importUseKanji) { _, _ in reapply() }
+    }
+
+    private func reapply() {
+        let updated = reapplyJapanese(
+            to: draftText,
+            knownWords: model.words,
+            attachJapanese: model.settings.importAttachJapanese,
+            useKanji: model.settings.importUseKanji
+        )
+        if updated != draftText {
+            draftText = updated
+        }
+    }
+}
+
+func formattedImportedWordLine(
+    _ word: String,
+    knownWords: [SpellingWord],
+    attachJapanese: Bool,
+    useKanji: Bool
+) -> String {
     let normalized = normalize(word)
     guard !normalized.isEmpty else {
         return ""
     }
 
+    guard attachJapanese else {
+        return normalized
+    }
+
+    // すでに登録済みの単語に手入力の訳があればそれを優先（漢字なし指定ならふりがなへ変換）。
     if let prompt = knownPrompt(for: normalized, in: knownWords) {
+        let adjusted = useKanji ? prompt : japanesePromptWithoutKanji(prompt)
+        return "\(normalized) | \(adjusted)"
+    }
+
+    if let prompt = BasicJapaneseWordPrompt.prompt(for: normalized, useKanji: useKanji) {
         return "\(normalized) | \(prompt)"
     }
 
-    if let prompt = BasicJapaneseWordPrompt.prompt(for: normalized) {
-        return "\(normalized) | \(prompt)"
+    // 同梱辞書（EJDict）でフォールバック。guard/scope など内蔵に無い語もカバー。
+    if let dbGloss = WordBank.shared.japanese(for: normalized) {
+        let adjusted = useKanji ? dbGloss : japanesePromptWithoutKanji(dbGloss)
+        return "\(normalized) | \(adjusted)"
     }
 
     return normalized
 }
 
-private func knownPrompt(for word: String, in knownWords: [SpellingWord]) -> String? {
+/// 取り込み済みの入力欄テキストを、現在の設定で日本語訳を付け直す（後からトグルを切り替えても反映できるように）。
+/// 手入力済みの訳はできるだけ保持し、漢字なしのときだけふりがなへ変換する。
+func reapplyJapanese(
+    to rawText: String,
+    knownWords: [SpellingWord],
+    attachJapanese: Bool,
+    useKanji: Bool
+) -> String {
+    let entries = parseWordListEntries(from: rawText)
+    let lines = entries.compactMap { entry -> String? in
+        let word = normalize(entry.text)
+        guard !word.isEmpty else {
+            return nil
+        }
+        guard attachJapanese else {
+            return word
+        }
+
+        let existing = (entry.promptText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let prompt: String
+        if useKanji {
+            if existing.contains(where: { $0.isHan }) {
+                prompt = existing // すでに漢字あり → そのまま
+            } else if let dictKanji = BasicJapaneseWordPrompt.prompt(for: word, useKanji: true),
+                      dictKanji.contains(where: { $0.isHan }) {
+                prompt = dictKanji // かなのみ → 辞書の漢字へ
+            } else if !existing.isEmpty {
+                prompt = existing
+            } else {
+                prompt = BasicJapaneseWordPrompt.prompt(for: word, useKanji: true) ?? ""
+            }
+        } else {
+            let base = existing.isEmpty ? (BasicJapaneseWordPrompt.prompt(for: word, useKanji: false) ?? "") : existing
+            prompt = japanesePromptWithoutKanji(base)
+        }
+
+        var finalPrompt = prompt
+        // 辞書に無ければ同梱辞書（EJDict）でフォールバック。
+        if finalPrompt.isEmpty, let dbGloss = WordBank.shared.japanese(for: word) {
+            finalPrompt = useKanji ? dbGloss : japanesePromptWithoutKanji(dbGloss)
+        }
+
+        return finalPrompt.isEmpty ? word : "\(word) | \(finalPrompt)"
+    }
+    return lines.joined(separator: "\n")
+}
+
+func knownPrompt(for word: String, in knownWords: [SpellingWord]) -> String? {
     knownWords
         .first { normalize($0.text) == word && !$0.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }?
         .promptText
         .trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
-private enum BasicJapaneseWordPrompt {
+/// 「漢字[よみ]」形式の訳をふりがな（よみ）だけに変換する。漢字を持たない訳はそのまま。
+/// 例: "学校[がっこう]がすき" -> "がっこうがすき"
+func japanesePromptWithoutKanji(_ text: String) -> String {
+    var result = ""
+    var buffer = ""
+    var index = text.startIndex
+
+    while index < text.endIndex {
+        if text[index] == "[", let closing = text[index...].firstIndex(of: "]") {
+            let readingStart = text.index(after: index)
+            let reading = String(text[readingStart..<closing]).trimmingCharacters(in: .whitespacesAndNewlines)
+            // 直前の漢字（連続するHan）だけを base とする。かな（「を」「お」等）は残す。
+            var cut = buffer.endIndex
+            while cut > buffer.startIndex {
+                let previous = buffer.index(before: cut)
+                if !buffer[previous].isHan {
+                    break
+                }
+                cut = previous
+            }
+            let hasBase = cut < buffer.endIndex
+            if !reading.isEmpty, hasBase {
+                result += String(buffer[..<cut])
+                result += reading
+                buffer = ""
+                index = text.index(after: closing)
+                continue
+            }
+            // base が無い／読みが空 → ブラケットはそのまま文字として扱う（表示パーサと整合）
+        }
+
+        buffer.append(text[index])
+        index = text.index(after: index)
+    }
+
+    result += buffer
+    return result
+}
+
+enum BasicJapaneseWordPrompt {
+    // 漢字（ふりがな付き）を使いたい単語。ここに無い語はかな表記の prompts を使う。
+    private static let kanjiPrompts: [String: String] = [
+        "animal": "動[どう]物[ぶつ]",
+        "bear": "熊[くま]",
+        "beautiful": "美[うつく]しい",
+        "big": "大[おお]きい",
+        "bird": "鳥[とり]",
+        "black": "黒[くろ]",
+        "blue": "青[あお]",
+        "book": "本[ほん]",
+        "brother": "兄[きょう]弟[だい]",
+        "brown": "茶[ちゃ]色[いろ]",
+        "car": "車[くるま]",
+        "cat": "猫[ねこ]",
+        "cold": "寒[さむ]い",
+        "color": "色[いろ]",
+        "come": "来[く]る",
+        "cow": "牛[うし]",
+        "day": "日[ひ]",
+        "desk": "机[つくえ]",
+        "dog": "犬[いぬ]",
+        "drink": "飲[の]む",
+        "eat": "食[た]べる",
+        "egg": "卵[たまご]",
+        "family": "家[か]族[ぞく]",
+        "fish": "魚[さかな]",
+        "flower": "花[はな]",
+        "friend": "友[とも]だち",
+        "go": "行[い]く",
+        "good": "良[よ]い",
+        "grass": "草[くさ]",
+        "green": "緑[みどり]",
+        "home": "家[いえ]",
+        "homework": "宿[しゅく]題[だい]",
+        "horse": "馬[うま]",
+        "hot": "暑[あつ]い",
+        "house": "家[いえ]",
+        "i": "私[わたし]",
+        "long": "長[なが]い",
+        "meat": "肉[にく]",
+        "month": "月[つき]",
+        "moon": "月[つき]",
+        "mountain": "山[やま]",
+        "name": "名[な]前[まえ]",
+        "night": "夜[よる]",
+        "ocean": "海[うみ]",
+        "one": "一[いち]",
+        "paper": "紙[かみ]",
+        "pencil": "鉛[えん]筆[ぴつ]",
+        "pig": "豚[ぶた]",
+        "play": "遊[あそ]ぶ",
+        "rain": "雨[あめ]",
+        "read": "読[よ]む",
+        "red": "赤[あか]",
+        "river": "川[かわ]",
+        "room": "部屋[へや]",
+        "run": "走[はし]る",
+        "sad": "悲[かな]しい",
+        "school": "学[がっ]校[こう]",
+        "sea": "海[うみ]",
+        "sheep": "羊[ひつじ]",
+        "short": "短[みじか]い",
+        "sing": "歌[うた]う",
+        "sister": "姉[し]妹[まい]",
+        "sky": "空[そら]",
+        "sleep": "寝[ね]る",
+        "small": "小[ちい]さい",
+        "snow": "雪[ゆき]",
+        "star": "星[ほし]",
+        "student": "生[せい]徒[と]",
+        "sun": "太[たい]陽[よう]",
+        "swim": "泳[およ]ぐ",
+        "teacher": "先[せん]生[せい]",
+        "today": "今日[きょう]",
+        "tree": "木[き]",
+        "walk": "歩[ある]く",
+        "water": "水[みず]",
+        "week": "週[しゅう]",
+        "white": "白[しろ]",
+        "wind": "風[かぜ]",
+        "write": "書[か]く",
+        "year": "年[とし]",
+        "yellow": "黄[き]色[いろ]"
+    ]
+
     private static let prompts: [String: String] = [
         "a": "ひとつの",
         "about": "について",
@@ -2831,11 +3068,182 @@ private enum BasicJapaneseWordPrompt {
         "write": "かく",
         "year": "とし",
         "yellow": "きいろ",
-        "you": "あなた"
+        "you": "あなた",
+        // --- 追加分（小・中学でよく出る語）---
+        "two": "ふたつ", "three": "みっつ", "four": "よっつ", "five": "いつつ",
+        "six": "むっつ", "seven": "ななつ", "eight": "やっつ", "nine": "ここのつ",
+        "ten": "とお", "hundred": "ひゃく", "thousand": "せん", "number": "すうじ",
+        "monday": "げつようび", "tuesday": "かようび", "wednesday": "すいようび",
+        "thursday": "もくようび", "friday": "きんようび", "saturday": "どようび",
+        "sunday": "にちようび",
+        "morning": "あさ", "noon": "ひる", "evening": "ゆうがた", "time": "じかん",
+        "hour": "じかん", "minute": "ふん", "yesterday": "きのう", "now": "いま",
+        "weekend": "しゅうまつ", "future": "みらい", "past": "かこ",
+        "spring": "はる", "summer": "なつ", "autumn": "あき", "winter": "ふゆ",
+        "weather": "てんき", "sunny": "はれ", "cloudy": "くもり", "rainy": "あめ",
+        "warm": "あたたかい", "cool": "すずしい",
+        "head": "あたま", "face": "かお", "eye": "め", "ear": "みみ", "nose": "はな",
+        "mouth": "くち", "tooth": "は", "hand": "て", "foot": "あし", "arm": "うで",
+        "finger": "ゆび", "neck": "くび", "back": "せなか", "stomach": "おなか", "body": "からだ",
+        "parent": "おや", "child": "こども", "son": "むすこ", "daughter": "むすめ",
+        "uncle": "おじ", "aunt": "おば", "cousin": "いとこ", "husband": "おっと", "wife": "つま",
+        "elephant": "ぞう", "giraffe": "きりん", "panda": "パンダ", "penguin": "ペンギン",
+        "dolphin": "いるか", "whale": "くじら", "snake": "へび", "turtle": "かめ",
+        "fox": "きつね", "wolf": "おおかみ", "deer": "しか", "goat": "やぎ",
+        "chicken": "にわとり", "owl": "ふくろう", "ant": "あり", "bee": "はち",
+        "insect": "むし", "dinosaur": "きょうりゅう", "dragon": "りゅう",
+        "strawberry": "いちご", "watermelon": "すいか", "lemon": "レモン", "melon": "メロン",
+        "tomato": "トマト", "potato": "じゃがいも", "carrot": "にんじん", "onion": "たまねぎ",
+        "corn": "とうもろこし", "mushroom": "きのこ", "pumpkin": "かぼちゃ", "tea": "おちゃ",
+        "coffee": "コーヒー", "sugar": "さとう", "salt": "しお", "candy": "あめ",
+        "chocolate": "チョコレート", "cookie": "クッキー", "hamburger": "ハンバーガー",
+        "pizza": "ピザ", "noodle": "めん", "vegetable": "やさい", "fruit": "くだもの",
+        "breakfast": "あさごはん", "lunch": "ひるごはん", "dinner": "ばんごはん",
+        "city": "まち", "town": "まち", "country": "くに", "world": "せかい",
+        "station": "えき", "hospital": "びょういん", "library": "としょかん", "park": "こうえん",
+        "store": "みせ", "restaurant": "レストラン", "museum": "はくぶつかん",
+        "zoo": "どうぶつえん", "temple": "おてら", "shrine": "じんじゃ", "bridge": "はし",
+        "road": "みち", "airport": "くうこう", "building": "たてもの",
+        "bicycle": "じてんしゃ", "train": "でんしゃ", "airplane": "ひこうき", "ship": "ふね",
+        "boat": "ボート", "truck": "トラック", "taxi": "タクシー",
+        "doctor": "いしゃ", "nurse": "かんごし", "police": "けいさつ", "farmer": "のうか",
+        "cook": "コック", "singer": "かしゅ",
+        "subject": "きょうか", "math": "すうがく", "science": "りか", "english": "えいご",
+        "history": "れきし", "music": "おんがく", "art": "びじゅつ", "question": "しつもん",
+        "answer": "こたえ", "word": "ことば", "sentence": "ぶん", "story": "ものがたり",
+        "picture": "え", "notebook": "ノート", "eraser": "けしごむ", "ruler": "じょうぎ",
+        "scissors": "はさみ",
+        "angry": "おこった", "hungry": "おなかがすいた", "thirsty": "のどがかわいた",
+        "tired": "つかれた", "sleepy": "ねむい", "scared": "こわい", "kind": "しんせつ",
+        "strong": "つよい", "weak": "よわい", "fast": "はやい", "slow": "おそい",
+        "easy": "かんたん", "difficult": "むずかしい", "new": "あたらしい", "old": "ふるい",
+        "young": "わかい", "clean": "きれい", "dirty": "きたない", "heavy": "おもい",
+        "light": "かるい", "dark": "くらい", "bright": "あかるい", "quiet": "しずか",
+        "busy": "いそがしい", "important": "たいせつ", "famous": "ゆうめい",
+        "expensive": "たかい", "cheap": "やすい", "delicious": "おいしい", "sweet": "あまい",
+        "spicy": "からい", "fun": "たのしい", "interesting": "おもしろい",
+        "open": "あける", "close": "しめる", "stop": "とめる", "push": "おす", "pull": "ひく",
+        "carry": "はこぶ", "throw": "なげる", "catch": "とる", "hold": "もつ", "give": "あげる",
+        "buy": "かう", "sell": "うる", "make": "つくる", "build": "たてる", "break": "こわす",
+        "fix": "なおす", "wash": "あらう", "study": "べんきょうする", "teach": "おしえる",
+        "learn": "まなぶ", "remember": "おぼえる", "forget": "わすれる", "think": "かんがえる",
+        "know": "しる", "understand": "わかる", "speak": "はなす", "say": "いう",
+        "tell": "つたえる", "ask": "きく", "listen": "きく", "look": "みる", "see": "みる",
+        "watch": "みる", "show": "みせる", "find": "みつける", "lose": "なくす", "win": "かつ",
+        "help": "たすける", "wait": "まつ", "meet": "あう", "visit": "たずねる",
+        "arrive": "つく", "leave": "でる", "enter": "はいる", "climb": "のぼる",
+        "fall": "おちる", "fly": "とぶ", "ride": "のる", "drive": "うんてんする",
+        "cry": "なく", "laugh": "わらう", "cut": "きる", "draw": "かく", "paint": "ぬる",
+        "dance": "おどる", "wear": "きる", "use": "つかう", "want": "ほしい", "like": "すき",
+        "love": "あいする", "hate": "きらい", "hope": "のぞむ", "try": "ためす",
+        "finish": "おわる", "become": "なる", "feel": "かんじる", "live": "すむ",
+        "grow": "そだつ", "change": "かえる", "move": "うごく", "work": "はたらく",
+        "rest": "やすむ", "sit": "すわる", "stand": "たつ",
+        "guard": "まもる", "scope": "はんい", "dream": "ゆめ", "idea": "アイデア",
+        "problem": "もんだい", "reason": "りゆう", "fact": "じじつ", "news": "ニュース",
+        "example": "れい", "group": "グループ", "team": "チーム", "member": "メンバー",
+        "peace": "へいわ", "nature": "しぜん", "environment": "かんきょう",
+        "energy": "エネルギー", "machine": "きかい", "computer": "コンピューター",
+        "phone": "でんわ", "letter": "てがみ", "money": "おかね", "job": "しごと",
+        // --- 追加分 第2弾（日常・教科でよく出る語）---
+        "accept": "うけいれる", "across": "わたって", "agree": "さんせいする", "allow": "ゆるす",
+        "almost": "ほとんど", "along": "そって", "already": "すでに", "always": "いつも",
+        "anger": "いかり", "ankle": "あしくび", "another": "べつの", "appear": "あらわれる",
+        "attack": "こうげきする", "bacon": "ベーコン", "ball": "ボール", "balloon": "ふうせん",
+        "bamboo": "たけ", "bank": "ぎんこう", "baseball": "やきゅう", "basket": "かご",
+        "basketball": "バスケットボール", "bat": "こうもり", "bathroom": "おふろ", "beach": "はまべ",
+        "beans": "まめ", "bedroom": "しんしつ", "beef": "ぎゅうにく", "beetle": "カブトムシ",
+        "behind": "うしろ", "believe": "しんじる", "belt": "ベルト", "beside": "となり",
+        "between": "あいだ", "blackboard": "こくばん", "blood": "ち", "bone": "ほね",
+        "both": "りょうほう", "bottle": "びん", "bowl": "ボウル", "box": "はこ",
+        "brain": "のう", "branch": "えだ", "brush": "ブラシ", "button": "ボタン",
+        "cabbage": "キャベツ", "camel": "ラクダ", "camera": "カメラ", "cap": "キャップ",
+        "castle": "しろ", "cave": "どうくつ", "ceiling": "てんじょう", "celebrate": "おいわいする",
+        "chalk": "チョーク", "check": "しらべる", "cheek": "ほお", "chestnut": "くり",
+        "chin": "あご", "choose": "えらぶ", "church": "きょうかい", "cinema": "えいがかん",
+        "circle": "まる", "classmate": "クラスメート", "classroom": "きょうしつ", "clock": "とけい",
+        "clothes": "ふく", "club": "クラブ", "coat": "コート", "collect": "あつめる",
+        "comic": "まんが", "company": "かいしゃ", "compare": "くらべる", "complete": "かんせいする",
+        "continue": "つづける", "copy": "うつす", "cost": "かかる", "count": "かぞえる",
+        "crab": "かに", "crocodile": "ワニ", "crow": "からす", "cup": "コップ",
+        "curry": "カレー", "decide": "きめる", "desert": "さばく", "dessert": "デザート",
+        "dictionary": "じしょ", "disappear": "きえる", "donut": "ドーナツ", "doubt": "うたがう",
+        "dragonfly": "トンボ", "drawing": "え", "dress": "ドレス", "drum": "ドラム",
+        "each": "それぞれ", "elbow": "ひじ", "engine": "エンジン", "enjoy": "たのしむ",
+        "erase": "けす", "escape": "にげる", "exam": "しけん", "exercise": "うんどうする",
+        "explain": "せつめいする", "express": "あらわす", "factory": "こうじょう", "farm": "のうじょう",
+        "fear": "きょうふ", "few": "すこし", "field": "のはら", "fight": "たたかう",
+        "fire": "ほのお", "floor": "ゆか", "flour": "こむぎこ", "flute": "フルート",
+        "fog": "きり", "follow": "ついていく", "forehead": "ひたい", "forest": "もり",
+        "fork": "フォーク", "from": "から", "front": "まえ", "garden": "にわ",
+        "garlic": "にんにく", "gather": "あつまる", "ginger": "しょうが", "glass": "ガラス",
+        "glasses": "めがね", "gloves": "てぶくろ", "goal": "もくひょう", "golf": "ゴルフ",
+        "goodbye": "さようなら", "grade": "せいせき", "grasshopper": "バッタ", "guess": "すいそくする",
+        "guitar": "ギター", "gym": "たいいくかん", "ham": "ハム", "hamster": "ハムスター",
+        "happen": "おこる", "happiness": "しあわせ", "hat": "ぼうし", "he": "かれ",
+        "heart": "こころ", "helicopter": "ヘリコプター", "hello": "こんにちは", "here": "ここ",
+        "hide": "かくれる", "hill": "おか", "hippo": "カバ", "hotel": "ホテル",
+        "how": "どうやって", "ice": "こおり", "imagine": "そうぞうする", "inside": "なか",
+        "introduce": "しょうかいする", "invite": "しょうたいする", "island": "しま", "it": "それ",
+        "jacket": "ジャケット", "jellyfish": "クラゲ", "join": "さんかする", "joy": "よろこび",
+        "judo": "じゅうどう", "just": "ちょうど", "kangaroo": "カンガルー", "karate": "からて",
+        "key": "かぎ", "kitchen": "だいどころ", "kite": "たこあげ", "kiwi": "キウイ",
+        "knife": "ナイフ", "koala": "コアラ", "lake": "みずうみ", "lamp": "ランプ",
+        "lead": "みちびく", "leaf": "はっぱ", "lettuce": "レタス", "lie": "うそ",
+        "line": "せん", "lip": "くちびる", "lizard": "トカゲ", "mango": "マンゴー",
+        "many": "たくさんの", "map": "ちず", "marathon": "マラソン", "market": "いちば",
+        "match": "しあい", "maybe": "たぶん", "meal": "しょくじ", "measure": "はかる",
+        "memory": "きおく", "mirror": "かがみ", "more": "もっと", "mosquito": "か",
+        "most": "いちばん", "motorcycle": "バイク", "movie": "えいが", "much": "たくさん",
+        "muscle": "きんにく", "my": "わたしの", "nail": "つめ", "near": "ちかく",
+        "net": "ネット", "never": "けっして", "no": "いいえ", "octopus": "たこ",
+        "office": "じむしょ", "often": "よく", "oil": "あぶら", "on": "うえ",
+        "only": "だけ", "other": "ほかの", "outside": "そと", "over": "うえに",
+        "page": "ページ", "pan": "フライパン", "pancake": "パンケーキ", "pants": "ズボン",
+        "parrot": "オウム", "pay": "はらう", "peanut": "ピーナッツ", "pepper": "こしょう",
+        "photo": "しゃしん", "piano": "ピアノ", "pigeon": "はと", "pineapple": "パイナップル",
+        "plan": "けいかく", "plant": "うえる", "plate": "さら", "please": "おねがい",
+        "plum": "うめ", "pocket": "ポケット", "point": "てん", "pond": "いけ",
+        "pool": "プール", "popcorn": "ポップコーン", "pork": "ぶたにく", "pot": "なべ",
+        "practice": "れんしゅうする", "prepare": "じゅんびする", "principal": "こうちょう", "prize": "しょう",
+        "promise": "やくそく", "protect": "まもる", "pudding": "プリン", "quiz": "クイズ",
+        "race": "レース", "racket": "ラケット", "radish": "だいこん", "rainbow": "にじ",
+        "ramen": "ラーメン", "rat": "ねずみ", "realize": "きづく", "really": "ほんとうに",
+        "recognize": "みわける", "refuse": "ことわる", "repeat": "くりかえす", "report": "レポート",
+        "ring": "ゆびわ", "rock": "いわ", "rocket": "ロケット", "roof": "やね",
+        "root": "ね", "rose": "バラ", "rule": "ルール", "same": "おなじ",
+        "sand": "すな", "sausage": "ソーセージ", "scarf": "マフラー", "schedule": "よてい",
+        "score": "とくてん", "seal": "アザラシ", "search": "さがす", "secret": "ひみつ",
+        "seed": "たね", "shadow": "かげ", "shape": "かたち", "share": "わけあう",
+        "shark": "サメ", "she": "かのじょ", "shirt": "シャツ", "shoes": "くつ",
+        "shrimp": "えび", "skate": "スケート", "ski": "スキー", "skin": "はだ",
+        "skirt": "スカート", "smoke": "けむり", "snack": "おやつ", "snail": "かたつむり",
+        "soap": "せっけん", "soccer": "サッカー", "socks": "くつした", "some": "いくつかの",
+        "sometimes": "ときどき", "song": "うた", "soon": "すぐに", "sorry": "ごめんなさい",
+        "sparrow": "すずめ", "spell": "つづる", "spinach": "ほうれんそう", "spoon": "スプーン",
+        "sport": "スポーツ", "square": "しかく", "squid": "いか", "squirrel": "りす",
+        "stadium": "スタジアム", "stairs": "かいだん", "still": "まだ", "stone": "いし",
+        "storm": "あらし", "subway": "ちかてつ", "sunflower": "ひまわり", "sushi": "すし",
+        "swan": "はくちょう", "sweater": "セーター", "swimming": "すいえい", "tennis": "テニス",
+        "textbook": "きょうかしょ", "thanks": "ありがとう", "that": "あれ", "theater": "げきじょう",
+        "there": "そこ", "these": "これら", "they": "かれら", "this": "これ",
+        "those": "あれら", "throat": "のど", "through": "とおって", "thunder": "かみなり",
+        "ticket": "きっぷ", "toe": "あしのゆび", "tofu": "とうふ", "tongue": "した",
+        "too": "…すぎる", "towel": "タオル", "tower": "タワー", "triangle": "さんかく",
+        "trumpet": "トランペット", "truth": "しんじつ", "umbrella": "かさ", "under": "した",
+        "uniform": "せいふく", "valley": "たに", "very": "とても", "violin": "バイオリン",
+        "volleyball": "バレーボール", "wall": "かべ", "we": "わたしたち", "what": "なに",
+        "wheat": "こむぎ", "wheel": "しゃりん", "when": "いつ", "where": "どこ",
+        "which": "どれ", "who": "だれ", "why": "なぜ", "wish": "ねがい",
+        "with": "いっしょに", "without": "なしで", "worm": "みみず", "wrist": "てくび",
+        "yes": "はい", "yogurt": "ヨーグルト", "your": "あなたの", "zebra": "シマウマ",
     ]
 
-    static func prompt(for word: String) -> String? {
-        prompts[word]
+    static func prompt(for word: String, useKanji: Bool = false) -> String? {
+        if useKanji, let kanji = kanjiPrompts[word] {
+            return kanji
+        }
+        return prompts[word]
     }
 }
 
@@ -2975,6 +3383,8 @@ private struct ParentNewStepSheet: View {
                             )
                         }
 
+                        ImportJapaneseOptionsView(language: language, draftText: $rawWords)
+
                         HStack {
                             Button {
                                 startCameraImport()
@@ -3032,7 +3442,7 @@ private struct ParentNewStepSheet: View {
                     .tapFeedback()
                 }
             }
-            .sheet(isPresented: $showingWordCamera) {
+            .fullScreenCover(isPresented: $showingWordCamera) {
                 WordCameraImportSheet(language: language) { image in
                     scanWordImage(image)
                 }
@@ -3146,7 +3556,14 @@ private struct ParentNewStepSheet: View {
         }
 
         let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
-        let importedLines = additions.map { formattedImportedWordLine($0, knownWords: model.words) }
+        let importedLines = additions.map {
+            formattedImportedWordLine(
+                $0,
+                knownWords: model.words,
+                attachJapanese: model.settings.importAttachJapanese,
+                useKanji: model.settings.importUseKanji
+            )
+        }
         rawWords = currentText.isEmpty
             ? importedLines.joined(separator: "\n")
             : currentText + "\n" + importedLines.joined(separator: "\n")
@@ -3317,6 +3734,8 @@ private struct ParentWordListPanel: View {
                     )
                 }
 
+                ImportJapaneseOptionsView(language: language, draftText: $rawWords)
+
                 HStack {
                     Button {
                         startCameraImport()
@@ -3377,7 +3796,7 @@ private struct ParentWordListPanel: View {
         .onChange(of: model.selectedWordStepID) { _, _ in
             reloadSelectedStep()
         }
-        .sheet(isPresented: $showingWordCamera) {
+        .fullScreenCover(isPresented: $showingWordCamera) {
             WordCameraImportSheet(language: language) { image in
                 scanWordImage(image)
             }
@@ -3495,7 +3914,14 @@ private struct ParentWordListPanel: View {
         }
 
         let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
-        let importedLines = additions.map { formattedImportedWordLine($0, knownWords: model.words) }
+        let importedLines = additions.map {
+            formattedImportedWordLine(
+                $0,
+                knownWords: model.words,
+                attachJapanese: model.settings.importAttachJapanese,
+                useKanji: model.settings.importUseKanji
+            )
+        }
         rawWords = currentText.isEmpty
             ? importedLines.joined(separator: "\n")
             : currentText + "\n" + importedLines.joined(separator: "\n")
@@ -3643,6 +4069,8 @@ private struct ParentLegacyWordListPanel: View {
                 )
             }
 
+            ImportJapaneseOptionsView(language: language, draftText: $rawWords)
+
             HStack {
                 Button {
                     startCameraImport()
@@ -3729,7 +4157,7 @@ private struct ParentLegacyWordListPanel: View {
         .onAppear {
             rawWords = wordListEditorText(model.words)
         }
-        .sheet(isPresented: $showingWordCamera) {
+        .fullScreenCover(isPresented: $showingWordCamera) {
             WordCameraImportSheet(language: language) { image in
                 scanWordImage(image)
             }
@@ -3816,7 +4244,14 @@ private struct ParentLegacyWordListPanel: View {
         }
 
         let currentText = rawWords.trimmingCharacters(in: .whitespacesAndNewlines)
-        let importedLines = additions.map { formattedImportedWordLine($0, knownWords: model.words) }
+        let importedLines = additions.map {
+            formattedImportedWordLine(
+                $0,
+                knownWords: model.words,
+                attachJapanese: model.settings.importAttachJapanese,
+                useKanji: model.settings.importUseKanji
+            )
+        }
         rawWords = currentText.isEmpty
             ? importedLines.joined(separator: "\n")
             : currentText + "\n" + importedLines.joined(separator: "\n")
@@ -3853,7 +4288,7 @@ private struct WordImportStatusBanner: View {
     }
 }
 
-private struct WordCameraImportSheet: View {
+struct WordCameraImportSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var capturedImage: UIImage?
     @State private var cropRect = WordImageCropRect.default
@@ -3910,8 +4345,10 @@ private struct WordImageCropperView: View {
     var onUseWholeImage: () -> Void
     var onRetake: () -> Void
     var onCancel: () -> Void
-    @State private var dragStartRect: WordImageCropRect?
-    @State private var resizeStartRect: WordImageCropRect?
+    // @GestureState はジェスチャ終了・キャンセル時に自動で初期値へ戻るので、
+    // 中断時に開始位置が残って次のドラッグが飛ぶ問題を防げる。
+    @GestureState private var dragStartRect: WordImageCropRect?
+    @GestureState private var resizeStartRect: WordImageCropRect?
 
     init(
         image: UIImage,
@@ -3948,7 +4385,7 @@ private struct WordImageCropperView: View {
                     Text(language.text(japanese: "読むところを合わせる", english: "Adjust Reading Area"))
                         .font(.title2.weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
-                    Text(language.text(japanese: "枠を動かして、単語だけを囲んでください。", english: "Move the frame around the words."))
+                    Text(language.text(japanese: "まんなかをドラッグで移動・四すみをドラッグで大きさ変更。", english: "Drag the middle to move · drag the corners to resize."))
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
@@ -3979,26 +4416,48 @@ private struct WordImageCropperView: View {
                     WordCropGridShape(cropFrame: cropFrame)
                         .stroke(.white.opacity(0.62), style: StrokeStyle(lineWidth: 1.4, dash: [7, 7]))
 
+                    // 枠の内側＝ドラッグで移動。判定を枠サイズに限定するため .gesture は .position の前。
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(.white, lineWidth: 3)
+                        .stroke(ParentPalette.primary, lineWidth: 3)
                         .background(Color.white.opacity(0.001))
                         .frame(width: cropFrame.width, height: cropFrame.height)
-                        .position(x: cropFrame.midX, y: cropFrame.midY)
                         .contentShape(Rectangle())
                         .gesture(moveCropGesture(imageFrame: imageFrame))
+                        .position(x: cropFrame.midX, y: cropFrame.midY)
 
+                    // まんなか：ドラッグで移動できることを示すヒント（タップは下の枠が処理）
+                    VStack(spacing: 4) {
+                        Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                            .font(.system(size: 24, weight: .heavy))
+                        Text(language.text(japanese: "ドラッグでいどう", english: "Drag to move"))
+                            .font(.caption2.weight(.heavy))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 16)
+                    .background(ParentPalette.primary.opacity(0.78), in: Capsule())
+                    .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 3)
+                    .allowsHitTesting(false)
+                    .position(x: cropFrame.midX, y: cropFrame.midY)
+
+                    // 四すみ：ドラッグで大きさ変更（斜め矢印で明示）。判定を丸に限定するため .gesture は .position の前。
                     ForEach(WordCropHandle.allCases) { handle in
                         Circle()
                             .fill(.white)
-                            .frame(width: 38, height: 38)
+                            .frame(width: 46, height: 46)
                             .overlay(
                                 Circle()
                                     .stroke(ParentPalette.primary, lineWidth: 3)
                             )
-                            .shadow(color: .black.opacity(0.25), radius: 7, x: 0, y: 3)
-                            .position(handle.position(in: cropFrame))
+                            .overlay(
+                                Image(systemName: handle.resizeSymbol)
+                                    .font(.system(size: 18, weight: .heavy))
+                                    .foregroundStyle(ParentPalette.primary)
+                            )
+                            .shadow(color: .black.opacity(0.3), radius: 7, x: 0, y: 3)
                             .contentShape(Circle())
                             .gesture(resizeCropGesture(handle: handle, imageFrame: imageFrame))
+                            .position(handle.position(in: cropFrame))
                     }
                 }
             }
@@ -4040,32 +4499,30 @@ private struct WordImageCropperView: View {
 
     private func moveCropGesture(imageFrame: CGRect) -> some Gesture {
         DragGesture(minimumDistance: 0)
+            .updating($dragStartRect) { _, state, _ in
+                if state == nil { state = cropRect }
+            }
             .onChanged { value in
                 let start = dragStartRect ?? cropRect
-                dragStartRect = start
                 cropRect = start.moved(
                     byX: value.translation.width / max(imageFrame.width, 1),
                     y: value.translation.height / max(imageFrame.height, 1)
                 )
             }
-            .onEnded { _ in
-                dragStartRect = nil
-            }
     }
 
     private func resizeCropGesture(handle: WordCropHandle, imageFrame: CGRect) -> some Gesture {
         DragGesture(minimumDistance: 0)
+            .updating($resizeStartRect) { _, state, _ in
+                if state == nil { state = cropRect }
+            }
             .onChanged { value in
                 let start = resizeStartRect ?? cropRect
-                resizeStartRect = start
                 cropRect = start.resized(
                     handle: handle,
                     deltaX: value.translation.width / max(imageFrame.width, 1),
                     deltaY: value.translation.height / max(imageFrame.height, 1)
                 )
-            }
-            .onEnded { _ in
-                resizeStartRect = nil
             }
     }
 }
@@ -4139,6 +4596,16 @@ private enum WordCropHandle: CaseIterable, Identifiable {
     case bottomRight
 
     var id: Self { self }
+
+    /// その角の対角線に沿った両矢印（リサイズできることを示す）。
+    var resizeSymbol: String {
+        switch self {
+        case .topLeft, .bottomRight:
+            return "arrow.up.left.and.arrow.down.right"
+        case .topRight, .bottomLeft:
+            return "arrow.up.right.and.arrow.down.left"
+        }
+    }
 
     func position(in frame: CGRect) -> CGPoint {
         switch self {
@@ -4391,6 +4858,17 @@ private struct TestSettingsPanel: View {
                     range: 0.10...0.60,
                     format: "%.2f"
                 )
+            }
+
+            SettingBlock(title: language.text(japanese: "クレジット", english: "Credits")) {
+                Text(language.text(
+                    japanese: "例文: Tanaka Corpus（CC BY 2.0 FR）\n英和辞書: EJDict-hand（パブリックドメイン）",
+                    english: "Examples: Tanaka Corpus (CC BY 2.0 FR)\nEN–JA dictionary: EJDict-hand (Public Domain)"
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             Button {
@@ -4899,9 +5377,14 @@ private struct ParentGradingSessionChip: View {
 }
 
 private struct ParentGradingSessionCard: View {
+    @EnvironmentObject private var model: AppModel
     var session: ParentGradingSession
     var showsOnlyUngraded: Bool
     var language: AppLanguage
+
+    // 下書き：採点完了を押すまでモデルには保存しない。未指定はデフォルトOK扱い。
+    @State private var decisionDrafts: [UUID: ParentReviewDecision] = [:]
+    @State private var exampleDrafts: [UUID: Data] = [:]
 
     private var visibleAttempts: [SpellingAttempt] {
         guard showsOnlyUngraded else {
@@ -4915,6 +5398,19 @@ private struct ParentGradingSessionCard: View {
             return session.samples
         }
         return session.samples.filter { $0.parentReviewDecision == .unreviewed }
+    }
+
+    private var visibleCount: Int {
+        visibleAttempts.count + visibleSamples.count
+    }
+
+    private var fixCount: Int {
+        visibleAttempts.filter { draftDecision(for: $0.id, current: $0.parentReviewDecision) == .needsPractice }.count
+            + visibleSamples.filter { draftDecision(for: $0.id, current: $0.parentReviewDecision) == .needsPractice }.count
+    }
+
+    private func draftDecision(for id: UUID, current: ParentReviewDecision) -> ParentReviewDecision {
+        decisionDrafts[id] ?? (current == .unreviewed ? .approved : current)
     }
 
     private var gradingColumns: [GridItem] {
@@ -4959,24 +5455,94 @@ private struct ParentGradingSessionCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
+            if visibleCount > 0 {
+                Text(language.text(
+                    japanese: "ぜんぶOKがデフォルトです。直すものだけ「直そう」にして、最後に採点完了を押してください。",
+                    english: "Everything defaults to OK. Mark only the ones to fix, then tap Done."
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+
             LazyVGrid(columns: gradingColumns, alignment: .leading, spacing: 10) {
                 ForEach(visibleAttempts) { attempt in
-                    ParentAttemptGradingCard(attempt: attempt, language: language)
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    ParentAttemptGradingCard(
+                        attempt: attempt,
+                        language: language,
+                        decision: draftDecision(for: attempt.id, current: attempt.parentReviewDecision),
+                        exampleData: exampleDrafts[attempt.id] ?? attempt.parentExampleDrawingData,
+                        setDecision: { decisionDrafts[attempt.id] = $0 },
+                        setExample: { exampleDrafts[attempt.id] = $0 }
+                    )
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
                 }
 
                 ForEach(visibleSamples) { sample in
-                    ParentPracticeGradingCard(sample: sample, language: language)
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    ParentPracticeGradingCard(
+                        sample: sample,
+                        language: language,
+                        decision: draftDecision(for: sample.id, current: sample.parentReviewDecision),
+                        exampleData: exampleDrafts[sample.id] ?? sample.parentExampleDrawingData,
+                        setDecision: { decisionDrafts[sample.id] = $0 },
+                        setExample: { exampleDrafts[sample.id] = $0 }
+                    )
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
                 }
             }
+            .animation(.easeInOut(duration: 0.18), value: decisionDrafts)
             .animation(.easeInOut(duration: 0.22), value: visibleAttempts.map(\.id))
             .animation(.easeInOut(duration: 0.22), value: visibleSamples.map(\.id))
+
+            if visibleCount > 0 {
+                Button {
+                    completeGrading()
+                } label: {
+                    Label(
+                        fixCount > 0
+                            ? language.text(japanese: "採点完了（直す \(fixCount)こ・のこりはOK）", english: "Done — \(fixCount) to fix, rest OK")
+                            : language.text(japanese: "ぜんぶOKで採点完了", english: "Mark all OK & Done"),
+                        systemImage: "checkmark.seal.fill"
+                    )
+                    .font(.headline.weight(.heavy))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(ParentPalette.success)
+                .tapFeedback(scale: 0.96, bounce: true)
+            }
         }
         .padding(10)
         .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
+    }
+
+    private func completeGrading() {
+        let attemptsToCommit = visibleAttempts
+        let samplesToCommit = visibleSamples
+
+        withAnimation(.easeInOut(duration: 0.24)) {
+            for attempt in attemptsToCommit {
+                let decision = draftDecision(for: attempt.id, current: attempt.parentReviewDecision)
+                let example = exampleDrafts[attempt.id] ?? attempt.parentExampleDrawingData
+                model.updateAttemptParentReview(
+                    attempt,
+                    decision: decision,
+                    exampleDrawingData: decision == .needsPractice ? example : nil
+                )
+            }
+            for sample in samplesToCommit {
+                let decision = draftDecision(for: sample.id, current: sample.parentReviewDecision)
+                let example = exampleDrafts[sample.id] ?? sample.parentExampleDrawingData
+                model.updatePracticeSampleParentReview(
+                    sample,
+                    decision: decision,
+                    exampleDrawingData: decision == .needsPractice ? example : nil
+                )
+            }
+        }
     }
 }
 
@@ -5001,25 +5567,18 @@ private struct GradingCountPill: View {
 }
 
 private struct ParentAttemptGradingCard: View {
-    @EnvironmentObject private var model: AppModel
-    @State private var pendingReviewDecision: ParentReviewDecision?
-    @State private var isCompletingReview = false
     var attempt: SpellingAttempt
     var language: AppLanguage
-
-    private var isApproved: Bool {
-        attempt.parentReviewDecision == .approved
-    }
-
-    private var needsPractice: Bool {
-        attempt.parentReviewDecision == .needsPractice
-    }
+    var decision: ParentReviewDecision
+    var exampleData: Data?
+    var setDecision: (ParentReviewDecision) -> Void
+    var setExample: (Data) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             GradingItemHeader(
                 word: attempt.word,
-                decision: attempt.parentReviewDecision,
+                decision: decision,
                 language: language,
                 detail: attempt.recognizedText.isEmpty ? nil : "OCR: \(attempt.recognizedText)"
             )
@@ -5028,93 +5587,45 @@ private struct ParentAttemptGradingCard: View {
                 GradingDrawingPreview(drawingData: drawingData, mode: .test, storedCanvasSize: attempt.canvasSize)
             }
 
-            if isApproved {
+            if decision == .approved {
                 ParentApprovedBanner(language: language)
             }
 
             ParentReviewButtons(
-                decision: attempt.parentReviewDecision,
-                pendingDecision: pendingReviewDecision,
+                decision: decision,
+                pendingDecision: nil,
                 language: language,
-                approve: {
-                    runReviewFeedback(.approved) {
-                        model.updateAttemptParentReview(attempt, decision: .approved)
-                    }
-                },
-                needsPractice: {
-                    runReviewFeedback(.needsPractice) {
-                        model.updateAttemptParentReview(attempt, decision: .needsPractice)
-                    }
-                }
+                approve: { setDecision(.approved) },
+                needsPractice: { setDecision(.needsPractice) }
             )
 
-            if needsPractice {
+            if decision == .needsPractice {
                 ParentNeedsPracticeBanner(isTest: true, language: language)
 
                 ParentExampleEditor(
                     word: attempt.word,
-                    initialData: attempt.parentExampleDrawingData,
+                    initialData: exampleData,
                     language: language,
                     affectsTestScore: true,
-                    save: { data in
-                        model.updateAttemptParentReview(attempt, decision: .needsPractice, exampleDrawingData: data)
-                    }
+                    save: { data in setExample(data) }
                 )
             }
         }
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .topLeading)
-        .background(gradingBackground(for: attempt.parentReviewDecision))
+        .background(gradingBackground(for: decision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(alignment: .topTrailing) {
-            if let pendingReviewDecision {
-                ParentReviewActionToast(decision: pendingReviewDecision, language: language)
-                    .padding(10)
-                    .transition(.scale(scale: 0.86, anchor: .topTrailing).combined(with: .opacity))
-            }
-        }
-        .scaleEffect(isCompletingReview ? 0.985 : 1)
-        .shadow(
-            color: reviewTint(for: pendingReviewDecision ?? attempt.parentReviewDecision).opacity(isCompletingReview ? 0.22 : 0),
-            radius: isCompletingReview ? 14 : 0,
-            x: 0,
-            y: 8
-        )
-        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: pendingReviewDecision)
-        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: isCompletingReview)
-    }
-
-    private func runReviewFeedback(_ decision: ParentReviewDecision, commit: @escaping () -> Void) {
-        guard pendingReviewDecision == nil else {
-            return
-        }
-
-        withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
-            pendingReviewDecision = decision
-            isCompletingReview = true
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.42) {
-            withAnimation(.easeInOut(duration: 0.18)) {
-                commit()
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                withAnimation(.easeInOut(duration: 0.16)) {
-                    pendingReviewDecision = nil
-                    isCompletingReview = false
-                }
-            }
-        }
+        .animation(.easeInOut(duration: 0.18), value: decision)
     }
 }
 
 private struct ParentPracticeGradingCard: View {
-    @EnvironmentObject private var model: AppModel
-    @State private var pendingReviewDecision: ParentReviewDecision?
-    @State private var isCompletingReview = false
     var sample: PracticeSample
     var language: AppLanguage
+    var decision: ParentReviewDecision
+    var exampleData: Data?
+    var setDecision: (ParentReviewDecision) -> Void
+    var setExample: (Data) -> Void
 
     private var modeLabel: String {
         if sample.mode == SessionMode.review.rawValue {
@@ -5123,103 +5634,46 @@ private struct ParentPracticeGradingCard: View {
         return language.text(japanese: "れんしゅう", english: "Practice")
     }
 
-    private var isApproved: Bool {
-        sample.parentReviewDecision == .approved
-    }
-
-    private var needsPractice: Bool {
-        sample.parentReviewDecision == .needsPractice
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             GradingItemHeader(
                 word: sample.word,
-                decision: sample.parentReviewDecision,
+                decision: decision,
                 language: language,
                 detail: modeLabel
             )
 
             GradingDrawingPreview(drawingData: sample.drawingData, mode: .practice, storedCanvasSize: sample.canvasSize)
 
-            if isApproved {
+            if decision == .approved {
                 ParentApprovedBanner(language: language)
             }
 
             ParentReviewButtons(
-                decision: sample.parentReviewDecision,
-                pendingDecision: pendingReviewDecision,
+                decision: decision,
+                pendingDecision: nil,
                 language: language,
-                approve: {
-                    runReviewFeedback(.approved) {
-                        model.updatePracticeSampleParentReview(sample, decision: .approved)
-                    }
-                },
-                needsPractice: {
-                    runReviewFeedback(.needsPractice) {
-                        model.updatePracticeSampleParentReview(sample, decision: .needsPractice)
-                    }
-                }
+                approve: { setDecision(.approved) },
+                needsPractice: { setDecision(.needsPractice) }
             )
 
-            if needsPractice {
+            if decision == .needsPractice {
                 ParentNeedsPracticeBanner(isTest: false, language: language)
 
                 ParentExampleEditor(
                     word: sample.word,
-                    initialData: sample.parentExampleDrawingData,
+                    initialData: exampleData,
                     language: language,
                     affectsTestScore: false,
-                    save: { data in
-                        model.updatePracticeSampleParentReview(sample, decision: .needsPractice, exampleDrawingData: data)
-                    }
+                    save: { data in setExample(data) }
                 )
             }
         }
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .topLeading)
-        .background(gradingBackground(for: sample.parentReviewDecision))
+        .background(gradingBackground(for: decision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(alignment: .topTrailing) {
-            if let pendingReviewDecision {
-                ParentReviewActionToast(decision: pendingReviewDecision, language: language)
-                    .padding(10)
-                    .transition(.scale(scale: 0.86, anchor: .topTrailing).combined(with: .opacity))
-            }
-        }
-        .scaleEffect(isCompletingReview ? 0.985 : 1)
-        .shadow(
-            color: reviewTint(for: pendingReviewDecision ?? sample.parentReviewDecision).opacity(isCompletingReview ? 0.22 : 0),
-            radius: isCompletingReview ? 14 : 0,
-            x: 0,
-            y: 8
-        )
-        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: pendingReviewDecision)
-        .animation(.spring(response: 0.24, dampingFraction: 0.82), value: isCompletingReview)
-    }
-
-    private func runReviewFeedback(_ decision: ParentReviewDecision, commit: @escaping () -> Void) {
-        guard pendingReviewDecision == nil else {
-            return
-        }
-
-        withAnimation(.spring(response: 0.24, dampingFraction: 0.82)) {
-            pendingReviewDecision = decision
-            isCompletingReview = true
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.42) {
-            withAnimation(.easeInOut(duration: 0.18)) {
-                commit()
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                withAnimation(.easeInOut(duration: 0.16)) {
-                    pendingReviewDecision = nil
-                    isCompletingReview = false
-                }
-            }
-        }
+        .animation(.easeInOut(duration: 0.18), value: decision)
     }
 }
 
@@ -5499,44 +5953,6 @@ enum WritingGuideSnapshotRenderer {
         context.addLine(to: CGPoint(x: end, y: y))
         context.strokePath()
         context.restoreGState()
-    }
-}
-
-private struct ParentReviewActionToast: View {
-    var decision: ParentReviewDecision
-    var language: AppLanguage
-
-    private var title: String {
-        switch decision {
-        case .approved:
-            return language.text(japanese: "OK 保存しました", english: "OK saved")
-        case .needsPractice:
-            return language.text(japanese: "直そう 保存しました", english: "Fix saved")
-        case .unreviewed:
-            return language.text(japanese: "保存しました", english: "Saved")
-        }
-    }
-
-    private var systemImage: String {
-        switch decision {
-        case .approved:
-            return "checkmark.seal.fill"
-        case .needsPractice:
-            return "pencil.circle.fill"
-        case .unreviewed:
-            return "checkmark.circle.fill"
-        }
-    }
-
-    var body: some View {
-        Label(title, systemImage: systemImage)
-            .font(.subheadline.weight(.heavy))
-            .foregroundStyle(.white)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
-            .background(reviewTint(for: decision).gradient)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .shadow(color: reviewTint(for: decision).opacity(0.26), radius: 12, x: 0, y: 6)
     }
 }
 

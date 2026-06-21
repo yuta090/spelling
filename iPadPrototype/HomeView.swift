@@ -1,7 +1,10 @@
 import SwiftUI
+import UIKit
 
 struct HomeView: View {
     @EnvironmentObject private var model: AppModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @StateObject private var iris = IrisController()
     @State private var activeMode: SessionMode?
     @State private var showingParent = false
     @State private var showingResults = false
@@ -90,7 +93,8 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        ZStack {
+            NavigationStack {
             ZStack(alignment: .bottom) {
                 HomeBackground()
 
@@ -121,7 +125,11 @@ struct HomeView: View {
                             showWords: { showingWordPreview = true },
                             showStepPicker: { showingStepPicker = true },
                             showCharacters: { showingCharacterPicker = true },
-                            startTest: { activeMode = .test }
+                            startTest: {
+                                iris.cover(animated: !reduceMotion) {
+                                    activeMode = .test
+                                }
+                            }
                         )
                     }
                     .frame(maxWidth: 760)
@@ -153,6 +161,11 @@ struct HomeView: View {
                     },
                     onPracticeRetryWords: { words in
                         startPracticeAgain(words: words)
+                    },
+                    onRequestClose: {
+                        iris.cover(animated: !reduceMotion) {
+                            activeMode = nil
+                        }
                     }
                 )
             }
@@ -170,6 +183,7 @@ struct HomeView: View {
                     stepTitle: model.selectedWordStep?.title(language: language) ?? language.text(japanese: "いまのステップ", english: "Current step"),
                     language: language
                 )
+                .environmentObject(model)
             }
             .sheet(isPresented: $showingPracticeRetryPicker) {
                 PracticeRetryPickerSheet(
@@ -209,6 +223,9 @@ struct HomeView: View {
             clearCompletedPracticeRoundIfWordsChanged()
             clearPracticeResumeIfWordsChanged()
         }
+
+            IrisTransitionOverlay(controller: iris)
+        }
     }
 
     private func startPractice() {
@@ -224,7 +241,9 @@ struct HomeView: View {
 
         completedPracticeWordIDs = []
         clearPracticeResumeIfWordsChanged()
-        activeMode = .practice
+        iris.cover(animated: !reduceMotion) {
+            activeMode = .practice
+        }
     }
 
     private func startPracticeAgain(words: [String]) {
@@ -257,7 +276,7 @@ struct HomeView: View {
         practiceResumeState = nil
         showingPracticeRetryPicker = false
         activeMode = nil
-        DispatchQueue.main.async {
+        iris.cover(animated: !reduceMotion) {
             activeMode = .practice
         }
     }
@@ -378,7 +397,7 @@ struct HomeView: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(HomeIconButtonStyle())
-            .tapFeedback()
+            .tapFeedback(scale: 0.88, bounce: true)
             .accessibilityLabel(language.text(japanese: "結果", english: "Results"))
 
             Button {
@@ -389,7 +408,7 @@ struct HomeView: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(HomeIconButtonStyle())
-            .tapFeedback()
+            .tapFeedback(scale: 0.88, bounce: true)
             .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
         }
     }
@@ -491,7 +510,7 @@ private struct ChildMissionPanel: View {
                             .frame(width: 118, height: 118)
                     }
                     .buttonStyle(.plain)
-                    .tapFeedback(scale: 0.94)
+                    .tapFeedback(scale: 0.92, bounce: true)
                     .accessibilityLabel(language.text(japanese: "\(character.name(language: language))を選ぶ", english: "Choose \(character.name(language: language))"))
                 }
 
@@ -521,7 +540,7 @@ private struct ChildMissionPanel: View {
                     }
                     .buttonStyle(.plain)
                     .contentShape(Capsule())
-                    .tapFeedback()
+                    .tapFeedback(scale: 0.93, bounce: true)
                     .disabled(!canSwitchSteps)
                     .accessibilityLabel(language.text(japanese: "\(stepTitle)を変える", english: "Change \(stepTitle)"))
 
@@ -555,7 +574,7 @@ private struct ChildMissionPanel: View {
             }
             .buttonStyle(.borderedProminent)
             .contentShape(RoundedRectangle(cornerRadius: 8))
-            .tapFeedback()
+            .tapFeedback(scale: 0.92, bounce: true)
             .tint(primaryButtonTint)
             .disabled(isPrimaryButtonDisabled)
 
@@ -630,7 +649,7 @@ private struct MissionSmallButton: View {
         }
         .buttonStyle(.bordered)
         .contentShape(RoundedRectangle(cornerRadius: 8))
-        .tapFeedback()
+        .tapFeedback(scale: 0.93, bounce: true)
         .tint(tint)
         .disabled(disabled)
     }
@@ -792,10 +811,13 @@ private struct ChildStepPickerCard: View {
 }
 
 private struct PracticeWordPreviewSheet: View {
+    @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
     var words: [SpellingWord]
     var stepTitle: String
     var language: AppLanguage
+
+    @State private var showingChildAddWords = false
 
     private let columns = [
         GridItem(.adaptive(minimum: 170, maximum: 240), spacing: 12)
@@ -818,6 +840,22 @@ private struct PracticeWordPreviewSheet: View {
                         }
 
                         Spacer()
+
+                        Button {
+                            showingChildAddWords = true
+                        } label: {
+                            Label(
+                                language.text(japanese: "ことばをふやす", english: "Add Words"),
+                                systemImage: "plus.circle.fill"
+                            )
+                            .font(.title3.weight(.heavy))
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 18)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(Color(red: 0.49, green: 0.30, blue: 0.78))
+                        .tapFeedback(scale: 0.93, bounce: true)
+                        .accessibilityLabel(language.text(japanese: "じぶんでことばをふやす", english: "Add your own words"))
                     }
 
                     if words.isEmpty {
@@ -850,7 +888,185 @@ private struct PracticeWordPreviewSheet: View {
                     .font(.headline.weight(.bold))
                 }
             }
+            .sheet(isPresented: $showingChildAddWords) {
+                ChildAddWordSheet(language: language) {
+                    // 登録できたらプレビューを閉じてホームへ。こども専用ステップが選ばれている。
+                    dismiss()
+                }
+                .environmentObject(model)
+            }
         }
+    }
+}
+
+private struct ChildAddWordSheet: View {
+    @EnvironmentObject private var model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    var language: AppLanguage
+    var onRegistered: () -> Void
+
+    @State private var rawText = ""
+    @State private var showingCamera = false
+    @State private var isReadingImage = false
+    @State private var statusMessage: String?
+
+    private var canRegister: Bool {
+        !rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var cameraAvailable: Bool {
+        UIImagePickerController.isSourceTypeAvailable(.camera)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                HomeBackground()
+
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(language.text(japanese: "じぶんで ことばを ふやそう", english: "Add Your Own Words"))
+                        .font(.system(size: 30, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
+
+                    Text(language.text(
+                        japanese: "1ぎょうに 1つ えいごを かいてね。いみは「cat | ねこ」のように かけるよ。",
+                        english: "One word per line. Add a meaning like \"cat | ねこ\"."
+                    ))
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                    ImportJapaneseOptionsView(language: language, draftText: $rawText)
+
+                    Button {
+                        showingCamera = true
+                    } label: {
+                        Label(
+                            isReadingImage
+                                ? language.text(japanese: "よみとり中…", english: "Reading…")
+                                : language.text(japanese: "カメラでとりこむ", english: "Use Camera"),
+                            systemImage: "camera.fill"
+                        )
+                        .font(.title3.weight(.heavy))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Color(red: 0.14, green: 0.35, blue: 0.76))
+                    .tapFeedback(scale: 0.95, bounce: true)
+                    .disabled(!cameraAvailable || isReadingImage)
+
+                    if !cameraAvailable {
+                        Text(language.text(japanese: "このタブレットには カメラが ないみたい。", english: "No camera on this device."))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    TextEditor(text: $rawText)
+                        .font(.system(size: 22, weight: .semibold, design: .rounded))
+                        .frame(minHeight: 200)
+                        .scrollContentBackground(.hidden)
+                        .padding(10)
+                        .background(.white.opacity(0.92))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1.5)
+                        )
+
+                    if let statusMessage {
+                        Text(statusMessage)
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(Color(red: 0.20, green: 0.58, blue: 0.24))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Button {
+                        register()
+                    } label: {
+                        Label(language.text(japanese: "とうろくする", english: "Register"), systemImage: "checkmark.circle.fill")
+                            .font(.title2.weight(.heavy))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color(red: 0.20, green: 0.58, blue: 0.24))
+                    .tapFeedback(scale: 0.93, bounce: true)
+                    .disabled(!canRegister)
+
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: 680)
+                .padding(28)
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                }
+            }
+            .fullScreenCover(isPresented: $showingCamera) {
+                WordCameraImportSheet(language: language) { image in
+                    readImage(image)
+                }
+                .ignoresSafeArea()
+            }
+        }
+    }
+
+    private func register() {
+        let count = model.addChildWords(from: rawText)
+        guard count > 0 else {
+            statusMessage = language.text(japanese: "あたらしい ことばが ないみたい。", english: "No new words to add.")
+            return
+        }
+        onRegistered()
+    }
+
+    private func readImage(_ image: UIImage) {
+        isReadingImage = true
+        statusMessage = nil
+        Task {
+            do {
+                let recognized = try await WordListImageTextRecognizer(language: model.settings.language)
+                    .recognizeWords(in: image)
+                await MainActor.run {
+                    appendWords(recognized)
+                    isReadingImage = false
+                }
+            } catch {
+                await MainActor.run {
+                    statusMessage = language.text(japanese: "よみとれなかったよ。もういちど ためしてね。", english: "Couldn't read it. Try again.")
+                    isReadingImage = false
+                }
+            }
+        }
+    }
+
+    private func appendWords(_ recognized: [String]) {
+        let cleaned = recognized
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        guard !cleaned.isEmpty else {
+            statusMessage = language.text(japanese: "ことばが 見つからなかったよ。", english: "No words found.")
+            return
+        }
+        let lines = cleaned.map {
+            formattedImportedWordLine(
+                $0,
+                knownWords: model.words,
+                attachJapanese: model.settings.importAttachJapanese,
+                useKanji: model.settings.importUseKanji
+            )
+        }.filter { !$0.isEmpty }
+        let existing = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let appended = lines.joined(separator: "\n")
+        rawText = existing.isEmpty ? appended : existing + "\n" + appended
+        statusMessage = language.text(japanese: "\(cleaned.count)こ よみとったよ！", english: "Read \(cleaned.count) words!")
     }
 }
 

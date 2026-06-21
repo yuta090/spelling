@@ -25,7 +25,7 @@ struct ParentWordListView: View {
 
                 HStack {
                     Button {
-                        rawWords = wordListEditorText(model.words)
+                        rawWords = wordListEditorText(model.words.filter { $0.source != .child })
                     } label: {
                         Label("Reload", systemImage: "arrow.clockwise")
                     }
@@ -51,8 +51,20 @@ struct ParentWordListView: View {
 
                 List(model.words) { word in
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(word.text)
-                            .font(.title3)
+                        HStack(spacing: 8) {
+                            Text(word.text)
+                                .font(.title3)
+                            if word.source == .child {
+                                Text(language.text(japanese: "こども", english: "Child"))
+                                    .font(.caption2.weight(.heavy))
+                                    .foregroundStyle(.white)
+                                    .padding(.vertical, 3)
+                                    .padding(.horizontal, 8)
+                                    .background(Color(red: 0.49, green: 0.30, blue: 0.78))
+                                    .clipShape(Capsule())
+                            }
+                            Spacer(minLength: 0)
+                        }
                         if !word.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             HStack(alignment: .firstTextBaseline, spacing: 6) {
                                 Text("Hint:")
@@ -88,7 +100,7 @@ struct ParentWordListView: View {
                 }
             }
             .onAppear {
-                rawWords = wordListEditorText(model.words)
+                rawWords = wordListEditorText(model.words.filter { $0.source != .child })
             }
         }
     }

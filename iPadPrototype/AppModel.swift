@@ -1,5 +1,73 @@
 import Foundation
+import SQLite3
 import SwiftData
+
+/// 同梱 wordbank.sqlite（EJDict訳語＋Tanaka例文）への読み取り専用アクセス。
+struct WordExample: Identifiable, Equatable, Sendable {
+    let id = UUID()
+    let en: String
+    let ja: String
+}
+
+/// 読み取り専用・メインスレッドからの利用を想定（UIから同期参照）。`db` は init で一度だけ設定。
+final class WordBank: @unchecked Sendable {
+    static let shared = WordBank()
+    private var db: OpaquePointer?
+    private static let transient = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
+
+    private init() {
+        guard let url = Bundle.main.url(forResource: "wordbank", withExtension: "sqlite") else {
+            return
+        }
+        if sqlite3_open_v2(url.path, &db, SQLITE_OPEN_READONLY, nil) != SQLITE_OK {
+            sqlite3_close(db)
+            db = nil
+        }
+    }
+
+    deinit {
+        sqlite3_close(db)
+    }
+
+    /// 英単語に対する日本語訳（EJDict）。
+    func japanese(for word: String) -> String? {
+        let key = normalize(word)
+        guard !key.isEmpty, let db else { return nil }
+        var stmt: OpaquePointer?
+        defer { sqlite3_finalize(stmt) }
+        guard sqlite3_prepare_v2(db, "SELECT ja FROM gloss WHERE word = ? LIMIT 1", -1, &stmt, nil) == SQLITE_OK else {
+            return nil
+        }
+        sqlite3_bind_text(stmt, 1, key, -1, Self.transient)
+        if sqlite3_step(stmt) == SQLITE_ROW, let c = sqlite3_column_text(stmt, 0) {
+            let value = String(cString: c)
+            return value.isEmpty ? nil : value
+        }
+        return nil
+    }
+
+    /// 英単語を含む例文（英＋日）。短い順。
+    func examples(for word: String, limit: Int = 3) -> [WordExample] {
+        let key = normalize(word)
+        guard !key.isEmpty, let db else { return [] }
+        var stmt: OpaquePointer?
+        defer { sqlite3_finalize(stmt) }
+        guard sqlite3_prepare_v2(db, "SELECT en, ja FROM examples WHERE word = ? ORDER BY n LIMIT ?", -1, &stmt, nil) == SQLITE_OK else {
+            return []
+        }
+        sqlite3_bind_text(stmt, 1, key, -1, Self.transient)
+        sqlite3_bind_int(stmt, 2, Int32(min(max(limit, 1), 50)))
+        var output: [WordExample] = []
+        while sqlite3_step(stmt) == SQLITE_ROW {
+            let en = sqlite3_column_text(stmt, 0).map { String(cString: $0) } ?? ""
+            let ja = sqlite3_column_text(stmt, 1).map { String(cString: $0) } ?? ""
+            if !en.isEmpty {
+                output.append(WordExample(en: en, ja: ja))
+            }
+        }
+        return output
+    }
+}
 
 @MainActor
 final class AppModel: ObservableObject {
@@ -158,7 +226,8 @@ final class AppModel: ObservableObject {
     }
 
     func carryOverReviewWords(for step: WordStep) -> [SpellingWord] {
-        guard let previousStep = previousWordStep(before: step) else {
+        // こども専用ステップは前のステップの復習を引き継がない（親の単語と混ざらないように）。
+        guard !step.isChildStep, let previousStep = previousWordStep(before: step) else {
             return []
         }
         return unresolvedReviewWords(for: previousStep)
@@ -199,7 +268,11 @@ final class AppModel: ObservableObject {
         guard let index = steps.firstIndex(where: { $0.id == step.id }), index > 0 else {
             return nil
         }
-        return steps[index - 1]
+        // こども専用ステップはスキップして直前の親ステップを探す。
+        for previousIndex in stride(from: index - 1, through: 0, by: -1) where !steps[previousIndex].isChildStep {
+            return steps[previousIndex]
+        }
+        return nil
     }
 
     private func latestSchoolMissDatesByWord(for step: WordStep) -> [String: Date] {
@@ -331,18 +404,24 @@ final class AppModel: ObservableObject {
         practiceSamples.filter { Calendar.current.isDateInToday($0.date) }
     }
 
+    /// こどもが登録した単語をまとめる専用ステップのID。
+    static let childWordStepID = "child-words"
+
     func replaceWords(from rawText: String) {
         let entries = parseWordListEntries(from: rawText)
         let now = Date()
+        // こどもが登録した単語は親の一括編集の対象外として残す。
+        let childWords = words.filter { $0.source == .child }
+        let parentWords = words.filter { $0.source != .child }
         var existingWordsByText: [String: SpellingWord] = [:]
-        for word in words {
+        for word in parentWords {
             let key = normalize(word.text)
             if existingWordsByText[key] == nil {
                 existingWordsByText[key] = word
             }
         }
 
-        let updatedWords = entries.map { entry in
+        let updatedParentWords = entries.map { entry in
             let key = normalize(entry.text)
             var word = existingWordsByText[key] ?? SpellingWord(text: key, registeredAt: now)
             word.text = key
@@ -351,12 +430,56 @@ final class AppModel: ObservableObject {
             }
             return word
         }
-        let addedNewWords = updatedWords.contains { existingWordsByText[normalize($0.text)] == nil }
+        let addedNewWords = updatedParentWords.contains { existingWordsByText[normalize($0.text)] == nil }
 
-        words = updatedWords
+        words = updatedParentWords + childWords
         if addedNewWords {
-            selectedWordStepID = Self.defaultWordStepID(for: updatedWords)
+            selectedWordStepID = Self.defaultWordStepID(for: words)
         }
+    }
+
+    /// こどもが自分のたんごメニューから登録する。専用ステップにまとめ、source = .child を付ける。
+    @discardableResult
+    func addChildWords(from rawText: String) -> Int {
+        let entries = parseWordListEntries(from: rawText)
+        guard !entries.isEmpty else {
+            return 0
+        }
+
+        let now = Date()
+        var updatedWords = words
+        var existingChildKeys = Set(
+            words.filter { $0.stepID == Self.childWordStepID }.map { normalize($0.text) }
+        )
+        var addedCount = 0
+
+        for entry in entries {
+            let key = normalize(entry.text)
+            guard !key.isEmpty, !existingChildKeys.contains(key) else {
+                continue
+            }
+            existingChildKeys.insert(key)
+            let promptText = entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            updatedWords.append(
+                SpellingWord(
+                    text: key,
+                    promptText: promptText,
+                    registeredAt: now,
+                    stepID: Self.childWordStepID,
+                    source: .child
+                )
+            )
+            addedCount += 1
+        }
+
+        if updatedWords != words {
+            words = updatedWords
+        }
+        if addedCount > 0 {
+            selectedWordStepID = Self.childWordStepID
+        }
+
+        return addedCount
     }
 
     @discardableResult
@@ -380,16 +503,21 @@ final class AppModel: ObservableObject {
             }
         }
 
+        // こども専用ステップを編集する場合は、新しい単語にも .child を付けて区別を保つ。
+        let stepSource: WordSource = (step.isChildStep || step.id == Self.childWordStepID) ? .child : .parent
+
         let replacementWords = entries.map { entry in
             let key = normalize(entry.text)
             var word = existingWordsByText[key] ?? SpellingWord(
                 text: key,
                 registeredAt: fallbackRegisteredAt,
-                stepID: explicitStepID
+                stepID: explicitStepID,
+                source: stepSource
             )
             word.text = key
             word.promptText = entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             word.stepID = explicitStepID
+            word.source = stepSource
             return word
         }
 
@@ -696,7 +824,13 @@ final class AppModel: ObservableObject {
             guard let group = groups[id] else {
                 return nil
             }
-            return WordStep(id: id, number: index + 1, registeredDate: group.date, words: group.words)
+            return WordStep(
+                id: id,
+                number: index + 1,
+                registeredDate: group.date,
+                words: group.words,
+                isChildStep: id == childWordStepID
+            )
         }
     }
 

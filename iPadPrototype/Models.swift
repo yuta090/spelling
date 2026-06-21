@@ -1,12 +1,19 @@
 import CoreGraphics
 import Foundation
 
+/// 単語を誰が登録したか。既存データは親登録として読み込まれる。
+enum WordSource: String, Codable, Equatable, Sendable {
+    case parent
+    case child
+}
+
 struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var text: String
     var promptText = ""
     var registeredAt = Date()
     var stepID: String?
+    var source: WordSource = .parent
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -14,14 +21,16 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
         case promptText
         case registeredAt
         case stepID
+        case source
     }
 
-    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date(), stepID: String? = nil) {
+    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date(), stepID: String? = nil, source: WordSource = .parent) {
         self.id = id
         self.text = text
         self.promptText = promptText
         self.registeredAt = registeredAt
         self.stepID = stepID
+        self.source = source
     }
 
     init(from decoder: Decoder) throws {
@@ -31,6 +40,7 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
         promptText = try container.decodeIfPresent(String.self, forKey: .promptText) ?? ""
         registeredAt = try container.decodeIfPresent(Date.self, forKey: .registeredAt) ?? Date()
         stepID = try container.decodeIfPresent(String.self, forKey: .stepID)
+        source = try container.decodeIfPresent(WordSource.self, forKey: .source) ?? .parent
     }
 }
 
@@ -39,9 +49,13 @@ struct WordStep: Identifiable, Equatable, Sendable {
     var number: Int
     var registeredDate: Date
     var words: [SpellingWord]
+    var isChildStep: Bool = false
 
     func title(language: AppLanguage) -> String {
-        language.text(japanese: "ステップ \(number)", english: "Step \(number)")
+        if isChildStep {
+            return language.text(japanese: "こどものたんご", english: "My Words")
+        }
+        return language.text(japanese: "ステップ \(number)", english: "Step \(number)")
     }
 }
 
@@ -427,6 +441,10 @@ struct TestSettings: Equatable, Codable, Sendable {
     var writingAreaSize: WritingAreaSize = .standard
     var autoCorrectConfidence: Float = 0.80
     var lowConfidence: Float = 0.35
+    /// カメラ取り込み時に日本語訳を自動で付けるか。
+    var importAttachJapanese: Bool = true
+    /// 日本語訳に漢字（ふりがな付き）を使うか。false ならひらがな・カタカナのみ。
+    var importUseKanji: Bool = false
 
     enum CodingKeys: String, CodingKey {
         case appLanguage
@@ -439,6 +457,8 @@ struct TestSettings: Equatable, Codable, Sendable {
         case writingAreaSize
         case autoCorrectConfidence
         case lowConfidence
+        case importAttachJapanese
+        case importUseKanji
     }
 
     init() {}
@@ -455,6 +475,8 @@ struct TestSettings: Equatable, Codable, Sendable {
         writingAreaSize = try container.decodeIfPresent(WritingAreaSize.self, forKey: .writingAreaSize) ?? .standard
         autoCorrectConfidence = try container.decodeIfPresent(Float.self, forKey: .autoCorrectConfidence) ?? 0.80
         lowConfidence = try container.decodeIfPresent(Float.self, forKey: .lowConfidence) ?? 0.35
+        importAttachJapanese = try container.decodeIfPresent(Bool.self, forKey: .importAttachJapanese) ?? true
+        importUseKanji = try container.decodeIfPresent(Bool.self, forKey: .importUseKanji) ?? false
     }
 }
 
@@ -658,6 +680,13 @@ struct OCRGrader {
 func normalize(_ text: String) -> String {
     let allowed = Set("abcdefghijklmnopqrstuvwxyz")
     return String(text.lowercased().filter { allowed.contains($0) })
+}
+
+extension Character {
+    /// 漢字（CJK表意文字）かどうか。ふりがな「漢字[よみ]」の base 判定に使う。
+    var isHan: Bool {
+        unicodeScalars.contains { $0.properties.isIdeographic }
+    }
 }
 
 struct WordListEntry: Equatable, Sendable {

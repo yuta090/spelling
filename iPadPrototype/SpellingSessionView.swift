@@ -12,6 +12,8 @@ struct SpellingSessionView: View {
     private let onPracticeCompleted: () -> Void
     private let onPracticeStartTest: () -> Void
     private let onPracticeRetryWords: ([String]) -> Void
+    /// ホームへ戻る操作。指定時はアイリス遷移を挟むためこちらを使う（未指定は素の dismiss）。
+    private let onRequestClose: (() -> Void)?
     @State private var sessionWords: [SpellingWord]
 
     @State private var index = 0
@@ -54,13 +56,15 @@ struct SpellingSessionView: View {
         onPracticeProgressChange: @escaping (PracticeSessionResumeState?) -> Void = { _ in },
         onPracticeCompleted: @escaping () -> Void = {},
         onPracticeStartTest: @escaping () -> Void = {},
-        onPracticeRetryWords: @escaping ([String]) -> Void = { _ in }
+        onPracticeRetryWords: @escaping ([String]) -> Void = { _ in },
+        onRequestClose: (() -> Void)? = nil
     ) {
         self.mode = mode
         self.onPracticeProgressChange = onPracticeProgressChange
         self.onPracticeCompleted = onPracticeCompleted
         self.onPracticeStartTest = onPracticeStartTest
         self.onPracticeRetryWords = onPracticeRetryWords
+        self.onRequestClose = onRequestClose
 
         let orderedWords = mode == .test ? words.shuffled() : words
         let maxIndex = max(orderedWords.count - 1, 0)
@@ -302,6 +306,17 @@ struct SpellingSessionView: View {
         return currentPromptText
     }
 
+    private func goHome() {
+        // 戻る操作はアイリス遷移で実際の pop が遅れるため、先にタイマーを止めて
+        // 遷移中にテストの時間切れが誤って記録されないようにする。
+        stopTimer()
+        if let onRequestClose {
+            onRequestClose()
+        } else {
+            dismiss()
+        }
+    }
+
     var body: some View {
         ZStack {
             SessionBackground()
@@ -313,7 +328,7 @@ struct SpellingSessionView: View {
                     onStartTest: mode == .practice && !sessionWords.isEmpty ? onPracticeStartTest : nil,
                     onPracticeRetry: mode == .practice ? onPracticeRetryWords : nil,
                     onDone: {
-                        dismiss()
+                        goHome()
                     }
                 )
                 .transition(.opacity)
@@ -325,7 +340,7 @@ struct SpellingSessionView: View {
                     attempts: sessionAttempts,
                     language: language,
                     onDone: {
-                        dismiss()
+                        goHome()
                     }
                 )
                 .transition(.opacity)
@@ -443,7 +458,7 @@ struct SpellingSessionView: View {
     private var header: some View {
         HStack(spacing: 14) {
             Button {
-                dismiss()
+                goHome()
             } label: {
                 Label(language.text(japanese: "ホームにもどる", english: "Home"), systemImage: "house.fill")
                     .font(.headline.weight(.bold))
@@ -487,7 +502,11 @@ struct SpellingSessionView: View {
         if mode == .test {
             testQuestionHeader
         } else {
-            practiceWordHeader
+            VStack(spacing: 8) {
+                practiceWordHeader
+                // 練習・復習では例文をヒント表示（テストは答えが見えてしまうので出さない）。
+                ExampleHintView(word: currentWord.text, language: language)
+            }
         }
     }
 
@@ -889,7 +908,7 @@ struct SpellingSessionView: View {
             } else if mode == .test {
                 finishTestWhenGradesAreReady()
             } else {
-                dismiss()
+                goHome()
             }
         } else {
             index += 1
@@ -2682,6 +2701,47 @@ private struct PracticeButtonTapEffectOverlay: View {
     }
 }
 
+private struct ExampleHintView: View {
+    var word: String
+    var language: AppLanguage
+    @State private var example: WordExample?
+
+    var body: some View {
+        Group {
+            if let example {
+                VStack(alignment: .leading, spacing: 3) {
+                    Label(language.text(japanese: "れいぶん", english: "Example"), systemImage: "text.quote")
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.45, green: 0.32, blue: 0.66))
+                    Text(example.en)
+                        .font(.system(size: 19, weight: .semibold, design: .rounded))
+                        .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.45))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(example.ja)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: 700, alignment: .leading)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 14)
+                .background(.white.opacity(0.72))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color(red: 0.80, green: 0.84, blue: 0.95), lineWidth: 1)
+                )
+            }
+        }
+        .onAppear { load() }
+        .onChange(of: word) { _, _ in load() }
+    }
+
+    private func load() {
+        example = WordBank.shared.examples(for: word, limit: 1).first
+    }
+}
+
 private struct ReviewHintPanel: View {
     var word: String
     var language: AppLanguage
@@ -3434,7 +3494,8 @@ private func splitRubyBase(from text: String) -> (prefix: String, base: String)?
     while current > text.startIndex {
         let previous = text.index(before: current)
         let character = text[previous]
-        if character.isWhitespace || character.isASCII {
+        // ふりがなは直前の漢字（Han）だけに付ける。かな（助詞「を」など）は base に含めない。
+        if !character.isHan {
             break
         }
         current = previous
