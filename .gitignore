@@ -7,3 +7,6 @@ generated/
 *.xcuserdata/
 xcuserdata/
 UserInterfaceState.xcuserstate
+
+# Claude Code local state
+.claude/

@@ -813,11 +813,13 @@ private struct ChildStepPickerCard: View {
 private struct PracticeWordPreviewSheet: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var speech = SpeechPlayer()
     var words: [SpellingWord]
     var stepTitle: String
     var language: AppLanguage
 
     @State private var showingChildAddWords = false
+    @State private var expandedWordID: UUID?
 
     private let columns = [
         GridItem(.adaptive(minimum: 170, maximum: 240), spacing: 12)
@@ -866,9 +868,17 @@ private struct PracticeWordPreviewSheet: View {
                         )
                     } else {
                         ScrollView {
-                            LazyVGrid(columns: columns, spacing: 12) {
+                            LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
                                 ForEach(words) { word in
-                                    PracticeWordPreviewChip(word: word)
+                                    PracticeWordPreviewChip(
+                                        word: word,
+                                        language: language,
+                                        isExpanded: expandedWordID == word.id,
+                                        onTap: { tapWord(word) },
+                                        speak: { text in
+                                            speech.speak(text, language: model.settings.language, rate: model.settings.speechRate)
+                                        }
+                                    )
                                 }
                             }
                             .padding(.vertical, 2)
@@ -895,6 +905,14 @@ private struct PracticeWordPreviewSheet: View {
                 }
                 .environmentObject(model)
             }
+        }
+    }
+
+    private func tapWord(_ word: SpellingWord) {
+        // タップで発音。あわせて例文の表示/非表示をトグル（同時に開くのは1つだけ）。
+        speech.speak(word.text, language: model.settings.language, rate: model.settings.speechRate)
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.82)) {
+            expandedWordID = (expandedWordID == word.id) ? nil : word.id
         }
     }
 }
@@ -1072,38 +1090,104 @@ private struct ChildAddWordSheet: View {
 
 private struct PracticeWordPreviewChip: View {
     var word: SpellingWord
+    var language: AppLanguage
+    var isExpanded: Bool
+    var onTap: () -> Void
+    var speak: (String) -> Void
+
+    @State private var example: WordExample?
 
     private var prompt: String {
         word.promptText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(word.text)
-                .font(.system(size: 30, weight: .heavy, design: .rounded))
-                .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
-                .lineLimit(1)
-                .minimumScaleFactor(0.62)
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(word.text)
+                        .font(.system(size: 30, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Color(red: 0.11, green: 0.27, blue: 0.62))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.62)
 
-            if !prompt.isEmpty {
-                RubyPromptText(
-                    text: prompt,
-                    baseFontSize: 18,
-                    rubyFontSize: 8,
-                    baseColor: Color(red: 0.18, green: 0.38, blue: 0.72),
-                    rubyColor: Color(red: 0.46, green: 0.32, blue: 0.64),
-                    maxLines: 1
-                )
+                    Spacer(minLength: 4)
+
+                    Image(systemName: "speaker.wave.2.fill")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78).opacity(0.8))
+                }
+
+                if !prompt.isEmpty {
+                    RubyPromptText(
+                        text: prompt,
+                        baseFontSize: 18,
+                        rubyFontSize: 8,
+                        baseColor: Color(red: 0.18, green: 0.38, blue: 0.72),
+                        rubyColor: Color(red: 0.46, green: 0.32, blue: 0.64),
+                        maxLines: 1
+                    )
+                }
+
+                if isExpanded {
+                    exampleSection
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 86, alignment: .leading)
+            .padding(14)
+            .background(.white.opacity(isExpanded ? 0.96 : 0.90))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        isExpanded ? Color(red: 0.49, green: 0.30, blue: 0.78).opacity(0.7) : Color(red: 0.72, green: 0.82, blue: 0.96),
+                        lineWidth: isExpanded ? 2 : 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .tapFeedback(scale: 0.96, bounce: true)
+        .onChange(of: isExpanded) { _, expanded in
+            if expanded, example == nil {
+                example = WordBank.shared.examples(for: word.text, limit: 1).first
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 86, alignment: .leading)
-        .padding(14)
-        .background(.white.opacity(0.90))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: 1)
-        )
+    }
+
+    @ViewBuilder
+    private var exampleSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Divider()
+            if let example {
+                HStack(alignment: .top, spacing: 8) {
+                    Text(example.en)
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.45))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Button {
+                        speak(example.en)
+                    } label: {
+                        Image(systemName: "play.circle.fill")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(Color(red: 0.49, green: 0.30, blue: 0.78))
+                    }
+                    .buttonStyle(.plain)
+                    .tapFeedback(scale: 0.9, bounce: true)
+                    .accessibilityLabel(language.text(japanese: "れいぶんを よむ", english: "Play example"))
+                }
+                Text(example.ja)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text(language.text(japanese: "れいぶんは ないよ", english: "No example"))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+        }
     }
 }
 
