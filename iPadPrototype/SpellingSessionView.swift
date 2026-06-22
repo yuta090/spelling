@@ -126,16 +126,12 @@ struct SpellingSessionView: View {
 
     /// 最後のラウンド（なぞり文字をゆっくり消して自分で書かせる回）かどうか。
     private var isGuideFadeRound: Bool {
-        if ProcessInfo.processInfo.environment["DEMO_FADE_ALWAYS"] == "1" {
-            return mode == .practice && capturesPracticeSamples
-        }
-        return mode == .practice && capturesPracticeSamples && practiceRepetitionCount > 1 && isLastPracticeRepeat
+        mode == .practice && capturesPracticeSamples && practiceRepetitionCount > 1 && isLastPracticeRepeat
     }
 
     /// このラウンドで日本語訳・例文ヒントを表示するか。
     private var showsPracticeHint: Bool {
         guard mode != .test else { return false }
-        if ProcessInfo.processInfo.environment["DEMO_FADE_ALWAYS"] == "1" { return true }
         switch model.settings.practiceHintTiming {
         case .never:
             return false

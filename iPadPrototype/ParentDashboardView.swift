@@ -5969,10 +5969,10 @@ private struct ParentReviewToggleButton: View {
                 .foregroundStyle(isSelected ? .white : tint)
                 .background(isSelected ? tint : Color.clear)
                 .clipShape(Capsule())
+                .contentShape(Capsule())
                 .scaleEffect(isPending ? 1.04 : 1)
         }
         .buttonStyle(.plain)
-        .contentShape(Capsule())
         .tapFeedback()
     }
 }
