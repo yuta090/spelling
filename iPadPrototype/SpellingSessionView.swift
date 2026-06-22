@@ -124,6 +124,24 @@ struct SpellingSessionView: View {
         practiceRepeatIndex >= practiceRepetitionCount - 1
     }
 
+    /// 最後のラウンド（なぞり文字をゆっくり消して自分で書かせる回）かどうか。
+    private var isGuideFadeRound: Bool {
+        mode == .practice && capturesPracticeSamples && practiceRepetitionCount > 1 && isLastPracticeRepeat
+    }
+
+    /// このラウンドで日本語訳・例文ヒントを表示するか。
+    private var showsPracticeHint: Bool {
+        guard mode != .test else { return false }
+        switch model.settings.practiceHintTiming {
+        case .never:
+            return false
+        case .everyRound:
+            return true
+        case .lastRound:
+            return isLastPracticeRepeat
+        }
+    }
+
     private var isPracticeRepeatAdvanceButton: Bool {
         mode == .practice && capturesPracticeSamples && !isLastPracticeRepeat
     }
@@ -386,7 +404,8 @@ struct SpellingSessionView: View {
                             sampleText: mode.showsWord ? currentWord.text : nil,
                             capture: drawingCapture,
                             isInputEnabled: isCanvasInputEnabled,
-                            minimumHeight: 0
+                            minimumHeight: 0,
+                            fadesSampleText: isGuideFadeRound
                         )
                         .id(canvasResetID)
                         .frame(maxWidth: writingCanvasMaxWidth)
@@ -504,8 +523,11 @@ struct SpellingSessionView: View {
         } else {
             VStack(spacing: 8) {
                 practiceWordHeader
-                // 練習・復習では例文をヒント表示（テストは答えが見えてしまうので出さない）。
-                ExampleHintView(word: currentWord.text, language: language)
+                // 練習・復習では日本語訳・例文をヒント表示（テストは答えが見えてしまうので出さない）。
+                // 表示タイミングは設定（既定は最後のラウンドのみ）に従う。
+                if showsPracticeHint {
+                    ExampleHintView(word: currentWord.text, language: language)
+                }
             }
         }
     }
@@ -640,6 +662,7 @@ struct SpellingSessionView: View {
                     guideLabels: guideLabels,
                     language: language,
                     isMissing: compactPracticeMissingWordIDs.contains(word.id),
+                    fadesSampleText: isGuideFadeRound,
                     onPlay: {
                         speech.speak(word.text, language: model.settings.language, rate: model.settings.speechRate)
                     },
@@ -1656,6 +1679,7 @@ private struct CompactPracticeWritingCell: View {
     var guideLabels: [String]
     var language: AppLanguage
     var isMissing: Bool
+    var fadesSampleText = false
     var onPlay: () -> Void
     var onClear: () -> Void
     var onMeasure: (CGSize) -> Void
@@ -1706,7 +1730,8 @@ private struct CompactPracticeWritingCell: View {
                 sampleText: word.text,
                 capture: nil,
                 isInputEnabled: true,
-                minimumHeight: 0
+                minimumHeight: 0,
+                fadesSampleText: fadesSampleText
             )
             .id(resetID)
             .frame(height: canvasHeight)
@@ -2704,23 +2729,41 @@ private struct PracticeButtonTapEffectOverlay: View {
 private struct ExampleHintView: View {
     var word: String
     var language: AppLanguage
+    @State private var meaning: String?
     @State private var example: WordExample?
 
     var body: some View {
         Group {
-            if let example {
-                VStack(alignment: .leading, spacing: 3) {
-                    Label(language.text(japanese: "れいぶん", english: "Example"), systemImage: "text.quote")
-                        .font(.caption.weight(.heavy))
-                        .foregroundStyle(Color(red: 0.45, green: 0.32, blue: 0.66))
-                    Text(example.en)
-                        .font(.system(size: 19, weight: .semibold, design: .rounded))
-                        .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.45))
-                        .fixedSize(horizontal: false, vertical: true)
-                    Text(example.ja)
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+            if meaning != nil || example != nil {
+                VStack(alignment: .leading, spacing: 8) {
+                    if let meaning {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Label(language.text(japanese: "いみ", english: "Meaning"), systemImage: "character.book.closed.fill")
+                                .font(.caption.weight(.heavy))
+                                .foregroundStyle(Color(red: 0.20, green: 0.45, blue: 0.40))
+                            Text(meaning)
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.45))
+                                .lineLimit(3)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+
+                    if let example {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Label(language.text(japanese: "れいぶん", english: "Example"), systemImage: "text.quote")
+                                .font(.caption.weight(.heavy))
+                                .foregroundStyle(Color(red: 0.45, green: 0.32, blue: 0.66))
+                            Text(example.en)
+                                .font(.system(size: 19, weight: .semibold, design: .rounded))
+                                .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.45))
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(example.ja)
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
                 }
                 .frame(maxWidth: 700, alignment: .leading)
                 .padding(.vertical, 8)
@@ -2738,6 +2781,7 @@ private struct ExampleHintView: View {
     }
 
     private func load() {
+        meaning = WordBank.shared.japanese(for: word)
         example = WordBank.shared.examples(for: word, limit: 1).first
     }
 }

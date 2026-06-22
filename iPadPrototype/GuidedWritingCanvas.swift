@@ -95,6 +95,9 @@ struct CanvasFitGeometry {
 }
 
 struct GuidedWritingCanvas: View {
+    /// お手本文字の通常時の濃さ。
+    static let sampleTextBaseOpacity: Double = 0.30
+
     @Binding var drawing: PKDrawing
     var mode: PracticeMode
     var guideLabels: [String] = ["Top line", "Mid line", "Base line", "Descender"]
@@ -102,6 +105,13 @@ struct GuidedWritingCanvas: View {
     var capture: DrawingCapture? = nil
     var isInputEnabled = true
     var minimumHeight: CGFloat = 285
+    /// なぞり用のお手本文字を時間でゆっくり消すか（自分で書く練習用）。
+    var fadesSampleText = false
+    /// フェードにかける秒数。
+    var fadeDuration: Double = 7
+
+    /// このビューが生成されてから（＝ラウンド開始から）の濃さ。`.id` 付け替えで毎回 0.30 にリセットされる。
+    @State private var sampleOpacity = GuidedWritingCanvas.sampleTextBaseOpacity
 
     var body: some View {
         ZStack {
@@ -112,13 +122,14 @@ struct GuidedWritingCanvas: View {
 
                     Text(sampleText)
                         .font(.system(size: layout.sampleTextFontSize, weight: .regular, design: .rounded))
-                        .foregroundStyle(Color.black.opacity(0.30))
+                        .foregroundStyle(Color.black.opacity(sampleOpacity))
                         .offset(y: layout.sampleTextYOffset)
                         .minimumScaleFactor(0.35)
                         .lineLimit(1)
                         .padding(.horizontal, mode == .practice ? 80 : 130)
                         .frame(width: proxy.size.width, height: proxy.size.height)
                         .allowsHitTesting(false)
+                        .onAppear(perform: startSampleFadeIfNeeded)
                 }
             }
             PencilCanvasView(drawing: $drawing, capture: capture, isInputEnabled: isInputEnabled)
@@ -133,6 +144,15 @@ struct GuidedWritingCanvas: View {
             }
         }
         .shadow(color: mode == .practice ? Color(red: 0.42, green: 0.48, blue: 0.66).opacity(0.10) : .clear, radius: 14, x: 0, y: 8)
+    }
+
+    private func startSampleFadeIfNeeded() {
+        guard fadesSampleText else { return }
+        // 開始時は通常の濃さで見せ、そこから時間をかけて 0 まで薄くする。
+        sampleOpacity = Self.sampleTextBaseOpacity
+        withAnimation(.easeInOut(duration: fadeDuration)) {
+            sampleOpacity = 0
+        }
     }
 
     private var canvasBackground: some View {

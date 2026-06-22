@@ -407,6 +407,17 @@ final class AppModel: ObservableObject {
     /// こどもが登録した単語をまとめる専用ステップのID。
     static let childWordStepID = "child-words"
 
+    /// 指定IDの単語をまとめて削除する（親メニューの一括削除用）。
+    func deleteWords(ids: Set<UUID>) {
+        guard !ids.isEmpty else {
+            return
+        }
+        let remaining = words.filter { !ids.contains($0.id) }
+        if remaining.count != words.count {
+            words = remaining
+        }
+    }
+
     func replaceWords(from rawText: String) {
         let entries = parseWordListEntries(from: rawText)
         let now = Date()

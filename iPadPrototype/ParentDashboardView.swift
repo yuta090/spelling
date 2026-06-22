@@ -49,12 +49,14 @@ struct ParentDashboardView: View {
                     .animation(.easeInOut(duration: 0.16), value: selectedSection)
                     .frame(maxHeight: .infinity)
 
-                    Text(language.text(
-                        japanese: "※ データは端末内に保存されます。iCloud同期にはまだ対応していません。",
-                        english: "Data is saved on this device. iCloud sync is not included yet."
-                    ))
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    if selectedSection != .grading {
+                        Text(language.text(
+                            japanese: "※ データは端末内に保存されます。iCloud同期にはまだ対応していません。",
+                            english: "Data is saved on this device. iCloud sync is not included yet."
+                        ))
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    }
                 }
                 .padding(22)
             }
@@ -3629,6 +3631,7 @@ private struct ParentWordListPanel: View {
     @State private var rawWords = ""
     @State private var showingWordCamera = false
     @State private var showingAllWords = false
+    @State private var showingBatchManager = false
     @State private var isScanningWordImage = false
     @State private var importMessage: String?
     @State private var importSucceeded = false
@@ -3673,6 +3676,16 @@ private struct ParentWordListPanel: View {
                     Spacer()
 
                     Button {
+                        showingBatchManager = true
+                    } label: {
+                        Label(language.text(japanese: "登録の管理", english: "Manage"), systemImage: "calendar.badge.clock")
+                            .font(.subheadline.weight(.bold))
+                    }
+                    .buttonStyle(.bordered)
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
+
+                    Button {
                         showingAllWords = true
                     } label: {
                         Label(language.text(japanese: "全単語を見る", english: "All Words"), systemImage: "tray.full.fill")
@@ -3682,6 +3695,22 @@ private struct ParentWordListPanel: View {
                     .tapFeedback()
                     .tint(ParentPalette.primary)
                 }
+
+                Button {
+                    startCameraImport()
+                } label: {
+                    Label(
+                        isScanningWordImage ? language.text(japanese: "読み取り中", english: "Scanning") : language.text(japanese: "カメラで読み取り", english: "Scan Camera"),
+                        systemImage: "camera.fill"
+                    )
+                    .font(.headline.weight(.bold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+                }
+                .buttonStyle(.borderedProminent)
+                .tapFeedback()
+                .tint(ParentPalette.primary)
+                .disabled(isScanningWordImage)
 
                 HStack(alignment: .center, spacing: 10) {
                     Label(
@@ -3738,19 +3767,6 @@ private struct ParentWordListPanel: View {
 
                 HStack {
                     Button {
-                        startCameraImport()
-                    } label: {
-                        Label(
-                            isScanningWordImage ? language.text(japanese: "読み取り中", english: "Scanning") : language.text(japanese: "カメラで読み取り", english: "Scan Camera"),
-                            systemImage: "camera.fill"
-                        )
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tapFeedback()
-                    .tint(ParentPalette.primary)
-                    .disabled(isScanningWordImage)
-
-                    Button {
                         reloadSelectedStep()
                     } label: {
                         Label(language.text(japanese: "戻す", english: "Reload"), systemImage: "arrow.clockwise")
@@ -3804,6 +3820,11 @@ private struct ParentWordListPanel: View {
         }
         .sheet(isPresented: $showingAllWords) {
             ParentAllWordsSheet(language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showingBatchManager) {
+            WordRegistrationManagerView(language: language)
                 .environmentObject(model)
                 .presentationDetents([.large])
         }
@@ -3939,26 +3960,158 @@ private struct ParentWordRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(word.text)
                     .font(.headline.weight(.semibold))
-                if !word.promptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                        Text(language.text(japanese: "ヒント:", english: "Prompt:"))
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        RubyPromptText(
-                            text: word.promptText,
-                            baseFontSize: 13,
-                            rubyFontSize: 7,
-                            baseColor: ParentPalette.primary,
-                            rubyColor: ParentPalette.neutral,
-                            maxLines: 1
-                        )
-                    }
-                }
             }
 
             Spacer()
         }
         .padding(.vertical, 8)
+    }
+}
+
+/// 登録1回ぶん（同じ source・登録時刻）の単語のまとまり。
+private struct WordRegistrationBatch: Identifiable {
+    let id: String
+    let source: WordSource
+    let date: Date
+    let words: [SpellingWord]
+}
+
+/// 登録のまとまりごとに一覧表示して、まとめて削除できる親用ビュー。
+private struct WordRegistrationManagerView: View {
+    @EnvironmentObject private var model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    var language: AppLanguage
+
+    @State private var pendingDelete: WordRegistrationBatch?
+
+    private var batches: [WordRegistrationBatch] {
+        let groups = Dictionary(grouping: model.words) { word -> String in
+            let second = Int(word.registeredAt.timeIntervalSinceReferenceDate.rounded())
+            return "\(word.source.rawValue)#\(second)"
+        }
+        return groups.map { key, words -> WordRegistrationBatch in
+            let sorted = words.sorted { $0.text < $1.text }
+            return WordRegistrationBatch(
+                id: key,
+                source: sorted.first?.source ?? .parent,
+                date: sorted.first?.registeredAt ?? Date(),
+                words: sorted
+            )
+        }
+        .sorted { $0.date > $1.date } // 新しい登録が上（直近のスパムをすぐ消せる）
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if batches.isEmpty {
+                    ContentUnavailableView(
+                        language.text(japanese: "単語がありません", english: "No words"),
+                        systemImage: "tray",
+                        description: Text(language.text(japanese: "まだ単語が登録されていません。", english: "No words registered yet."))
+                    )
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            Text(language.text(
+                                japanese: "登録したタイミングごとにまとまっています。いらないまとまりは「まとめて削除」で消せます。",
+                                english: "Grouped by when they were added. Remove unwanted groups with Delete."
+                            ))
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            ForEach(batches) { batch in
+                                batchCard(batch)
+                            }
+                        }
+                        .padding(20)
+                    }
+                }
+            }
+            .navigationTitle(language.text(japanese: "登録のまとめ", english: "Registrations"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                }
+            }
+            .alert(
+                language.text(japanese: "このまとまりを削除しますか？", english: "Delete this group?"),
+                isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
+                presenting: pendingDelete
+            ) { batch in
+                Button(
+                    language.text(japanese: "\(batch.words.count)個を削除", english: "Delete \(batch.words.count)"),
+                    role: .destructive
+                ) {
+                    model.deleteWords(ids: Set(batch.words.map(\.id)))
+                    pendingDelete = nil
+                }
+                Button(language.text(japanese: "やめる", english: "Cancel"), role: .cancel) {
+                    pendingDelete = nil
+                }
+            } message: { batch in
+                Text(batch.words.map(\.text).joined(separator: ", "))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func batchCard(_ batch: WordRegistrationBatch) -> some View {
+        let isChild = batch.source == .child
+        let tint = isChild ? Color(red: 0.49, green: 0.30, blue: 0.78) : ParentPalette.primary
+
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                Text(isChild ? language.text(japanese: "こども", english: "Child") : language.text(japanese: "おとな", english: "Parent"))
+                    .font(.caption2.weight(.heavy))
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 3)
+                    .padding(.horizontal, 8)
+                    .background(tint)
+                    .clipShape(Capsule())
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(formattedLocalizedDateTime(batch.date, language: language))
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                    Text(language.text(japanese: "\(batch.words.count)個", english: "\(batch.words.count) words"))
+                        .font(.caption.monospacedDigit().weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Button {
+                    pendingDelete = batch
+                } label: {
+                    Label(language.text(japanese: "まとめて削除", english: "Delete"), systemImage: "trash.fill")
+                        .font(.subheadline.weight(.bold))
+                }
+                .buttonStyle(.bordered)
+                .tapFeedback()
+                .tint(ParentPalette.warning)
+            }
+
+            Text(batch.words.map(\.text).joined(separator: "、"))
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(ParentPalette.ink.opacity(0.85))
+                .lineLimit(3)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(14)
+        .background(ParentPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(tint.opacity(0.28), lineWidth: 1)
+        )
     }
 }
 
@@ -4849,6 +5002,32 @@ private struct TestSettingsPanel: View {
                         value: "\(model.settings.practiceRepetitions)"
                     )
                 }
+
+                Text(language.text(japanese: "日本語訳・例文のヒント", english: "Meaning & example hint"))
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Picker(language.text(japanese: "ヒント表示", english: "Hint timing"), selection: $model.settings.practiceHintTiming) {
+                    ForEach(PracticeHintTiming.allCases) { timing in
+                        Text(timing.label(language: language)).tag(timing)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel(language.text(japanese: "練習中のヒント表示タイミング", english: "Practice hint timing"))
+
+                Text(model.settings.practiceHintTiming.description(language: language))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(language.text(
+                    japanese: "最後のラウンドでは、なぞるお手本の文字がゆっくり消えて、自分で書く練習になります。",
+                    english: "On the final round the model letters fade out so the child writes from memory."
+                ))
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
             }
 
             SettingBlock(title: language.text(japanese: "OCR判定", english: "OCR Grading")) {
@@ -6043,6 +6222,18 @@ private struct ParentExampleEditor: View {
 
             ZStack {
                 FourLineGuide(mode: .practice, labels: parentGuideLabels(language: language))
+                GeometryReader { proxy in
+                    let layout = WritingGuideLayout(size: proxy.size)
+                    Text(word)
+                        .font(.system(size: layout.sampleTextFontSize, weight: .regular, design: .rounded))
+                        .foregroundStyle(Color.black.opacity(0.22))
+                        .offset(y: layout.sampleTextYOffset)
+                        .minimumScaleFactor(0.35)
+                        .lineLimit(1)
+                        .padding(.horizontal, 80)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .allowsHitTesting(false)
+                }
                 PencilCanvasView(drawing: $drawing, capture: capture)
             }
             .frame(height: 210)
