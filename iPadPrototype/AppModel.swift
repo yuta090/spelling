@@ -9,6 +9,12 @@ struct WordExample: Identifiable, Equatable, Sendable {
     let ja: String
 }
 
+struct LeveledWord: Identifiable, Equatable, Sendable {
+    var id: String { word }
+    let word: String
+    let ja: String
+}
+
 /// 読み取り専用・メインスレッドからの利用を想定（UIから同期参照）。`db` は init で一度だけ設定。
 final class WordBank: @unchecked Sendable {
     static let shared = WordBank()
@@ -67,6 +73,39 @@ final class WordBank: @unchecked Sendable {
         }
         return output
     }
+
+    /// レベル別の単語（訳語付き）。dolch（US学年）または band（難易度1〜5）のどちらかで絞る。
+    /// `excluding`（正規化済み英単語）に含まれる語は除外。頻度順（やさしい順）。
+    func leveledWords(dolch: String?, band: Int?, excluding: Set<String>, limit: Int) -> [LeveledWord] {
+        guard let db else { return [] }
+        var sql = "SELECT l.word, g.ja FROM level l JOIN gloss g ON g.word = l.word WHERE "
+        if dolch != nil {
+            sql += "l.dolch = ?"
+        } else if band != nil {
+            sql += "l.band = ?"
+        } else {
+            return []
+        }
+        sql += " ORDER BY (l.ngsl_rank IS NULL), l.ngsl_rank, l.word"
+        var stmt: OpaquePointer?
+        defer { sqlite3_finalize(stmt) }
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { return [] }
+        if let dolch {
+            sqlite3_bind_text(stmt, 1, dolch, -1, Self.transient)
+        } else if let band {
+            sqlite3_bind_int(stmt, 1, Int32(band))
+        }
+        var output: [LeveledWord] = []
+        let cap = min(max(limit, 1), 100)
+        while sqlite3_step(stmt) == SQLITE_ROW, output.count < cap {
+            let word = sqlite3_column_text(stmt, 0).map { String(cString: $0) } ?? ""
+            let ja = sqlite3_column_text(stmt, 1).map { String(cString: $0) } ?? ""
+            if !word.isEmpty, !ja.isEmpty, !excluding.contains(word) {
+                output.append(LeveledWord(word: word, ja: ja))
+            }
+        }
+        return output
+    }
 }
 
 @MainActor
@@ -117,8 +156,8 @@ final class AppModel: ObservableObject {
     @Published var focusedPracticeWordIDs = Set<UUID>()
 
     static let practiceCoinReward = 3
-    static let defaultCharacterID = "bear"
-    static let defaultUnlockedCharacterIDs: Set<String> = ["bear", "cat", "dog"]
+    static let defaultCharacterID = HomeRewardCharacter.defaultID
+    static let defaultUnlockedCharacterIDs: Set<String> = HomeRewardCharacter.defaultUnlockedIDs
 
     private let persistenceStore: AppPersistenceStore
     private let wordsKey = "spellingTrainer.words"

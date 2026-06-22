@@ -3632,6 +3632,7 @@ private struct ParentWordListPanel: View {
     @State private var showingWordCamera = false
     @State private var showingAllWords = false
     @State private var showingBatchManager = false
+    @State private var showingLevelSet = false
     @State private var isScanningWordImage = false
     @State private var importMessage: String?
     @State private var importSucceeded = false
@@ -3674,6 +3675,16 @@ private struct ParentWordListPanel: View {
                     }
 
                     Spacer()
+
+                    Button {
+                        showingLevelSet = true
+                    } label: {
+                        Label(language.text(japanese: "レベルで作成", english: "By Level"), systemImage: "chart.bar.doc.horizontal")
+                            .font(.subheadline.weight(.bold))
+                    }
+                    .buttonStyle(.bordered)
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
 
                     Button {
                         showingBatchManager = true
@@ -3819,6 +3830,11 @@ private struct ParentWordListPanel: View {
                 .environmentObject(model)
                 .presentationDetents([.large])
         }
+        .sheet(isPresented: $showingLevelSet) {
+            WordLevelSetSheet(language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
+        }
     }
 
     private func reloadSelectedStep() {
@@ -3956,6 +3972,182 @@ private struct ParentWordRow: View {
             Spacer()
         }
         .padding(.vertical, 8)
+    }
+}
+
+/// レベル（US学年=Dolch / 難易度=NGSL頻度）を選んで、おすすめ単語のステップを自動作成する。
+private struct WordLevelSetSheet: View {
+    @EnvironmentObject private var model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    var language: AppLanguage
+
+    private enum Axis: String, CaseIterable, Identifiable {
+        case grade, difficulty
+        var id: String { rawValue }
+    }
+
+    @State private var axis: Axis = .grade
+    @State private var grade = "1"
+    @State private var band = 1
+    @State private var count = 15
+    @State private var statusMessage: String?
+
+    private let grades = ["pre-K", "K", "1", "2", "3"]
+
+    private func gradeLabel(_ g: String) -> String {
+        switch g {
+        case "pre-K": return language.text(japanese: "にゅうもん", english: "Pre-K")
+        case "K": return language.text(japanese: "きほん", english: "K")
+        default: return language.text(japanese: "US \(g)年生", english: "US Grade \(g)")
+        }
+    }
+
+    private func bandLabel(_ b: Int) -> String {
+        let name: String
+        switch b {
+        case 1: name = language.text(japanese: "とてもやさしい", english: "Very easy")
+        case 2: name = language.text(japanese: "やさしい", english: "Easy")
+        case 3: name = language.text(japanese: "ふつう", english: "Medium")
+        case 4: name = language.text(japanese: "むずかしい", english: "Hard")
+        default: name = language.text(japanese: "とてもむずかしい", english: "Very hard")
+        }
+        return "Lv\(b)・\(name)"
+    }
+
+    private var existing: Set<String> {
+        Set(model.words.map { normalize($0.text) })
+    }
+
+    private var candidates: [LeveledWord] {
+        WordBank.shared.leveledWords(
+            dolch: axis == .grade ? grade : nil,
+            band: axis == .difficulty ? band : nil,
+            excluding: existing,
+            limit: count
+        )
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Picker("", selection: $axis) {
+                        Text(language.text(japanese: "US学年", english: "US Grade")).tag(Axis.grade)
+                        Text(language.text(japanese: "難易度", english: "Difficulty")).tag(Axis.difficulty)
+                    }
+                    .pickerStyle(.segmented)
+
+                    if axis == .grade {
+                        Picker(language.text(japanese: "学年", english: "Grade"), selection: $grade) {
+                            ForEach(grades, id: \.self) { Text(gradeLabel($0)).tag($0) }
+                        }
+                        .pickerStyle(.segmented)
+                        Text(language.text(
+                            japanese: "Dolch（アメリカの小学校の読み・スペル用の語）。\"US 1年生\"はネイティブ向けの目安です。",
+                            english: "Dolch sight words (US elementary reading/spelling). US grades are native-speaker levels."
+                        ))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    } else {
+                        Picker(language.text(japanese: "難易度", english: "Difficulty"), selection: $band) {
+                            ForEach(1...5, id: \.self) { Text("Lv\($0)").tag($0) }
+                        }
+                        .pickerStyle(.segmented)
+                        Text(bandLabel(band))
+                            .font(.subheadline.weight(.heavy))
+                            .foregroundStyle(ParentPalette.primary)
+                        Text(language.text(
+                            japanese: "NGSL（使われる頻度）による難易度。やさしい＝よく使う語。",
+                            english: "Difficulty by NGSL word frequency. Easy = very common words."
+                        ))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Stepper(value: $count, in: 5...30, step: 5) {
+                        Text(language.text(japanese: "最大 \(count)語", english: "Up to \(count) words"))
+                            .font(.subheadline.weight(.bold))
+                    }
+
+                    Divider()
+
+                    if candidates.isEmpty {
+                        Text(language.text(
+                            japanese: "このレベルで追加できる新しい単語がありません（すでに登録済みかも）。",
+                            english: "No new words available at this level (they may already be registered)."
+                        ))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    } else {
+                        Text(language.text(japanese: "ふくまれる単語（\(candidates.count)）", english: "Words (\(candidates.count))"))
+                            .font(.subheadline.weight(.heavy))
+                            .foregroundStyle(ParentPalette.ink)
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 8)], alignment: .leading, spacing: 8) {
+                            ForEach(candidates) { item in
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(item.word)
+                                        .font(.subheadline.weight(.heavy))
+                                        .foregroundStyle(ParentPalette.ink)
+                                    Text(item.ja)
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(8)
+                                .background(ParentPalette.surfaceTint)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                    }
+
+                    if let statusMessage {
+                        Text(statusMessage)
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(ParentPalette.success)
+                    }
+
+                    Button {
+                        createSet()
+                    } label: {
+                        Label(language.text(japanese: "このセットを作る", english: "Create This Set"), systemImage: "plus.circle.fill")
+                            .font(.headline.weight(.heavy))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
+                    .disabled(candidates.isEmpty)
+                }
+                .padding(20)
+            }
+            .navigationTitle(language.text(japanese: "レベルで単語を作る", english: "Add Words by Level"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                }
+            }
+        }
+    }
+
+    private func createSet() {
+        let words = candidates
+        guard !words.isEmpty else { return }
+        let rawText = words.map { "\($0.word) | \($0.ja)" }.joined(separator: "\n")
+        let result = model.addWordsToStep(from: rawText)
+        statusMessage = language.text(
+            japanese: "\(result.added)語のステップを作りました。",
+            english: "Created a step with \(result.added) words."
+        )
     }
 }
 
