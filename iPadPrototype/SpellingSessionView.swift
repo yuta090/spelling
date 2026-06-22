@@ -48,6 +48,12 @@ struct SpellingSessionView: View {
     @State private var compactPracticeResetIDs: [UUID: UUID] = [:]
     @State private var compactPracticeMissingWordIDs: Set<UUID> = []
     @State private var practiceCelebrationCoinReward = AppModel.practiceCoinReward
+    /// なぞり練習でゆっくり消えるお手本文字の濃さ。ラウンド/単語が変わるたびにフェードし直す
+    /// （消す・戻すではリセットしない）。
+    @State private var guideSampleOpacity = GuidedWritingCanvas.sampleTextBaseOpacity
+
+    /// お手本フェードにかける秒数。
+    private let guideFadeDuration: Double = 7
 
     init(
         mode: SessionMode,
@@ -129,9 +135,23 @@ struct SpellingSessionView: View {
         mode == .practice && capturesPracticeSamples && practiceRepetitionCount > 1 && isLastPracticeRepeat
     }
 
+    /// 単語/ラウンドが変わったときに、お手本フェードを開始（または濃さを戻す）。
+    /// 消す・戻す（`canvasResetID` 更新）では呼ばないので、フェードが巻き戻らない。
+    private func refreshGuideFade() {
+        let base = GuidedWritingCanvas.sampleTextBaseOpacity
+        guideSampleOpacity = base
+        guard isGuideFadeRound else { return }
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut(duration: guideFadeDuration)) {
+                guideSampleOpacity = 0
+            }
+        }
+    }
+
     /// このラウンドで日本語訳・例文ヒントを表示するか。
+    /// 復習(review)には専用の `ReviewHintPanel` があり、設定も「れんしゅう」配下なので練習限定にする。
     private var showsPracticeHint: Bool {
-        guard mode != .test else { return false }
+        guard mode == .practice else { return false }
         switch model.settings.practiceHintTiming {
         case .never:
             return false
@@ -405,7 +425,7 @@ struct SpellingSessionView: View {
                             capture: drawingCapture,
                             isInputEnabled: isCanvasInputEnabled,
                             minimumHeight: 0,
-                            fadesSampleText: isGuideFadeRound
+                            sampleTextOpacity: guideSampleOpacity
                         )
                         .id(canvasResetID)
                         .frame(maxWidth: writingCanvasMaxWidth)
@@ -457,7 +477,14 @@ struct SpellingSessionView: View {
                 resetTimer()
                 startTimerIfNeeded()
                 showSpeakerHintIfNeeded()
+                refreshGuideFade()
             }
+        }
+        .onChange(of: index) { _, _ in
+            refreshGuideFade()
+        }
+        .onChange(of: practiceRepeatIndex) { _, _ in
+            refreshGuideFade()
         }
         .onDisappear {
             stopTimer()
@@ -662,7 +689,7 @@ struct SpellingSessionView: View {
                     guideLabels: guideLabels,
                     language: language,
                     isMissing: compactPracticeMissingWordIDs.contains(word.id),
-                    fadesSampleText: isGuideFadeRound,
+                    sampleTextOpacity: guideSampleOpacity,
                     onPlay: {
                         speech.speak(word.text, language: model.settings.language, rate: model.settings.speechRate)
                     },
@@ -1679,7 +1706,7 @@ private struct CompactPracticeWritingCell: View {
     var guideLabels: [String]
     var language: AppLanguage
     var isMissing: Bool
-    var fadesSampleText = false
+    var sampleTextOpacity: Double = GuidedWritingCanvas.sampleTextBaseOpacity
     var onPlay: () -> Void
     var onClear: () -> Void
     var onMeasure: (CGSize) -> Void
@@ -1731,7 +1758,7 @@ private struct CompactPracticeWritingCell: View {
                 capture: nil,
                 isInputEnabled: true,
                 minimumHeight: 0,
-                fadesSampleText: fadesSampleText
+                sampleTextOpacity: sampleTextOpacity
             )
             .id(resetID)
             .frame(height: canvasHeight)
@@ -2730,13 +2757,14 @@ private struct ExampleHintView: View {
     var word: String
     var language: AppLanguage
 
-    // WordBank は同梱SQLiteへの同期参照（単一行・高速）なので、その場で引く。
-    // ※ @State + onAppear だと、初期は中身が空で onAppear が発火せずヒントが出ないことがある。
-    private var meaning: String? { WordBank.shared.japanese(for: word) }
-    private var example: WordExample? { WordBank.shared.examples(for: word, limit: 1).first }
+    // WordBank（同梱SQLite）参照は単語ごとに一度だけ行い保持する。
+    // ※ @State + onAppear を空の Group に付けると onAppear が発火せずヒントが出ない。
+    //    そのため常に存在する VStack に .onChange(initial:) を付けて確実に読み込む。
+    @State private var meaning: String?
+    @State private var example: WordExample?
 
     var body: some View {
-        Group {
+        VStack(alignment: .leading, spacing: 8) {
             if meaning != nil || example != nil {
                 VStack(alignment: .leading, spacing: 8) {
                     if let meaning {
@@ -2778,6 +2806,10 @@ private struct ExampleHintView: View {
                         .stroke(Color(red: 0.80, green: 0.84, blue: 0.95), lineWidth: 1)
                 )
             }
+        }
+        .onChange(of: word, initial: true) { _, _ in
+            meaning = WordBank.shared.japanese(for: word)
+            example = WordBank.shared.examples(for: word, limit: 1).first
         }
     }
 }

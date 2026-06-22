@@ -105,13 +105,10 @@ struct GuidedWritingCanvas: View {
     var capture: DrawingCapture? = nil
     var isInputEnabled = true
     var minimumHeight: CGFloat = 285
-    /// なぞり用のお手本文字を時間でゆっくり消すか（自分で書く練習用）。
-    var fadesSampleText = false
-    /// フェードにかける秒数。
-    var fadeDuration: Double = 7
-
-    /// このビューが生成されてから（＝ラウンド開始から）の濃さ。`.id` 付け替えで毎回 0.30 にリセットされる。
-    @State private var sampleOpacity = GuidedWritingCanvas.sampleTextBaseOpacity
+    /// お手本文字の濃さ。なぞり練習で文字をゆっくり消すときは親側でアニメーションさせる。
+    /// ※ フェードを親の状態として持つことで、消す/戻す（`.id` 付け替え）でフェードが
+    ///    巻き戻らないようにしている。
+    var sampleTextOpacity: Double = GuidedWritingCanvas.sampleTextBaseOpacity
 
     var body: some View {
         ZStack {
@@ -122,14 +119,13 @@ struct GuidedWritingCanvas: View {
 
                     Text(sampleText)
                         .font(.system(size: layout.sampleTextFontSize, weight: .regular, design: .rounded))
-                        .foregroundStyle(Color.black.opacity(sampleOpacity))
+                        .foregroundStyle(Color.black.opacity(sampleTextOpacity))
                         .offset(y: layout.sampleTextYOffset)
                         .minimumScaleFactor(0.35)
                         .lineLimit(1)
                         .padding(.horizontal, mode == .practice ? 80 : 130)
                         .frame(width: proxy.size.width, height: proxy.size.height)
                         .allowsHitTesting(false)
-                        .onAppear(perform: startSampleFadeIfNeeded)
                 }
             }
             PencilCanvasView(drawing: $drawing, capture: capture, isInputEnabled: isInputEnabled)
@@ -144,15 +140,6 @@ struct GuidedWritingCanvas: View {
             }
         }
         .shadow(color: mode == .practice ? Color(red: 0.42, green: 0.48, blue: 0.66).opacity(0.10) : .clear, radius: 14, x: 0, y: 8)
-    }
-
-    private func startSampleFadeIfNeeded() {
-        guard fadesSampleText else { return }
-        // 開始時は通常の濃さで見せ、そこから時間をかけて 0 まで薄くする。
-        sampleOpacity = Self.sampleTextBaseOpacity
-        withAnimation(.easeInOut(duration: fadeDuration)) {
-            sampleOpacity = 0
-        }
     }
 
     private var canvasBackground: some View {
