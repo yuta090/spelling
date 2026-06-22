@@ -24,7 +24,7 @@ END = "    // CATALOG-GENERATED-END"
 
 VALID_CATEGORIES = {
     "starter", "animal", "sea", "people", "vehicle", "building", "landmark",
-    "food", "sports", "cosme", "fantasy",
+    "japan", "food", "sports", "cosme", "fantasy",
 }
 VALID_STYLES = {
     "bear", "cat", "dog", "rabbit", "panda", "penguin", "lion", "fox", "koala",
@@ -46,6 +46,8 @@ VALID_STYLES = {
     "greatWall", "operaHouse", "stonehenge", "christRedeemer", "sagrada",
     "goldenGate", "towerBridge", "ferrisWheel", "kinkaku", "sphinx",
     "angkor", "matterhorn",
+    "libertyBell", "whiteHouse", "notreDame", "burjKhalifa", "archTriomphe",
+    "skytree", "japaneseCastle", "pagoda", "daibutsu", "gasshou",
 }
 
 

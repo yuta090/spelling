@@ -88,14 +88,14 @@ basketball,sports,バスケ,Basketball,5,basketball,#E0773C,#FFD6B2,#5A2E1A,fals
 tennis,sports,テニス,Tennis,5,tennisBall,#C2E04A,#EAF7C2,#FFFFFF,false
 trophy,sports,トロフィー,Trophy,7,trophy,#F2C03C,#FFE89E,#9E6B1F,false
 eiffel,landmark,エッフェルとう,Eiffel Tower,6,eiffel,#9E7B4A,#6B5230,#3A2E1A,false
-tokyotower,landmark,とうきょうタワー,Tokyo Tower,5,tokyoTower,#E0432E,#F2F2F2,#7A1F12,false
+tokyotower,japan,とうきょうタワー,Tokyo Tower,5,tokyoTower,#E0432E,#F2F2F2,#7A1F12,false
 liberty,landmark,じゆうのめがみ,Statue of Liberty,7,liberty,#5BA88C,#C7E0D6,#E0A53C,false
 pyramid,landmark,ピラミッド,Pyramid,5,pyramid,#E0B45C,#F2D89E,#C77A2E,false
 pisa,landmark,ピサのしゃとう,Tower of Pisa,6,pisa,#EDE6D6,#F7F2E8,#9E8A6B,false
 bigben,landmark,ビッグベン,Big Ben,6,bigBen,#C7A36B,#9E7B4A,#3A2E1A,false
 tajmahal,landmark,タージマハル,Taj Mahal,7,tajMahal,#F2EDE6,#D6CFC2,#9E8A6B,false
-fuji,landmark,ふじさん,Mt. Fuji,5,fuji,#5B86C7,#7AB04F,#2E4A6E,false
-torii,landmark,とりい,Torii Gate,5,torii,#E0432E,#F2F2F2,#7A1F12,false
+fuji,japan,ふじさん,Mt. Fuji,5,fuji,#5B86C7,#7AB04F,#2E4A6E,false
+torii,japan,とりい,Torii Gate,5,torii,#E0432E,#F2F2F2,#7A1F12,false
 moai,landmark,モアイ,Moai,6,moai,#8C8C8C,#6B6B6B,#3A3A3A,false
 windmill,landmark,ふうしゃ,Windmill,5,windmill,#C7784A,#F2F2F2,#7A3A1F,false
 colosseum,landmark,コロッセオ,Colosseum,6,colosseum,#D6B88C,#F2E6CF,#9E7B4A,false
@@ -107,7 +107,18 @@ sagrada,landmark,サグラダファミリア,Sagrada Familia,7,sagrada,#C7A36B,#
 goldengate,landmark,きんもんきょう,Golden Gate,6,goldenGate,#E0563B,#9AB8C7,#7A2A1A,false
 towerbridge,landmark,タワーブリッジ,Tower Bridge,6,towerBridge,#9AA6B2,#F2F2F2,#4A7BA8,false
 ferriswheel,landmark,かんらんしゃ,Ferris Wheel,5,ferrisWheel,#5B86C7,#F2C03C,#3A4656,false
-kinkaku,landmark,きんかくじ,Golden Pavilion,6,kinkaku,#E0B43C,#C79A3C,#7A5A1F,false
+kinkaku,japan,きんかくじ,Golden Pavilion,6,kinkaku,#E0B43C,#C79A3C,#7A5A1F,false
 sphinx,landmark,スフィンクス,Sphinx,6,sphinx,#E0B45C,#F2D89E,#9E6B2E,false
 angkor,landmark,アンコールワット,Angkor Wat,7,angkor,#9E8A6B,#C7B89E,#6B5A3A,false
 matterhorn,landmark,マッターホルン,Matterhorn,5,matterhorn,#7A8A9E,#F2F2F2,#4A5A6E,false
+libertybell,landmark,じゆうのかね,Liberty Bell,6,libertyBell,#B5894A,#8A6B3A,#5C3A1A,false
+whitehouse,landmark,ホワイトハウス,White House,6,whiteHouse,#F2F2F2,#DCDCDC,#9AA0A6,false
+notredame,landmark,ノートルダム,Notre-Dame,7,notreDame,#C7B89E,#A89A7E,#6B5A3A,false
+burj,landmark,ブルジュハリファ,Burj Khalifa,7,burjKhalifa,#9AB8C7,#D6EAF2,#5B7A8C,false
+arc,landmark,がいせんもん,Arc de Triomphe,6,archTriomphe,#D6C7A8,#EDE6D6,#9E8A6B,false
+skytree,japan,スカイツリー,Tokyo Skytree,6,skytree,#8FA6C7,#D6E0EB,#5B6B8C,false
+himeji,japan,ひめじじょう,Himeji Castle,7,japaneseCastle,#F2F2F2,#3A4656,#9AA0A6,false
+osaka,japan,おおさかじょう,Osaka Castle,7,japaneseCastle,#E8E4D6,#2E5A4A,#C7A33C,false
+pagoda,japan,ごじゅうのとう,Five-Story Pagoda,6,pagoda,#B5482A,#4A3A2E,#E0C04A,false
+daibutsu,japan,だいぶつ,Great Buddha,7,daibutsu,#6B8C7A,#C7B89E,#3A4A42,false
+gasshou,japan,しらかわごう,Gassho House,6,gasshou,#9E7B4A,#C7B89E,#5C4329,false
