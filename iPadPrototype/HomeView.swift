@@ -2041,6 +2041,18 @@ enum HomeRewardCharacterStyle {
     case moai
     case windmill
     case colosseum
+    case greatWall
+    case operaHouse
+    case stonehenge
+    case christRedeemer
+    case sagrada
+    case goldenGate
+    case towerBridge
+    case ferrisWheel
+    case kinkaku
+    case sphinx
+    case angkor
+    case matterhorn
 }
 
 struct HomeRewardCharacter: Identifiable {
@@ -3174,6 +3186,138 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.8392, green: 0.7216, blue: 0.5490),
             secondary: Color(red: 0.9490, green: 0.9020, blue: 0.8118),
             accent: Color(red: 0.6196, green: 0.4824, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "greatwall",
+            category: .landmark,
+            japaneseName: "ばんりのちょうじょう",
+            englishName: "Great Wall",
+            price: 6,
+            style: .greatWall,
+            primary: Color(red: 0.7098, green: 0.6431, blue: 0.5490),
+            secondary: Color(red: 0.4784, green: 0.6902, blue: 0.3098),
+            accent: Color(red: 0.4196, green: 0.3529, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "operahouse",
+            category: .landmark,
+            japaneseName: "オペラハウス",
+            englishName: "Opera House",
+            price: 6,
+            style: .operaHouse,
+            primary: Color(red: 0.9686, green: 0.9686, blue: 0.9686),
+            secondary: Color(red: 0.5608, green: 0.7490, blue: 0.8392),
+            accent: Color(red: 0.6039, green: 0.6510, blue: 0.6980)
+        ),
+        HomeRewardCharacter(
+            id: "stonehenge",
+            category: .landmark,
+            japaneseName: "ストーンヘンジ",
+            englishName: "Stonehenge",
+            price: 5,
+            style: .stonehenge,
+            primary: Color(red: 0.6196, green: 0.5922, blue: 0.5490),
+            secondary: Color(red: 0.4784, green: 0.6902, blue: 0.3098),
+            accent: Color(red: 0.4196, green: 0.3882, blue: 0.3451)
+        ),
+        HomeRewardCharacter(
+            id: "christ",
+            category: .landmark,
+            japaneseName: "キリストぞう",
+            englishName: "Christ the Redeemer",
+            price: 7,
+            style: .christRedeemer,
+            primary: Color(red: 0.7804, green: 0.8000, blue: 0.8235),
+            secondary: Color(red: 0.5608, green: 0.7490, blue: 0.8392),
+            accent: Color(red: 0.6039, green: 0.6275, blue: 0.6510)
+        ),
+        HomeRewardCharacter(
+            id: "sagrada",
+            category: .landmark,
+            japaneseName: "サグラダファミリア",
+            englishName: "Sagrada Familia",
+            price: 7,
+            style: .sagrada,
+            primary: Color(red: 0.7804, green: 0.6392, blue: 0.4196),
+            secondary: Color(red: 0.8784, green: 0.7882, blue: 0.6196),
+            accent: Color(red: 0.5412, green: 0.4196, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "goldengate",
+            category: .landmark,
+            japaneseName: "きんもんきょう",
+            englishName: "Golden Gate",
+            price: 6,
+            style: .goldenGate,
+            primary: Color(red: 0.8784, green: 0.3373, blue: 0.2314),
+            secondary: Color(red: 0.6039, green: 0.7216, blue: 0.7804),
+            accent: Color(red: 0.4784, green: 0.1647, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "towerbridge",
+            category: .landmark,
+            japaneseName: "タワーブリッジ",
+            englishName: "Tower Bridge",
+            price: 6,
+            style: .towerBridge,
+            primary: Color(red: 0.6039, green: 0.6510, blue: 0.6980),
+            secondary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            accent: Color(red: 0.2902, green: 0.4824, blue: 0.6588)
+        ),
+        HomeRewardCharacter(
+            id: "ferriswheel",
+            category: .landmark,
+            japaneseName: "かんらんしゃ",
+            englishName: "Ferris Wheel",
+            price: 5,
+            style: .ferrisWheel,
+            primary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            secondary: Color(red: 0.9490, green: 0.7529, blue: 0.2353),
+            accent: Color(red: 0.2275, green: 0.2745, blue: 0.3373)
+        ),
+        HomeRewardCharacter(
+            id: "kinkaku",
+            category: .landmark,
+            japaneseName: "きんかくじ",
+            englishName: "Golden Pavilion",
+            price: 6,
+            style: .kinkaku,
+            primary: Color(red: 0.8784, green: 0.7059, blue: 0.2353),
+            secondary: Color(red: 0.7804, green: 0.6039, blue: 0.2353),
+            accent: Color(red: 0.4784, green: 0.3529, blue: 0.1216)
+        ),
+        HomeRewardCharacter(
+            id: "sphinx",
+            category: .landmark,
+            japaneseName: "スフィンクス",
+            englishName: "Sphinx",
+            price: 6,
+            style: .sphinx,
+            primary: Color(red: 0.8784, green: 0.7059, blue: 0.3608),
+            secondary: Color(red: 0.9490, green: 0.8471, blue: 0.6196),
+            accent: Color(red: 0.6196, green: 0.4196, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "angkor",
+            category: .landmark,
+            japaneseName: "アンコールワット",
+            englishName: "Angkor Wat",
+            price: 7,
+            style: .angkor,
+            primary: Color(red: 0.6196, green: 0.5412, blue: 0.4196),
+            secondary: Color(red: 0.7804, green: 0.7216, blue: 0.6196),
+            accent: Color(red: 0.4196, green: 0.3529, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "matterhorn",
+            category: .landmark,
+            japaneseName: "マッターホルン",
+            englishName: "Matterhorn",
+            price: 5,
+            style: .matterhorn,
+            primary: Color(red: 0.4784, green: 0.5412, blue: 0.6196),
+            secondary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            accent: Color(red: 0.2902, green: 0.3529, blue: 0.4314)
         )
     ]
     // CATALOG-GENERATED-END
@@ -3611,6 +3755,30 @@ private struct RewardCharacterAvatar: View {
                 WindmillCharacterView(character: character)
             case .colosseum:
                 ColosseumCharacterView(character: character)
+            case .greatWall:
+                GreatWallCharacterView(character: character)
+            case .operaHouse:
+                OperaHouseCharacterView(character: character)
+            case .stonehenge:
+                StonehengeCharacterView(character: character)
+            case .christRedeemer:
+                ChristRedeemerCharacterView(character: character)
+            case .sagrada:
+                SagradaCharacterView(character: character)
+            case .goldenGate:
+                GoldenGateCharacterView(character: character)
+            case .towerBridge:
+                TowerBridgeCharacterView(character: character)
+            case .ferrisWheel:
+                FerrisWheelCharacterView(character: character)
+            case .kinkaku:
+                KinkakuCharacterView(character: character)
+            case .sphinx:
+                SphinxCharacterView(character: character)
+            case .angkor:
+                AngkorCharacterView(character: character)
+            case .matterhorn:
+                MatterhornCharacterView(character: character)
             }
         }
         .padding(4)
@@ -4993,6 +5161,275 @@ private struct ColosseumCharacterView: View {
                 Rectangle().frame(width: 88, height: 32).offset(y: 22)
             }
         )
+    }
+}
+
+// MARK: - World landmarks (batch 2)
+
+private struct GreatWallCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.secondary.opacity(0.7)).frame(width: 60, height: 48).offset(x: -28, y: 34)
+            Ellipse().fill(character.secondary.opacity(0.7)).frame(width: 70, height: 52).offset(x: 30, y: 36)
+            Capsule().fill(character.primary).frame(width: 96, height: 20).rotationEffect(.degrees(-9)).offset(y: 6)
+            ForEach(0..<7) { index in
+                Rectangle().fill(character.primary)
+                    .frame(width: 8, height: 9)
+                    .rotationEffect(.degrees(-9))
+                    .offset(x: CGFloat(-40 + index * 13), y: CGFloat(-3 + index))
+            }
+            RoundedRectangle(cornerRadius: 2).fill(character.primary).frame(width: 18, height: 30).offset(x: -30, y: -2)
+            RoundedRectangle(cornerRadius: 2).fill(character.primary).frame(width: 18, height: 26).offset(x: 26, y: 8)
+            Rectangle().fill(character.accent.opacity(0.5)).frame(width: 8, height: 12).offset(x: -30, y: 2)
+        }
+    }
+}
+
+private struct OperaHouseCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.secondary).frame(width: 90, height: 22).offset(y: 30)
+            SailShape().fill(character.primary).frame(width: 30, height: 40).offset(x: -22, y: 8)
+            SailShape().fill(character.primary).frame(width: 36, height: 52).offset(x: -6, y: 2)
+            SailShape().fill(character.primary).frame(width: 30, height: 44).scaleEffect(x: -1, y: 1).offset(x: 16, y: 6)
+            SailShape().fill(character.primary).frame(width: 22, height: 34).scaleEffect(x: -1, y: 1).offset(x: 30, y: 12)
+            Rectangle().fill(character.accent.opacity(0.3)).frame(width: 84, height: 3).offset(y: 22)
+        }
+    }
+}
+
+private struct StonehengeCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Rectangle().fill(character.secondary.opacity(0.6)).frame(width: 98, height: 8).offset(y: 38)
+            Group {
+                Rectangle().fill(character.primary).frame(width: 12, height: 44).offset(x: -30, y: 14)
+                Rectangle().fill(character.primary).frame(width: 12, height: 44).offset(x: -12, y: 14)
+                RoundedRectangle(cornerRadius: 2).fill(character.accent).frame(width: 32, height: 11).offset(x: -21, y: -10)
+            }
+            Group {
+                Rectangle().fill(character.primary).frame(width: 13, height: 56).offset(x: 14, y: 8)
+                Rectangle().fill(character.primary).frame(width: 13, height: 56).offset(x: 34, y: 8)
+                RoundedRectangle(cornerRadius: 2).fill(character.accent).frame(width: 36, height: 12).offset(x: 24, y: -22)
+            }
+            Rectangle().fill(character.primary).frame(width: 9, height: 30).offset(x: 2, y: 22)
+        }
+    }
+}
+
+private struct ChristRedeemerCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Trapezoid().fill(character.accent.opacity(0.6)).frame(width: 30, height: 16).offset(y: 38)
+            Trapezoid().fill(character.primary).frame(width: 34, height: 50).offset(y: 18)
+            Capsule().fill(character.primary).frame(width: 76, height: 11).offset(y: -8)
+            Circle().fill(character.primary).frame(width: 16, height: 16).offset(y: -22)
+        }
+    }
+}
+
+private struct SagradaCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 70, height: 30).offset(y: 26)
+            SpireShape().fill(character.primary).frame(width: 16, height: 64).offset(x: -28, y: 2)
+            SpireShape().fill(character.primary).frame(width: 18, height: 78).offset(x: -12, y: -6)
+            SpireShape().fill(character.secondary).frame(width: 20, height: 90).offset(y: -12)
+            SpireShape().fill(character.primary).frame(width: 18, height: 78).offset(x: 12, y: -6)
+            SpireShape().fill(character.primary).frame(width: 16, height: 64).offset(x: 28, y: 2)
+            ForEach(0..<5) { index in
+                Circle().fill(character.accent.opacity(0.5)).frame(width: 5, height: 5)
+                    .offset(x: CGFloat(-28 + index * 14), y: CGFloat([6, -2, -8, -2, 6][index]))
+            }
+        }
+    }
+}
+
+private struct GoldenGateCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.secondary.opacity(0.6)).frame(width: 98, height: 18).offset(y: 36)
+            Rectangle().fill(character.primary).frame(width: 96, height: 6).offset(y: 14)
+            Rectangle().fill(character.primary).frame(width: 9, height: 70).offset(x: -28, y: -2)
+            Rectangle().fill(character.primary).frame(width: 9, height: 70).offset(x: 28, y: -2)
+            Triangle().fill(.clear).overlay(
+                Path { p in
+                    p.move(to: CGPoint(x: 0, y: 6)); p.addQuadCurve(to: CGPoint(x: 56, y: 6), control: CGPoint(x: 28, y: 40))
+                }.stroke(character.primary, lineWidth: 3)
+            ).frame(width: 56, height: 40).offset(y: -16)
+            Path { p in
+                p.move(to: CGPoint(x: 0, y: 6)); p.addQuadCurve(to: CGPoint(x: 30, y: 6), control: CGPoint(x: 15, y: 30))
+            }.stroke(character.primary, lineWidth: 3).frame(width: 30, height: 30).offset(x: -42, y: -8)
+            Path { p in
+                p.move(to: CGPoint(x: 0, y: 6)); p.addQuadCurve(to: CGPoint(x: 30, y: 6), control: CGPoint(x: 15, y: 30))
+            }.stroke(character.primary, lineWidth: 3).frame(width: 30, height: 30).offset(x: 42, y: -8)
+        }
+    }
+}
+
+private struct TowerBridgeCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.secondary.opacity(0.6)).frame(width: 96, height: 16).offset(y: 36)
+            Rectangle().fill(character.accent).frame(width: 96, height: 6).offset(y: 22)
+            Path { p in
+                p.move(to: CGPoint(x: 0, y: 0)); p.addQuadCurve(to: CGPoint(x: 44, y: 0), control: CGPoint(x: 22, y: 22))
+            }.stroke(character.accent, lineWidth: 3).frame(width: 44, height: 20).offset(y: 2)
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 22, height: 60).offset(x: -22, y: 4)
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 22, height: 60).offset(x: 22, y: 4)
+            Triangle().fill(character.accent).frame(width: 22, height: 16).offset(x: -22, y: -32)
+            Triangle().fill(character.accent).frame(width: 22, height: 16).offset(x: 22, y: -32)
+            Rectangle().fill(character.secondary).frame(width: 22, height: 9).offset(x: -22, y: -6)
+            Rectangle().fill(character.secondary).frame(width: 22, height: 9).offset(x: 22, y: -6)
+        }
+    }
+}
+
+private struct FerrisWheelCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Rectangle().fill(character.accent).frame(width: 7, height: 54).rotationEffect(.degrees(18)).offset(x: -10, y: 22)
+            Rectangle().fill(character.accent).frame(width: 7, height: 54).rotationEffect(.degrees(-18)).offset(x: 10, y: 22)
+            Circle().stroke(character.primary, lineWidth: 4).frame(width: 76, height: 76).offset(y: -4)
+            ForEach(0..<8) { index in
+                Rectangle().fill(character.primary).frame(width: 2.5, height: 72)
+                    .rotationEffect(.degrees(Double(index) * 22.5)).offset(y: -4)
+            }
+            ForEach(0..<8) { index in
+                Circle().fill(character.secondary).frame(width: 11, height: 11)
+                    .offset(y: -42).rotationEffect(.degrees(Double(index) * 45)).offset(y: 0)
+            }
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(y: -4)
+        }
+    }
+}
+
+private struct KinkakuCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.accent).frame(width: 26, height: 16).offset(y: -34)
+            Circle().fill(character.accent).frame(width: 8, height: 8).offset(y: -42)
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 30, height: 22).offset(y: -18)
+            Trapezoid().fill(character.secondary).frame(width: 50, height: 14).offset(y: -24).rotationEffect(.degrees(180))
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 44, height: 22).offset(y: 0)
+            Trapezoid().fill(character.secondary).frame(width: 64, height: 16).offset(y: -6).rotationEffect(.degrees(180))
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 58, height: 24).offset(y: 22)
+            Trapezoid().fill(character.secondary).frame(width: 74, height: 16).offset(y: 14).rotationEffect(.degrees(180))
+            Rectangle().fill(character.accent.opacity(0.5)).frame(width: 58, height: 4).offset(y: 34)
+        }
+    }
+}
+
+private struct SphinxCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.secondary.opacity(0.7)).frame(width: 60, height: 50).offset(x: 18, y: -4)
+            Capsule().fill(character.primary).frame(width: 78, height: 30).offset(x: -2, y: 24)
+            Triangle().fill(character.primary).frame(width: 22, height: 22).rotationEffect(.degrees(-90)).offset(x: -42, y: 22)
+            RoundedRectangle(cornerRadius: 6).fill(character.primary).frame(width: 30, height: 34).offset(x: -22, y: -2)
+            Trapezoid().fill(character.accent.opacity(0.55)).frame(width: 36, height: 26).offset(x: -22, y: -8)
+            Circle().fill(character.accent.opacity(0.7)).frame(width: 5, height: 5).offset(x: -28, y: 0)
+        }
+    }
+}
+
+private struct AngkorCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 84, height: 22).offset(y: 28)
+            CornSpireShape().fill(character.secondary).frame(width: 22, height: 56).offset(x: -34, y: 4)
+            CornSpireShape().fill(character.secondary).frame(width: 22, height: 56).offset(x: 34, y: 4)
+            CornSpireShape().fill(character.primary).frame(width: 26, height: 70).offset(x: -18, y: -4)
+            CornSpireShape().fill(character.primary).frame(width: 26, height: 70).offset(x: 18, y: -4)
+            CornSpireShape().fill(character.secondary).frame(width: 30, height: 86).offset(y: -12)
+            Rectangle().fill(character.accent.opacity(0.4)).frame(width: 84, height: 4).offset(y: 38)
+        }
+    }
+}
+
+private struct MatterhornCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            PeakShape().fill(character.primary).frame(width: 92, height: 84).offset(y: 8)
+            PeakShape().fill(character.accent.opacity(0.35)).frame(width: 46, height: 84).offset(x: 23, y: 8)
+            PeakShape().fill(character.secondary).frame(width: 38, height: 32).offset(x: 5, y: -22)
+            Rectangle().fill(character.accent.opacity(0.4)).frame(width: 94, height: 5).offset(y: 46)
+        }
+    }
+}
+
+private struct SailShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.minY), control: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct SpireShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let neck = rect.maxY - rect.width * 0.7
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: neck))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: neck))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct CornSpireShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let shoulder = rect.maxY - rect.height * 0.40
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: shoulder))
+        path.addQuadCurve(to: CGPoint(x: rect.midX, y: rect.minY), control: CGPoint(x: rect.minX, y: rect.minY + rect.height * 0.12))
+        path.addQuadCurve(to: CGPoint(x: rect.maxX, y: shoulder), control: CGPoint(x: rect.maxX, y: rect.minY + rect.height * 0.12))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct PeakShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.midX + rect.width * 0.10, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.midX + rect.width * 0.24, y: rect.minY + rect.height * 0.16))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
     }
 }
 

@@ -99,3 +99,15 @@ torii,landmark,とりい,Torii Gate,5,torii,#E0432E,#F2F2F2,#7A1F12,false
 moai,landmark,モアイ,Moai,6,moai,#8C8C8C,#6B6B6B,#3A3A3A,false
 windmill,landmark,ふうしゃ,Windmill,5,windmill,#C7784A,#F2F2F2,#7A3A1F,false
 colosseum,landmark,コロッセオ,Colosseum,6,colosseum,#D6B88C,#F2E6CF,#9E7B4A,false
+greatwall,landmark,ばんりのちょうじょう,Great Wall,6,greatWall,#B5A48C,#7AB04F,#6B5A3A,false
+operahouse,landmark,オペラハウス,Opera House,6,operaHouse,#F7F7F7,#8FBFD6,#9AA6B2,false
+stonehenge,landmark,ストーンヘンジ,Stonehenge,5,stonehenge,#9E978C,#7AB04F,#6B6358,false
+christ,landmark,キリストぞう,Christ the Redeemer,7,christRedeemer,#C7CCD2,#8FBFD6,#9AA0A6,false
+sagrada,landmark,サグラダファミリア,Sagrada Familia,7,sagrada,#C7A36B,#E0C99E,#8A6B3A,false
+goldengate,landmark,きんもんきょう,Golden Gate,6,goldenGate,#E0563B,#9AB8C7,#7A2A1A,false
+towerbridge,landmark,タワーブリッジ,Tower Bridge,6,towerBridge,#9AA6B2,#F2F2F2,#4A7BA8,false
+ferriswheel,landmark,かんらんしゃ,Ferris Wheel,5,ferrisWheel,#5B86C7,#F2C03C,#3A4656,false
+kinkaku,landmark,きんかくじ,Golden Pavilion,6,kinkaku,#E0B43C,#C79A3C,#7A5A1F,false
+sphinx,landmark,スフィンクス,Sphinx,6,sphinx,#E0B45C,#F2D89E,#9E6B2E,false
+angkor,landmark,アンコールワット,Angkor Wat,7,angkor,#9E8A6B,#C7B89E,#6B5A3A,false
+matterhorn,landmark,マッターホルン,Matterhorn,5,matterhorn,#7A8A9E,#F2F2F2,#4A5A6E,false

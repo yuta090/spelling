@@ -43,6 +43,9 @@ VALID_STYLES = {
     "soccerBall", "baseball", "basketball", "tennisBall", "trophy",
     "eiffel", "tokyoTower", "liberty", "pyramid", "pisa", "bigBen",
     "tajMahal", "fuji", "torii", "moai", "windmill", "colosseum",
+    "greatWall", "operaHouse", "stonehenge", "christRedeemer", "sagrada",
+    "goldenGate", "towerBridge", "ferrisWheel", "kinkaku", "sphinx",
+    "angkor", "matterhorn",
 }
 
 
