@@ -5190,11 +5190,6 @@ private struct ParentGradingPanel: View {
                 .frame(minHeight: 240)
             } else {
                 VStack(alignment: .leading, spacing: 12) {
-                    GradingWorkHeader(
-                        activeSession: activeSession,
-                        language: language
-                    )
-
                     if filteredSessions.isEmpty {
                         ContentUnavailableView(
                             sessionFilter.emptyTitle(language: language),
@@ -5217,7 +5212,7 @@ private struct ParentGradingPanel: View {
                                 }
                                 .frame(width: 172)
 
-                                ScrollView {
+                                Group {
                                     if let activeSession {
                                         ParentGradingSessionCard(
                                             session: activeSession,
@@ -5241,7 +5236,7 @@ private struct ParentGradingPanel: View {
                                 )
                                 .frame(maxHeight: 160)
 
-                                ScrollView {
+                                Group {
                                     if let activeSession {
                                         ParentGradingSessionCard(
                                             session: activeSession,
@@ -5577,6 +5572,7 @@ private struct ParentGradingSessionCard: View {
     // 下書き：採点完了を押すまでモデルには保存しない。未指定はデフォルトOK扱い。
     @State private var decisionDrafts: [UUID: ParentReviewDecision] = [:]
     @State private var exampleDrafts: [UUID: Data] = [:]
+    @State private var showsGuide = false
 
     private var visibleAttempts: [SpellingAttempt] {
         guard showsOnlyUngraded else {
@@ -5636,6 +5632,30 @@ private struct ParentGradingSessionCard: View {
 
                 Spacer()
 
+                if visibleCount > 0 {
+                    Button {
+                        showsGuide = true
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(ParentPalette.primary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(language.text(japanese: "採点のヒント", english: "Grading tip"))
+                    .popover(isPresented: $showsGuide) {
+                        Text(language.text(
+                            japanese: "ぜんぶOKがデフォルトです。直すものだけ「直そう」にして、最後に採点完了を押してください。",
+                            english: "Everything defaults to OK. Mark only the ones to fix, then tap Done."
+                        ))
+                        .font(.callout.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(16)
+                        .frame(width: 280)
+                        .presentationCompactAdaptation(.popover)
+                    }
+                }
+
                 Text(session.unreviewedCount > 0
                     ? language.text(japanese: "あと \(session.unreviewedCount)件", english: "\(session.unreviewedCount) left")
                     : language.text(japanese: "採点済み", english: "Done")
@@ -5648,44 +5668,38 @@ private struct ParentGradingSessionCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
-            if visibleCount > 0 {
-                Text(language.text(
-                    japanese: "ぜんぶOKがデフォルトです。直すものだけ「直そう」にして、最後に採点完了を押してください。",
-                    english: "Everything defaults to OK. Mark only the ones to fix, then tap Done."
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            }
+            ScrollView {
+                LazyVGrid(columns: gradingColumns, alignment: .leading, spacing: 10) {
+                    ForEach(visibleAttempts) { attempt in
+                        ParentAttemptGradingCard(
+                            attempt: attempt,
+                            language: language,
+                            decision: draftDecision(for: attempt.id, current: attempt.parentReviewDecision),
+                            exampleData: exampleDrafts[attempt.id] ?? attempt.parentExampleDrawingData,
+                            setDecision: { decisionDrafts[attempt.id] = $0 },
+                            setExample: { exampleDrafts[attempt.id] = $0 }
+                        )
+                        .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    }
 
-            LazyVGrid(columns: gradingColumns, alignment: .leading, spacing: 10) {
-                ForEach(visibleAttempts) { attempt in
-                    ParentAttemptGradingCard(
-                        attempt: attempt,
-                        language: language,
-                        decision: draftDecision(for: attempt.id, current: attempt.parentReviewDecision),
-                        exampleData: exampleDrafts[attempt.id] ?? attempt.parentExampleDrawingData,
-                        setDecision: { decisionDrafts[attempt.id] = $0 },
-                        setExample: { exampleDrafts[attempt.id] = $0 }
-                    )
-                    .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    ForEach(visibleSamples) { sample in
+                        ParentPracticeGradingCard(
+                            sample: sample,
+                            language: language,
+                            decision: draftDecision(for: sample.id, current: sample.parentReviewDecision),
+                            exampleData: exampleDrafts[sample.id] ?? sample.parentExampleDrawingData,
+                            setDecision: { decisionDrafts[sample.id] = $0 },
+                            setExample: { exampleDrafts[sample.id] = $0 }
+                        )
+                        .transition(.opacity.combined(with: .move(edge: .trailing)))
+                    }
                 }
-
-                ForEach(visibleSamples) { sample in
-                    ParentPracticeGradingCard(
-                        sample: sample,
-                        language: language,
-                        decision: draftDecision(for: sample.id, current: sample.parentReviewDecision),
-                        exampleData: exampleDrafts[sample.id] ?? sample.parentExampleDrawingData,
-                        setDecision: { decisionDrafts[sample.id] = $0 },
-                        setExample: { exampleDrafts[sample.id] = $0 }
-                    )
-                    .transition(.opacity.combined(with: .move(edge: .trailing)))
-                }
+                .padding(.bottom, 4)
+                .animation(.easeInOut(duration: 0.18), value: decisionDrafts)
+                .animation(.easeInOut(duration: 0.22), value: visibleAttempts.map(\.id))
+                .animation(.easeInOut(duration: 0.22), value: visibleSamples.map(\.id))
             }
-            .animation(.easeInOut(duration: 0.18), value: decisionDrafts)
-            .animation(.easeInOut(duration: 0.22), value: visibleAttempts.map(\.id))
-            .animation(.easeInOut(duration: 0.22), value: visibleSamples.map(\.id))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             if visibleCount > 0 {
                 Button {
