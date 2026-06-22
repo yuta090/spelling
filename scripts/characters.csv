@@ -52,3 +52,38 @@ ghost,fantasy,おばけ,Ghost,5,ghost,#EDEDF5,#C9C9E0,#4A4A66,false
 star,fantasy,おほしさま,Star,5,star,#F5C842,#FFE89E,#E0942E,false
 unicorn,fantasy,ユニコーン,Unicorn,7,unicorn,#F4DCEF,#C9A6E0,#F2A6C2,false
 dragon,fantasy,ドラゴン,Dragon,7,dragon,#4CA66B,#B8E69E,#E0563B,false
+police,vehicle,パトカー,Police Car,5,car,#2B3340,#EDEFF2,#3A6EA5,false
+ambulance,vehicle,きゅうきゅうしゃ,Ambulance,6,bus,#F2F4F7,#FFD6D1,#DB291F,false
+excavator,vehicle,ショベルカー,Excavator,6,excavator,#F2B01F,#FFE08A,#3A4453,false
+crane,vehicle,クレーンしゃ,Crane Truck,7,crane,#E0883C,#FFE0B2,#3A4453,false
+dumptruck,vehicle,ダンプカー,Dump Truck,6,dumpTruck,#E0A53C,#FFE0A6,#3A4453,false
+mixer,vehicle,ミキサーしゃ,Mixer Truck,6,dumpTruck,#5B86C7,#CFE0F5,#2E3A4A,false
+garbage,vehicle,ごみしゅうしゅうしゃ,Garbage Truck,6,dumpTruck,#4FA06B,#CDEBD6,#2E3A2E,false
+house,building,おうち,House,4,house,#E0563B,#FFE7C2,#7A4A2E,false
+school,building,がっこう,School,5,school,#E0A53C,#FFEFC2,#9E5A2E,false
+shop,building,おみせ,Shop,5,house,#4FA06B,#E8F5D6,#2E5A3A,false
+castle,building,おしろ,Castle,7,castle,#9AA6C2,#EDEFF7,#C7472E,false
+tower,building,タワー,Tower,6,tower,#E0883C,#FFE0B2,#5B86C7,false
+lipstick,cosme,くちべに,Lipstick,5,lipstick,#C24A8A,#3A3340,#E0563B,false
+perfume,cosme,こうすい,Perfume,6,perfume,#E0A6C2,#F2E0EB,#C24A8A,false
+compact,cosme,コンパクト,Compact,5,compact,#D17AA6,#F7E0EE,#C24A8A,false
+nailpolish,cosme,マニキュア,Nail Polish,5,nailPolish,#E0563B,#3A3340,#F2A6BC,false
+octopus,sea,たこ,Octopus,5,octopus,#E0563B,#FFC2B2,#7A2A1A,false
+crab,sea,かに,Crab,5,crab,#E0432E,#FFB8A6,#7A1F12,false
+fish,sea,さかな,Fish,4,fish,#3A9ED1,#BDEBFF,#1F5A7A,false
+dolphin,sea,いるか,Dolphin,6,dolphin,#5B8FC7,#DCEBFF,#2E4A6E,false
+shark,sea,さめ,Shark,6,shark,#8FA0B2,#E0E8F0,#3A4656,false
+jellyfish,sea,くらげ,Jellyfish,6,jellyfish,#D17AC2,#F2D6F0,#7A3A6E,false
+starfish,sea,ひとで,Starfish,5,starfish,#F2994A,#FFD6A6,#9E5A1F,false
+strawberry,food,いちご,Strawberry,4,strawberry,#E0322E,#4FA06B,#7A1212,false
+cake,food,ケーキ,Cake,5,cake,#F2A6C2,#FFE8D6,#D14A4A,false
+icecream,food,アイス,Ice Cream,5,iceCream,#F2B6D6,#E0A53C,#C24A8A,false
+donut,food,ドーナツ,Donut,5,donut,#C2784A,#F7B0C2,#E0432E,false
+riceball,food,おにぎり,Rice Ball,4,riceBall,#F7F4EC,#3A3F46,#E0883C,false
+sushi,food,すし,Sushi,6,sushi,#E0653C,#F7F2E8,#D14A2E,false
+burger,food,ハンバーガー,Hamburger,6,hamburger,#E0A53C,#7AB04F,#9E5A2E,false
+soccer,sports,サッカー,Soccer Ball,4,soccerBall,#EDEFF2,#EDEFF2,#2B3340,false
+baseball,sports,やきゅう,Baseball,5,baseball,#F2B01F,#F7F4EC,#DB291F,false
+basketball,sports,バスケ,Basketball,5,basketball,#E0773C,#FFD6B2,#5A2E1A,false
+tennis,sports,テニス,Tennis,5,tennisBall,#C2E04A,#EAF7C2,#FFFFFF,false
+trophy,sports,トロフィー,Trophy,7,trophy,#F2C03C,#FFE89E,#9E6B1F,false

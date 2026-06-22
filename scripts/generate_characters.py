@@ -22,7 +22,10 @@ HOME_VIEW = ROOT / "iPadPrototype" / "HomeView.swift"
 BEGIN = "    // CATALOG-GENERATED-BEGIN"
 END = "    // CATALOG-GENERATED-END"
 
-VALID_CATEGORIES = {"starter", "animal", "people", "vehicle", "fantasy"}
+VALID_CATEGORIES = {
+    "starter", "animal", "sea", "people", "vehicle", "building", "food",
+    "sports", "cosme", "fantasy",
+}
 VALID_STYLES = {
     "bear", "cat", "dog", "rabbit", "panda", "penguin", "lion", "fox", "koala",
     "sheep", "elephant", "giraffe", "owl", "turtle", "whale",
@@ -32,6 +35,12 @@ VALID_STYLES = {
     "personShort", "personLong", "personCurly", "personBun", "personBuzz",
     "personPonytail",
     "robot", "ghost", "star", "unicorn", "dragon",
+    "excavator", "crane", "dumpTruck",
+    "house", "school", "castle", "tower",
+    "lipstick", "perfume", "compact", "nailPolish",
+    "octopus", "crab", "fish", "dolphin", "shark", "jellyfish", "starfish",
+    "strawberry", "cake", "iceCream", "donut", "riceBall", "sushi", "hamburger",
+    "soccerBall", "baseball", "basketball", "tennisBall", "trophy",
 }
 
 
