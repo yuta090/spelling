@@ -87,3 +87,15 @@ baseball,sports,やきゅう,Baseball,5,baseball,#F2B01F,#F7F4EC,#DB291F,false
 basketball,sports,バスケ,Basketball,5,basketball,#E0773C,#FFD6B2,#5A2E1A,false
 tennis,sports,テニス,Tennis,5,tennisBall,#C2E04A,#EAF7C2,#FFFFFF,false
 trophy,sports,トロフィー,Trophy,7,trophy,#F2C03C,#FFE89E,#9E6B1F,false
+eiffel,landmark,エッフェルとう,Eiffel Tower,6,eiffel,#9E7B4A,#6B5230,#3A2E1A,false
+tokyotower,landmark,とうきょうタワー,Tokyo Tower,5,tokyoTower,#E0432E,#F2F2F2,#7A1F12,false
+liberty,landmark,じゆうのめがみ,Statue of Liberty,7,liberty,#5BA88C,#C7E0D6,#E0A53C,false
+pyramid,landmark,ピラミッド,Pyramid,5,pyramid,#E0B45C,#F2D89E,#C77A2E,false
+pisa,landmark,ピサのしゃとう,Tower of Pisa,6,pisa,#EDE6D6,#F7F2E8,#9E8A6B,false
+bigben,landmark,ビッグベン,Big Ben,6,bigBen,#C7A36B,#9E7B4A,#3A2E1A,false
+tajmahal,landmark,タージマハル,Taj Mahal,7,tajMahal,#F2EDE6,#D6CFC2,#9E8A6B,false
+fuji,landmark,ふじさん,Mt. Fuji,5,fuji,#5B86C7,#7AB04F,#2E4A6E,false
+torii,landmark,とりい,Torii Gate,5,torii,#E0432E,#F2F2F2,#7A1F12,false
+moai,landmark,モアイ,Moai,6,moai,#8C8C8C,#6B6B6B,#3A3A3A,false
+windmill,landmark,ふうしゃ,Windmill,5,windmill,#C7784A,#F2F2F2,#7A3A1F,false
+colosseum,landmark,コロッセオ,Colosseum,6,colosseum,#D6B88C,#F2E6CF,#9E7B4A,false

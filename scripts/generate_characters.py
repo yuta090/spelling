@@ -23,8 +23,8 @@ BEGIN = "    // CATALOG-GENERATED-BEGIN"
 END = "    // CATALOG-GENERATED-END"
 
 VALID_CATEGORIES = {
-    "starter", "animal", "sea", "people", "vehicle", "building", "food",
-    "sports", "cosme", "fantasy",
+    "starter", "animal", "sea", "people", "vehicle", "building", "landmark",
+    "food", "sports", "cosme", "fantasy",
 }
 VALID_STYLES = {
     "bear", "cat", "dog", "rabbit", "panda", "penguin", "lion", "fox", "koala",
@@ -41,6 +41,8 @@ VALID_STYLES = {
     "octopus", "crab", "fish", "dolphin", "shark", "jellyfish", "starfish",
     "strawberry", "cake", "iceCream", "donut", "riceBall", "sushi", "hamburger",
     "soccerBall", "baseball", "basketball", "tennisBall", "trophy",
+    "eiffel", "tokyoTower", "liberty", "pyramid", "pisa", "bigBen",
+    "tajMahal", "fuji", "torii", "moai", "windmill", "colosseum",
 }
 
 
