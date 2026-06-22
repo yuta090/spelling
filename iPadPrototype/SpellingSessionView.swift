@@ -126,12 +126,16 @@ struct SpellingSessionView: View {
 
     /// 最後のラウンド（なぞり文字をゆっくり消して自分で書かせる回）かどうか。
     private var isGuideFadeRound: Bool {
-        mode == .practice && capturesPracticeSamples && practiceRepetitionCount > 1 && isLastPracticeRepeat
+        if ProcessInfo.processInfo.environment["DEMO_FADE_ALWAYS"] == "1" {
+            return mode == .practice && capturesPracticeSamples
+        }
+        return mode == .practice && capturesPracticeSamples && practiceRepetitionCount > 1 && isLastPracticeRepeat
     }
 
     /// このラウンドで日本語訳・例文ヒントを表示するか。
     private var showsPracticeHint: Bool {
         guard mode != .test else { return false }
+        if ProcessInfo.processInfo.environment["DEMO_FADE_ALWAYS"] == "1" { return true }
         switch model.settings.practiceHintTiming {
         case .never:
             return false
@@ -2729,8 +2733,11 @@ private struct PracticeButtonTapEffectOverlay: View {
 private struct ExampleHintView: View {
     var word: String
     var language: AppLanguage
-    @State private var meaning: String?
-    @State private var example: WordExample?
+
+    // WordBank は同梱SQLiteへの同期参照（単一行・高速）なので、その場で引く。
+    // ※ @State + onAppear だと、初期は中身が空で onAppear が発火せずヒントが出ないことがある。
+    private var meaning: String? { WordBank.shared.japanese(for: word) }
+    private var example: WordExample? { WordBank.shared.examples(for: word, limit: 1).first }
 
     var body: some View {
         Group {
@@ -2776,13 +2783,6 @@ private struct ExampleHintView: View {
                 )
             }
         }
-        .onAppear { load() }
-        .onChange(of: word) { _, _ in load() }
-    }
-
-    private func load() {
-        meaning = WordBank.shared.japanese(for: word)
-        example = WordBank.shared.examples(for: word, limit: 1).first
     }
 }
 

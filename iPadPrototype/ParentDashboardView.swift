@@ -3765,38 +3765,29 @@ private struct ParentWordListPanel: View {
 
                 ImportJapaneseOptionsView(language: language, draftText: $rawWords)
 
-                HStack {
+                HStack(spacing: 10) {
                     Button {
                         reloadSelectedStep()
                     } label: {
                         Label(language.text(japanese: "戻す", english: "Reload"), systemImage: "arrow.clockwise")
+                            .font(.subheadline.weight(.bold))
                     }
                     .buttonStyle(.bordered)
                     .tapFeedback()
-
-                    Spacer()
 
                     Button {
                         saveSelectedStep(step)
                     } label: {
                         Label(language.text(japanese: "このステップを保存", english: "Save This Step"), systemImage: "square.and.arrow.down.fill")
+                            .font(.title3.weight(.heavy))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
                     }
                     .buttonStyle(.borderedProminent)
                     .tapFeedback()
                     .tint(ParentPalette.primary)
                     .disabled(parseWordListEntries(from: rawWords).isEmpty)
                 }
-                .font(.subheadline.weight(.bold))
-
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(step.words) { word in
-                            ParentWordRow(word: word, language: language)
-                            Divider()
-                        }
-                    }
-                }
-                .frame(maxHeight: 210)
             } else {
                 ContentUnavailableView(
                     language.text(japanese: "ステップがありません", english: "No step"),
@@ -5427,17 +5418,39 @@ private enum ParentGradingSessionKind: Equatable {
         }
     }
 
+    /// パッと見で分かる短いラベル。
+    func shortLabel(language: AppLanguage) -> String {
+        switch self {
+        case .test:
+            return language.text(japanese: "テスト", english: "Test")
+        case .practice:
+            return language.text(japanese: "れんしゅう", english: "Practice")
+        case .review:
+            return language.text(japanese: "ふくしゅう", english: "Review")
+        }
+    }
+
     var systemImage: String {
         switch self {
         case .test:
             return "checklist.checked"
-        case .practice, .review:
+        case .practice:
             return "pencil.and.scribble"
+        case .review:
+            return "arrow.triangle.2.circlepath"
         }
     }
 
+    /// 種別ごとに色を分けて見分けやすくする。
     var tint: Color {
-        ParentPalette.primary
+        switch self {
+        case .test:
+            return Color(red: 0.20, green: 0.58, blue: 0.24)   // 緑＝テスト
+        case .practice:
+            return Color(red: 0.49, green: 0.30, blue: 0.78)   // 紫＝れんしゅう
+        case .review:
+            return Color(red: 0.90, green: 0.52, blue: 0.16)   // 橙＝ふくしゅう
+        }
     }
 }
 
@@ -5602,11 +5615,12 @@ private struct ParentGradingSessionCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center, spacing: 12) {
-                Image(systemName: session.kind.systemImage)
-                    .font(.headline.weight(.bold))
+                Label(session.kind.shortLabel(language: language), systemImage: session.kind.systemImage)
+                    .font(.subheadline.weight(.heavy))
                     .foregroundStyle(.white)
-                    .frame(width: 36, height: 36)
-                    .background(ParentPalette.primary)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .background(session.kind.tint)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 4) {
