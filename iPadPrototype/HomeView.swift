@@ -1917,10 +1917,12 @@ private struct HomeStatChip: View {
     }
 }
 
-private enum HomeRewardCharacterCategory: String, CaseIterable, Identifiable {
+enum HomeRewardCharacterCategory: String, CaseIterable, Identifiable {
     case starter
     case animal
+    case people
     case vehicle
+    case fantasy
 
     var id: String { rawValue }
 
@@ -1930,13 +1932,17 @@ private enum HomeRewardCharacterCategory: String, CaseIterable, Identifiable {
             return language.text(japanese: "きほん", english: "Starter")
         case .animal:
             return language.text(japanese: "どうぶつ", english: "Animals")
+        case .people:
+            return language.text(japanese: "ひと", english: "People")
         case .vehicle:
             return language.text(japanese: "のりもの", english: "Vehicles")
+        case .fantasy:
+            return language.text(japanese: "ファンタジー", english: "Fantasy")
         }
     }
 }
 
-private enum HomeRewardCharacterStyle {
+enum HomeRewardCharacterStyle {
     case bear
     case cat
     case dog
@@ -1962,9 +1968,22 @@ private enum HomeRewardCharacterStyle {
     case bicycle
     case tractor
     case balloon
+    case monkey
+    case pig
+    case personShort
+    case personLong
+    case personCurly
+    case personBun
+    case personBuzz
+    case personPonytail
+    case robot
+    case ghost
+    case star
+    case unicorn
+    case dragon
 }
 
-private struct HomeRewardCharacter: Identifiable {
+struct HomeRewardCharacter: Identifiable {
     var id: String
     var category: HomeRewardCharacterCategory
     var japaneseName: String
@@ -1987,6 +2006,14 @@ private struct HomeRewardCharacter: Identifiable {
         catalog.first { $0.id == id } ?? catalog[0]
     }
 
+    // MARK: - CHARACTER CATALOG (generated from scripts/characters.csv)
+    // Do not edit the catalog/defaultUnlockedIDs/defaultID below by hand.
+    // Run: python3 scripts/generate_characters.py
+    // CATALOG-GENERATED-BEGIN
+    static let defaultID = "bear"
+
+    static let defaultUnlockedIDs: Set<String> = ["bear", "cat", "dog"]
+
     static let catalog: [HomeRewardCharacter] = [
         HomeRewardCharacter(
             id: "bear",
@@ -1995,9 +2022,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Bear",
             price: 0,
             style: .bear,
-            primary: Color(red: 0.87, green: 0.55, blue: 0.22),
-            secondary: Color(red: 0.97, green: 0.77, blue: 0.44),
-            accent: Color(red: 0.49, green: 0.30, blue: 0.16)
+            primary: Color(red: 0.8706, green: 0.5490, blue: 0.2196),
+            secondary: Color(red: 0.9686, green: 0.7686, blue: 0.4392),
+            accent: Color(red: 0.4902, green: 0.2980, blue: 0.1608)
         ),
         HomeRewardCharacter(
             id: "cat",
@@ -2006,9 +2033,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Cat",
             price: 0,
             style: .cat,
-            primary: Color(red: 0.58, green: 0.64, blue: 0.78),
-            secondary: Color(red: 0.92, green: 0.87, blue: 0.76),
-            accent: Color(red: 0.32, green: 0.34, blue: 0.46)
+            primary: Color(red: 0.5804, green: 0.6392, blue: 0.7804),
+            secondary: Color(red: 0.9216, green: 0.8706, blue: 0.7608),
+            accent: Color(red: 0.3216, green: 0.3412, blue: 0.4588)
         ),
         HomeRewardCharacter(
             id: "dog",
@@ -2017,9 +2044,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Dog",
             price: 0,
             style: .dog,
-            primary: Color(red: 0.76, green: 0.53, blue: 0.30),
-            secondary: Color(red: 0.98, green: 0.78, blue: 0.48),
-            accent: Color(red: 0.44, green: 0.28, blue: 0.16)
+            primary: Color(red: 0.7608, green: 0.5294, blue: 0.2980),
+            secondary: Color(red: 0.9804, green: 0.7804, blue: 0.4784),
+            accent: Color(red: 0.4392, green: 0.2784, blue: 0.1608)
         ),
         HomeRewardCharacter(
             id: "rabbit",
@@ -2028,9 +2055,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Rabbit",
             price: 3,
             style: .rabbit,
-            primary: Color(red: 0.95, green: 0.80, blue: 0.90),
-            secondary: Color(red: 1.0, green: 0.94, blue: 0.98),
-            accent: Color(red: 0.75, green: 0.38, blue: 0.62)
+            primary: Color(red: 0.9490, green: 0.8000, blue: 0.9020),
+            secondary: Color(red: 1.0000, green: 0.9412, blue: 0.9804),
+            accent: Color(red: 0.7490, green: 0.3804, blue: 0.6196)
         ),
         HomeRewardCharacter(
             id: "panda",
@@ -2039,9 +2066,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Panda",
             price: 3,
             style: .panda,
-            primary: Color(red: 0.17, green: 0.19, blue: 0.23),
-            secondary: Color(red: 0.96, green: 0.96, blue: 0.92),
-            accent: Color(red: 0.35, green: 0.62, blue: 0.36)
+            primary: Color(red: 0.1686, green: 0.1882, blue: 0.2314),
+            secondary: Color(red: 0.9608, green: 0.9608, blue: 0.9216),
+            accent: Color(red: 0.3490, green: 0.6196, blue: 0.3608)
         ),
         HomeRewardCharacter(
             id: "penguin",
@@ -2050,9 +2077,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Penguin",
             price: 4,
             style: .penguin,
-            primary: Color(red: 0.18, green: 0.31, blue: 0.62),
-            secondary: Color(red: 0.94, green: 0.97, blue: 1.0),
-            accent: Color(red: 0.96, green: 0.62, blue: 0.12)
+            primary: Color(red: 0.1804, green: 0.3098, blue: 0.6196),
+            secondary: Color(red: 0.9412, green: 0.9686, blue: 1.0000),
+            accent: Color(red: 0.9608, green: 0.6196, blue: 0.1216)
         ),
         HomeRewardCharacter(
             id: "lion",
@@ -2061,9 +2088,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Lion",
             price: 5,
             style: .lion,
-            primary: Color(red: 0.94, green: 0.53, blue: 0.12),
-            secondary: Color(red: 1.0, green: 0.78, blue: 0.30),
-            accent: Color(red: 0.58, green: 0.26, blue: 0.08)
+            primary: Color(red: 0.9412, green: 0.5294, blue: 0.1216),
+            secondary: Color(red: 1.0000, green: 0.7804, blue: 0.2980),
+            accent: Color(red: 0.5804, green: 0.2588, blue: 0.0784)
         ),
         HomeRewardCharacter(
             id: "fox",
@@ -2072,9 +2099,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Fox",
             price: 4,
             style: .fox,
-            primary: Color(red: 0.92, green: 0.43, blue: 0.12),
-            secondary: Color(red: 1.0, green: 0.88, blue: 0.70),
-            accent: Color(red: 0.43, green: 0.18, blue: 0.08)
+            primary: Color(red: 0.9216, green: 0.4314, blue: 0.1216),
+            secondary: Color(red: 1.0000, green: 0.8784, blue: 0.6980),
+            accent: Color(red: 0.4314, green: 0.1804, blue: 0.0784)
         ),
         HomeRewardCharacter(
             id: "koala",
@@ -2083,9 +2110,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Koala",
             price: 4,
             style: .koala,
-            primary: Color(red: 0.56, green: 0.61, blue: 0.66),
-            secondary: Color(red: 0.88, green: 0.90, blue: 0.92),
-            accent: Color(red: 0.22, green: 0.24, blue: 0.28)
+            primary: Color(red: 0.5608, green: 0.6118, blue: 0.6588),
+            secondary: Color(red: 0.8784, green: 0.9020, blue: 0.9216),
+            accent: Color(red: 0.2196, green: 0.2392, blue: 0.2784)
         ),
         HomeRewardCharacter(
             id: "hamster",
@@ -2094,9 +2121,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Hamster",
             price: 4,
             style: .bear,
-            primary: Color(red: 0.86, green: 0.64, blue: 0.38),
-            secondary: Color(red: 1.0, green: 0.86, blue: 0.62),
-            accent: Color(red: 0.50, green: 0.28, blue: 0.12)
+            primary: Color(red: 0.8588, green: 0.6392, blue: 0.3804),
+            secondary: Color(red: 1.0000, green: 0.8588, blue: 0.6196),
+            accent: Color(red: 0.5020, green: 0.2784, blue: 0.1216)
         ),
         HomeRewardCharacter(
             id: "sheep",
@@ -2105,9 +2132,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Sheep",
             price: 5,
             style: .sheep,
-            primary: Color(red: 0.96, green: 0.96, blue: 0.90),
-            secondary: Color(red: 0.72, green: 0.76, blue: 0.82),
-            accent: Color(red: 0.38, green: 0.40, blue: 0.46)
+            primary: Color(red: 0.9608, green: 0.9608, blue: 0.9020),
+            secondary: Color(red: 0.7216, green: 0.7608, blue: 0.8196),
+            accent: Color(red: 0.3804, green: 0.4000, blue: 0.4588)
         ),
         HomeRewardCharacter(
             id: "elephant",
@@ -2116,9 +2143,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Elephant",
             price: 5,
             style: .elephant,
-            primary: Color(red: 0.55, green: 0.63, blue: 0.74),
-            secondary: Color(red: 0.82, green: 0.88, blue: 0.96),
-            accent: Color(red: 0.24, green: 0.31, blue: 0.44)
+            primary: Color(red: 0.5490, green: 0.6314, blue: 0.7412),
+            secondary: Color(red: 0.8196, green: 0.8784, blue: 0.9608),
+            accent: Color(red: 0.2392, green: 0.3098, blue: 0.4392)
         ),
         HomeRewardCharacter(
             id: "giraffe",
@@ -2127,9 +2154,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Giraffe",
             price: 5,
             style: .giraffe,
-            primary: Color(red: 0.94, green: 0.68, blue: 0.22),
-            secondary: Color(red: 1.0, green: 0.86, blue: 0.44),
-            accent: Color(red: 0.57, green: 0.31, blue: 0.08)
+            primary: Color(red: 0.9412, green: 0.6784, blue: 0.2196),
+            secondary: Color(red: 1.0000, green: 0.8588, blue: 0.4392),
+            accent: Color(red: 0.5686, green: 0.3098, blue: 0.0784)
         ),
         HomeRewardCharacter(
             id: "owl",
@@ -2138,9 +2165,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Owl",
             price: 5,
             style: .owl,
-            primary: Color(red: 0.60, green: 0.38, blue: 0.18),
-            secondary: Color(red: 0.95, green: 0.78, blue: 0.48),
-            accent: Color(red: 0.28, green: 0.17, blue: 0.10)
+            primary: Color(red: 0.6000, green: 0.3804, blue: 0.1804),
+            secondary: Color(red: 0.9490, green: 0.7804, blue: 0.4784),
+            accent: Color(red: 0.2784, green: 0.1686, blue: 0.1020)
         ),
         HomeRewardCharacter(
             id: "turtle",
@@ -2149,9 +2176,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Turtle",
             price: 5,
             style: .turtle,
-            primary: Color(red: 0.22, green: 0.58, blue: 0.30),
-            secondary: Color(red: 0.72, green: 0.86, blue: 0.42),
-            accent: Color(red: 0.12, green: 0.36, blue: 0.18)
+            primary: Color(red: 0.2196, green: 0.5804, blue: 0.2980),
+            secondary: Color(red: 0.7216, green: 0.8588, blue: 0.4196),
+            accent: Color(red: 0.1216, green: 0.3608, blue: 0.1804)
         ),
         HomeRewardCharacter(
             id: "whale",
@@ -2160,9 +2187,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Whale",
             price: 6,
             style: .whale,
-            primary: Color(red: 0.22, green: 0.48, blue: 0.80),
-            secondary: Color(red: 0.78, green: 0.92, blue: 1.0),
-            accent: Color(red: 0.12, green: 0.26, blue: 0.52)
+            primary: Color(red: 0.2196, green: 0.4784, blue: 0.8000),
+            secondary: Color(red: 0.7804, green: 0.9216, blue: 1.0000),
+            accent: Color(red: 0.1216, green: 0.2588, blue: 0.5216)
         ),
         HomeRewardCharacter(
             id: "frog",
@@ -2171,9 +2198,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Frog",
             price: 4,
             style: .panda,
-            primary: Color(red: 0.15, green: 0.56, blue: 0.26),
-            secondary: Color(red: 0.76, green: 0.94, blue: 0.58),
-            accent: Color(red: 0.08, green: 0.32, blue: 0.14)
+            primary: Color(red: 0.1490, green: 0.5608, blue: 0.2588),
+            secondary: Color(red: 0.7608, green: 0.9412, blue: 0.5804),
+            accent: Color(red: 0.0784, green: 0.3216, blue: 0.1412)
         ),
         HomeRewardCharacter(
             id: "tiger",
@@ -2182,9 +2209,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Tiger",
             price: 6,
             style: .lion,
-            primary: Color(red: 0.96, green: 0.50, blue: 0.10),
-            secondary: Color(red: 1.0, green: 0.76, blue: 0.28),
-            accent: Color(red: 0.20, green: 0.13, blue: 0.08)
+            primary: Color(red: 0.9608, green: 0.5020, blue: 0.1020),
+            secondary: Color(red: 1.0000, green: 0.7608, blue: 0.2784),
+            accent: Color(red: 0.2000, green: 0.1294, blue: 0.0784)
         ),
         HomeRewardCharacter(
             id: "squirrel",
@@ -2193,9 +2220,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Squirrel",
             price: 5,
             style: .cat,
-            primary: Color(red: 0.66, green: 0.38, blue: 0.16),
-            secondary: Color(red: 0.94, green: 0.68, blue: 0.36),
-            accent: Color(red: 0.34, green: 0.18, blue: 0.08)
+            primary: Color(red: 0.6588, green: 0.3804, blue: 0.1608),
+            secondary: Color(red: 0.9412, green: 0.6784, blue: 0.3608),
+            accent: Color(red: 0.3412, green: 0.1804, blue: 0.0784)
         ),
         HomeRewardCharacter(
             id: "deer",
@@ -2204,9 +2231,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Deer",
             price: 6,
             style: .rabbit,
-            primary: Color(red: 0.67, green: 0.42, blue: 0.20),
-            secondary: Color(red: 0.96, green: 0.76, blue: 0.48),
-            accent: Color(red: 0.36, green: 0.20, blue: 0.10)
+            primary: Color(red: 0.6706, green: 0.4196, blue: 0.2000),
+            secondary: Color(red: 0.9608, green: 0.7608, blue: 0.4784),
+            accent: Color(red: 0.3608, green: 0.2000, blue: 0.1020)
         ),
         HomeRewardCharacter(
             id: "car",
@@ -2215,9 +2242,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Car",
             price: 4,
             style: .car,
-            primary: Color(red: 0.18, green: 0.46, blue: 0.86),
-            secondary: Color(red: 0.66, green: 0.86, blue: 1.0),
-            accent: Color(red: 0.08, green: 0.18, blue: 0.36)
+            primary: Color(red: 0.1804, green: 0.4588, blue: 0.8588),
+            secondary: Color(red: 0.6588, green: 0.8588, blue: 1.0000),
+            accent: Color(red: 0.0784, green: 0.1804, blue: 0.3608)
         ),
         HomeRewardCharacter(
             id: "train",
@@ -2226,9 +2253,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Train",
             price: 5,
             style: .train,
-            primary: Color(red: 0.20, green: 0.62, blue: 0.38),
-            secondary: Color(red: 0.82, green: 0.96, blue: 0.74),
-            accent: Color(red: 0.10, green: 0.32, blue: 0.20)
+            primary: Color(red: 0.2000, green: 0.6196, blue: 0.3804),
+            secondary: Color(red: 0.8196, green: 0.9608, blue: 0.7412),
+            accent: Color(red: 0.1020, green: 0.3216, blue: 0.2000)
         ),
         HomeRewardCharacter(
             id: "rocket",
@@ -2237,9 +2264,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Rocket",
             price: 6,
             style: .rocket,
-            primary: Color(red: 0.78, green: 0.30, blue: 0.72),
-            secondary: Color(red: 0.98, green: 0.90, blue: 1.0),
-            accent: Color(red: 0.96, green: 0.55, blue: 0.10)
+            primary: Color(red: 0.7804, green: 0.2980, blue: 0.7216),
+            secondary: Color(red: 0.9804, green: 0.9020, blue: 1.0000),
+            accent: Color(red: 0.9608, green: 0.5490, blue: 0.1020)
         ),
         HomeRewardCharacter(
             id: "plane",
@@ -2248,9 +2275,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Plane",
             price: 6,
             style: .plane,
-            primary: Color(red: 0.28, green: 0.62, blue: 0.90),
-            secondary: Color(red: 0.86, green: 0.96, blue: 1.0),
-            accent: Color(red: 0.14, green: 0.34, blue: 0.70)
+            primary: Color(red: 0.2784, green: 0.6196, blue: 0.9020),
+            secondary: Color(red: 0.8588, green: 0.9608, blue: 1.0000),
+            accent: Color(red: 0.1412, green: 0.3412, blue: 0.6980)
         ),
         HomeRewardCharacter(
             id: "bus",
@@ -2259,9 +2286,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Bus",
             price: 5,
             style: .bus,
-            primary: Color(red: 0.96, green: 0.70, blue: 0.12),
-            secondary: Color(red: 1.0, green: 0.92, blue: 0.54),
-            accent: Color(red: 0.58, green: 0.36, blue: 0.06)
+            primary: Color(red: 0.9608, green: 0.6980, blue: 0.1216),
+            secondary: Color(red: 1.0000, green: 0.9216, blue: 0.5412),
+            accent: Color(red: 0.5804, green: 0.3608, blue: 0.0588)
         ),
         HomeRewardCharacter(
             id: "truck",
@@ -2270,9 +2297,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Truck",
             price: 5,
             style: .car,
-            primary: Color(red: 0.22, green: 0.52, blue: 0.72),
-            secondary: Color(red: 0.72, green: 0.90, blue: 1.0),
-            accent: Color(red: 0.10, green: 0.25, blue: 0.36)
+            primary: Color(red: 0.2196, green: 0.5216, blue: 0.7216),
+            secondary: Color(red: 0.7216, green: 0.9020, blue: 1.0000),
+            accent: Color(red: 0.1020, green: 0.2510, blue: 0.3608)
         ),
         HomeRewardCharacter(
             id: "ship",
@@ -2281,9 +2308,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Ship",
             price: 6,
             style: .ship,
-            primary: Color(red: 0.20, green: 0.42, blue: 0.78),
-            secondary: Color(red: 0.84, green: 0.94, blue: 1.0),
-            accent: Color(red: 0.82, green: 0.34, blue: 0.18)
+            primary: Color(red: 0.2000, green: 0.4196, blue: 0.7804),
+            secondary: Color(red: 0.8392, green: 0.9412, blue: 1.0000),
+            accent: Color(red: 0.8196, green: 0.3412, blue: 0.1804)
         ),
         HomeRewardCharacter(
             id: "helicopter",
@@ -2292,9 +2319,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Helicopter",
             price: 6,
             style: .helicopter,
-            primary: Color(red: 0.84, green: 0.28, blue: 0.28),
-            secondary: Color(red: 1.0, green: 0.82, blue: 0.74),
-            accent: Color(red: 0.48, green: 0.12, blue: 0.12)
+            primary: Color(red: 0.8392, green: 0.2784, blue: 0.2784),
+            secondary: Color(red: 1.0000, green: 0.8196, blue: 0.7412),
+            accent: Color(red: 0.4784, green: 0.1216, blue: 0.1216)
         ),
         HomeRewardCharacter(
             id: "bicycle",
@@ -2303,9 +2330,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Bicycle",
             price: 5,
             style: .bicycle,
-            primary: Color(red: 0.52, green: 0.34, blue: 0.82),
-            secondary: Color(red: 0.92, green: 0.86, blue: 1.0),
-            accent: Color(red: 0.28, green: 0.16, blue: 0.54)
+            primary: Color(red: 0.5216, green: 0.3412, blue: 0.8196),
+            secondary: Color(red: 0.9216, green: 0.8588, blue: 1.0000),
+            accent: Color(red: 0.2784, green: 0.1608, blue: 0.5412)
         ),
         HomeRewardCharacter(
             id: "tractor",
@@ -2314,9 +2341,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Tractor",
             price: 6,
             style: .tractor,
-            primary: Color(red: 0.22, green: 0.62, blue: 0.28),
-            secondary: Color(red: 0.88, green: 0.96, blue: 0.66),
-            accent: Color(red: 0.12, green: 0.32, blue: 0.16)
+            primary: Color(red: 0.2196, green: 0.6196, blue: 0.2784),
+            secondary: Color(red: 0.8784, green: 0.9608, blue: 0.6588),
+            accent: Color(red: 0.1216, green: 0.3216, blue: 0.1608)
         ),
         HomeRewardCharacter(
             id: "balloon",
@@ -2325,9 +2352,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Balloon",
             price: 6,
             style: .balloon,
-            primary: Color(red: 0.82, green: 0.32, blue: 0.66),
-            secondary: Color(red: 1.0, green: 0.84, blue: 0.94),
-            accent: Color(red: 0.44, green: 0.20, blue: 0.36)
+            primary: Color(red: 0.8196, green: 0.3216, blue: 0.6588),
+            secondary: Color(red: 1.0000, green: 0.8392, blue: 0.9412),
+            accent: Color(red: 0.4392, green: 0.2000, blue: 0.3608)
         ),
         HomeRewardCharacter(
             id: "submarine",
@@ -2336,9 +2363,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Submarine",
             price: 7,
             style: .ship,
-            primary: Color(red: 0.88, green: 0.62, blue: 0.08),
-            secondary: Color(red: 1.0, green: 0.90, blue: 0.40),
-            accent: Color(red: 0.52, green: 0.34, blue: 0.05)
+            primary: Color(red: 0.8784, green: 0.6196, blue: 0.0784),
+            secondary: Color(red: 1.0000, green: 0.9020, blue: 0.4000),
+            accent: Color(red: 0.5216, green: 0.3412, blue: 0.0510)
         ),
         HomeRewardCharacter(
             id: "firetruck",
@@ -2347,9 +2374,9 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Fire Truck",
             price: 7,
             style: .bus,
-            primary: Color(red: 0.86, green: 0.16, blue: 0.12),
-            secondary: Color(red: 1.0, green: 0.78, blue: 0.70),
-            accent: Color(red: 0.48, green: 0.06, blue: 0.04)
+            primary: Color(red: 0.8588, green: 0.1608, blue: 0.1216),
+            secondary: Color(red: 1.0000, green: 0.7804, blue: 0.6980),
+            accent: Color(red: 0.4784, green: 0.0588, blue: 0.0392)
         ),
         HomeRewardCharacter(
             id: "scooter",
@@ -2358,11 +2385,221 @@ private struct HomeRewardCharacter: Identifiable {
             englishName: "Scooter",
             price: 6,
             style: .bicycle,
-            primary: Color(red: 0.18, green: 0.62, blue: 0.70),
-            secondary: Color(red: 0.80, green: 0.96, blue: 1.0),
-            accent: Color(red: 0.08, green: 0.34, blue: 0.40)
+            primary: Color(red: 0.1804, green: 0.6196, blue: 0.6980),
+            secondary: Color(red: 0.8000, green: 0.9608, blue: 1.0000),
+            accent: Color(red: 0.0784, green: 0.3412, blue: 0.4000)
+        ),
+        HomeRewardCharacter(
+            id: "monkey",
+            category: .animal,
+            japaneseName: "さる",
+            englishName: "Monkey",
+            price: 5,
+            style: .monkey,
+            primary: Color(red: 0.6196, green: 0.4196, blue: 0.2353),
+            secondary: Color(red: 0.9490, green: 0.8235, blue: 0.6510),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "pig",
+            category: .animal,
+            japaneseName: "ぶた",
+            englishName: "Pig",
+            price: 4,
+            style: .pig,
+            primary: Color(red: 0.9490, green: 0.6510, blue: 0.7373),
+            secondary: Color(red: 1.0000, green: 0.8392, blue: 0.8784),
+            accent: Color(red: 0.7686, green: 0.4196, blue: 0.5216)
+        ),
+        HomeRewardCharacter(
+            id: "kid_haru",
+            category: .people,
+            japaneseName: "ハル",
+            englishName: "Haru",
+            price: 4,
+            style: .personShort,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.4314, green: 0.7569, blue: 0.8941),
+            accent: Color(red: 0.1216, green: 0.1059, blue: 0.0902)
+        ),
+        HomeRewardCharacter(
+            id: "kid_sora",
+            category: .people,
+            japaneseName: "ソラ",
+            englishName: "Sora",
+            price: 4,
+            style: .personLong,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.9490, green: 0.6510, blue: 0.7608),
+            accent: Color(red: 0.2314, green: 0.1647, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "kid_niko",
+            category: .people,
+            japaneseName: "ニコ",
+            englishName: "Niko",
+            price: 5,
+            style: .personCurly,
+            primary: Color(red: 0.4196, green: 0.2588, blue: 0.1490),
+            secondary: Color(red: 0.9608, green: 0.8157, blue: 0.2980),
+            accent: Color(red: 0.0824, green: 0.0667, blue: 0.0510)
+        ),
+        HomeRewardCharacter(
+            id: "kid_mei",
+            category: .people,
+            japaneseName: "メイ",
+            englishName: "Mei",
+            price: 5,
+            style: .personBun,
+            primary: Color(red: 0.7765, green: 0.5412, blue: 0.3686),
+            secondary: Color(red: 0.5608, green: 0.8196, blue: 0.4784),
+            accent: Color(red: 0.1255, green: 0.0863, blue: 0.0588)
+        ),
+        HomeRewardCharacter(
+            id: "kid_leo",
+            category: .people,
+            japaneseName: "レオ",
+            englishName: "Leo",
+            price: 4,
+            style: .personBuzz,
+            primary: Color(red: 0.9686, green: 0.8431, blue: 0.7098),
+            secondary: Color(red: 0.8784, green: 0.3373, blue: 0.2314),
+            accent: Color(red: 0.4196, green: 0.2667, blue: 0.1373)
+        ),
+        HomeRewardCharacter(
+            id: "kid_aya",
+            category: .people,
+            japaneseName: "アヤ",
+            englishName: "Aya",
+            price: 5,
+            style: .personPonytail,
+            primary: Color(red: 0.8784, green: 0.6588, blue: 0.4706),
+            secondary: Color(red: 0.7255, green: 0.5490, blue: 0.8784),
+            accent: Color(red: 0.1020, green: 0.0863, blue: 0.1333)
+        ),
+        HomeRewardCharacter(
+            id: "kid_ken",
+            category: .people,
+            japaneseName: "ケン",
+            englishName: "Ken",
+            price: 5,
+            style: .personShort,
+            primary: Color(red: 0.3608, green: 0.2275, blue: 0.1294),
+            secondary: Color(red: 0.2980, green: 0.6510, blue: 0.4196),
+            accent: Color(red: 0.0706, green: 0.0549, blue: 0.0392)
+        ),
+        HomeRewardCharacter(
+            id: "kid_luna",
+            category: .people,
+            japaneseName: "ルナ",
+            englishName: "Luna",
+            price: 5,
+            style: .personLong,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.8784, green: 0.4157, blue: 0.6588),
+            accent: Color(red: 0.8784, green: 0.7216, blue: 0.3608)
+        ),
+        HomeRewardCharacter(
+            id: "kid_jin",
+            category: .people,
+            japaneseName: "ジン",
+            englishName: "Jin",
+            price: 5,
+            style: .personBuzz,
+            primary: Color(red: 0.7098, green: 0.4784, blue: 0.3137),
+            secondary: Color(red: 0.2275, green: 0.4314, blue: 0.6471),
+            accent: Color(red: 0.0784, green: 0.0627, blue: 0.0471)
+        ),
+        HomeRewardCharacter(
+            id: "kid_mio",
+            category: .people,
+            japaneseName: "ミオ",
+            englishName: "Mio",
+            price: 6,
+            style: .personCurly,
+            primary: Color(red: 0.8314, green: 0.6039, blue: 0.4157),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.7098, green: 0.2824, blue: 0.1647)
+        ),
+        HomeRewardCharacter(
+            id: "kid_nao",
+            category: .people,
+            japaneseName: "ナオ",
+            englishName: "Nao",
+            price: 6,
+            style: .personBun,
+            primary: Color(red: 0.9490, green: 0.7961, blue: 0.6588),
+            secondary: Color(red: 0.4000, green: 0.7608, blue: 0.7608),
+            accent: Color(red: 0.6039, green: 0.6275, blue: 0.6510)
+        ),
+        HomeRewardCharacter(
+            id: "kid_riku",
+            category: .people,
+            japaneseName: "リク",
+            englishName: "Riku",
+            price: 6,
+            style: .personPonytail,
+            primary: Color(red: 0.4000, green: 0.2588, blue: 0.1647),
+            secondary: Color(red: 0.8784, green: 0.5412, blue: 0.2353),
+            accent: Color(red: 0.8784, green: 0.4157, blue: 0.6588)
+        ),
+        HomeRewardCharacter(
+            id: "robot",
+            category: .fantasy,
+            japaneseName: "ロボット",
+            englishName: "Robot",
+            price: 6,
+            style: .robot,
+            primary: Color(red: 0.5490, green: 0.5961, blue: 0.6588),
+            secondary: Color(red: 0.8392, green: 0.8784, blue: 0.9216),
+            accent: Color(red: 0.8784, green: 0.3373, blue: 0.2314)
+        ),
+        HomeRewardCharacter(
+            id: "ghost",
+            category: .fantasy,
+            japaneseName: "おばけ",
+            englishName: "Ghost",
+            price: 5,
+            style: .ghost,
+            primary: Color(red: 0.9294, green: 0.9294, blue: 0.9608),
+            secondary: Color(red: 0.7882, green: 0.7882, blue: 0.8784),
+            accent: Color(red: 0.2902, green: 0.2902, blue: 0.4000)
+        ),
+        HomeRewardCharacter(
+            id: "star",
+            category: .fantasy,
+            japaneseName: "おほしさま",
+            englishName: "Star",
+            price: 5,
+            style: .star,
+            primary: Color(red: 0.9608, green: 0.7843, blue: 0.2588),
+            secondary: Color(red: 1.0000, green: 0.9098, blue: 0.6196),
+            accent: Color(red: 0.8784, green: 0.5804, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "unicorn",
+            category: .fantasy,
+            japaneseName: "ユニコーン",
+            englishName: "Unicorn",
+            price: 7,
+            style: .unicorn,
+            primary: Color(red: 0.9569, green: 0.8627, blue: 0.9373),
+            secondary: Color(red: 0.7882, green: 0.6510, blue: 0.8784),
+            accent: Color(red: 0.9490, green: 0.6510, blue: 0.7608)
+        ),
+        HomeRewardCharacter(
+            id: "dragon",
+            category: .fantasy,
+            japaneseName: "ドラゴン",
+            englishName: "Dragon",
+            price: 7,
+            style: .dragon,
+            primary: Color(red: 0.2980, green: 0.6510, blue: 0.4196),
+            secondary: Color(red: 0.7216, green: 0.9020, blue: 0.6196),
+            accent: Color(red: 0.8784, green: 0.3373, blue: 0.2314)
         )
     ]
+    // CATALOG-GENERATED-END
 }
 
 private struct CharacterPickerSheet: View {
@@ -2687,6 +2924,32 @@ private struct RewardCharacterAvatar: View {
                 TractorCharacterView(character: character)
             case .balloon:
                 BalloonCharacterView(character: character)
+            case .monkey:
+                MonkeyCharacterFace(character: character)
+            case .pig:
+                PigCharacterFace(character: character)
+            case .personShort:
+                PersonCharacterFace(character: character, hair: .short)
+            case .personLong:
+                PersonCharacterFace(character: character, hair: .long)
+            case .personCurly:
+                PersonCharacterFace(character: character, hair: .curly)
+            case .personBun:
+                PersonCharacterFace(character: character, hair: .bun)
+            case .personBuzz:
+                PersonCharacterFace(character: character, hair: .buzz)
+            case .personPonytail:
+                PersonCharacterFace(character: character, hair: .ponytail)
+            case .robot:
+                RobotCharacterFace(character: character)
+            case .ghost:
+                GhostCharacterFace(character: character)
+            case .star:
+                StarCharacterFace(character: character)
+            case .unicorn:
+                UnicornCharacterFace(character: character)
+            case .dragon:
+                DragonCharacterFace(character: character)
             }
         }
         .padding(4)
@@ -3137,6 +3400,275 @@ private struct BalloonCharacterView: View {
             Capsule().fill(character.accent.opacity(0.70)).frame(width: 3, height: 30).rotationEffect(.degrees(16)).offset(x: 8, y: 26)
             RoundedRectangle(cornerRadius: 4).fill(character.accent).frame(width: 28, height: 18).offset(y: 44)
         }
+    }
+}
+
+// MARK: - People characters (skin = primary, shirt = secondary, hair = accent)
+
+private enum PersonHair {
+    case short
+    case long
+    case curly
+    case bun
+    case buzz
+    case ponytail
+}
+
+private struct PersonCharacterFace: View {
+    var character: HomeRewardCharacter
+    var hair: PersonHair
+
+    private var cheek: Color {
+        Color(red: 0.95, green: 0.55, blue: 0.58)
+    }
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.secondary).frame(width: 82, height: 48).offset(y: 52)
+            RoundedRectangle(cornerRadius: 8).fill(character.primary).frame(width: 18, height: 16).offset(y: 33)
+
+            hairBack
+
+            Circle().fill(character.primary).frame(width: 62, height: 66).offset(y: 2)
+            Circle().fill(character.primary).frame(width: 13, height: 15).offset(x: -31, y: 6)
+            Circle().fill(character.primary).frame(width: 13, height: 15).offset(x: 31, y: 6)
+
+            hairFront
+
+            CharacterEyes(color: .black.opacity(0.78))
+            Circle().fill(cheek.opacity(0.30)).frame(width: 11, height: 9).offset(x: -19, y: 13)
+            Circle().fill(cheek.opacity(0.30)).frame(width: 11, height: 9).offset(x: 19, y: 13)
+            SmileArc()
+                .stroke(.black.opacity(0.55), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                .frame(width: 20, height: 11)
+                .offset(y: 15)
+        }
+    }
+
+    @ViewBuilder private var hairBack: some View {
+        switch hair {
+        case .long:
+            RoundedRectangle(cornerRadius: 26).fill(character.accent).frame(width: 72, height: 88).offset(y: 8)
+        case .ponytail:
+            Capsule().fill(character.accent).frame(width: 20, height: 48).rotationEffect(.degrees(18)).offset(x: 35, y: 8)
+        case .bun:
+            Circle().fill(character.accent).frame(width: 26, height: 26).offset(y: -34)
+        default:
+            EmptyView()
+        }
+    }
+
+    @ViewBuilder private var hairFront: some View {
+        switch hair {
+        case .buzz:
+            Circle().fill(character.accent).frame(width: 60, height: 60).offset(y: -8)
+                .mask(Rectangle().frame(width: 64, height: 24).offset(y: -22))
+        case .short:
+            Circle().fill(character.accent).frame(width: 66, height: 64).offset(y: -10)
+                .mask(Rectangle().frame(width: 70, height: 34).offset(y: -18))
+        case .curly:
+            ForEach(0..<6) { index in
+                Circle().fill(character.accent).frame(width: 24, height: 24)
+                    .offset(y: -30)
+                    .rotationEffect(.degrees(Double(index) * 28 - 70))
+            }
+            Circle().fill(character.accent).frame(width: 24, height: 24).offset(y: -32)
+        case .long, .ponytail, .bun:
+            Circle().fill(character.accent).frame(width: 64, height: 58).offset(y: -12)
+                .mask(Rectangle().frame(width: 70, height: 30).offset(y: -20))
+        }
+    }
+}
+
+// MARK: - New animal faces
+
+private struct MonkeyCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 30, height: 30).offset(x: -32, y: -6)
+            Circle().fill(character.primary).frame(width: 30, height: 30).offset(x: 32, y: -6)
+            Circle().fill(character.secondary).frame(width: 18, height: 18).offset(x: -32, y: -6)
+            Circle().fill(character.secondary).frame(width: 18, height: 18).offset(x: 32, y: -6)
+            Circle().fill(character.primary).frame(width: 74, height: 72).offset(y: 4)
+            Circle().fill(character.secondary).frame(width: 54, height: 46).offset(y: 12)
+            CharacterEyes(color: .black.opacity(0.78))
+            Circle().fill(character.accent.opacity(0.6)).frame(width: 6, height: 5).offset(x: -7, y: 16)
+            Circle().fill(character.accent.opacity(0.6)).frame(width: 6, height: 5).offset(x: 7, y: 16)
+            Capsule().fill(.black.opacity(0.45)).frame(width: 12, height: 4).offset(y: 22)
+        }
+    }
+}
+
+private struct PigCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.primary).frame(width: 22, height: 20).rotationEffect(.degrees(-12)).offset(x: -24, y: -28)
+            Triangle().fill(character.primary).frame(width: 22, height: 20).rotationEffect(.degrees(12)).offset(x: 24, y: -28)
+            Circle().fill(character.primary).frame(width: 78, height: 70).offset(y: 6)
+            Ellipse().fill(character.secondary).frame(width: 32, height: 24).offset(y: 16)
+            Circle().fill(character.accent).frame(width: 7, height: 9).offset(x: -7, y: 16)
+            Circle().fill(character.accent).frame(width: 7, height: 9).offset(x: 7, y: 16)
+            CharacterEyes(color: .black.opacity(0.78))
+        }
+    }
+}
+
+// MARK: - Fantasy faces
+
+private struct RobotCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Rectangle().fill(character.accent).frame(width: 4, height: 14).offset(y: -34)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(y: -42)
+            Capsule().fill(character.accent).frame(width: 8, height: 22).offset(x: -38, y: 4)
+            Capsule().fill(character.accent).frame(width: 8, height: 22).offset(x: 38, y: 4)
+            RoundedRectangle(cornerRadius: 18).fill(character.primary).frame(width: 74, height: 70).offset(y: 4)
+            RoundedRectangle(cornerRadius: 12).fill(character.secondary).frame(width: 56, height: 40).offset(y: 0)
+            Circle().fill(character.accent).frame(width: 13, height: 13).offset(x: -14, y: -4)
+            Circle().fill(character.accent).frame(width: 13, height: 13).offset(x: 14, y: -4)
+            RoundedRectangle(cornerRadius: 3).fill(.black.opacity(0.45)).frame(width: 26, height: 5).offset(y: 16)
+        }
+    }
+}
+
+private struct GhostCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            GhostShape().fill(character.primary).frame(width: 66, height: 84).offset(y: 4)
+            Ellipse().fill(character.accent).frame(width: 12, height: 17).offset(x: -13, y: -8)
+            Ellipse().fill(character.accent).frame(width: 12, height: 17).offset(x: 13, y: -8)
+            Ellipse().fill(character.accent).frame(width: 11, height: 13).offset(y: 12)
+            Circle().fill(character.secondary.opacity(0.7)).frame(width: 10, height: 8).offset(x: -22, y: 4)
+            Circle().fill(character.secondary.opacity(0.7)).frame(width: 10, height: 8).offset(x: 22, y: 4)
+        }
+    }
+}
+
+private struct StarCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            StarShape().fill(character.primary).frame(width: 94, height: 94).offset(y: 2)
+            StarShape().fill(character.secondary).frame(width: 54, height: 54).offset(y: 2)
+            CharacterEyes(color: character.accent)
+            SmileArc()
+                .stroke(character.accent, style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                .frame(width: 18, height: 10)
+                .offset(y: 14)
+        }
+    }
+}
+
+private struct UnicornCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.accent).frame(width: 14, height: 26).offset(y: -34)
+            Triangle().fill(character.primary).frame(width: 16, height: 22).offset(x: -22, y: -28)
+            Triangle().fill(character.primary).frame(width: 16, height: 22).offset(x: 22, y: -28)
+            Capsule().fill(character.secondary).frame(width: 26, height: 56).rotationEffect(.degrees(-16)).offset(x: -30, y: 2)
+            Circle().fill(character.primary).frame(width: 72, height: 74).offset(y: 6)
+            Ellipse().fill(character.secondary.opacity(0.5)).frame(width: 40, height: 30).offset(y: 20)
+            Capsule().fill(character.secondary).frame(width: 18, height: 24).rotationEffect(.degrees(20)).offset(x: 8, y: -20)
+            CharacterEyes(color: .black.opacity(0.78))
+            Circle().fill(.black.opacity(0.4)).frame(width: 5, height: 5).offset(x: -6, y: 22)
+            Circle().fill(.black.opacity(0.4)).frame(width: 5, height: 5).offset(x: 6, y: 22)
+        }
+    }
+}
+
+private struct DragonCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.secondary).frame(width: 14, height: 20).rotationEffect(.degrees(-20)).offset(x: -18, y: -30)
+            Triangle().fill(character.secondary).frame(width: 14, height: 20).rotationEffect(.degrees(20)).offset(x: 18, y: -30)
+            Triangle().fill(character.accent).frame(width: 12, height: 13).offset(y: -28)
+            Circle().fill(character.primary).frame(width: 78, height: 72).offset(y: 4)
+            Ellipse().fill(character.primary).frame(width: 46, height: 34).offset(y: 18)
+            Circle().fill(.black.opacity(0.5)).frame(width: 6, height: 6).offset(x: -9, y: 22)
+            Circle().fill(.black.opacity(0.5)).frame(width: 6, height: 6).offset(x: 9, y: 22)
+            CharacterEyes(color: .black.opacity(0.78))
+        }
+    }
+}
+
+private struct SmileArc: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addQuadCurve(
+            to: CGPoint(x: rect.maxX, y: rect.minY),
+            control: CGPoint(x: rect.midX, y: rect.maxY * 1.6)
+        )
+        return path
+    }
+}
+
+private struct StarShape: Shape {
+    var points: Int = 5
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let outer = min(rect.width, rect.height) / 2
+        let inner = outer * 0.46
+        let total = points * 2
+        for index in 0..<total {
+            let radius = index.isMultiple(of: 2) ? outer : inner
+            let angle = -CGFloat.pi / 2 + CGFloat(index) * .pi / CGFloat(points)
+            let point = CGPoint(x: center.x + radius * cos(angle), y: center.y + radius * sin(angle))
+            if index == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
+        }
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct GhostShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let domeHeight = rect.height * 0.45
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + domeHeight))
+        path.addArc(
+            center: CGPoint(x: rect.midX, y: rect.minY + domeHeight),
+            radius: rect.width / 2,
+            startAngle: .degrees(180),
+            endAngle: .degrees(0),
+            clockwise: false
+        )
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        let waves = 4
+        let step = rect.width / CGFloat(waves)
+        var x = rect.maxX
+        var dip = true
+        for _ in 0..<waves {
+            let nextX = x - step
+            path.addQuadCurve(
+                to: CGPoint(x: nextX, y: rect.maxY),
+                control: CGPoint(x: x - step / 2, y: rect.maxY + (dip ? 10 : -8))
+            )
+            x = nextX
+            dip.toggle()
+        }
+        path.closeSubpath()
+        return path
     }
 }
 
