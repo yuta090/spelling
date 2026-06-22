@@ -48,6 +48,8 @@ VALID_STYLES = {
     "angkor", "matterhorn",
     "libertyBell", "whiteHouse", "notreDame", "burjKhalifa", "archTriomphe",
     "skytree", "japaneseCastle", "pagoda", "daibutsu", "gasshou",
+    "stBasil", "parthenon", "machuPicchu", "mosque", "montStMichel",
+    "capitol", "petra", "kiyomizu", "tokyoStation", "templeHall",
 }
 
 

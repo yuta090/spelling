@@ -122,3 +122,16 @@ osaka,japan,おおさかじょう,Osaka Castle,7,japaneseCastle,#E8E4D6,#2E5A4A,
 pagoda,japan,ごじゅうのとう,Five-Story Pagoda,6,pagoda,#B5482A,#4A3A2E,#E0C04A,false
 daibutsu,japan,だいぶつ,Great Buddha,7,daibutsu,#6B8C7A,#C7B89E,#3A4A42,false
 gasshou,japan,しらかわごう,Gassho House,6,gasshou,#9E7B4A,#C7B89E,#5C4329,false
+stbasil,landmark,せいワシリイだいせいどう,St. Basil's,7,stBasil,#E8E0D0,#C7CCD6,#9E8A6B,false
+parthenon,landmark,パルテノンしんでん,Parthenon,7,parthenon,#EDE6D6,#D6CFC2,#9E8A6B,false
+machupicchu,landmark,マチュピチュ,Machu Picchu,7,machuPicchu,#4F9E5A,#C7B89E,#8AA66B,false
+mosque,landmark,モスク,Mosque,6,mosque,#E0D6C2,#F2EAD6,#C7A33C,false
+montsaintmichel,landmark,モンサンミッシェル,Mont-St-Michel,7,montStMichel,#C7B89E,#E0D6C2,#9AA6B2,false
+capitol,landmark,こっかいぎじどう,Capitol,6,capitol,#F2F2F2,#DCDCDC,#9AA0A6,false
+petra,landmark,ペトラ,Petra,7,petra,#D69A6B,#E0B894,#8A5A3A,false
+ginkaku,japan,ぎんかくじ,Silver Pavilion,6,kinkaku,#9AA0A6,#7A8089,#4A4F56,false
+nagoya,japan,なごやじょう,Nagoya Castle,7,japaneseCastle,#E8E4D6,#3A4656,#C7A33C,false
+itsukushima,japan,いつくしまじんじゃ,Itsukushima,6,torii,#E0432E,#8FBFD6,#7A1F12,false
+kiyomizu,japan,きよみずでら,Kiyomizu-dera,6,kiyomizu,#E0C9A6,#9E5A3A,#8A6B4A,false
+tokyostation,japan,とうきょうえき,Tokyo Station,6,tokyoStation,#A0522D,#7A8C8A,#E0D6C2,false
+todaiji,japan,とうだいじ,Todai-ji,7,templeHall,#9E5A3A,#5A6B5A,#5C3A1A,false

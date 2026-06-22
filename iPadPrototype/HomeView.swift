@@ -2066,6 +2066,16 @@ enum HomeRewardCharacterStyle {
     case pagoda
     case daibutsu
     case gasshou
+    case stBasil
+    case parthenon
+    case machuPicchu
+    case mosque
+    case montStMichel
+    case capitol
+    case petra
+    case kiyomizu
+    case tokyoStation
+    case templeHall
 }
 
 struct HomeRewardCharacter: Identifiable {
@@ -3452,6 +3462,149 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.6196, green: 0.4824, blue: 0.2902),
             secondary: Color(red: 0.7804, green: 0.7216, blue: 0.6196),
             accent: Color(red: 0.3608, green: 0.2627, blue: 0.1608)
+        ),
+        HomeRewardCharacter(
+            id: "stbasil",
+            category: .landmark,
+            japaneseName: "せいワシリイだいせいどう",
+            englishName: "St. Basil's",
+            price: 7,
+            style: .stBasil,
+            primary: Color(red: 0.9098, green: 0.8784, blue: 0.8157),
+            secondary: Color(red: 0.7804, green: 0.8000, blue: 0.8392),
+            accent: Color(red: 0.6196, green: 0.5412, blue: 0.4196)
+        ),
+        HomeRewardCharacter(
+            id: "parthenon",
+            category: .landmark,
+            japaneseName: "パルテノンしんでん",
+            englishName: "Parthenon",
+            price: 7,
+            style: .parthenon,
+            primary: Color(red: 0.9294, green: 0.9020, blue: 0.8392),
+            secondary: Color(red: 0.8392, green: 0.8118, blue: 0.7608),
+            accent: Color(red: 0.6196, green: 0.5412, blue: 0.4196)
+        ),
+        HomeRewardCharacter(
+            id: "machupicchu",
+            category: .landmark,
+            japaneseName: "マチュピチュ",
+            englishName: "Machu Picchu",
+            price: 7,
+            style: .machuPicchu,
+            primary: Color(red: 0.3098, green: 0.6196, blue: 0.3529),
+            secondary: Color(red: 0.7804, green: 0.7216, blue: 0.6196),
+            accent: Color(red: 0.5412, green: 0.6510, blue: 0.4196)
+        ),
+        HomeRewardCharacter(
+            id: "mosque",
+            category: .landmark,
+            japaneseName: "モスク",
+            englishName: "Mosque",
+            price: 6,
+            style: .mosque,
+            primary: Color(red: 0.8784, green: 0.8392, blue: 0.7608),
+            secondary: Color(red: 0.9490, green: 0.9176, blue: 0.8392),
+            accent: Color(red: 0.7804, green: 0.6392, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "montsaintmichel",
+            category: .landmark,
+            japaneseName: "モンサンミッシェル",
+            englishName: "Mont-St-Michel",
+            price: 7,
+            style: .montStMichel,
+            primary: Color(red: 0.7804, green: 0.7216, blue: 0.6196),
+            secondary: Color(red: 0.8784, green: 0.8392, blue: 0.7608),
+            accent: Color(red: 0.6039, green: 0.6510, blue: 0.6980)
+        ),
+        HomeRewardCharacter(
+            id: "capitol",
+            category: .landmark,
+            japaneseName: "こっかいぎじどう",
+            englishName: "Capitol",
+            price: 6,
+            style: .capitol,
+            primary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            secondary: Color(red: 0.8627, green: 0.8627, blue: 0.8627),
+            accent: Color(red: 0.6039, green: 0.6275, blue: 0.6510)
+        ),
+        HomeRewardCharacter(
+            id: "petra",
+            category: .landmark,
+            japaneseName: "ペトラ",
+            englishName: "Petra",
+            price: 7,
+            style: .petra,
+            primary: Color(red: 0.8392, green: 0.6039, blue: 0.4196),
+            secondary: Color(red: 0.8784, green: 0.7216, blue: 0.5804),
+            accent: Color(red: 0.5412, green: 0.3529, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "ginkaku",
+            category: .japan,
+            japaneseName: "ぎんかくじ",
+            englishName: "Silver Pavilion",
+            price: 6,
+            style: .kinkaku,
+            primary: Color(red: 0.6039, green: 0.6275, blue: 0.6510),
+            secondary: Color(red: 0.4784, green: 0.5020, blue: 0.5373),
+            accent: Color(red: 0.2902, green: 0.3098, blue: 0.3373)
+        ),
+        HomeRewardCharacter(
+            id: "nagoya",
+            category: .japan,
+            japaneseName: "なごやじょう",
+            englishName: "Nagoya Castle",
+            price: 7,
+            style: .japaneseCastle,
+            primary: Color(red: 0.9098, green: 0.8941, blue: 0.8392),
+            secondary: Color(red: 0.2275, green: 0.2745, blue: 0.3373),
+            accent: Color(red: 0.7804, green: 0.6392, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "itsukushima",
+            category: .japan,
+            japaneseName: "いつくしまじんじゃ",
+            englishName: "Itsukushima",
+            price: 6,
+            style: .torii,
+            primary: Color(red: 0.8784, green: 0.2627, blue: 0.1804),
+            secondary: Color(red: 0.5608, green: 0.7490, blue: 0.8392),
+            accent: Color(red: 0.4784, green: 0.1216, blue: 0.0706)
+        ),
+        HomeRewardCharacter(
+            id: "kiyomizu",
+            category: .japan,
+            japaneseName: "きよみずでら",
+            englishName: "Kiyomizu-dera",
+            price: 6,
+            style: .kiyomizu,
+            primary: Color(red: 0.8784, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.6196, green: 0.3529, blue: 0.2275),
+            accent: Color(red: 0.5412, green: 0.4196, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "tokyostation",
+            category: .japan,
+            japaneseName: "とうきょうえき",
+            englishName: "Tokyo Station",
+            price: 6,
+            style: .tokyoStation,
+            primary: Color(red: 0.6275, green: 0.3216, blue: 0.1765),
+            secondary: Color(red: 0.4784, green: 0.5490, blue: 0.5412),
+            accent: Color(red: 0.8784, green: 0.8392, blue: 0.7608)
+        ),
+        HomeRewardCharacter(
+            id: "todaiji",
+            category: .japan,
+            japaneseName: "とうだいじ",
+            englishName: "Todai-ji",
+            price: 7,
+            style: .templeHall,
+            primary: Color(red: 0.6196, green: 0.3529, blue: 0.2275),
+            secondary: Color(red: 0.3529, green: 0.4196, blue: 0.3529),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
         )
     ]
     // CATALOG-GENERATED-END
@@ -3933,6 +4086,26 @@ private struct RewardCharacterAvatar: View {
                 DaibutsuCharacterView(character: character)
             case .gasshou:
                 GasshouCharacterView(character: character)
+            case .stBasil:
+                StBasilCharacterView(character: character)
+            case .parthenon:
+                ParthenonCharacterView(character: character)
+            case .machuPicchu:
+                MachuPicchuCharacterView(character: character)
+            case .mosque:
+                MosqueCharacterView(character: character)
+            case .montStMichel:
+                MontStMichelCharacterView(character: character)
+            case .capitol:
+                CapitolCharacterView(character: character)
+            case .petra:
+                PetraCharacterView(character: character)
+            case .kiyomizu:
+                KiyomizuCharacterView(character: character)
+            case .tokyoStation:
+                TokyoStationCharacterView(character: character)
+            case .templeHall:
+                TempleHallCharacterView(character: character)
             }
         }
         .padding(4)
@@ -5816,6 +5989,222 @@ private struct BurjShape: Shape {
         path.addLine(to: CGPoint(x: cx - w * 0.40, y: rect.minY + h * 0.66))
         path.addLine(to: CGPoint(x: cx - w * 0.26, y: rect.minY + h * 0.30))
         path.addLine(to: CGPoint(x: cx - w * 0.16, y: rect.minY + h * 0.30))
+        path.closeSubpath()
+        return path
+    }
+}
+
+// MARK: - World & Japan landmarks (batch 4)
+
+private struct StBasilCharacterView: View {
+    var character: HomeRewardCharacter
+    private let domeRed = Color(red: 0.85, green: 0.27, blue: 0.22)
+    private let domeBlue = Color(red: 0.22, green: 0.46, blue: 0.76)
+    private let domeGreen = Color(red: 0.27, green: 0.62, blue: 0.42)
+    private let domeGold = Color(red: 0.92, green: 0.72, blue: 0.22)
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 72, height: 30).offset(y: 26)
+            Rectangle().fill(character.secondary).frame(width: 13, height: 30).offset(x: -25, y: 14)
+            OnionDomeShape().fill(domeRed).frame(width: 22, height: 26).offset(x: -25, y: -6)
+            Rectangle().fill(character.secondary).frame(width: 13, height: 30).offset(x: 25, y: 14)
+            OnionDomeShape().fill(domeBlue).frame(width: 22, height: 26).offset(x: 25, y: -6)
+            OnionDomeShape().fill(domeGreen).frame(width: 15, height: 19).offset(x: -13, y: 8)
+            OnionDomeShape().fill(domeGold).frame(width: 15, height: 19).offset(x: 13, y: 8)
+            Rectangle().fill(character.secondary).frame(width: 18, height: 40).offset(y: 6)
+            Triangle().fill(character.accent).frame(width: 22, height: 20).offset(y: -16)
+            OnionDomeShape().fill(domeGold).frame(width: 12, height: 16).offset(y: -32)
+        }
+    }
+}
+
+private struct ParthenonCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.primary).frame(width: 84, height: 24).offset(y: -26)
+            Rectangle().fill(character.primary).frame(width: 86, height: 10).offset(y: -11)
+            ForEach(0..<6) { index in
+                Rectangle().fill(character.secondary).frame(width: 8, height: 40)
+                    .offset(x: CGFloat(-35 + index * 14), y: 14)
+            }
+            Rectangle().fill(character.primary).frame(width: 92, height: 8).offset(y: 36)
+            Rectangle().fill(character.accent.opacity(0.4)).frame(width: 96, height: 5).offset(y: 42)
+        }
+    }
+}
+
+private struct MachuPicchuCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.accent.opacity(0.55)).frame(width: 52, height: 64).offset(x: 20, y: -6)
+            ForEach(0..<4) { index in
+                RoundedRectangle(cornerRadius: 2).fill(character.primary)
+                    .frame(width: CGFloat(72 - index * 13), height: 12)
+                    .offset(y: CGFloat(32 - index * 12))
+            }
+            Rectangle().fill(character.secondary).frame(width: 8, height: 11).offset(x: -10, y: -4)
+            Rectangle().fill(character.secondary).frame(width: 8, height: 9).offset(x: 4, y: -6)
+            Rectangle().fill(character.secondary).frame(width: 7, height: 8).offset(x: -20, y: 8)
+        }
+    }
+}
+
+private struct MosqueCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.secondary).frame(width: 8, height: 66).offset(x: -34, y: 6)
+            Capsule().fill(character.secondary).frame(width: 8, height: 66).offset(x: 34, y: 6)
+            Circle().fill(character.primary).frame(width: 11, height: 11).offset(x: -34, y: -28)
+            Circle().fill(character.primary).frame(width: 11, height: 11).offset(x: 34, y: -28)
+            RoundedRectangle(cornerRadius: 4).fill(character.primary).frame(width: 66, height: 30).offset(y: 24)
+            Circle().fill(character.primary).frame(width: 46, height: 46).offset(y: 2)
+            Image(systemName: "moon.fill")
+                .font(.system(size: 14, weight: .black))
+                .foregroundStyle(character.accent)
+                .offset(y: -28)
+            RoundedRectangle(cornerRadius: 6).fill(character.accent.opacity(0.5)).frame(width: 16, height: 22).offset(y: 28)
+        }
+    }
+}
+
+private struct MontStMichelCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.accent.opacity(0.4)).frame(width: 84, height: 18).offset(y: 36)
+            Triangle().fill(character.primary).frame(width: 70, height: 66).offset(y: 10)
+            RoundedRectangle(cornerRadius: 2).fill(character.secondary).frame(width: 42, height: 14).offset(y: 24)
+            RoundedRectangle(cornerRadius: 2).fill(character.secondary).frame(width: 26, height: 12).offset(y: 8)
+            RoundedRectangle(cornerRadius: 2).fill(character.secondary).frame(width: 15, height: 12).offset(y: -6)
+            Triangle().fill(character.primary).frame(width: 10, height: 22).offset(y: -24)
+            Circle().fill(character.accent).frame(width: 5, height: 5).offset(y: -36)
+        }
+    }
+}
+
+private struct CapitolCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 90, height: 28).offset(y: 26)
+            ForEach(0..<7) { index in
+                Rectangle().fill(character.secondary).frame(width: 5, height: 22)
+                    .offset(x: CGFloat(-30 + index * 10), y: 26)
+            }
+            Triangle().fill(character.primary).frame(width: 32, height: 12).offset(y: 10)
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 34, height: 18).offset(y: 6)
+            Circle().fill(character.primary).frame(width: 38, height: 38).offset(y: -10)
+            Rectangle().fill(character.accent).frame(width: 3, height: 12).offset(y: -32)
+            Circle().fill(character.accent).frame(width: 5, height: 5).offset(y: -38)
+        }
+    }
+}
+
+private struct PetraCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10).fill(character.accent.opacity(0.3)).frame(width: 80, height: 90).offset(y: 4)
+            Triangle().fill(character.primary).frame(width: 18, height: 11).offset(x: -22, y: -20)
+            Triangle().fill(character.primary).frame(width: 18, height: 11).offset(x: 22, y: -20)
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 22, height: 26).offset(y: -16)
+            Triangle().fill(character.secondary).frame(width: 22, height: 9).offset(y: -30)
+            Rectangle().fill(character.primary).frame(width: 64, height: 8).offset(y: 4)
+            ForEach(0..<4) { index in
+                Rectangle().fill(character.primary).frame(width: 7, height: 32)
+                    .offset(x: CGFloat(-21 + index * 14), y: 24)
+            }
+            UnevenRoundedRectangle(topLeadingRadius: 8, topTrailingRadius: 8).fill(character.accent).frame(width: 13, height: 26).offset(y: 26)
+        }
+    }
+}
+
+private struct KiyomizuCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<4) { index in
+                Rectangle().fill(character.accent).frame(width: 5, height: 34)
+                    .offset(x: CGFloat(-24 + index * 16), y: 28)
+            }
+            Rectangle().fill(character.accent.opacity(0.7)).frame(width: 72, height: 3).offset(y: 20)
+            Rectangle().fill(character.accent.opacity(0.7)).frame(width: 72, height: 3).offset(y: 34)
+            Rectangle().fill(character.primary).frame(width: 76, height: 8).offset(y: 9)
+            RoundedRectangle(cornerRadius: 2).fill(character.primary).frame(width: 50, height: 16).offset(y: -3)
+            RoofShape().fill(character.secondary).frame(width: 68, height: 16).offset(y: -14)
+        }
+    }
+}
+
+private struct TokyoStationCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 88, height: 36).offset(y: 18)
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 30, height: 18).offset(y: 0)
+            Circle().fill(character.secondary).frame(width: 24, height: 24).offset(x: -32, y: -2)
+            Circle().fill(character.secondary).frame(width: 24, height: 24).offset(x: 32, y: -2)
+            Triangle().fill(character.secondary).frame(width: 11, height: 9).offset(x: -32, y: -16)
+            Triangle().fill(character.secondary).frame(width: 11, height: 9).offset(x: 32, y: -16)
+            Rectangle().fill(character.accent.opacity(0.6)).frame(width: 88, height: 2).offset(y: 10)
+            Rectangle().fill(character.accent.opacity(0.6)).frame(width: 88, height: 2).offset(y: 26)
+            ForEach(0..<5) { index in
+                Rectangle().fill(character.accent.opacity(0.5)).frame(width: 6, height: 8)
+                    .offset(x: CGFloat(-24 + index * 12), y: 18)
+            }
+        }
+    }
+}
+
+private struct TempleHallCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Rectangle().fill(character.accent.opacity(0.4)).frame(width: 92, height: 8).offset(y: 35)
+            RoundedRectangle(cornerRadius: 2).fill(character.primary).frame(width: 72, height: 26).offset(y: 18)
+            ForEach(0..<5) { index in
+                Rectangle().fill(character.accent).frame(width: 5, height: 24)
+                    .offset(x: CGFloat(-28 + index * 14), y: 18)
+            }
+            RoofShape().fill(character.secondary).frame(width: 96, height: 28).offset(y: -8)
+            RoofShape().fill(character.secondary).frame(width: 60, height: 16).offset(y: -26)
+            Capsule().fill(domeGold).frame(width: 5, height: 12).offset(x: -16, y: -20)
+            Capsule().fill(domeGold).frame(width: 5, height: 12).offset(x: 16, y: -20)
+        }
+    }
+
+    private var domeGold: Color { Color(red: 0.86, green: 0.68, blue: 0.20) }
+}
+
+private struct OnionDomeShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        let w = rect.width
+        let h = rect.height
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addCurve(
+            to: CGPoint(x: rect.midX, y: rect.minY),
+            control1: CGPoint(x: rect.minX - w * 0.12, y: rect.minY + h * 0.45),
+            control2: CGPoint(x: rect.midX - w * 0.10, y: rect.minY + h * 0.08)
+        )
+        path.addCurve(
+            to: CGPoint(x: rect.maxX, y: rect.maxY),
+            control1: CGPoint(x: rect.midX + w * 0.10, y: rect.minY + h * 0.08),
+            control2: CGPoint(x: rect.maxX + w * 0.12, y: rect.minY + h * 0.45)
+        )
         path.closeSubpath()
         return path
     }
