@@ -24,7 +24,8 @@ END = "    // CATALOG-GENERATED-END"
 
 VALID_CATEGORIES = {
     "starter", "animal", "sea", "people", "vehicle", "building", "landmark",
-    "japan", "food", "sports", "cosme", "fantasy",
+    "japan", "food", "sports", "instruments", "insect", "dinosaur", "space",
+    "cosme", "fantasy",
 }
 VALID_STYLES = {
     "bear", "cat", "dog", "rabbit", "panda", "penguin", "lion", "fox", "koala",
@@ -50,6 +51,11 @@ VALID_STYLES = {
     "skytree", "japaneseCastle", "pagoda", "daibutsu", "gasshou",
     "stBasil", "parthenon", "machuPicchu", "mosque", "montStMichel",
     "capitol", "petra", "kiyomizu", "tokyoStation", "templeHall",
+    "duomo", "euroCastle", "mayanPyramid", "skyscraper", "starFort",
+    "guitar", "piano", "drum", "trumpet", "violin",
+    "butterfly", "beetle", "ladybug", "bee", "ant",
+    "trex", "triceratops", "stegosaurus", "brachiosaurus", "pteranodon",
+    "astronaut", "ufo", "saturn", "moon", "alien",
 }
 
 

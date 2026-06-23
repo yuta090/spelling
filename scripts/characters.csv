@@ -135,3 +135,32 @@ itsukushima,japan,いつくしまじんじゃ,Itsukushima,6,torii,#E0432E,#8FBFD
 kiyomizu,japan,きよみずでら,Kiyomizu-dera,6,kiyomizu,#E0C9A6,#9E5A3A,#8A6B4A,false
 tokyostation,japan,とうきょうえき,Tokyo Station,6,tokyoStation,#A0522D,#7A8C8A,#E0D6C2,false
 todaiji,japan,とうだいじ,Todai-ji,7,templeHall,#9E5A3A,#5A6B5A,#5C3A1A,false
+duomo,landmark,ドゥオモ,Duomo,7,duomo,#EDE6D6,#C7B89E,#C2552E,false
+neuschwanstein,landmark,ノイシュバンシュタイン,Neuschwanstein,7,euroCastle,#F2F2F2,#C7D6E0,#5B7A9E,false
+mayan,landmark,マヤピラミッド,Mayan Pyramid,6,mayanPyramid,#A89A7E,#C7B89E,#6B5A3A,false
+gateway,landmark,インドもん,Gateway of India,6,archTriomphe,#C7A36B,#E0C99E,#8A6B3A,false
+harukas,japan,あべのハルカス,Abeno Harukas,6,skyscraper,#9AB8C7,#C7DCE8,#5B7A8C,false
+goryokaku,japan,ごりょうかく,Goryokaku,6,starFort,#5FA06B,#8AC77A,#3A6B4A,false
+okayama,japan,おかやまじょう,Okayama Castle,7,japaneseCastle,#3A3F46,#1F2329,#C7A33C,false
+tsutenkaku,japan,つうてんかく,Tsutenkaku,5,tower,#E0A53C,#FFE0A6,#C2552E,false
+guitar,instruments,ギター,Guitar,5,guitar,#C2784A,#F2D6A6,#5C3A1A,false
+piano,instruments,ピアノ,Piano,6,piano,#2B2B30,#C7A36B,#9AA0A6,false
+drum,instruments,たいこ,Drum,5,drum,#D14A2E,#F2E8D6,#7A2A1A,false
+trumpet,instruments,トランペット,Trumpet,6,trumpet,#E0B43C,#FFE89E,#9E6B1F,false
+violin,instruments,バイオリン,Violin,6,violin,#9E5A2E,#E0C99E,#3A2A1A,false
+butterfly,insect,ちょうちょ,Butterfly,5,butterfly,#E06AA8,#F2C14E,#7A2A5A,false
+beetle,insect,かぶとむし,Beetle,5,beetle,#5C3A1A,#9E7B4A,#2A1A0A,false
+ladybug,insect,てんとうむし,Ladybug,4,ladybug,#E0322E,#3A2A2A,#1A1212,false
+bee,insect,はち,Bee,5,bee,#F2C03C,#3A3026,#2A2018,false
+ant,insect,あり,Ant,4,ant,#7A4329,#9E5A3A,#3A2018,false
+trex,dinosaur,ティラノサウルス,T-Rex,6,trex,#5FA06B,#8AC77A,#3A6B4A,false
+triceratops,dinosaur,トリケラトプス,Triceratops,6,triceratops,#7AA0C7,#C7DCE8,#3A5A7A,false
+stegosaurus,dinosaur,ステゴサウルス,Stegosaurus,6,stegosaurus,#9E7BC7,#C7A6E0,#5A3A7A,false
+brachiosaurus,dinosaur,ブラキオサウルス,Brachiosaurus,6,brachiosaurus,#5FA0A0,#8AC7C7,#3A6B6B,false
+pteranodon,dinosaur,プテラノドン,Pteranodon,6,pteranodon,#E0883C,#F2C14E,#9E5A1F,false
+astronaut,space,うちゅうひこうし,Astronaut,6,astronaut,#F2F2F2,#5B86C7,#3A4656,false
+ufo,space,ユーフォー,UFO,5,ufo,#8FA0B2,#9AE0C7,#3A4656,false
+saturn,space,どせい,Saturn,6,saturn,#E0B43C,#FFE89E,#C79A3C,false
+moon,space,つき,Moon,4,moon,#E0E0E8,#C7C7D0,#9AA0A6,false
+alien,space,うちゅうじん,Alien,5,alien,#7AC77A,#5FA06B,#2A4A2A,false
+spacerocket,space,ロケット,Rocket,5,rocket,#C74CB8,#FAE6FF,#F58C1A,false

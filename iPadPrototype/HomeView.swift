@@ -1928,6 +1928,10 @@ enum HomeRewardCharacterCategory: String, CaseIterable, Identifiable {
     case japan
     case food
     case sports
+    case instruments
+    case insect
+    case dinosaur
+    case space
     case cosme
     case fantasy
 
@@ -1955,6 +1959,14 @@ enum HomeRewardCharacterCategory: String, CaseIterable, Identifiable {
             return language.text(japanese: "たべもの", english: "Food")
         case .sports:
             return language.text(japanese: "スポーツ", english: "Sports")
+        case .instruments:
+            return language.text(japanese: "がっき", english: "Instruments")
+        case .insect:
+            return language.text(japanese: "むし", english: "Insects")
+        case .dinosaur:
+            return language.text(japanese: "きょうりゅう", english: "Dinosaurs")
+        case .space:
+            return language.text(japanese: "うちゅう", english: "Space")
         case .cosme:
             return language.text(japanese: "コスメ", english: "Cosmetics")
         case .fantasy:
@@ -2076,6 +2088,31 @@ enum HomeRewardCharacterStyle {
     case kiyomizu
     case tokyoStation
     case templeHall
+    case duomo
+    case euroCastle
+    case mayanPyramid
+    case skyscraper
+    case starFort
+    case guitar
+    case piano
+    case drum
+    case trumpet
+    case violin
+    case butterfly
+    case beetle
+    case ladybug
+    case bee
+    case ant
+    case trex
+    case triceratops
+    case stegosaurus
+    case brachiosaurus
+    case pteranodon
+    case astronaut
+    case ufo
+    case saturn
+    case moon
+    case alien
 }
 
 struct HomeRewardCharacter: Identifiable {
@@ -3605,6 +3642,325 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.6196, green: 0.3529, blue: 0.2275),
             secondary: Color(red: 0.3529, green: 0.4196, blue: 0.3529),
             accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "duomo",
+            category: .landmark,
+            japaneseName: "ドゥオモ",
+            englishName: "Duomo",
+            price: 7,
+            style: .duomo,
+            primary: Color(red: 0.9294, green: 0.9020, blue: 0.8392),
+            secondary: Color(red: 0.7804, green: 0.7216, blue: 0.6196),
+            accent: Color(red: 0.7608, green: 0.3333, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "neuschwanstein",
+            category: .landmark,
+            japaneseName: "ノイシュバンシュタイン",
+            englishName: "Neuschwanstein",
+            price: 7,
+            style: .euroCastle,
+            primary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            secondary: Color(red: 0.7804, green: 0.8392, blue: 0.8784),
+            accent: Color(red: 0.3569, green: 0.4784, blue: 0.6196)
+        ),
+        HomeRewardCharacter(
+            id: "mayan",
+            category: .landmark,
+            japaneseName: "マヤピラミッド",
+            englishName: "Mayan Pyramid",
+            price: 6,
+            style: .mayanPyramid,
+            primary: Color(red: 0.6588, green: 0.6039, blue: 0.4941),
+            secondary: Color(red: 0.7804, green: 0.7216, blue: 0.6196),
+            accent: Color(red: 0.4196, green: 0.3529, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "gateway",
+            category: .landmark,
+            japaneseName: "インドもん",
+            englishName: "Gateway of India",
+            price: 6,
+            style: .archTriomphe,
+            primary: Color(red: 0.7804, green: 0.6392, blue: 0.4196),
+            secondary: Color(red: 0.8784, green: 0.7882, blue: 0.6196),
+            accent: Color(red: 0.5412, green: 0.4196, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "harukas",
+            category: .japan,
+            japaneseName: "あべのハルカス",
+            englishName: "Abeno Harukas",
+            price: 6,
+            style: .skyscraper,
+            primary: Color(red: 0.6039, green: 0.7216, blue: 0.7804),
+            secondary: Color(red: 0.7804, green: 0.8627, blue: 0.9098),
+            accent: Color(red: 0.3569, green: 0.4784, blue: 0.5490)
+        ),
+        HomeRewardCharacter(
+            id: "goryokaku",
+            category: .japan,
+            japaneseName: "ごりょうかく",
+            englishName: "Goryokaku",
+            price: 6,
+            style: .starFort,
+            primary: Color(red: 0.3725, green: 0.6275, blue: 0.4196),
+            secondary: Color(red: 0.5412, green: 0.7804, blue: 0.4784),
+            accent: Color(red: 0.2275, green: 0.4196, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "okayama",
+            category: .japan,
+            japaneseName: "おかやまじょう",
+            englishName: "Okayama Castle",
+            price: 7,
+            style: .japaneseCastle,
+            primary: Color(red: 0.2275, green: 0.2471, blue: 0.2745),
+            secondary: Color(red: 0.1216, green: 0.1373, blue: 0.1608),
+            accent: Color(red: 0.7804, green: 0.6392, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "tsutenkaku",
+            category: .japan,
+            japaneseName: "つうてんかく",
+            englishName: "Tsutenkaku",
+            price: 5,
+            style: .tower,
+            primary: Color(red: 0.8784, green: 0.6471, blue: 0.2353),
+            secondary: Color(red: 1.0000, green: 0.8784, blue: 0.6510),
+            accent: Color(red: 0.7608, green: 0.3333, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "guitar",
+            category: .instruments,
+            japaneseName: "ギター",
+            englishName: "Guitar",
+            price: 5,
+            style: .guitar,
+            primary: Color(red: 0.7608, green: 0.4706, blue: 0.2902),
+            secondary: Color(red: 0.9490, green: 0.8392, blue: 0.6510),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "piano",
+            category: .instruments,
+            japaneseName: "ピアノ",
+            englishName: "Piano",
+            price: 6,
+            style: .piano,
+            primary: Color(red: 0.1686, green: 0.1686, blue: 0.1882),
+            secondary: Color(red: 0.7804, green: 0.6392, blue: 0.4196),
+            accent: Color(red: 0.6039, green: 0.6275, blue: 0.6510)
+        ),
+        HomeRewardCharacter(
+            id: "drum",
+            category: .instruments,
+            japaneseName: "たいこ",
+            englishName: "Drum",
+            price: 5,
+            style: .drum,
+            primary: Color(red: 0.8196, green: 0.2902, blue: 0.1804),
+            secondary: Color(red: 0.9490, green: 0.9098, blue: 0.8392),
+            accent: Color(red: 0.4784, green: 0.1647, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "trumpet",
+            category: .instruments,
+            japaneseName: "トランペット",
+            englishName: "Trumpet",
+            price: 6,
+            style: .trumpet,
+            primary: Color(red: 0.8784, green: 0.7059, blue: 0.2353),
+            secondary: Color(red: 1.0000, green: 0.9098, blue: 0.6196),
+            accent: Color(red: 0.6196, green: 0.4196, blue: 0.1216)
+        ),
+        HomeRewardCharacter(
+            id: "violin",
+            category: .instruments,
+            japaneseName: "バイオリン",
+            englishName: "Violin",
+            price: 6,
+            style: .violin,
+            primary: Color(red: 0.6196, green: 0.3529, blue: 0.1804),
+            secondary: Color(red: 0.8784, green: 0.7882, blue: 0.6196),
+            accent: Color(red: 0.2275, green: 0.1647, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "butterfly",
+            category: .insect,
+            japaneseName: "ちょうちょ",
+            englishName: "Butterfly",
+            price: 5,
+            style: .butterfly,
+            primary: Color(red: 0.8784, green: 0.4157, blue: 0.6588),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.4784, green: 0.1647, blue: 0.3529)
+        ),
+        HomeRewardCharacter(
+            id: "beetle",
+            category: .insect,
+            japaneseName: "かぶとむし",
+            englishName: "Beetle",
+            price: 5,
+            style: .beetle,
+            primary: Color(red: 0.3608, green: 0.2275, blue: 0.1020),
+            secondary: Color(red: 0.6196, green: 0.4824, blue: 0.2902),
+            accent: Color(red: 0.1647, green: 0.1020, blue: 0.0392)
+        ),
+        HomeRewardCharacter(
+            id: "ladybug",
+            category: .insect,
+            japaneseName: "てんとうむし",
+            englishName: "Ladybug",
+            price: 4,
+            style: .ladybug,
+            primary: Color(red: 0.8784, green: 0.1961, blue: 0.1804),
+            secondary: Color(red: 0.2275, green: 0.1647, blue: 0.1647),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0706)
+        ),
+        HomeRewardCharacter(
+            id: "bee",
+            category: .insect,
+            japaneseName: "はち",
+            englishName: "Bee",
+            price: 5,
+            style: .bee,
+            primary: Color(red: 0.9490, green: 0.7529, blue: 0.2353),
+            secondary: Color(red: 0.2275, green: 0.1882, blue: 0.1490),
+            accent: Color(red: 0.1647, green: 0.1255, blue: 0.0941)
+        ),
+        HomeRewardCharacter(
+            id: "ant",
+            category: .insect,
+            japaneseName: "あり",
+            englishName: "Ant",
+            price: 4,
+            style: .ant,
+            primary: Color(red: 0.4784, green: 0.2627, blue: 0.1608),
+            secondary: Color(red: 0.6196, green: 0.3529, blue: 0.2275),
+            accent: Color(red: 0.2275, green: 0.1255, blue: 0.0941)
+        ),
+        HomeRewardCharacter(
+            id: "trex",
+            category: .dinosaur,
+            japaneseName: "ティラノサウルス",
+            englishName: "T-Rex",
+            price: 6,
+            style: .trex,
+            primary: Color(red: 0.3725, green: 0.6275, blue: 0.4196),
+            secondary: Color(red: 0.5412, green: 0.7804, blue: 0.4784),
+            accent: Color(red: 0.2275, green: 0.4196, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "triceratops",
+            category: .dinosaur,
+            japaneseName: "トリケラトプス",
+            englishName: "Triceratops",
+            price: 6,
+            style: .triceratops,
+            primary: Color(red: 0.4784, green: 0.6275, blue: 0.7804),
+            secondary: Color(red: 0.7804, green: 0.8627, blue: 0.9098),
+            accent: Color(red: 0.2275, green: 0.3529, blue: 0.4784)
+        ),
+        HomeRewardCharacter(
+            id: "stegosaurus",
+            category: .dinosaur,
+            japaneseName: "ステゴサウルス",
+            englishName: "Stegosaurus",
+            price: 6,
+            style: .stegosaurus,
+            primary: Color(red: 0.6196, green: 0.4824, blue: 0.7804),
+            secondary: Color(red: 0.7804, green: 0.6510, blue: 0.8784),
+            accent: Color(red: 0.3529, green: 0.2275, blue: 0.4784)
+        ),
+        HomeRewardCharacter(
+            id: "brachiosaurus",
+            category: .dinosaur,
+            japaneseName: "ブラキオサウルス",
+            englishName: "Brachiosaurus",
+            price: 6,
+            style: .brachiosaurus,
+            primary: Color(red: 0.3725, green: 0.6275, blue: 0.6275),
+            secondary: Color(red: 0.5412, green: 0.7804, blue: 0.7804),
+            accent: Color(red: 0.2275, green: 0.4196, blue: 0.4196)
+        ),
+        HomeRewardCharacter(
+            id: "pteranodon",
+            category: .dinosaur,
+            japaneseName: "プテラノドン",
+            englishName: "Pteranodon",
+            price: 6,
+            style: .pteranodon,
+            primary: Color(red: 0.8784, green: 0.5333, blue: 0.2353),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.6196, green: 0.3529, blue: 0.1216)
+        ),
+        HomeRewardCharacter(
+            id: "astronaut",
+            category: .space,
+            japaneseName: "うちゅうひこうし",
+            englishName: "Astronaut",
+            price: 6,
+            style: .astronaut,
+            primary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            secondary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            accent: Color(red: 0.2275, green: 0.2745, blue: 0.3373)
+        ),
+        HomeRewardCharacter(
+            id: "ufo",
+            category: .space,
+            japaneseName: "ユーフォー",
+            englishName: "UFO",
+            price: 5,
+            style: .ufo,
+            primary: Color(red: 0.5608, green: 0.6275, blue: 0.6980),
+            secondary: Color(red: 0.6039, green: 0.8784, blue: 0.7804),
+            accent: Color(red: 0.2275, green: 0.2745, blue: 0.3373)
+        ),
+        HomeRewardCharacter(
+            id: "saturn",
+            category: .space,
+            japaneseName: "どせい",
+            englishName: "Saturn",
+            price: 6,
+            style: .saturn,
+            primary: Color(red: 0.8784, green: 0.7059, blue: 0.2353),
+            secondary: Color(red: 1.0000, green: 0.9098, blue: 0.6196),
+            accent: Color(red: 0.7804, green: 0.6039, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "moon",
+            category: .space,
+            japaneseName: "つき",
+            englishName: "Moon",
+            price: 4,
+            style: .moon,
+            primary: Color(red: 0.8784, green: 0.8784, blue: 0.9098),
+            secondary: Color(red: 0.7804, green: 0.7804, blue: 0.8157),
+            accent: Color(red: 0.6039, green: 0.6275, blue: 0.6510)
+        ),
+        HomeRewardCharacter(
+            id: "alien",
+            category: .space,
+            japaneseName: "うちゅうじん",
+            englishName: "Alien",
+            price: 5,
+            style: .alien,
+            primary: Color(red: 0.4784, green: 0.7804, blue: 0.4784),
+            secondary: Color(red: 0.3725, green: 0.6275, blue: 0.4196),
+            accent: Color(red: 0.1647, green: 0.2902, blue: 0.1647)
+        ),
+        HomeRewardCharacter(
+            id: "spacerocket",
+            category: .space,
+            japaneseName: "ロケット",
+            englishName: "Rocket",
+            price: 5,
+            style: .rocket,
+            primary: Color(red: 0.7804, green: 0.2980, blue: 0.7216),
+            secondary: Color(red: 0.9804, green: 0.9020, blue: 1.0000),
+            accent: Color(red: 0.9608, green: 0.5490, blue: 0.1020)
         )
     ]
     // CATALOG-GENERATED-END
@@ -4106,6 +4462,56 @@ private struct RewardCharacterAvatar: View {
                 TokyoStationCharacterView(character: character)
             case .templeHall:
                 TempleHallCharacterView(character: character)
+            case .duomo:
+                DuomoCharacterView(character: character)
+            case .euroCastle:
+                EuroCastleCharacterView(character: character)
+            case .mayanPyramid:
+                MayanPyramidCharacterView(character: character)
+            case .skyscraper:
+                SkyscraperCharacterView(character: character)
+            case .starFort:
+                StarFortCharacterView(character: character)
+            case .guitar:
+                GuitarCharacterView(character: character)
+            case .piano:
+                PianoCharacterView(character: character)
+            case .drum:
+                DrumCharacterView(character: character)
+            case .trumpet:
+                TrumpetCharacterView(character: character)
+            case .violin:
+                ViolinCharacterView(character: character)
+            case .butterfly:
+                ButterflyCharacterFace(character: character)
+            case .beetle:
+                BeetleCharacterFace(character: character)
+            case .ladybug:
+                LadybugCharacterFace(character: character)
+            case .bee:
+                BeeCharacterFace(character: character)
+            case .ant:
+                AntCharacterFace(character: character)
+            case .trex:
+                TrexCharacterFace(character: character)
+            case .triceratops:
+                TriceratopsCharacterFace(character: character)
+            case .stegosaurus:
+                StegosaurusCharacterFace(character: character)
+            case .brachiosaurus:
+                BrachiosaurusCharacterFace(character: character)
+            case .pteranodon:
+                PteranodonCharacterFace(character: character)
+            case .astronaut:
+                AstronautCharacterFace(character: character)
+            case .ufo:
+                UfoCharacterView(character: character)
+            case .saturn:
+                SaturnCharacterFace(character: character)
+            case .moon:
+                MoonCharacterFace(character: character)
+            case .alien:
+                AlienCharacterFace(character: character)
             }
         }
         .padding(4)
@@ -6207,6 +6613,456 @@ private struct OnionDomeShape: Shape {
         )
         path.closeSubpath()
         return path
+    }
+}
+
+// MARK: - Landmarks (batch 5)
+
+private struct DuomoCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 78, height: 30).offset(y: 26)
+            RoundedRectangle(cornerRadius: 3).fill(character.secondary).frame(width: 16, height: 60).offset(x: -32, y: 8)
+            Triangle().fill(character.accent).frame(width: 18, height: 14).offset(x: -32, y: -26)
+            Circle().fill(character.accent).frame(width: 50, height: 50).offset(y: 2)
+                .mask(Rectangle().frame(width: 54, height: 30).offset(y: -10))
+            RoundedRectangle(cornerRadius: 2).fill(character.primary).frame(width: 44, height: 16).offset(y: 14)
+            Triangle().fill(character.secondary).frame(width: 12, height: 14).offset(y: -26)
+            Circle().fill(character.secondary).frame(width: 7, height: 7).offset(y: -34)
+        }
+    }
+}
+
+private struct EuroCastleCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 20, height: 70).offset(x: -28, y: 4)
+            Triangle().fill(character.accent).frame(width: 26, height: 22).offset(x: -28, y: -34)
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 16, height: 56).offset(x: 26, y: 12)
+            Triangle().fill(character.accent).frame(width: 22, height: 18).offset(x: 26, y: -22)
+            RoundedRectangle(cornerRadius: 3).fill(character.primary).frame(width: 40, height: 48).offset(y: 16)
+            Triangle().fill(character.accent).frame(width: 30, height: 22).offset(y: -10)
+            RoundedRectangle(cornerRadius: 2).fill(character.secondary.opacity(0.6)).frame(width: 9, height: 14).offset(x: -8, y: 14)
+            RoundedRectangle(cornerRadius: 2).fill(character.secondary.opacity(0.6)).frame(width: 9, height: 14).offset(x: 8, y: 14)
+            UnevenRoundedRectangle(topLeadingRadius: 6, topTrailingRadius: 6).fill(character.accent).frame(width: 12, height: 18).offset(y: 30)
+        }
+    }
+}
+
+private struct MayanPyramidCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<4) { index in
+                RoundedRectangle(cornerRadius: 2).fill(character.primary)
+                    .frame(width: CGFloat(86 - index * 18), height: 14)
+                    .offset(y: CGFloat(28 - index * 14))
+            }
+            Rectangle().fill(character.secondary).frame(width: 14, height: 56).offset(y: 0)
+            RoundedRectangle(cornerRadius: 2).fill(character.primary).frame(width: 22, height: 12).offset(y: -28)
+            Rectangle().fill(character.accent.opacity(0.4)).frame(width: 90, height: 5).offset(y: 38)
+        }
+    }
+}
+
+private struct SkyscraperCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            UnevenRoundedRectangle(topLeadingRadius: 10, topTrailingRadius: 4).fill(character.primary).frame(width: 26, height: 92).offset(x: -10, y: 2)
+            UnevenRoundedRectangle(topLeadingRadius: 4, topTrailingRadius: 8).fill(character.secondary).frame(width: 20, height: 70).offset(x: 14, y: 13)
+            ForEach(0..<6) { index in
+                Rectangle().fill(character.accent.opacity(0.3)).frame(width: 22, height: 2)
+                    .offset(x: -10, y: CGFloat(-30 + index * 13))
+            }
+            Rectangle().fill(character.accent).frame(width: 2.5, height: 16).offset(x: -10, y: -52)
+        }
+    }
+}
+
+private struct StarFortCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            StarShape(points: 5).fill(character.secondary.opacity(0.6)).frame(width: 96, height: 96).offset(y: 2)
+            StarShape(points: 5).fill(character.primary).frame(width: 74, height: 74).offset(y: 2)
+            StarShape(points: 5).fill(character.accent.opacity(0.35)).frame(width: 40, height: 40).offset(y: 2)
+        }
+    }
+}
+
+// MARK: - Instruments (がっき)
+
+private struct GuitarCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.accent).frame(width: 9, height: 64).rotationEffect(.degrees(32)).offset(x: 18, y: -20)
+            RoundedRectangle(cornerRadius: 3).fill(character.secondary).frame(width: 16, height: 12).rotationEffect(.degrees(32)).offset(x: 32, y: -42)
+            Circle().fill(character.primary).frame(width: 42, height: 42).offset(x: -12, y: 22)
+            Circle().fill(character.primary).frame(width: 52, height: 52).offset(x: -18, y: 30)
+            Circle().fill(character.accent.opacity(0.7)).frame(width: 18, height: 18).offset(x: -16, y: 26)
+            Circle().fill(character.secondary).frame(width: 9, height: 9).offset(x: -16, y: 26)
+        }
+    }
+}
+
+private struct PianoCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 4).fill(character.primary).frame(width: 80, height: 34).offset(y: -8)
+            RoundedRectangle(cornerRadius: 2).fill(.white).frame(width: 72, height: 22).offset(y: 18)
+            ForEach(0..<7) { index in
+                Rectangle().fill(character.accent).frame(width: 1.5, height: 22).offset(x: CGFloat(-30 + index * 10), y: 18)
+            }
+            ForEach(0..<6) { index in
+                Rectangle().fill(.black).frame(width: 5, height: 13).offset(x: CGFloat(-25 + index * 10), y: 13)
+            }
+            RoundedRectangle(cornerRadius: 2).fill(character.secondary).frame(width: 80, height: 6).offset(y: 3)
+        }
+    }
+}
+
+private struct DrumCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.accent).frame(width: 5, height: 56).rotationEffect(.degrees(34)).offset(x: -2, y: -22)
+            Capsule().fill(character.accent).frame(width: 5, height: 56).rotationEffect(.degrees(-34)).offset(x: 2, y: -22)
+            RoundedRectangle(cornerRadius: 6).fill(character.primary).frame(width: 72, height: 40).offset(y: 14)
+            Ellipse().fill(character.secondary).frame(width: 72, height: 22).offset(y: -4)
+            Path { p in
+                for i in 0..<6 {
+                    let x = -30 + i * 12
+                    p.move(to: CGPoint(x: CGFloat(x), y: 4))
+                    p.addLine(to: CGPoint(x: CGFloat(x + 6), y: 30))
+                }
+            }.stroke(character.accent, lineWidth: 2).frame(width: 72, height: 34).offset(y: 14)
+        }
+    }
+}
+
+private struct TrumpetCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 56, height: 12).offset(x: -8, y: -8)
+            TrumpetBellShape().fill(character.primary).frame(width: 34, height: 44).offset(x: 22, y: 8)
+            Capsule().fill(character.primary).frame(width: 12, height: 30).offset(x: -30, y: 6)
+            ForEach(0..<3) { index in
+                RoundedRectangle(cornerRadius: 2).fill(character.accent).frame(width: 6, height: 16)
+                    .offset(x: CGFloat(-14 + index * 12), y: -16)
+            }
+            Capsule().fill(character.secondary).frame(width: 8, height: 8).offset(x: -36, y: 6)
+        }
+    }
+}
+
+private struct ViolinCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3).fill(character.accent).frame(width: 9, height: 56).rotationEffect(.degrees(-28)).offset(x: 18, y: -22)
+            Circle().fill(character.secondary).frame(width: 14, height: 14).offset(x: 30, y: -42)
+            ViolinBodyShape().fill(character.primary).frame(width: 44, height: 64).rotationEffect(.degrees(-28)).offset(x: -8, y: 16)
+            Rectangle().fill(character.accent).frame(width: 4, height: 40).rotationEffect(.degrees(-28)).offset(x: -8, y: 14)
+        }
+    }
+}
+
+private struct TrumpetBellShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.midY - rect.height * 0.14))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.midY + rect.height * 0.14))
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct ViolinBodyShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        let w = rect.width, h = rect.height
+        var path = Path()
+        path.addEllipse(in: CGRect(x: rect.minX, y: rect.minY, width: w, height: h * 0.5))
+        path.addEllipse(in: CGRect(x: rect.minX, y: rect.minY + h * 0.45, width: w, height: h * 0.55))
+        path.addRect(CGRect(x: rect.minX + w * 0.30, y: rect.minY + h * 0.30, width: w * 0.40, height: h * 0.40))
+        return path
+    }
+}
+
+// MARK: - Insects (むし)
+
+private struct ButterflyCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 36, height: 36).offset(x: -22, y: -16)
+            Circle().fill(character.primary).frame(width: 30, height: 30).offset(x: -20, y: 18)
+            Circle().fill(character.primary).frame(width: 36, height: 36).offset(x: 22, y: -16)
+            Circle().fill(character.primary).frame(width: 30, height: 30).offset(x: 20, y: 18)
+            Circle().fill(character.secondary.opacity(0.7)).frame(width: 14, height: 14).offset(x: -22, y: -16)
+            Circle().fill(character.secondary.opacity(0.7)).frame(width: 14, height: 14).offset(x: 22, y: -16)
+            Capsule().fill(character.accent).frame(width: 9, height: 50).offset(y: 0)
+            Capsule().fill(character.accent).frame(width: 2, height: 12).rotationEffect(.degrees(20)).offset(x: 5, y: -30)
+            Capsule().fill(character.accent).frame(width: 2, height: 12).rotationEffect(.degrees(-20)).offset(x: -5, y: -30)
+            CharacterEyes(color: .white).offset(y: -22)
+        }
+    }
+}
+
+private struct BeetleCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<3) { index in
+                Capsule().fill(character.accent).frame(width: 4, height: 18).rotationEffect(.degrees(-40)).offset(x: -30, y: CGFloat(-4 + index * 14))
+                Capsule().fill(character.accent).frame(width: 4, height: 18).rotationEffect(.degrees(40)).offset(x: 30, y: CGFloat(-4 + index * 14))
+            }
+            Triangle().fill(character.accent).frame(width: 10, height: 26).offset(y: -34)
+            Ellipse().fill(character.primary).frame(width: 56, height: 70).offset(y: 6)
+            Rectangle().fill(character.accent.opacity(0.4)).frame(width: 2, height: 56).offset(y: 12)
+            Circle().fill(character.secondary.opacity(0.6)).frame(width: 18, height: 18).offset(y: -10)
+            CharacterEyes(color: .black.opacity(0.78)).offset(y: -14)
+        }
+    }
+}
+
+private struct LadybugCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.accent).frame(width: 28, height: 24).offset(y: -22)
+            CharacterEyes(color: .white).offset(y: -24)
+            Circle().fill(character.primary).frame(width: 70, height: 64).offset(y: 8)
+            Rectangle().fill(character.accent).frame(width: 2.5, height: 64).offset(y: 8)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: -16, y: 0)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: 16, y: 0)
+            Circle().fill(character.accent).frame(width: 11, height: 11).offset(x: -14, y: 20)
+            Circle().fill(character.accent).frame(width: 11, height: 11).offset(x: 14, y: 20)
+        }
+    }
+}
+
+private struct BeeCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.secondary.opacity(0.85)).frame(width: 30, height: 22).offset(x: -18, y: -10)
+            Ellipse().fill(character.secondary.opacity(0.85)).frame(width: 30, height: 22).offset(x: 18, y: -10)
+            Ellipse().fill(character.primary).frame(width: 58, height: 52).offset(y: 8)
+            Rectangle().fill(character.accent).frame(width: 58, height: 7).offset(y: 0)
+            Rectangle().fill(character.accent).frame(width: 50, height: 7).offset(y: 16)
+            Triangle().fill(character.accent).frame(width: 14, height: 12).rotationEffect(.degrees(180)).offset(y: 34)
+            CharacterEyes(color: .black.opacity(0.78)).offset(y: -8)
+        }
+    }
+}
+
+private struct AntCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<3) { index in
+                Capsule().fill(character.accent).frame(width: 3, height: 18).rotationEffect(.degrees(-35)).offset(x: -14, y: CGFloat(2 + index * 9))
+                Capsule().fill(character.accent).frame(width: 3, height: 18).rotationEffect(.degrees(35)).offset(x: 14, y: CGFloat(2 + index * 9))
+            }
+            Circle().fill(character.primary).frame(width: 30, height: 30).offset(x: 24, y: 14)
+            Circle().fill(character.primary).frame(width: 24, height: 24).offset(y: 6)
+            Circle().fill(character.primary).frame(width: 28, height: 28).offset(x: -24, y: -4)
+            Capsule().fill(character.accent).frame(width: 2, height: 12).rotationEffect(.degrees(25)).offset(x: -30, y: -20)
+            Capsule().fill(character.accent).frame(width: 2, height: 12).rotationEffect(.degrees(-25)).offset(x: -36, y: -18)
+            CharacterEyes(color: .white).offset(x: -24, y: -6)
+        }
+    }
+}
+
+// MARK: - Dinosaurs (きょうりゅう)
+
+private struct TrexCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 22, height: 50).rotationEffect(.degrees(40)).offset(x: 30, y: 18)
+            Capsule().fill(character.primary).frame(width: 24, height: 40).rotationEffect(.degrees(-20)).offset(x: -8, y: 22)
+            Circle().fill(character.primary).frame(width: 46, height: 44).offset(x: -14, y: -8)
+            RoundedRectangle(cornerRadius: 6).fill(character.primary).frame(width: 30, height: 22).offset(x: -30, y: 2)
+            Path { p in
+                for i in 0..<4 { p.move(to: CGPoint(x: CGFloat(i*7), y: 0)); p.addLine(to: CGPoint(x: CGFloat(i*7+3), y: 6)); p.addLine(to: CGPoint(x: CGFloat(i*7+6), y: 0)) }
+            }.fill(.white).frame(width: 24, height: 6).offset(x: -34, y: 10)
+            Capsule().fill(character.secondary).frame(width: 8, height: 16).rotationEffect(.degrees(20)).offset(x: 0, y: 14)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: -20, y: -12)
+        }
+    }
+}
+
+private struct TriceratopsCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.secondary).frame(width: 64, height: 58).offset(x: 6, y: -8)
+            ForEach(0..<7) { index in
+                Triangle().fill(character.accent.opacity(0.6)).frame(width: 8, height: 10)
+                    .offset(y: -32).rotationEffect(.degrees(Double(index - 3) * 22))
+                    .offset(x: 6, y: 0)
+            }
+            Circle().fill(character.primary).frame(width: 50, height: 46).offset(x: -8, y: 8)
+            Capsule().fill(character.primary).frame(width: 22, height: 18).offset(x: -28, y: 16)
+            Triangle().fill(character.secondary).frame(width: 7, height: 16).offset(x: -8, y: -10)
+            Triangle().fill(character.secondary).frame(width: 5, height: 11).offset(x: -32, y: 6)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: -10, y: 6)
+        }
+    }
+}
+
+private struct StegosaurusCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<5) { index in
+                Triangle().fill(character.secondary)
+                    .frame(width: 18, height: 20)
+                    .offset(x: CGFloat(-24 + index * 12), y: CGFloat(-22 + abs(index - 2) * 4))
+            }
+            Ellipse().fill(character.primary).frame(width: 78, height: 40).offset(y: 6)
+            Circle().fill(character.primary).frame(width: 26, height: 24).offset(x: -34, y: 6)
+            Capsule().fill(character.primary).frame(width: 30, height: 9).rotationEffect(.degrees(-18)).offset(x: 36, y: 0)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: -34, y: 4)
+        }
+    }
+}
+
+private struct BrachiosaurusCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.primary).frame(width: 64, height: 38).offset(y: 18)
+            Capsule().fill(character.primary).frame(width: 18, height: 64).rotationEffect(.degrees(-16)).offset(x: -16, y: -14)
+            Circle().fill(character.primary).frame(width: 26, height: 24).offset(x: -26, y: -38)
+            Capsule().fill(character.primary).frame(width: 26, height: 10).rotationEffect(.degrees(14)).offset(x: 32, y: 16)
+            Circle().fill(character.secondary.opacity(0.5)).frame(width: 12, height: 12).offset(x: 6, y: 16)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: -28, y: -40)
+        }
+    }
+}
+
+private struct PteranodonCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.primary).frame(width: 52, height: 30).rotationEffect(.degrees(-58)).offset(x: -22, y: 2)
+            Triangle().fill(character.primary).frame(width: 52, height: 30).rotationEffect(.degrees(58)).offset(x: 22, y: 2)
+            Capsule().fill(character.primary).frame(width: 16, height: 34).offset(y: 10)
+            Circle().fill(character.primary).frame(width: 22, height: 20).offset(y: -16)
+            Triangle().fill(character.secondary).frame(width: 26, height: 10).rotationEffect(.degrees(-90)).offset(x: -14, y: -20)
+            Triangle().fill(character.accent).frame(width: 22, height: 9).rotationEffect(.degrees(90)).offset(x: 14, y: -12)
+            CharacterEyes(color: .black.opacity(0.8)).offset(y: -16)
+        }
+    }
+}
+
+// MARK: - Space (うちゅう)
+
+private struct AstronautCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 18).fill(character.primary).frame(width: 54, height: 56).offset(y: 24)
+            Capsule().fill(character.primary).frame(width: 16, height: 30).rotationEffect(.degrees(28)).offset(x: -30, y: 22)
+            Capsule().fill(character.primary).frame(width: 16, height: 30).rotationEffect(.degrees(-28)).offset(x: 30, y: 22)
+            Circle().fill(character.primary).frame(width: 60, height: 60).offset(y: -10)
+            Circle().fill(character.accent).frame(width: 44, height: 44).offset(y: -10)
+            Capsule().fill(.white.opacity(0.45)).frame(width: 9, height: 18).rotationEffect(.degrees(28)).offset(x: -8, y: -16)
+            RoundedRectangle(cornerRadius: 2).fill(character.secondary).frame(width: 14, height: 8).offset(y: 24)
+        }
+    }
+}
+
+private struct UfoCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.accent.opacity(0.25)).frame(width: 50, height: 36).rotationEffect(.degrees(180)).offset(y: 34)
+            Circle().fill(character.secondary).frame(width: 40, height: 40).offset(y: -8)
+                .mask(Rectangle().frame(width: 44, height: 24).offset(y: -10))
+            Ellipse().fill(character.primary).frame(width: 88, height: 30).offset(y: 6)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: -24, y: 8)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(y: 10)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: 24, y: 8)
+            Capsule().fill(.white.opacity(0.5)).frame(width: 12, height: 7).offset(x: -6, y: -14)
+        }
+    }
+}
+
+private struct SaturnCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.accent.opacity(0.7)).frame(width: 104, height: 30).rotationEffect(.degrees(-18))
+            Circle().fill(character.primary).frame(width: 60, height: 60)
+            Ellipse().fill(character.secondary.opacity(0.4)).frame(width: 40, height: 12).rotationEffect(.degrees(-12)).offset(y: -10)
+            CuteFace(eyeY: -2, mouthY: 12)
+        }
+    }
+}
+
+private struct MoonCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 76, height: 76).offset(y: 2)
+            Circle().fill(character.accent.opacity(0.35)).frame(width: 16, height: 16).offset(x: -16, y: -12)
+            Circle().fill(character.accent.opacity(0.35)).frame(width: 11, height: 11).offset(x: 18, y: 10)
+            Circle().fill(character.accent.opacity(0.35)).frame(width: 8, height: 8).offset(x: 6, y: 22)
+            CuteFace(eyeColor: character.accent.opacity(0.7), mouthColor: character.accent.opacity(0.7), eyeY: -2, mouthY: 12)
+        }
+    }
+}
+
+private struct AlienCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 3, height: 16).rotationEffect(.degrees(20)).offset(x: -10, y: -38)
+            Capsule().fill(character.primary).frame(width: 3, height: 16).rotationEffect(.degrees(-20)).offset(x: 10, y: -38)
+            Circle().fill(character.primary).frame(width: 12, height: 12).offset(x: -14, y: -44)
+            Circle().fill(character.primary).frame(width: 12, height: 12).offset(x: 14, y: -44)
+            Capsule().fill(character.primary).frame(width: 40, height: 30).offset(y: 26)
+            Ellipse().fill(character.primary).frame(width: 60, height: 66).offset(y: -6)
+            Ellipse().fill(character.accent).frame(width: 18, height: 24).rotationEffect(.degrees(20)).offset(x: -13, y: -6)
+            Ellipse().fill(character.accent).frame(width: 18, height: 24).rotationEffect(.degrees(-20)).offset(x: 13, y: -6)
+            SmileArc().stroke(character.accent, style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 16, height: 7).offset(y: 14)
+        }
     }
 }
 
