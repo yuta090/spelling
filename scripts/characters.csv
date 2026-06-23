@@ -164,3 +164,9 @@ saturn,space,どせい,Saturn,6,saturn,#E0B43C,#FFE89E,#C79A3C,false
 moon,space,つき,Moon,4,moon,#E0E0E8,#C7C7D0,#9AA0A6,false
 alien,space,うちゅうじん,Alien,5,alien,#7AC77A,#5FA06B,#2A4A2A,false
 spacerocket,space,ロケット,Rocket,5,rocket,#C74CB8,#FAE6FF,#F58C1A,false
+velociraptor,dinosaur,ヴェロキラプトル,Velociraptor,6,velociraptor,#C77A3C,#E0A86B,#5C3A1A,false
+ankylosaurus,dinosaur,アンキロサウルス,Ankylosaurus,6,ankylosaurus,#7A8C5A,#A6B87A,#4A5A3A,false
+spinosaurus,dinosaur,スピノサウルス,Spinosaurus,7,spinosaurus,#5A7AA0,#C77A4A,#2A4A6A,false
+parasaurolophus,dinosaur,パラサウロロフス,Parasaurolophus,6,parasaurolophus,#5FA0A0,#C77A4A,#3A6B6B,false
+plesiosaurus,dinosaur,くびながりゅう,Plesiosaurus,6,plesiosaurus,#5B86C7,#C7E0FF,#2E4A6E,false
+dinoegg,dinosaur,きょうりゅうのたまご,Dino Egg,4,dinoEgg,#F2E8D6,#9E7B4A,#C77A4A,false
