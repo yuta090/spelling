@@ -2113,6 +2113,12 @@ enum HomeRewardCharacterStyle {
     case saturn
     case moon
     case alien
+    case velociraptor
+    case ankylosaurus
+    case spinosaurus
+    case parasaurolophus
+    case plesiosaurus
+    case dinoEgg
 }
 
 struct HomeRewardCharacter: Identifiable {
@@ -3961,6 +3967,72 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.7804, green: 0.2980, blue: 0.7216),
             secondary: Color(red: 0.9804, green: 0.9020, blue: 1.0000),
             accent: Color(red: 0.9608, green: 0.5490, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "velociraptor",
+            category: .dinosaur,
+            japaneseName: "ヴェロキラプトル",
+            englishName: "Velociraptor",
+            price: 6,
+            style: .velociraptor,
+            primary: Color(red: 0.7804, green: 0.4784, blue: 0.2353),
+            secondary: Color(red: 0.8784, green: 0.6588, blue: 0.4196),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ankylosaurus",
+            category: .dinosaur,
+            japaneseName: "アンキロサウルス",
+            englishName: "Ankylosaurus",
+            price: 6,
+            style: .ankylosaurus,
+            primary: Color(red: 0.4784, green: 0.5490, blue: 0.3529),
+            secondary: Color(red: 0.6510, green: 0.7216, blue: 0.4784),
+            accent: Color(red: 0.2902, green: 0.3529, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "spinosaurus",
+            category: .dinosaur,
+            japaneseName: "スピノサウルス",
+            englishName: "Spinosaurus",
+            price: 7,
+            style: .spinosaurus,
+            primary: Color(red: 0.3529, green: 0.4784, blue: 0.6275),
+            secondary: Color(red: 0.7804, green: 0.4784, blue: 0.2902),
+            accent: Color(red: 0.1647, green: 0.2902, blue: 0.4157)
+        ),
+        HomeRewardCharacter(
+            id: "parasaurolophus",
+            category: .dinosaur,
+            japaneseName: "パラサウロロフス",
+            englishName: "Parasaurolophus",
+            price: 6,
+            style: .parasaurolophus,
+            primary: Color(red: 0.3725, green: 0.6275, blue: 0.6275),
+            secondary: Color(red: 0.7804, green: 0.4784, blue: 0.2902),
+            accent: Color(red: 0.2275, green: 0.4196, blue: 0.4196)
+        ),
+        HomeRewardCharacter(
+            id: "plesiosaurus",
+            category: .dinosaur,
+            japaneseName: "くびながりゅう",
+            englishName: "Plesiosaurus",
+            price: 6,
+            style: .plesiosaurus,
+            primary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            secondary: Color(red: 0.7804, green: 0.8784, blue: 1.0000),
+            accent: Color(red: 0.1804, green: 0.2902, blue: 0.4314)
+        ),
+        HomeRewardCharacter(
+            id: "dinoegg",
+            category: .dinosaur,
+            japaneseName: "きょうりゅうのたまご",
+            englishName: "Dino Egg",
+            price: 4,
+            style: .dinoEgg,
+            primary: Color(red: 0.9490, green: 0.9098, blue: 0.8392),
+            secondary: Color(red: 0.6196, green: 0.4824, blue: 0.2902),
+            accent: Color(red: 0.7804, green: 0.4784, blue: 0.2902)
         )
     ]
     // CATALOG-GENERATED-END
@@ -4512,6 +4584,18 @@ private struct RewardCharacterAvatar: View {
                 MoonCharacterFace(character: character)
             case .alien:
                 AlienCharacterFace(character: character)
+            case .velociraptor:
+                VelociraptorCharacterFace(character: character)
+            case .ankylosaurus:
+                AnkylosaurusCharacterFace(character: character)
+            case .spinosaurus:
+                SpinosaurusCharacterFace(character: character)
+            case .parasaurolophus:
+                ParasaurolophusCharacterFace(character: character)
+            case .plesiosaurus:
+                PlesiosaurusCharacterFace(character: character)
+            case .dinoEgg:
+                DinoEggCharacterView(character: character)
             }
         }
         .padding(4)
@@ -7062,6 +7146,121 @@ private struct AlienCharacterFace: View {
             Ellipse().fill(character.accent).frame(width: 18, height: 24).rotationEffect(.degrees(20)).offset(x: -13, y: -6)
             Ellipse().fill(character.accent).frame(width: 18, height: 24).rotationEffect(.degrees(-20)).offset(x: 13, y: -6)
             SmileArc().stroke(character.accent, style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 16, height: 7).offset(y: 14)
+        }
+    }
+}
+
+// MARK: - Dinosaurs (batch 2)
+
+private struct VelociraptorCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 40, height: 11).rotationEffect(.degrees(16)).offset(x: 30, y: 4)
+            Ellipse().fill(character.primary).frame(width: 38, height: 30).offset(x: 4, y: 2)
+            Capsule().fill(character.primary).frame(width: 11, height: 28).offset(x: 10, y: 24)
+            Capsule().fill(character.primary).frame(width: 11, height: 24).offset(x: -2, y: 24)
+            Triangle().fill(character.accent).frame(width: 9, height: 6).rotationEffect(.degrees(-90)).offset(x: -12, y: 36)
+            Capsule().fill(character.secondary).frame(width: 8, height: 16).rotationEffect(.degrees(40)).offset(x: -6, y: 10)
+            Capsule().fill(character.primary).frame(width: 13, height: 26).rotationEffect(.degrees(-34)).offset(x: -16, y: -10)
+            Circle().fill(character.primary).frame(width: 22, height: 20).offset(x: -28, y: -18)
+            Capsule().fill(character.primary).frame(width: 18, height: 10).rotationEffect(.degrees(-10)).offset(x: -38, y: -14)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: -28, y: -20)
+        }
+    }
+}
+
+private struct AnkylosaurusCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 30, height: 12).rotationEffect(.degrees(-8)).offset(x: 34, y: 2)
+            Circle().fill(character.accent).frame(width: 20, height: 20).offset(x: 44, y: 0)
+            Ellipse().fill(character.primary).frame(width: 76, height: 46).offset(y: 8)
+            ForEach(0..<5) { index in
+                Triangle().fill(character.secondary)
+                    .frame(width: 13, height: 12)
+                    .offset(x: CGFloat(-24 + index * 11), y: CGFloat(-16 + abs(index - 2) * 2))
+            }
+            Circle().fill(character.primary).frame(width: 26, height: 22).offset(x: -34, y: 12)
+            Triangle().fill(character.secondary).frame(width: 8, height: 7).offset(x: -40, y: 4)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: -34, y: 10)
+        }
+    }
+}
+
+private struct SpinosaurusCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            SailShape().fill(character.secondary).frame(width: 60, height: 46).scaleEffect(x: -1, y: 1).offset(x: 6, y: -8)
+            ForEach(0..<4) { index in
+                Rectangle().fill(character.accent.opacity(0.4)).frame(width: 2, height: CGFloat(20 + index * 4))
+                    .offset(x: CGFloat(-8 + index * 12), y: -14)
+            }
+            Capsule().fill(character.primary).frame(width: 40, height: 12).rotationEffect(.degrees(18)).offset(x: 30, y: 18)
+            Ellipse().fill(character.primary).frame(width: 40, height: 30).offset(x: 0, y: 14)
+            Capsule().fill(character.primary).frame(width: 12, height: 24).offset(x: 6, y: 30)
+            Capsule().fill(character.primary).frame(width: 14, height: 22).rotationEffect(.degrees(-26)).offset(x: -18, y: 0)
+            Circle().fill(character.primary).frame(width: 20, height: 18).offset(x: -28, y: -8)
+            Capsule().fill(character.primary).frame(width: 22, height: 9).rotationEffect(.degrees(-8)).offset(x: -40, y: -4)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: -28, y: -10)
+        }
+    }
+}
+
+private struct ParasaurolophusCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 40, height: 11).rotationEffect(.degrees(20)).offset(x: 30, y: 8)
+            Ellipse().fill(character.primary).frame(width: 38, height: 32).offset(x: 6, y: 6)
+            Capsule().fill(character.primary).frame(width: 12, height: 26).offset(x: 8, y: 28)
+            Capsule().fill(character.primary).frame(width: 12, height: 24).offset(x: -4, y: 28)
+            Capsule().fill(character.primary).frame(width: 15, height: 30).rotationEffect(.degrees(-34)).offset(x: -16, y: -4)
+            Circle().fill(character.primary).frame(width: 22, height: 20).offset(x: -28, y: -16)
+            Capsule().fill(character.primary).frame(width: 16, height: 9).rotationEffect(.degrees(-16)).offset(x: -38, y: -14)
+            Capsule().fill(character.accent).frame(width: 9, height: 40).rotationEffect(.degrees(36)).offset(x: -14, y: -28)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: -28, y: -18)
+        }
+    }
+}
+
+private struct PlesiosaurusCharacterFace: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.primary).frame(width: 64, height: 30).offset(y: 18)
+            Triangle().fill(character.primary).frame(width: 22, height: 14).rotationEffect(.degrees(-50)).offset(x: -22, y: 26)
+            Triangle().fill(character.primary).frame(width: 22, height: 14).rotationEffect(.degrees(50)).offset(x: 20, y: 26)
+            Capsule().fill(character.primary).frame(width: 16, height: 60).rotationEffect(.degrees(-18)).offset(x: 14, y: -10)
+            Circle().fill(character.primary).frame(width: 22, height: 20).offset(x: 24, y: -34)
+            Capsule().fill(character.primary).frame(width: 14, height: 9).offset(x: 33, y: -34)
+            Ellipse().fill(character.secondary.opacity(0.5)).frame(width: 40, height: 10).offset(y: 28)
+            CharacterEyes(color: .black.opacity(0.8)).offset(x: 24, y: -36)
+        }
+    }
+}
+
+private struct DinoEggCharacterView: View {
+    var character: HomeRewardCharacter
+
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.primary).frame(width: 56, height: 70).offset(y: 0)
+            Circle().fill(character.accent.opacity(0.4)).frame(width: 12, height: 12).offset(x: -10, y: -12)
+            Circle().fill(character.accent.opacity(0.4)).frame(width: 9, height: 9).offset(x: 12, y: 8)
+            Circle().fill(character.accent.opacity(0.4)).frame(width: 7, height: 7).offset(x: -6, y: 18)
+            Path { p in
+                p.move(to: CGPoint(x: 0, y: 0)); p.addLine(to: CGPoint(x: 7, y: 7)); p.addLine(to: CGPoint(x: 1, y: 13)); p.addLine(to: CGPoint(x: 8, y: 20))
+            }.stroke(character.secondary, lineWidth: 2.5).frame(width: 14, height: 20).offset(x: 2, y: -2)
+            Capsule().fill(character.accent.opacity(0.7)).frame(width: 60, height: 14).offset(y: 34)
+            Capsule().fill(character.secondary.opacity(0.7)).frame(width: 70, height: 10).offset(y: 40)
         }
     }
 }

@@ -56,6 +56,8 @@ VALID_STYLES = {
     "butterfly", "beetle", "ladybug", "bee", "ant",
     "trex", "triceratops", "stegosaurus", "brachiosaurus", "pteranodon",
     "astronaut", "ufo", "saturn", "moon", "alien",
+    "velociraptor", "ankylosaurus", "spinosaurus", "parasaurolophus",
+    "plesiosaurus", "dinoEgg",
 }
 
 
