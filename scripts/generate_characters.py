@@ -22,7 +22,11 @@ HOME_VIEW = ROOT / "iPadPrototype" / "HomeView.swift"
 BEGIN = "    // CATALOG-GENERATED-BEGIN"
 END = "    // CATALOG-GENERATED-END"
 
-VALID_CATEGORIES = {"starter", "animal", "people", "vehicle", "fantasy"}
+VALID_CATEGORIES = {
+    "starter", "animal", "sea", "people", "vehicle", "building", "landmark",
+    "japan", "food", "sports", "instruments", "insect", "dinosaur", "space",
+    "cosme", "fantasy",
+}
 VALID_STYLES = {
     "bear", "cat", "dog", "rabbit", "panda", "penguin", "lion", "fox", "koala",
     "sheep", "elephant", "giraffe", "owl", "turtle", "whale",
@@ -32,6 +36,26 @@ VALID_STYLES = {
     "personShort", "personLong", "personCurly", "personBun", "personBuzz",
     "personPonytail",
     "robot", "ghost", "star", "unicorn", "dragon",
+    "excavator", "crane", "dumpTruck",
+    "house", "school", "castle", "tower",
+    "lipstick", "perfume", "compact", "nailPolish",
+    "octopus", "crab", "fish", "dolphin", "shark", "jellyfish", "starfish",
+    "strawberry", "cake", "iceCream", "donut", "riceBall", "sushi", "hamburger",
+    "soccerBall", "baseball", "basketball", "tennisBall", "trophy",
+    "eiffel", "tokyoTower", "liberty", "pyramid", "pisa", "bigBen",
+    "tajMahal", "fuji", "torii", "moai", "windmill", "colosseum",
+    "greatWall", "operaHouse", "stonehenge", "christRedeemer", "sagrada",
+    "goldenGate", "towerBridge", "ferrisWheel", "kinkaku", "sphinx",
+    "angkor", "matterhorn",
+    "libertyBell", "whiteHouse", "notreDame", "burjKhalifa", "archTriomphe",
+    "skytree", "japaneseCastle", "pagoda", "daibutsu", "gasshou",
+    "stBasil", "parthenon", "machuPicchu", "mosque", "montStMichel",
+    "capitol", "petra", "kiyomizu", "tokyoStation", "templeHall",
+    "duomo", "euroCastle", "mayanPyramid", "skyscraper", "starFort",
+    "guitar", "piano", "drum", "trumpet", "violin",
+    "butterfly", "beetle", "ladybug", "bee", "ant",
+    "trex", "triceratops", "stegosaurus", "brachiosaurus", "pteranodon",
+    "astronaut", "ufo", "saturn", "moon", "alien",
 }
 
 

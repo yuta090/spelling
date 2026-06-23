@@ -52,3 +52,115 @@ ghost,fantasy,おばけ,Ghost,5,ghost,#EDEDF5,#C9C9E0,#4A4A66,false
 star,fantasy,おほしさま,Star,5,star,#F5C842,#FFE89E,#E0942E,false
 unicorn,fantasy,ユニコーン,Unicorn,7,unicorn,#F4DCEF,#C9A6E0,#F2A6C2,false
 dragon,fantasy,ドラゴン,Dragon,7,dragon,#4CA66B,#B8E69E,#E0563B,false
+police,vehicle,パトカー,Police Car,5,car,#2B3340,#EDEFF2,#3A6EA5,false
+ambulance,vehicle,きゅうきゅうしゃ,Ambulance,6,bus,#F2F4F7,#FFD6D1,#DB291F,false
+excavator,vehicle,ショベルカー,Excavator,6,excavator,#F2B01F,#FFE08A,#3A4453,false
+crane,vehicle,クレーンしゃ,Crane Truck,7,crane,#E0883C,#FFE0B2,#3A4453,false
+dumptruck,vehicle,ダンプカー,Dump Truck,6,dumpTruck,#E0A53C,#FFE0A6,#3A4453,false
+mixer,vehicle,ミキサーしゃ,Mixer Truck,6,dumpTruck,#5B86C7,#CFE0F5,#2E3A4A,false
+garbage,vehicle,ごみしゅうしゅうしゃ,Garbage Truck,6,dumpTruck,#4FA06B,#CDEBD6,#2E3A2E,false
+house,building,おうち,House,4,house,#E0563B,#FFE7C2,#7A4A2E,false
+school,building,がっこう,School,5,school,#E0A53C,#FFEFC2,#9E5A2E,false
+shop,building,おみせ,Shop,5,house,#4FA06B,#E8F5D6,#2E5A3A,false
+castle,building,おしろ,Castle,7,castle,#9AA6C2,#EDEFF7,#C7472E,false
+tower,building,タワー,Tower,6,tower,#E0883C,#FFE0B2,#5B86C7,false
+lipstick,cosme,くちべに,Lipstick,5,lipstick,#C24A8A,#3A3340,#E0563B,false
+perfume,cosme,こうすい,Perfume,6,perfume,#E0A6C2,#F2E0EB,#C24A8A,false
+compact,cosme,コンパクト,Compact,5,compact,#D17AA6,#F7E0EE,#C24A8A,false
+nailpolish,cosme,マニキュア,Nail Polish,5,nailPolish,#E0563B,#3A3340,#F2A6BC,false
+octopus,sea,たこ,Octopus,5,octopus,#E0563B,#FFC2B2,#7A2A1A,false
+crab,sea,かに,Crab,5,crab,#E0432E,#FFB8A6,#7A1F12,false
+fish,sea,さかな,Fish,4,fish,#3A9ED1,#BDEBFF,#1F5A7A,false
+dolphin,sea,いるか,Dolphin,6,dolphin,#5B8FC7,#DCEBFF,#2E4A6E,false
+shark,sea,さめ,Shark,6,shark,#8FA0B2,#E0E8F0,#3A4656,false
+jellyfish,sea,くらげ,Jellyfish,6,jellyfish,#D17AC2,#F2D6F0,#7A3A6E,false
+starfish,sea,ひとで,Starfish,5,starfish,#F2994A,#FFD6A6,#9E5A1F,false
+strawberry,food,いちご,Strawberry,4,strawberry,#E0322E,#4FA06B,#7A1212,false
+cake,food,ケーキ,Cake,5,cake,#F2A6C2,#FFE8D6,#D14A4A,false
+icecream,food,アイス,Ice Cream,5,iceCream,#F2B6D6,#E0A53C,#C24A8A,false
+donut,food,ドーナツ,Donut,5,donut,#C2784A,#F7B0C2,#E0432E,false
+riceball,food,おにぎり,Rice Ball,4,riceBall,#F7F4EC,#3A3F46,#E0883C,false
+sushi,food,すし,Sushi,6,sushi,#E0653C,#F7F2E8,#D14A2E,false
+burger,food,ハンバーガー,Hamburger,6,hamburger,#E0A53C,#7AB04F,#9E5A2E,false
+soccer,sports,サッカー,Soccer Ball,4,soccerBall,#EDEFF2,#EDEFF2,#2B3340,false
+baseball,sports,やきゅう,Baseball,5,baseball,#F2B01F,#F7F4EC,#DB291F,false
+basketball,sports,バスケ,Basketball,5,basketball,#E0773C,#FFD6B2,#5A2E1A,false
+tennis,sports,テニス,Tennis,5,tennisBall,#C2E04A,#EAF7C2,#FFFFFF,false
+trophy,sports,トロフィー,Trophy,7,trophy,#F2C03C,#FFE89E,#9E6B1F,false
+eiffel,landmark,エッフェルとう,Eiffel Tower,6,eiffel,#9E7B4A,#6B5230,#3A2E1A,false
+tokyotower,japan,とうきょうタワー,Tokyo Tower,5,tokyoTower,#E0432E,#F2F2F2,#7A1F12,false
+liberty,landmark,じゆうのめがみ,Statue of Liberty,7,liberty,#5BA88C,#C7E0D6,#E0A53C,false
+pyramid,landmark,ピラミッド,Pyramid,5,pyramid,#E0B45C,#F2D89E,#C77A2E,false
+pisa,landmark,ピサのしゃとう,Tower of Pisa,6,pisa,#EDE6D6,#F7F2E8,#9E8A6B,false
+bigben,landmark,ビッグベン,Big Ben,6,bigBen,#C7A36B,#9E7B4A,#3A2E1A,false
+tajmahal,landmark,タージマハル,Taj Mahal,7,tajMahal,#F2EDE6,#D6CFC2,#9E8A6B,false
+fuji,japan,ふじさん,Mt. Fuji,5,fuji,#5B86C7,#7AB04F,#2E4A6E,false
+torii,japan,とりい,Torii Gate,5,torii,#E0432E,#F2F2F2,#7A1F12,false
+moai,landmark,モアイ,Moai,6,moai,#8C8C8C,#6B6B6B,#3A3A3A,false
+windmill,landmark,ふうしゃ,Windmill,5,windmill,#C7784A,#F2F2F2,#7A3A1F,false
+colosseum,landmark,コロッセオ,Colosseum,6,colosseum,#D6B88C,#F2E6CF,#9E7B4A,false
+greatwall,landmark,ばんりのちょうじょう,Great Wall,6,greatWall,#B5A48C,#7AB04F,#6B5A3A,false
+operahouse,landmark,オペラハウス,Opera House,6,operaHouse,#F7F7F7,#8FBFD6,#9AA6B2,false
+stonehenge,landmark,ストーンヘンジ,Stonehenge,5,stonehenge,#9E978C,#7AB04F,#6B6358,false
+christ,landmark,キリストぞう,Christ the Redeemer,7,christRedeemer,#C7CCD2,#8FBFD6,#9AA0A6,false
+sagrada,landmark,サグラダファミリア,Sagrada Familia,7,sagrada,#C7A36B,#E0C99E,#8A6B3A,false
+goldengate,landmark,きんもんきょう,Golden Gate,6,goldenGate,#E0563B,#9AB8C7,#7A2A1A,false
+towerbridge,landmark,タワーブリッジ,Tower Bridge,6,towerBridge,#9AA6B2,#F2F2F2,#4A7BA8,false
+ferriswheel,landmark,かんらんしゃ,Ferris Wheel,5,ferrisWheel,#5B86C7,#F2C03C,#3A4656,false
+kinkaku,japan,きんかくじ,Golden Pavilion,6,kinkaku,#E0B43C,#C79A3C,#7A5A1F,false
+sphinx,landmark,スフィンクス,Sphinx,6,sphinx,#E0B45C,#F2D89E,#9E6B2E,false
+angkor,landmark,アンコールワット,Angkor Wat,7,angkor,#9E8A6B,#C7B89E,#6B5A3A,false
+matterhorn,landmark,マッターホルン,Matterhorn,5,matterhorn,#7A8A9E,#F2F2F2,#4A5A6E,false
+libertybell,landmark,じゆうのかね,Liberty Bell,6,libertyBell,#B5894A,#8A6B3A,#5C3A1A,false
+whitehouse,landmark,ホワイトハウス,White House,6,whiteHouse,#F2F2F2,#DCDCDC,#9AA0A6,false
+notredame,landmark,ノートルダム,Notre-Dame,7,notreDame,#C7B89E,#A89A7E,#6B5A3A,false
+burj,landmark,ブルジュハリファ,Burj Khalifa,7,burjKhalifa,#9AB8C7,#D6EAF2,#5B7A8C,false
+arc,landmark,がいせんもん,Arc de Triomphe,6,archTriomphe,#D6C7A8,#EDE6D6,#9E8A6B,false
+skytree,japan,スカイツリー,Tokyo Skytree,6,skytree,#8FA6C7,#D6E0EB,#5B6B8C,false
+himeji,japan,ひめじじょう,Himeji Castle,7,japaneseCastle,#F2F2F2,#3A4656,#9AA0A6,false
+osaka,japan,おおさかじょう,Osaka Castle,7,japaneseCastle,#E8E4D6,#2E5A4A,#C7A33C,false
+pagoda,japan,ごじゅうのとう,Five-Story Pagoda,6,pagoda,#B5482A,#4A3A2E,#E0C04A,false
+daibutsu,japan,だいぶつ,Great Buddha,7,daibutsu,#6B8C7A,#C7B89E,#3A4A42,false
+gasshou,japan,しらかわごう,Gassho House,6,gasshou,#9E7B4A,#C7B89E,#5C4329,false
+stbasil,landmark,せいワシリイだいせいどう,St. Basil's,7,stBasil,#E8E0D0,#C7CCD6,#9E8A6B,false
+parthenon,landmark,パルテノンしんでん,Parthenon,7,parthenon,#EDE6D6,#D6CFC2,#9E8A6B,false
+machupicchu,landmark,マチュピチュ,Machu Picchu,7,machuPicchu,#4F9E5A,#C7B89E,#8AA66B,false
+mosque,landmark,モスク,Mosque,6,mosque,#E0D6C2,#F2EAD6,#C7A33C,false
+montsaintmichel,landmark,モンサンミッシェル,Mont-St-Michel,7,montStMichel,#C7B89E,#E0D6C2,#9AA6B2,false
+capitol,landmark,こっかいぎじどう,Capitol,6,capitol,#F2F2F2,#DCDCDC,#9AA0A6,false
+petra,landmark,ペトラ,Petra,7,petra,#D69A6B,#E0B894,#8A5A3A,false
+ginkaku,japan,ぎんかくじ,Silver Pavilion,6,kinkaku,#9AA0A6,#7A8089,#4A4F56,false
+nagoya,japan,なごやじょう,Nagoya Castle,7,japaneseCastle,#E8E4D6,#3A4656,#C7A33C,false
+itsukushima,japan,いつくしまじんじゃ,Itsukushima,6,torii,#E0432E,#8FBFD6,#7A1F12,false
+kiyomizu,japan,きよみずでら,Kiyomizu-dera,6,kiyomizu,#E0C9A6,#9E5A3A,#8A6B4A,false
+tokyostation,japan,とうきょうえき,Tokyo Station,6,tokyoStation,#A0522D,#7A8C8A,#E0D6C2,false
+todaiji,japan,とうだいじ,Todai-ji,7,templeHall,#9E5A3A,#5A6B5A,#5C3A1A,false
+duomo,landmark,ドゥオモ,Duomo,7,duomo,#EDE6D6,#C7B89E,#C2552E,false
+neuschwanstein,landmark,ノイシュバンシュタイン,Neuschwanstein,7,euroCastle,#F2F2F2,#C7D6E0,#5B7A9E,false
+mayan,landmark,マヤピラミッド,Mayan Pyramid,6,mayanPyramid,#A89A7E,#C7B89E,#6B5A3A,false
+gateway,landmark,インドもん,Gateway of India,6,archTriomphe,#C7A36B,#E0C99E,#8A6B3A,false
+harukas,japan,あべのハルカス,Abeno Harukas,6,skyscraper,#9AB8C7,#C7DCE8,#5B7A8C,false
+goryokaku,japan,ごりょうかく,Goryokaku,6,starFort,#5FA06B,#8AC77A,#3A6B4A,false
+okayama,japan,おかやまじょう,Okayama Castle,7,japaneseCastle,#3A3F46,#1F2329,#C7A33C,false
+tsutenkaku,japan,つうてんかく,Tsutenkaku,5,tower,#E0A53C,#FFE0A6,#C2552E,false
+guitar,instruments,ギター,Guitar,5,guitar,#C2784A,#F2D6A6,#5C3A1A,false
+piano,instruments,ピアノ,Piano,6,piano,#2B2B30,#C7A36B,#9AA0A6,false
+drum,instruments,たいこ,Drum,5,drum,#D14A2E,#F2E8D6,#7A2A1A,false
+trumpet,instruments,トランペット,Trumpet,6,trumpet,#E0B43C,#FFE89E,#9E6B1F,false
+violin,instruments,バイオリン,Violin,6,violin,#9E5A2E,#E0C99E,#3A2A1A,false
+butterfly,insect,ちょうちょ,Butterfly,5,butterfly,#E06AA8,#F2C14E,#7A2A5A,false
+beetle,insect,かぶとむし,Beetle,5,beetle,#5C3A1A,#9E7B4A,#2A1A0A,false
+ladybug,insect,てんとうむし,Ladybug,4,ladybug,#E0322E,#3A2A2A,#1A1212,false
+bee,insect,はち,Bee,5,bee,#F2C03C,#3A3026,#2A2018,false
+ant,insect,あり,Ant,4,ant,#7A4329,#9E5A3A,#3A2018,false
+trex,dinosaur,ティラノサウルス,T-Rex,6,trex,#5FA06B,#8AC77A,#3A6B4A,false
+triceratops,dinosaur,トリケラトプス,Triceratops,6,triceratops,#7AA0C7,#C7DCE8,#3A5A7A,false
+stegosaurus,dinosaur,ステゴサウルス,Stegosaurus,6,stegosaurus,#9E7BC7,#C7A6E0,#5A3A7A,false
+brachiosaurus,dinosaur,ブラキオサウルス,Brachiosaurus,6,brachiosaurus,#5FA0A0,#8AC7C7,#3A6B6B,false
+pteranodon,dinosaur,プテラノドン,Pteranodon,6,pteranodon,#E0883C,#F2C14E,#9E5A1F,false
+astronaut,space,うちゅうひこうし,Astronaut,6,astronaut,#F2F2F2,#5B86C7,#3A4656,false
+ufo,space,ユーフォー,UFO,5,ufo,#8FA0B2,#9AE0C7,#3A4656,false
+saturn,space,どせい,Saturn,6,saturn,#E0B43C,#FFE89E,#C79A3C,false
+moon,space,つき,Moon,4,moon,#E0E0E8,#C7C7D0,#9AA0A6,false
+alien,space,うちゅうじん,Alien,5,alien,#7AC77A,#5FA06B,#2A4A2A,false
+spacerocket,space,ロケット,Rocket,5,rocket,#C74CB8,#FAE6FF,#F58C1A,false
