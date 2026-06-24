@@ -4,7 +4,10 @@ import Vision
 struct WordListImageTextRecognizer {
     var language = "en-US"
 
-    func recognizeWords(in image: UIImage) async throws -> [String] {
+    func recognizeWords(
+        in image: UIImage,
+        onProgress: (@Sendable (Double) -> Void)? = nil
+    ) async throws -> [String] {
         guard let cgImage = image.cgImage else {
             return []
         }
@@ -44,6 +47,12 @@ struct WordListImageTextRecognizer {
             request.recognitionLanguages = [language]
             request.usesLanguageCorrection = true
             request.minimumTextHeight = 0.008
+            // 機種によっては進捗が来ない/粗いことがある。来た分は UI の実進捗として反映する。
+            if let onProgress {
+                request.progressHandler = { _, fraction, _ in
+                    onProgress(fraction)
+                }
+            }
 
             let handler = VNImageRequestHandler(cgImage: cgImage, orientation: image.cgImagePropertyOrientation, options: [:])
             do {

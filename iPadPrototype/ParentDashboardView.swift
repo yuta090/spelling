@@ -3256,6 +3256,7 @@ private struct ParentNewStepSheet: View {
     @State private var rawWords = ""
     @State private var showingWordCamera = false
     @State private var isScanningWordImage = false
+    @StateObject private var scanProgress = ScanProgressModel()
     @State private var statusMessage: String?
     @State private var statusSucceeded = false
     var language: AppLanguage
@@ -3381,7 +3382,8 @@ private struct ParentNewStepSheet: View {
                             WordImportStatusBanner(
                                 message: statusMessage,
                                 isSuccess: statusSucceeded,
-                                isScanning: isScanningWordImage
+                                isScanning: isScanningWordImage,
+                                scanProgress: scanProgress.fraction
                             )
                         }
 
@@ -3496,14 +3498,18 @@ private struct ParentNewStepSheet: View {
 
     private func scanWordImage(_ image: UIImage) {
         isScanningWordImage = true
+        scanProgress.start()
         statusSucceeded = false
         statusMessage = language.text(japanese: "宿題の文字を読み取っています。", english: "Scanning the homework text.")
 
         Task {
             do {
-                let importedWords = try await WordListImageTextRecognizer(language: model.settings.language).recognizeWords(in: image)
+                let importedWords = try await WordListImageTextRecognizer(language: model.settings.language).recognizeWords(in: image) { fraction in
+                    Task { @MainActor in scanProgress.report(fraction) }
+                }
                 await MainActor.run {
                     let addedCount = appendImportedWords(importedWords)
+                    scanProgress.finish()
                     isScanningWordImage = false
 
                     if importedWords.isEmpty {
@@ -3528,6 +3534,7 @@ private struct ParentNewStepSheet: View {
                 }
             } catch {
                 await MainActor.run {
+                    scanProgress.reset()
                     isScanningWordImage = false
                     statusSucceeded = false
                     statusMessage = language.text(
@@ -3634,6 +3641,7 @@ private struct ParentWordListPanel: View {
     @State private var showingBatchManager = false
     @State private var showingLevelSet = false
     @State private var isScanningWordImage = false
+    @StateObject private var scanProgress = ScanProgressModel()
     @State private var importMessage: String?
     @State private var importSucceeded = false
     var language: AppLanguage
@@ -3770,7 +3778,8 @@ private struct ParentWordListPanel: View {
                     WordImportStatusBanner(
                         message: importMessage,
                         isSuccess: importSucceeded,
-                        isScanning: isScanningWordImage
+                        isScanning: isScanningWordImage,
+                        scanProgress: scanProgress.fraction
                     )
                 }
 
@@ -3880,14 +3889,18 @@ private struct ParentWordListPanel: View {
 
     private func scanWordImage(_ image: UIImage) {
         isScanningWordImage = true
+        scanProgress.start()
         importSucceeded = false
         importMessage = language.text(japanese: "宿題の文字を読み取っています。", english: "Scanning the homework text.")
 
         Task {
             do {
-                let importedWords = try await WordListImageTextRecognizer(language: model.settings.language).recognizeWords(in: image)
+                let importedWords = try await WordListImageTextRecognizer(language: model.settings.language).recognizeWords(in: image) { fraction in
+                    Task { @MainActor in scanProgress.report(fraction) }
+                }
                 await MainActor.run {
                     let addedCount = appendImportedWords(importedWords)
+                    scanProgress.finish()
                     isScanningWordImage = false
 
                     if importedWords.isEmpty {
@@ -3912,6 +3925,7 @@ private struct ParentWordListPanel: View {
                 }
             } catch {
                 await MainActor.run {
+                    scanProgress.reset()
                     isScanningWordImage = false
                     importSucceeded = false
                     importMessage = language.text(
@@ -4370,6 +4384,7 @@ private struct ParentLegacyWordListPanel: View {
     @State private var rawWords = ""
     @State private var showingWordCamera = false
     @State private var isScanningWordImage = false
+    @StateObject private var scanProgress = ScanProgressModel()
     @State private var importMessage: String?
     @State private var importSucceeded = false
     var language: AppLanguage
@@ -4401,7 +4416,8 @@ private struct ParentLegacyWordListPanel: View {
                 WordImportStatusBanner(
                     message: importMessage,
                     isSuccess: importSucceeded,
-                    isScanning: isScanningWordImage
+                    isScanning: isScanningWordImage,
+                    scanProgress: scanProgress.fraction
                 )
             }
 
@@ -4517,14 +4533,18 @@ private struct ParentLegacyWordListPanel: View {
 
     private func scanWordImage(_ image: UIImage) {
         isScanningWordImage = true
+        scanProgress.start()
         importSucceeded = false
         importMessage = language.text(japanese: "宿題の文字を読み取っています。", english: "Scanning the homework text.")
 
         Task {
             do {
-                let importedWords = try await WordListImageTextRecognizer(language: model.settings.language).recognizeWords(in: image)
+                let importedWords = try await WordListImageTextRecognizer(language: model.settings.language).recognizeWords(in: image) { fraction in
+                    Task { @MainActor in scanProgress.report(fraction) }
+                }
                 await MainActor.run {
                     let addedCount = appendImportedWords(importedWords)
+                    scanProgress.finish()
                     isScanningWordImage = false
 
                     if importedWords.isEmpty {
@@ -4549,6 +4569,7 @@ private struct ParentLegacyWordListPanel: View {
                 }
             } catch {
                 await MainActor.run {
+                    scanProgress.reset()
                     isScanningWordImage = false
                     importSucceeded = false
                     importMessage = language.text(
@@ -4600,26 +4621,30 @@ private struct WordImportStatusBanner: View {
     var message: String
     var isSuccess: Bool
     var isScanning: Bool
+    var scanProgress: Double = 0
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        Group {
             if isScanning {
-                ProgressView()
-                    .controlSize(.small)
+                // 読み取り中はパーセンテージ付きの進捗バーを出す（古い端末でも進み具合がわかる）。
+                ScanProgressBar(fraction: scanProgress, label: message, tint: ParentPalette.primary)
+                    .foregroundStyle(ParentPalette.ink)
             } else {
-                Image(systemName: isSuccess ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                    .font(.headline.weight(.bold))
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: isSuccess ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                        .font(.headline.weight(.bold))
+
+                    Text(message)
+                        .font(.caption.weight(.semibold))
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Spacer(minLength: 0)
+                }
+                .foregroundStyle(isSuccess ? ParentPalette.success : ParentPalette.warning)
             }
-
-            Text(message)
-                .font(.caption.weight(.semibold))
-                .fixedSize(horizontal: false, vertical: true)
-
-            Spacer(minLength: 0)
         }
-        .foregroundStyle(isSuccess ? ParentPalette.success : ParentPalette.warning)
         .padding(10)
-        .background(isSuccess ? ParentPalette.successSoft : ParentPalette.warningSoft)
+        .background(isScanning ? ParentPalette.surface : (isSuccess ? ParentPalette.successSoft : ParentPalette.warningSoft))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

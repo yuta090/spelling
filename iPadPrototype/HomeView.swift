@@ -934,6 +934,7 @@ private struct ChildAddWordSheet: View {
     @State private var showingCamera = false
     @State private var isReadingImage = false
     @State private var statusMessage: String?
+    @StateObject private var scanProgress = ScanProgressModel()
 
     private var canRegister: Bool {
         !rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -980,6 +981,14 @@ private struct ChildAddWordSheet: View {
                     .tint(Color(red: 0.14, green: 0.35, blue: 0.76))
                     .tapFeedback(scale: 0.95, bounce: true)
                     .disabled(!cameraAvailable || isReadingImage)
+
+                    if isReadingImage {
+                        ScanProgressBar(
+                            fraction: scanProgress.fraction,
+                            label: language.text(japanese: "よみとり中", english: "Reading"),
+                            tint: Color(red: 0.14, green: 0.35, blue: 0.76)
+                        )
+                    }
 
                     if !cameraAvailable {
                         Text(language.text(japanese: "このタブレットには カメラが ないみたい。", english: "No camera on this device."))
@@ -1060,16 +1069,21 @@ private struct ChildAddWordSheet: View {
     private func readImage(_ image: UIImage) {
         isReadingImage = true
         statusMessage = nil
+        scanProgress.start()
         Task {
             do {
                 let recognized = try await WordListImageTextRecognizer(language: model.settings.language)
-                    .recognizeWords(in: image)
+                    .recognizeWords(in: image) { fraction in
+                        Task { @MainActor in scanProgress.report(fraction) }
+                    }
                 await MainActor.run {
+                    scanProgress.finish()
                     appendWords(recognized)
                     isReadingImage = false
                 }
             } catch {
                 await MainActor.run {
+                    scanProgress.reset()
                     statusMessage = language.text(japanese: "よみとれなかったよ。もういちど ためしてね。", english: "Couldn't read it. Try again.")
                     isReadingImage = false
                 }
