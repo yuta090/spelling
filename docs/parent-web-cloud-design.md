@@ -1,6 +1,11 @@
 # Parent Web and Cloud Sync Design
 
-Status: Design only. No implementation in this document.
+> **⚠️ SUPERSEDED (2026-06-25):** この Supabase + 親Web 路線は採用されなかった。
+> 運用ゼロ・子データ非保持を最優先する判断により、**CloudKit + ネイティブ親iPhoneアプリ**路線へ移行した。
+> 現行設計は `docs/multi-user-cloudkit-sync-design.md` を参照。
+> 本書は将来 Android/世界展開を本格化する際の参照資料として残置する。
+
+Status: Design only. No implementation in this document. **(Superseded — see banner above.)**
 Date: 2026-06-07
 
 ## 1. Recommendation

@@ -159,7 +159,7 @@ final class AppModel: ObservableObject {
     static let defaultCharacterID = HomeRewardCharacter.defaultID
     static let defaultUnlockedCharacterIDs: Set<String> = HomeRewardCharacter.defaultUnlockedIDs
 
-    private let persistenceStore: AppPersistenceStore
+    private let persistenceStore: UserDataStore
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
     private let practiceSamplesKey = "spellingTrainer.practiceSamples"
@@ -171,7 +171,7 @@ final class AppModel: ObservableObject {
     private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
 
-    init(persistenceStore: AppPersistenceStore = AppPersistenceStore()) {
+    init(persistenceStore: UserDataStore = AppPersistenceStore()) {
         self.persistenceStore = persistenceStore
 
         let loadedWords = persistenceStore.load([SpellingWord].self, key: wordsKey) ?? [
@@ -984,6 +984,18 @@ final class PersistentJSONRecord {
     }
 }
 
+/// ユーザーデータを「キー → Codable 値」で永続化する境界。
+///
+/// 既定実装はローカルファイル保存の `AppPersistenceStore`。
+/// 将来 CloudKit 同期（`NSPersistentCloudKitContainer`）へ移行する際は、この protocol に
+/// 準拠した別ストアを `AppModel(persistenceStore:)` に注入するだけで差し替えられる。
+/// `AppModel` は具象ストアではなくこの境界にのみ依存する。
+/// 設計の全体像は docs/multi-user-cloudkit-sync-design.md を参照。
+protocol UserDataStore: Sendable {
+    func load<T: Decodable>(_ type: T.Type, key: String) -> T?
+    func save<T: Encodable & Sendable>(_ value: T, key: String)
+}
+
 /// キー → JSON Data のローカル保存。iOS 16 でも動くようファイル(Application Support)を主役にする。
 /// 旧 SwiftData ストアにデータがある端末(iOS 17)では、初回に一度だけファイルへ移行する。
 final class AppPersistenceStore: @unchecked Sendable {
@@ -1108,3 +1120,7 @@ final class AppPersistenceStore: @unchecked Sendable {
         return directoryURL.appendingPathComponent(String(safeName)).appendingPathExtension("json")
     }
 }
+
+// ローカルファイル保存を `UserDataStore` 境界に適合させる。
+// `load`/`save` は既存シグネチャと一致するため、宣言のみで準拠が成立する。
+extension AppPersistenceStore: UserDataStore {}
