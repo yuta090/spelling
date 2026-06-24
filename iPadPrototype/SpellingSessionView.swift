@@ -693,6 +693,9 @@ struct SpellingSessionView: View {
                     onPlay: {
                         speech.speak(word.text, language: model.settings.language, rate: model.settings.speechRate)
                     },
+                    onUndo: {
+                        undoCompactPracticeDrawing(for: word)
+                    },
                     onClear: {
                         clearCompactPracticeDrawing(for: word)
                     },
@@ -1146,6 +1149,19 @@ struct SpellingSessionView: View {
             return nil
         }
         return DrawingCanvasSize(width: Double(size.width), height: Double(size.height))
+    }
+
+    private func undoCompactPracticeDrawing(for word: SpellingWord) {
+        let current = compactPracticeDrawing(for: word)
+        guard !current.strokes.isEmpty else {
+            return
+        }
+        let updated = PKDrawing(strokes: Array(current.strokes.dropLast()))
+        compactPracticeDrawings[word.id] = updated
+        compactPracticeResetIDs[word.id] = UUID()
+        if !hasInk(updated) {
+            compactPracticeMissingWordIDs.remove(word.id)
+        }
     }
 
     private func clearCompactPracticeDrawing(for word: SpellingWord) {
@@ -1708,6 +1724,7 @@ private struct CompactPracticeWritingCell: View {
     var isMissing: Bool
     var sampleTextOpacity: Double = GuidedWritingCanvas.sampleTextBaseOpacity
     var onPlay: () -> Void
+    var onUndo: () -> Void
     var onClear: () -> Void
     var onMeasure: (CGSize) -> Void
 
@@ -1734,6 +1751,22 @@ private struct CompactPracticeWritingCell: View {
                     .minimumScaleFactor(0.52)
 
                 Spacer(minLength: 6)
+
+                Button(action: onUndo) {
+                    Label(language.text(japanese: "1つもどす", english: "Undo"), systemImage: "arrow.uturn.backward")
+                        .font(.subheadline.weight(.heavy))
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(drawing.strokes.isEmpty ? Color(red: 0.55, green: 0.61, blue: 0.70) : Color(red: 0.13, green: 0.34, blue: 0.75))
+                        .frame(width: 42, height: 42)
+                        .background(Color(red: 0.91, green: 0.96, blue: 1.0))
+                        .clipShape(Circle())
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .tapFeedback(scale: 0.94)
+                .disabled(drawing.strokes.isEmpty)
+                .opacity(drawing.strokes.isEmpty ? 0.55 : 1)
+                .accessibilityLabel(language.text(japanese: "\(word.text) を1つもどす", english: "Undo \(word.text)"))
 
                 Button(action: onClear) {
                     Label(language.text(japanese: "消す", english: "Clear"), systemImage: "eraser.fill")
