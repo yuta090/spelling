@@ -1037,12 +1037,17 @@ private struct ChildAddWordSheet: View {
     }
 
     private func register() {
-        let count = model.addChildWords(from: rawText)
-        guard count > 0 else {
+        switch model.addChildWords(from: rawText) {
+        case .added:
+            onRegistered()
+        case .blocked:
+            statusMessage = language.text(
+                japanese: "いまの たんごを ぜんぶ 100てんに してから、あたらしい ことばを ふやせるよ。",
+                english: "Get 100 on your current words first, then you can add new ones."
+            )
+        case .noNewWords:
             statusMessage = language.text(japanese: "あたらしい ことばが ないみたい。", english: "No new words to add.")
-            return
         }
-        onRegistered()
     }
 
     private func readImage(_ image: UIImage) {

@@ -397,12 +397,17 @@ final class AppModel: ObservableObject {
     }
 
     private func hasPerfectRunToday(for sourceWords: [SpellingWord], in todayAttempts: [SpellingAttempt]) -> Bool {
+        hasPerfectRun(for: sourceWords, in: todayAttempts)
+    }
+
+    /// 1セッション内で対象単語をすべて一発正解（満点）にしたことがあるか。
+    private func hasPerfectRun(for sourceWords: [SpellingWord], in attempts: [SpellingAttempt]) -> Bool {
         let sourceTexts = Set(sourceWords.map { normalize($0.text) })
         guard !sourceTexts.isEmpty else {
             return false
         }
 
-        let sessions = Dictionary(grouping: todayAttempts) { $0.sessionID }
+        let sessions = Dictionary(grouping: attempts) { $0.sessionID }
         return sessions.values.contains { sessionAttempts in
             var latestInSession: [String: SpellingAttempt] = [:]
             for attempt in sessionAttempts.sorted(by: { $0.date < $1.date }) {
@@ -443,8 +448,29 @@ final class AppModel: ObservableObject {
         practiceSamples.filter { Calendar.current.isDateInToday($0.date) }
     }
 
-    /// こどもが登録した単語をまとめる専用ステップのID。
+    /// こどもが登録した単語をまとめる専用ステップのID（最初のこどもステップ）。
     static let childWordStepID = "child-words"
+
+    /// こどもステップのIDか判定する（旧来の固定ID＋連番つきの新IDの両方）。
+    static func isChildStepID(_ id: String) -> Bool {
+        id.hasPrefix(childWordStepID)
+    }
+
+    /// 2つめ以降のこどもステップ用にユニークなIDを作る。
+    private static func uniqueChildStepID() -> String {
+        "\(childWordStepID)-\(UUID().uuidString.prefix(8))"
+    }
+
+    /// 今いちばん新しいこどものたんごステップ。
+    var latestChildStep: WordStep? {
+        wordSteps.last { $0.isChildStep }
+    }
+
+    /// そのこどもステップを満点（1セッション一発全正解）でクリアしたか。
+    /// 過去ぶんも含めて判定するので、いちど満点にすれば次の追加が解放される。
+    func childStepIsMastered(_ step: WordStep) -> Bool {
+        hasPerfectRun(for: step.words, in: attempts)
+    }
 
     /// 指定IDの単語をまとめて削除する（親メニューの一括削除用）。
     func deleteWords(ids: Set<UUID>) {
@@ -488,48 +514,58 @@ final class AppModel: ObservableObject {
         }
     }
 
-    /// こどもが自分のたんごメニューから登録する。専用ステップにまとめ、source = .child を付ける。
+    /// こどもが自分のたんごメニューから登録する。
+    /// ルール: 今いちばん新しいこどもステップを満点にするまでは追加できない。
+    /// 満点になったら、追加ぶんは「こどものたんご（連番）」の新しいステップとして作る。
     @discardableResult
-    func addChildWords(from rawText: String) -> Int {
+    func addChildWords(from rawText: String) -> ChildWordAddResult {
         let entries = parseWordListEntries(from: rawText)
         guard !entries.isEmpty else {
-            return 0
+            return .noNewWords
+        }
+
+        // 今のこどもステップが満点（100点）未達なら、新しい追加をブロックする。
+        if let current = latestChildStep, !childStepIsMastered(current) {
+            return .blocked
         }
 
         let now = Date()
+        // 最初のこどもステップは旧来の固定IDを使い、2つめ以降はユニークIDで新ステップを作る。
+        let hasExistingChildStep = words.contains { Self.isChildStepID($0.stepID ?? "") }
+        let targetStepID = hasExistingChildStep ? Self.uniqueChildStepID() : Self.childWordStepID
+
         var updatedWords = words
-        var existingChildKeys = Set(
-            words.filter { $0.stepID == Self.childWordStepID }.map { normalize($0.text) }
-        )
+        var addedKeys = Set<String>()
         var addedCount = 0
 
         for entry in entries {
             let key = normalize(entry.text)
-            guard !key.isEmpty, !existingChildKeys.contains(key) else {
+            guard !key.isEmpty, !addedKeys.contains(key) else {
                 continue
             }
-            existingChildKeys.insert(key)
+            addedKeys.insert(key)
             let promptText = entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             updatedWords.append(
                 SpellingWord(
                     text: key,
                     promptText: promptText,
                     registeredAt: now,
-                    stepID: Self.childWordStepID,
+                    stepID: targetStepID,
                     source: .child
                 )
             )
             addedCount += 1
         }
 
-        if updatedWords != words {
-            words = updatedWords
-        }
-        if addedCount > 0 {
-            selectedWordStepID = Self.childWordStepID
+        guard addedCount > 0 else {
+            return .noNewWords
         }
 
-        return addedCount
+        words = updatedWords
+        // 表示ステップは勝手に切り替えない（親が選んでいた表示を維持。ステップえらびから移動できる）。
+        ensureSelectedWordStepStillExists()
+
+        return .added(addedCount)
     }
 
     @discardableResult
@@ -870,6 +906,17 @@ final class AppModel: ObservableObject {
             return $0 < $1
         }
 
+        // こどもステップの総数。2つ以上あるときだけ連番を振る（1つなら番号なし）。
+        let childStepIDs = sortedIDs.filter { isChildStepID($0) }
+        let childOrdinalByID: [String: Int]
+        if childStepIDs.count > 1 {
+            childOrdinalByID = Dictionary(
+                uniqueKeysWithValues: childStepIDs.enumerated().map { ($0.element, $0.offset + 1) }
+            )
+        } else {
+            childOrdinalByID = [:]
+        }
+
         return sortedIDs.enumerated().compactMap { index, id in
             guard let group = groups[id] else {
                 return nil
@@ -879,7 +926,8 @@ final class AppModel: ObservableObject {
                 number: index + 1,
                 registeredDate: group.date,
                 words: group.words,
-                isChildStep: id == childWordStepID
+                isChildStep: isChildStepID(id),
+                childNumber: childOrdinalByID[id]
             )
         }
     }

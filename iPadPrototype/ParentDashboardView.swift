@@ -6466,6 +6466,21 @@ private struct ParentExampleEditor: View {
 
             HStack {
                 Button {
+                    let current = drawing
+                    guard !current.strokes.isEmpty else {
+                        return
+                    }
+                    let updated = PKDrawing(strokes: Array(current.strokes.dropLast()))
+                    drawing = updated
+                    capture.latestDrawing = updated
+                } label: {
+                    Label(language.text(japanese: "1つもどす", english: "Undo"), systemImage: "arrow.uturn.backward")
+                }
+                .buttonStyle(.bordered)
+                .tapFeedback()
+                .disabled(drawing.strokes.isEmpty)
+
+                Button {
                     drawing = PKDrawing()
                     capture.latestDrawing = PKDrawing()
                 } label: {

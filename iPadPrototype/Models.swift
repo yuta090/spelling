@@ -50,13 +50,25 @@ struct WordStep: Identifiable, Equatable, Sendable {
     var registeredDate: Date
     var words: [SpellingWord]
     var isChildStep: Bool = false
+    /// こどものたんごが複数あるときの連番（1始まり）。1つだけのときは nil で番号を出さない。
+    var childNumber: Int? = nil
 
     func title(language: AppLanguage) -> String {
         if isChildStep {
+            if let childNumber {
+                return language.text(japanese: "こどものたんご \(childNumber)", english: "My Words \(childNumber)")
+            }
             return language.text(japanese: "こどものたんご", english: "My Words")
         }
         return language.text(japanese: "ステップ \(number)", english: "Step \(number)")
     }
+}
+
+/// こどもが自分の単語を追加しようとしたときの結果。
+enum ChildWordAddResult: Equatable, Sendable {
+    case added(Int)   // 新しいステップに追加できた
+    case blocked      // 今のこどもステップが満点（100点）未達のため追加不可
+    case noNewWords   // 追加できる新しい単語が無かった
 }
 
 struct TodayStepProgress: Equatable, Sendable {
