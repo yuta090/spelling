@@ -4681,10 +4681,12 @@ private struct WordImageCropperView: View {
     var onUseWholeImage: () -> Void
     var onRetake: () -> Void
     var onCancel: () -> Void
-    // @GestureState はジェスチャ終了・キャンセル時に自動で初期値へ戻るので、
-    // 中断時に開始位置が残って次のドラッグが飛ぶ問題を防げる。
-    @GestureState private var dragStartRect: WordImageCropRect?
-    @GestureState private var resizeStartRect: WordImageCropRect?
+    // ドラッグはクロップ領域全体に付けた単一ジェスチャで処理し、開始位置で move/resize を判定する。
+    // 要素ごとに .position＋.gesture を重ねるとヒットテストが不安定で「ドラッグできない」状態になりやすいため。
+    // @GestureState は中断・終了時に自動で初期値へ戻るので、開始時のクロップ矩形の保持に使う。
+    @GestureState private var gestureStartRect: WordImageCropRect?
+    // ドラッグ中の操作モード（最初の onChanged で1回だけ決める）。
+    @State private var activeDragMode: CropDragMode?
 
     init(
         image: UIImage,
@@ -4752,16 +4754,14 @@ private struct WordImageCropperView: View {
                     WordCropGridShape(cropFrame: cropFrame)
                         .stroke(.white.opacity(0.62), style: StrokeStyle(lineWidth: 1.4, dash: [7, 7]))
 
-                    // 枠の内側＝ドラッグで移動。判定を枠サイズに限定するため .gesture は .position の前。
+                    // 枠（見た目のみ）。操作は下の単一ジェスチャ層で受ける。
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(ParentPalette.primary, lineWidth: 3)
-                        .background(Color.white.opacity(0.001))
                         .frame(width: cropFrame.width, height: cropFrame.height)
-                        .contentShape(Rectangle())
-                        .gesture(moveCropGesture(imageFrame: imageFrame))
                         .position(x: cropFrame.midX, y: cropFrame.midY)
+                        .allowsHitTesting(false)
 
-                    // まんなか：ドラッグで移動できることを示すヒント（タップは下の枠が処理）
+                    // まんなか：ドラッグで移動できることを示すヒント。
                     VStack(spacing: 4) {
                         Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
                             .font(.system(size: 24, weight: .heavy))
@@ -4776,7 +4776,7 @@ private struct WordImageCropperView: View {
                     .allowsHitTesting(false)
                     .position(x: cropFrame.midX, y: cropFrame.midY)
 
-                    // 四すみ：ドラッグで大きさ変更（斜め矢印で明示）。判定を丸に限定するため .gesture は .position の前。
+                    // 四すみ：ドラッグで大きさ変更（斜め矢印で明示・見た目のみ）。
                     ForEach(WordCropHandle.allCases) { handle in
                         Circle()
                             .fill(.white)
@@ -4791,10 +4791,14 @@ private struct WordImageCropperView: View {
                                     .foregroundStyle(ParentPalette.primary)
                             )
                             .shadow(color: .black.opacity(0.3), radius: 7, x: 0, y: 3)
-                            .contentShape(Circle())
-                            .gesture(resizeCropGesture(handle: handle, imageFrame: imageFrame))
                             .position(handle.position(in: cropFrame))
+                            .allowsHitTesting(false)
                     }
+
+                    // 操作層：画像全体を覆う単一ジェスチャ。開始位置で move/resize を判定する。
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .gesture(cropDragGesture(imageFrame: imageFrame, cropFrame: cropFrame))
                 }
             }
 
@@ -4833,34 +4837,59 @@ private struct WordImageCropperView: View {
         .background(Color.black.opacity(0.92))
     }
 
-    private func moveCropGesture(imageFrame: CGRect) -> some Gesture {
+    /// クロップ領域全体に付ける単一ドラッグジェスチャ。
+    /// 開始位置（四すみ近く＝リサイズ / 枠内＝移動）で操作を1回だけ決める。
+    private func cropDragGesture(imageFrame: CGRect, cropFrame: CGRect) -> some Gesture {
         DragGesture(minimumDistance: 0)
-            .updating($dragStartRect) { _, state, _ in
+            .updating($gestureStartRect) { _, state, _ in
                 if state == nil { state = cropRect }
             }
             .onChanged { value in
-                let start = dragStartRect ?? cropRect
-                cropRect = start.moved(
-                    byX: value.translation.width / max(imageFrame.width, 1),
-                    y: value.translation.height / max(imageFrame.height, 1)
-                )
+                let mode = activeDragMode ?? resolveDragMode(at: value.startLocation, cropFrame: cropFrame)
+                if activeDragMode == nil { activeDragMode = mode }
+                guard let mode else { return }
+
+                let start = gestureStartRect ?? cropRect
+                let deltaX = value.translation.width / max(imageFrame.width, 1)
+                let deltaY = value.translation.height / max(imageFrame.height, 1)
+
+                switch mode {
+                case .move:
+                    cropRect = start.moved(byX: deltaX, y: deltaY)
+                case .resize(let handle):
+                    cropRect = start.resized(handle: handle, deltaX: deltaX, deltaY: deltaY)
+                }
+            }
+            .onEnded { _ in
+                activeDragMode = nil
             }
     }
 
-    private func resizeCropGesture(handle: WordCropHandle, imageFrame: CGRect) -> some Gesture {
-        DragGesture(minimumDistance: 0)
-            .updating($resizeStartRect) { _, state, _ in
-                if state == nil { state = cropRect }
+    /// ドラッグ開始位置から操作モードを決める。四すみの判定半径内ならリサイズ、枠内なら移動、外側は無視。
+    private func resolveDragMode(at location: CGPoint, cropFrame: CGRect) -> CropDragMode? {
+        let handleHitRadius: CGFloat = 44
+        var nearest: (handle: WordCropHandle, distance: CGFloat)?
+        for handle in WordCropHandle.allCases {
+            let corner = handle.position(in: cropFrame)
+            let distance = hypot(location.x - corner.x, location.y - corner.y)
+            if distance <= handleHitRadius, nearest == nil || distance < nearest!.distance {
+                nearest = (handle, distance)
             }
-            .onChanged { value in
-                let start = resizeStartRect ?? cropRect
-                cropRect = start.resized(
-                    handle: handle,
-                    deltaX: value.translation.width / max(imageFrame.width, 1),
-                    deltaY: value.translation.height / max(imageFrame.height, 1)
-                )
-            }
+        }
+        if let nearest {
+            return .resize(nearest.handle)
+        }
+        if cropFrame.insetBy(dx: -8, dy: -8).contains(location) {
+            return .move
+        }
+        return nil
     }
+}
+
+/// クロップ操作のモード。
+private enum CropDragMode: Equatable {
+    case move
+    case resize(WordCropHandle)
 }
 
 private struct WordImageCropRect: Equatable {
