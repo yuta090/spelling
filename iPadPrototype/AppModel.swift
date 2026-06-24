@@ -452,8 +452,9 @@ final class AppModel: ObservableObject {
     static let childWordStepID = "child-words"
 
     /// こどもステップのIDか判定する（旧来の固定ID＋連番つきの新IDの両方）。
+    /// 別IDの誤判定を避けるため、完全一致か "child-words-" 接頭辞のみを許可する。
     static func isChildStepID(_ id: String) -> Bool {
-        id.hasPrefix(childWordStepID)
+        id == childWordStepID || id.hasPrefix(childWordStepID + "-")
     }
 
     /// 2つめ以降のこどもステップ用にユニークなIDを作る。
@@ -535,7 +536,11 @@ final class AppModel: ObservableObject {
         let targetStepID = hasExistingChildStep ? Self.uniqueChildStepID() : Self.childWordStepID
 
         var updatedWords = words
-        var addedKeys = Set<String>()
+        // 既存のこどもステップにある単語はキーに含めて重複登録を防ぐ。
+        // （同じ単語で新ステップを作って満点ゲートをすり抜けるのも抑止できる）
+        var addedKeys = Set(
+            words.filter { Self.isChildStepID($0.stepID ?? "") }.map { normalize($0.text) }
+        )
         var addedCount = 0
 
         for entry in entries {
@@ -1015,8 +1020,11 @@ final class AppPersistenceStore: @unchecked Sendable {
         }
 
         Self.persistenceQueue.async {
-            Self.writeFileData(legacyData, key: key)
-            UserDefaults.standard.removeObject(forKey: key)
+            // ファイル書き込みが成功したときだけ旧 UserDefaults を消す。
+            // 失敗時は writeFileData が UserDefaults に退避するため、消すとデータを失う。
+            if Self.writeFileData(legacyData, key: key) {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
         }
         return value
     }
@@ -1027,8 +1035,10 @@ final class AppPersistenceStore: @unchecked Sendable {
         }
 
         Self.persistenceQueue.async {
-            Self.writeFileData(data, key: key)
-            UserDefaults.standard.removeObject(forKey: key)
+            // ファイル書き込み成功時のみ旧 UserDefaults を掃除する（失敗時は退避先なので残す）。
+            if Self.writeFileData(data, key: key) {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
         }
     }
 
@@ -1043,13 +1053,15 @@ final class AppPersistenceStore: @unchecked Sendable {
         let schema = Schema([PersistentJSONRecord.self])
         let configuration = ModelConfiguration("SpellingTrainerData", schema: schema)
 
-        if let container = try? ModelContainer(for: schema, configurations: [configuration]) {
-            let context = ModelContext(container)
-            if let records = try? context.fetch(FetchDescriptor<PersistentJSONRecord>()) {
-                for record in records where loadFileData(for: record.key) == nil {
-                    writeFileData(record.data, key: record.key)
-                }
-            }
+        // コンテナ生成や fetch に失敗したらフラグを立てず、次回起動で再試行する
+        // （一時的な失敗で既存データの移行機会を恒久的に失わないように）。
+        guard let container = try? ModelContainer(for: schema, configurations: [configuration]),
+              let records = try? ModelContext(container).fetch(FetchDescriptor<PersistentJSONRecord>()) else {
+            return
+        }
+
+        for record in records where loadFileData(for: record.key) == nil {
+            writeFileData(record.data, key: record.key)
         }
 
         UserDefaults.standard.set(true, forKey: migrationFlagKey)
@@ -1062,16 +1074,20 @@ final class AppPersistenceStore: @unchecked Sendable {
         return try? Data(contentsOf: url)
     }
 
-    private static func writeFileData(_ data: Data, key: String) {
+    /// ファイルへ保存できたら true。失敗時は UserDefaults に退避して false を返す。
+    @discardableResult
+    private static func writeFileData(_ data: Data, key: String) -> Bool {
         guard let url = storageURL(for: key, createDirectory: true) else {
             UserDefaults.standard.set(data, forKey: key)
-            return
+            return false
         }
 
         do {
             try data.write(to: url, options: [.atomic])
+            return true
         } catch {
             UserDefaults.standard.set(data, forKey: key)
+            return false
         }
     }
 
