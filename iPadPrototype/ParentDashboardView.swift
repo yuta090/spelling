@@ -380,7 +380,7 @@ private struct ParentStepChooserSheet: View {
                 )
 
                 if groupedSections.isEmpty {
-                    ContentUnavailableView(
+                    EmptyStateView(
                         language.text(japanese: "見つかりません", english: "No matching steps"),
                         systemImage: "magnifyingglass",
                         description: Text(language.text(japanese: "ステップ番号、日付、単語で検索できます。", english: "Search by step number, date, or word."))
@@ -638,7 +638,7 @@ private struct ParentRecordsWorkspace: View {
                 showsHeader: false
             ) {
                 if orderedSteps.isEmpty {
-                    ContentUnavailableView(
+                    EmptyStateView(
                         language.text(japanese: "まだステップがありません", english: "No steps yet"),
                         systemImage: "rectangle.stack.fill",
                         description: Text(language.text(japanese: "単語を登録すると、日付ごとのステップを確認できます。", english: "Register words to view steps by date."))
@@ -905,7 +905,7 @@ private struct ParentAppTestResultsPanel: View {
             }
 
             if attempts.isEmpty {
-                ContentUnavailableView(
+                EmptyStateView(
                     language.text(japanese: "まだアプリのテスト結果はありません", english: "No app test results yet"),
                     systemImage: "checklist",
                     description: Text(language.text(japanese: "子供がテストをするとここに表示されます。", english: "App test answers will appear here."))
@@ -1340,7 +1340,7 @@ private struct ParentStepRecordCard: View {
             prepareSchoolDefaultsIfNeeded()
             selectDefaultResultItemIfNeeded()
         }
-        .onChange(of: resultTimelineItems.map(\.id)) { _, _ in
+        .onValueChange(of: resultTimelineItems.map(\.id)) { _ in
             selectDefaultResultItemIfNeeded()
         }
         .sheet(isPresented: $showingResultHistory) {
@@ -1494,7 +1494,7 @@ private struct ParentStepResultHistorySheet: View {
                 ScrollView {
                     VStack(spacing: 14) {
                         if items.isEmpty {
-                            ContentUnavailableView(
+                            EmptyStateView(
                                 language.text(japanese: "まだ結果はありません", english: "No results yet"),
                                 systemImage: "clock",
                                 description: Text(language.text(japanese: "アプリか学校の結果が入るとここに表示されます。", english: "App or school results will appear here."))
@@ -2036,7 +2036,7 @@ private struct SchoolTestResultPanel: View {
             }
 
             if sortedResults.isEmpty {
-                ContentUnavailableView(
+                EmptyStateView(
                     language.text(japanese: "まだ学校のテスト結果がありません", english: "No school test results yet"),
                     systemImage: "graduationcap",
                     description: Text(language.text(japanese: "返ってきたら点数を入れます。", english: "Enter the score when it comes back."))
@@ -2057,12 +2057,12 @@ private struct SchoolTestResultPanel: View {
         .onAppear {
             prepareDefaultsIfNeeded()
         }
-        .onChange(of: selectedStepID) { _, _ in
+        .onValueChange(of: selectedStepID) { _ in
             if total <= 0 {
                 applyDefaultTotal()
             }
         }
-        .onChange(of: total) { _, newTotal in
+        .onValueChange(of: total) { newTotal in
             score = min(score, max(newTotal, 1))
         }
         .sheet(isPresented: $showingStepChooser) {
@@ -2582,7 +2582,7 @@ private struct ParentWordStepPanel: View {
             }
 
             if orderedSteps.isEmpty {
-                ContentUnavailableView(
+                EmptyStateView(
                     language.text(japanese: "ステップがありません", english: "No steps yet"),
                     systemImage: "rectangle.stack.fill",
                     description: Text(language.text(japanese: "最初のステップを作ってください。", english: "Create the first step."))
@@ -2698,8 +2698,8 @@ struct ImportJapaneseOptionsView: View {
         .padding(12)
         .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .onChange(of: model.settings.importAttachJapanese) { _, _ in reapply() }
-        .onChange(of: model.settings.importUseKanji) { _, _ in reapply() }
+        .onValueChange(of: model.settings.importAttachJapanese) { _ in reapply() }
+        .onValueChange(of: model.settings.importUseKanji) { _ in reapply() }
     }
 
     private func reapply() {
@@ -3800,7 +3800,7 @@ private struct ParentWordListPanel: View {
                     .disabled(parseWordListEntries(from: rawWords).isEmpty)
                 }
             } else {
-                ContentUnavailableView(
+                EmptyStateView(
                     language.text(japanese: "ステップがありません", english: "No step"),
                     systemImage: "rectangle.stack.fill",
                     description: Text(language.text(japanese: "先に新しいステップを作ってください。", english: "Create a step first."))
@@ -3811,7 +3811,7 @@ private struct ParentWordListPanel: View {
         .onAppear {
             reloadSelectedStep()
         }
-        .onChange(of: model.selectedWordStepID) { _, _ in
+        .onValueChange(of: model.selectedWordStepID) { _ in
             reloadSelectedStep()
         }
         .fullScreenCover(isPresented: $showingWordCamera) {
@@ -4188,7 +4188,7 @@ private struct WordRegistrationManagerView: View {
         NavigationStack {
             Group {
                 if batches.isEmpty {
-                    ContentUnavailableView(
+                    EmptyStateView(
                         language.text(japanese: "単語がありません", english: "No words"),
                         systemImage: "tray",
                         description: Text(language.text(japanese: "まだ単語が登録されていません。", english: "No words registered yet."))
@@ -5374,7 +5374,7 @@ private struct ParentGradingPanel: View {
             tint: ParentPalette.primary
         ) {
             if sessions.isEmpty {
-                ContentUnavailableView(
+                EmptyStateView(
                     language.text(japanese: "まだ採点する記録がありません", english: "Nothing to grade yet"),
                     systemImage: "checkmark.seal",
                     description: Text(language.text(japanese: "練習やテストをするとここに表示されます。", english: "Practice and test sessions will appear here."))
@@ -5383,7 +5383,7 @@ private struct ParentGradingPanel: View {
             } else {
                 VStack(alignment: .leading, spacing: 12) {
                     if filteredSessions.isEmpty {
-                        ContentUnavailableView(
+                        EmptyStateView(
                             sessionFilter.emptyTitle(language: language),
                             systemImage: "checkmark.seal",
                             description: Text(sessionFilter.emptyMessage(language: language))
@@ -5446,7 +5446,7 @@ private struct ParentGradingPanel: View {
                 .onAppear {
                     scheduleSelectedSessionSync(filteredSessions.map(\.id))
                 }
-                .onChange(of: filteredSessions.map(\.id)) { _, ids in
+                .onValueChange(of: filteredSessions.map(\.id)) { ids in
                     scheduleSelectedSessionSync(ids)
                 }
             }
@@ -6633,7 +6633,7 @@ private struct AnswerReviewPanel: View {
             Divider()
 
             if reviewSummaries.isEmpty {
-                ContentUnavailableView(
+                EmptyStateView(
                     language.text(japanese: "確認待ちはありません", english: "No answers need review"),
                     systemImage: "checkmark.circle.fill",
                     description: Text(language.text(japanese: "テスト後にここへ表示されます。", english: "Items appear here after a test."))
@@ -6787,7 +6787,7 @@ private struct LearningHistoryPanel: View {
             .foregroundStyle(.secondary)
 
             if history.isEmpty {
-                ContentUnavailableView(
+                EmptyStateView(
                     language.text(japanese: "まだ履歴がありません", english: "No history yet"),
                     systemImage: "clock",
                     description: Text(language.text(japanese: "練習やテストをするとここに残ります。", english: "Practice and test records will appear here."))
@@ -6884,7 +6884,7 @@ private struct HandwritingListPanel: View {
             .foregroundStyle(.secondary)
 
             if handwritingEntries.isEmpty {
-                ContentUnavailableView(
+                EmptyStateView(
                     language.text(japanese: "まだ手書きがありません", english: "No handwriting yet"),
                     systemImage: "pencil.and.scribble",
                     description: Text(language.text(japanese: "練習やテストをするとここに残ります。", english: "Practice and test handwriting will appear here."))

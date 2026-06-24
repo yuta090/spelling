@@ -480,10 +480,10 @@ struct SpellingSessionView: View {
                 refreshGuideFade()
             }
         }
-        .onChange(of: index) { _, _ in
+        .onValueChange(of: index) { _ in
             refreshGuideFade()
         }
-        .onChange(of: practiceRepeatIndex) { _, _ in
+        .onValueChange(of: practiceRepeatIndex) { _ in
             refreshGuideFade()
         }
         .onDisappear {
@@ -712,10 +712,10 @@ struct SpellingSessionView: View {
         .onAppear {
             prepareCompactPracticeBatch()
         }
-        .onChange(of: compactPracticeWordIDs) { _, _ in
+        .onValueChange(of: compactPracticeWordIDs) { _ in
             prepareCompactPracticeBatch()
         }
-        .onChange(of: practiceRepeatIndex) { _, _ in
+        .onValueChange(of: practiceRepeatIndex) { _ in
             prepareCompactPracticeBatch()
         }
     }
@@ -1801,7 +1801,7 @@ private struct CompactPracticeWritingCell: View {
                         .onAppear {
                             onMeasure(proxy.size)
                         }
-                        .onChange(of: proxy.size) { _, newSize in
+                        .onValueChange(of: proxy.size) { newSize in
                             onMeasure(newSize)
                         }
                 }
@@ -2840,7 +2840,7 @@ private struct ExampleHintView: View {
                 )
             }
         }
-        .onChange(of: word, initial: true) { _, _ in
+        .onValueChange(of: word, initial: true) { _ in
             meaning = WordBank.shared.japanese(for: word)
             example = WordBank.shared.examples(for: word, limit: 1).first
         }
@@ -2973,7 +2973,7 @@ private struct PracticeSessionReviewView: View {
                 )
 
                 if samples.isEmpty {
-                    ContentUnavailableView(
+                    EmptyStateView(
                         language.text(japanese: "まだ手書きがありません", english: "No handwriting saved"),
                         systemImage: "pencil.and.scribble",
                         description: Text(language.text(japanese: "単語を書いてから「つぎへ」を押すと保存されます。", english: "Write a word, then tap Next to save it."))
@@ -3305,7 +3305,7 @@ private struct TestSessionResultsView: View {
                 .shadow(color: isPerfect ? Color.orange.opacity(0.28) : .clear, radius: 16, x: 0, y: 8)
 
                 if attempts.isEmpty {
-                    ContentUnavailableView(
+                    EmptyStateView(
                         language.text(japanese: "まだ結果がありません", english: "No results yet"),
                         systemImage: "checklist",
                         description: Text(language.text(japanese: "アプリのテストを進めるとここに表示されます。", english: "App test answers will appear here."))

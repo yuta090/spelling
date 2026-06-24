@@ -963,6 +963,9 @@ final class AppModel: ObservableObject {
 
 }
 
+/// iOS 17 でのみ存在した旧 SwiftData レコード。
+/// iOS 16 対応に伴いファイル保存へ移行したため、いまは既存ユーザーのデータ移行(読み出し)専用。
+@available(iOS 17, *)
 @Model
 final class PersistentJSONRecord {
     @Attribute(.unique) var key: String
@@ -976,54 +979,45 @@ final class PersistentJSONRecord {
     }
 }
 
+/// キー → JSON Data のローカル保存。iOS 16 でも動くようファイル(Application Support)を主役にする。
+/// 旧 SwiftData ストアにデータがある端末(iOS 17)では、初回に一度だけファイルへ移行する。
 final class AppPersistenceStore: @unchecked Sendable {
-    private let container: ModelContainer
-    private let mirrorsToLegacyStorage: Bool
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     private static let persistenceQueue = DispatchQueue(
-        label: "com.local.SpellingTrainer.swiftDataPersistence",
+        label: "com.local.SpellingTrainer.filePersistence",
         qos: .utility
     )
 
     init() {
-        let schema = Schema([PersistentJSONRecord.self])
-        let configuration = ModelConfiguration("SpellingTrainerData", schema: schema)
-
-        do {
-            container = try ModelContainer(for: schema, configurations: [configuration])
-            mirrorsToLegacyStorage = false
-        } catch {
-            let fallbackConfiguration = ModelConfiguration(
-                "SpellingTrainerDataFallback",
-                schema: schema,
-                isStoredInMemoryOnly: true
-            )
-            container = try! ModelContainer(for: schema, configurations: [fallbackConfiguration])
-            mirrorsToLegacyStorage = true
+        if #available(iOS 17, *) {
+            Self.migrateFromSwiftDataIfNeeded()
         }
     }
 
     func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
-        if let data = loadSwiftDataRecordData(for: key),
+        if let data = Self.loadFileData(for: key),
            let value = try? decoder.decode(type, from: data) {
             return value
         }
 
-        if let legacyString = loadLegacyString(for: key),
+        // 旧 UserDefaults 保存（文字列）からの取り込み。
+        if let legacyString = UserDefaults.standard.string(forKey: key),
            let value = legacyString as? T {
-            if let data = try? encoder.encode(legacyString) {
-                writeSwiftDataRecordData(data, key: key, removeLegacyData: true)
-            }
+            save(legacyString, key: key)
             return value
         }
 
-        guard let legacyData = loadLegacyData(for: key),
+        // 旧 UserDefaults 保存（Data）からの取り込み。
+        guard let legacyData = UserDefaults.standard.data(forKey: key),
               let value = try? decoder.decode(type, from: legacyData) else {
             return nil
         }
 
-        writeSwiftDataRecordData(legacyData, key: key, removeLegacyData: true)
+        Self.persistenceQueue.async {
+            Self.writeFileData(legacyData, key: key)
+            UserDefaults.standard.removeObject(forKey: key)
+        }
         return value
     }
 
@@ -1032,79 +1026,44 @@ final class AppPersistenceStore: @unchecked Sendable {
             return
         }
 
-        writeSwiftDataRecordData(data, key: key, removeLegacyData: true)
-    }
-
-    private func loadSwiftDataRecordData(for key: String) -> Data? {
-        let context = ModelContext(container)
-        var descriptor = FetchDescriptor<PersistentJSONRecord>(
-            predicate: #Predicate { record in
-                record.key == key
-            }
-        )
-        descriptor.fetchLimit = 1
-
-        guard let record = try? context.fetch(descriptor).first else {
-            return nil
-        }
-        return record.data
-    }
-
-    private func writeSwiftDataRecordData(_ data: Data, key: String, removeLegacyData: Bool) {
-        let container = container
-        let mirrorsToLegacyStorage = mirrorsToLegacyStorage
         Self.persistenceQueue.async {
-            autoreleasepool {
-                let context = ModelContext(container)
-                var descriptor = FetchDescriptor<PersistentJSONRecord>(
-                    predicate: #Predicate { record in
-                        record.key == key
-                    }
-                )
-                descriptor.fetchLimit = 1
+            Self.writeFileData(data, key: key)
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+    }
 
-                if let record = try? context.fetch(descriptor).first {
-                    record.data = data
-                    record.updatedAt = Date()
-                } else {
-                    context.insert(PersistentJSONRecord(key: key, data: data))
-                }
+    /// 旧 SwiftData ストアの全レコードを、対応するファイルが無ければファイルへ書き出す（初回のみ）。
+    @available(iOS 17, *)
+    private static func migrateFromSwiftDataIfNeeded() {
+        let migrationFlagKey = "spellingTrainer.migratedFromSwiftData.v1"
+        guard !UserDefaults.standard.bool(forKey: migrationFlagKey) else {
+            return
+        }
 
-                do {
-                    try context.save()
-                    if mirrorsToLegacyStorage {
-                        Self.writeLegacyFileData(data, key: key)
-                    } else if removeLegacyData {
-                        Self.removeLegacyData(for: key)
-                    }
-                } catch {
-                    Self.writeLegacyFileData(data, key: key)
+        let schema = Schema([PersistentJSONRecord.self])
+        let configuration = ModelConfiguration("SpellingTrainerData", schema: schema)
+
+        if let container = try? ModelContainer(for: schema, configurations: [configuration]) {
+            let context = ModelContext(container)
+            if let records = try? context.fetch(FetchDescriptor<PersistentJSONRecord>()) {
+                for record in records where loadFileData(for: record.key) == nil {
+                    writeFileData(record.data, key: record.key)
                 }
             }
         }
+
+        UserDefaults.standard.set(true, forKey: migrationFlagKey)
     }
 
-    private func loadLegacyData(for key: String) -> Data? {
-        if let fileData = Self.loadLegacyFileData(for: key) {
-            return fileData
-        }
-
-        return UserDefaults.standard.data(forKey: key)
-    }
-
-    private func loadLegacyString(for key: String) -> String? {
-        UserDefaults.standard.string(forKey: key)
-    }
-
-    private static func loadLegacyFileData(for key: String) -> Data? {
-        guard let url = legacyStorageURL(for: key, createDirectory: false) else {
+    private static func loadFileData(for key: String) -> Data? {
+        guard let url = storageURL(for: key, createDirectory: false) else {
             return nil
         }
         return try? Data(contentsOf: url)
     }
 
-    private static func writeLegacyFileData(_ data: Data, key: String) {
-        guard let url = legacyStorageURL(for: key, createDirectory: true) else {
+    private static func writeFileData(_ data: Data, key: String) {
+        guard let url = storageURL(for: key, createDirectory: true) else {
             UserDefaults.standard.set(data, forKey: key)
             return
         }
@@ -1116,15 +1075,7 @@ final class AppPersistenceStore: @unchecked Sendable {
         }
     }
 
-    private static func removeLegacyData(for key: String) {
-        UserDefaults.standard.removeObject(forKey: key)
-        guard let url = legacyStorageURL(for: key, createDirectory: false) else {
-            return
-        }
-        try? FileManager.default.removeItem(at: url)
-    }
-
-    private static func legacyStorageURL(for key: String, createDirectory: Bool) -> URL? {
+    private static func storageURL(for key: String, createDirectory: Bool) -> URL? {
         guard let baseURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }

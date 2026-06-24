@@ -62,6 +62,7 @@ extension View {
 // MARK: - アニメ風アイリス・トランジション（丸い枠が萎む／開く）
 
 /// 画面遷移を「黒い円が萎んで全黒 → 画面切替 → 円が開いて新画面」で包むコントローラ。
+@MainActor
 final class IrisController: ObservableObject {
     /// 1 = 完全に開いた状態（透明・全部見える）、0 = 完全に閉じた状態（全黒）。
     @Published var progress: CGFloat = 1
@@ -87,9 +88,7 @@ final class IrisController: ObservableObject {
         progress = 1
 
         // 1) 黒い円が萎んで全黒へ。
-        withAnimation(.easeInOut(duration: duration), {
-            self.progress = 0
-        }, completion: { [weak self] in
+        animateProgress(to: 0) { [weak self] in
             guard let self else { return }
 
             // 2) 全黒の間に、アニメ無効で実際の画面切替を行う。
@@ -98,12 +97,31 @@ final class IrisController: ObservableObject {
             withTransaction(transaction, swap)
 
             // 3) 円が開いて新画面が現れる。
-            withAnimation(.easeInOut(duration: self.duration), {
-                self.progress = 1
-            }, completion: { [weak self] in
+            self.animateProgress(to: 1) { [weak self] in
                 self?.isActive = false
-            })
-        })
+            }
+        }
+    }
+
+    /// `progress` をアニメーションで変化させ、完了後に `completion` を呼ぶ。
+    /// iOS 17 は標準の completion を、iOS 16 は同じ duration 後のディレイで代替する。
+    private func animateProgress(to target: CGFloat, completion: @escaping () -> Void) {
+        if #available(iOS 17.0, *) {
+            withAnimation(.easeInOut(duration: duration)) {
+                self.progress = target
+            } completion: {
+                completion()
+            }
+        } else {
+            withAnimation(.easeInOut(duration: duration)) {
+                self.progress = target
+            }
+            let delayNanoseconds = UInt64(duration * 1_000_000_000)
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: delayNanoseconds)
+                completion()
+            }
+        }
     }
 }
 
@@ -147,5 +165,92 @@ struct IrisTransitionOverlay: View {
         .allowsHitTesting(controller.isActive)
         .opacity(controller.isActive ? 1 : 0)
         .animation(nil, value: controller.isActive)
+    }
+}
+
+// MARK: - iOS 16 互換シム
+// iOS 17 専用 API（ContentUnavailableView / 2引数 onChange / scrollBounceBehavior）を
+// 16 でも使える形に置き換える。見た目・挙動は iOS 17 版と同等。
+
+/// `ContentUnavailableView`(iOS 17+) の代替。空状態の表示に使う。
+/// 呼び出しは `EmptyStateView("タイトル", systemImage: "...", description: Text("..."))`。
+struct EmptyStateView: View {
+    private let title: String
+    private let systemImage: String
+    private let description: Text?
+
+    init(_ title: String, systemImage: String, description: Text? = nil) {
+        self.title = title
+        self.systemImage = systemImage
+        self.description = description
+    }
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.system(size: 48, weight: .regular))
+                .foregroundStyle(.secondary)
+
+            Text(title)
+                .font(.title3.weight(.semibold))
+                .multilineTextAlignment(.center)
+
+            if let description {
+                description
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding(24)
+        .frame(maxWidth: 420)
+    }
+}
+
+extension View {
+    /// 2引数 `onChange(of:){ _, new in }`(iOS 17+) の代替。新しい値だけを渡す。
+    /// `initial: true` で表示時にも一度実行する（iOS 17 の initial 相当）。
+    @ViewBuilder
+    func onValueChange<V: Equatable>(
+        of value: V,
+        initial: Bool = false,
+        _ action: @escaping (V) -> Void
+    ) -> some View {
+        if #available(iOS 17.0, *) {
+            self.onChange(of: value, initial: initial) { _, newValue in
+                action(newValue)
+            }
+        } else {
+            self.modifier(LegacyOnChange(value: value, initial: initial, action: action))
+        }
+    }
+
+    /// `scrollBounceBehavior(.basedOnSize)`(iOS 16.4+) を 16.0 でも安全に呼ぶ。
+    @ViewBuilder
+    func scrollBounceBasedOnSizeCompat() -> some View {
+        if #available(iOS 16.4, *) {
+            self.scrollBounceBehavior(.basedOnSize)
+        } else {
+            self
+        }
+    }
+}
+
+private struct LegacyOnChange<V: Equatable>: ViewModifier {
+    let value: V
+    let initial: Bool
+    let action: (V) -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                if initial {
+                    action(value)
+                }
+            }
+            // iOS 17 で deprecated だが、この分岐は iOS 16 でのみ実行される。
+            .onChange(of: value) { newValue in
+                action(newValue)
+            }
     }
 }
