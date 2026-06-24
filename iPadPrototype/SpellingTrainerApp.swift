@@ -254,3 +254,74 @@ private struct LegacyOnChange<V: Equatable>: ViewModifier {
             }
     }
 }
+
+// MARK: - 取り込み(OCR)の進捗
+
+/// カメラ取り込みの読み取り進捗。Vision の実進捗を受けつつ、報告が粗い/来ない端末でも
+/// バーが止まって見えないよう、時間ベースで 0→0.9 へなめらかにクリープし、完了時に 1.0 にする。
+@MainActor
+final class ScanProgressModel: ObservableObject {
+    @Published private(set) var fraction: Double = 0
+    private var ticker: Task<Void, Never>?
+
+    /// 読み取り開始。クリープを始める。
+    func start() {
+        fraction = 0
+        ticker?.cancel()
+        ticker = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 90_000_000) // 約0.09秒ごと
+                guard let self else { return }
+                if self.fraction < 0.9 {
+                    // 0.9 へ漸近（残りの 6% ずつ詰める）。遅い端末でも自然に進んで見える。
+                    self.fraction += (0.9 - self.fraction) * 0.06
+                }
+            }
+        }
+    }
+
+    /// Vision からの実進捗(0...1)。現在値より大きいときだけ反映し、後退させない。
+    func report(_ value: Double) {
+        guard value.isFinite else { return }
+        fraction = max(fraction, min(value, 0.99))
+    }
+
+    /// 読み取り完了。100% にしてクリープを止める。
+    func finish() {
+        ticker?.cancel()
+        ticker = nil
+        fraction = 1
+    }
+
+    /// 失敗・キャンセル時に 0 へ戻す。
+    func reset() {
+        ticker?.cancel()
+        ticker = nil
+        fraction = 0
+    }
+}
+
+/// 取り込み中に出す、パーセンテージ付きの進捗バー。
+struct ScanProgressBar: View {
+    var fraction: Double
+    var label: String
+    var tint: Color = Color(red: 0.13, green: 0.34, blue: 0.75)
+
+    private var clamped: Double { min(max(fraction, 0), 1) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(label)
+                Spacer()
+                Text("\(Int((clamped * 100).rounded()))%")
+                    .monospacedDigit()
+            }
+            .font(.subheadline.weight(.bold))
+
+            ProgressView(value: clamped)
+                .tint(tint)
+        }
+        .animation(.easeOut(duration: 0.2), value: clamped)
+    }
+}
