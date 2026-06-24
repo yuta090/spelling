@@ -140,7 +140,13 @@ struct HomeView: View {
                 .padding(.top, 24)
                 .padding(.bottom, 28)
             }
-            .navigationDestination(item: $activeMode) { mode in
+            .navigationDestination(isPresented: Binding(
+                get: { activeMode != nil },
+                set: { isPresented in
+                    if !isPresented { activeMode = nil }
+                }
+            )) {
+                if let mode = activeMode {
                 let resumeState = mode == .practice ? activePracticeResumeState : nil
                 SpellingSessionView(
                     mode: mode,
@@ -168,6 +174,7 @@ struct HomeView: View {
                         }
                     }
                 )
+                }
             }
             .fullScreenCover(isPresented: $showingParent) {
                 ParentDashboardView()
@@ -210,16 +217,16 @@ struct HomeView: View {
         .onAppear {
             schedulePracticeSelectionSync()
         }
-        .onChange(of: model.activeWords.map(\.id)) { _, _ in
+        .onValueChange(of: model.activeWords.map(\.id)) { _ in
             schedulePracticeSelectionSync()
         }
-        .onChange(of: model.homeReviewWordIDs) { _, _ in
+        .onValueChange(of: model.homeReviewWordIDs) { _ in
             schedulePracticeSelectionSync()
         }
-        .onChange(of: model.focusedPracticeWordIDs) { _, _ in
+        .onValueChange(of: model.focusedPracticeWordIDs) { _ in
             schedulePracticeSelectionSync()
         }
-        .onChange(of: selectedPracticeWordIDs) { _, _ in
+        .onValueChange(of: selectedPracticeWordIDs) { _ in
             clearCompletedPracticeRoundIfWordsChanged()
             clearPracticeResumeIfWordsChanged()
         }
@@ -684,7 +691,7 @@ private struct ChildStepPickerSheet: View {
                     .frame(maxWidth: .infinity)
 
                     if orderedSteps.isEmpty {
-                        ContentUnavailableView(
+                        EmptyStateView(
                             language.text(japanese: "まだステップがありません", english: "No steps yet"),
                             systemImage: "book.closed.fill",
                             description: Text(language.text(japanese: "保護者メニューで単語を登録してください。", english: "Add words in the parent menu."))
@@ -861,7 +868,7 @@ private struct PracticeWordPreviewSheet: View {
                     }
 
                     if words.isEmpty {
-                        ContentUnavailableView(
+                        EmptyStateView(
                             language.text(japanese: "たんごがありません", english: "No words"),
                             systemImage: "list.bullet",
                             description: Text(language.text(japanese: "保護者メニューで単語を入れてください。", english: "Add words in the parent menu."))
@@ -1153,7 +1160,7 @@ private struct PracticeWordPreviewChip: View {
         }
         .buttonStyle(.plain)
         .tapFeedback(scale: 0.96, bounce: true)
-        .onChange(of: isExpanded) { _, expanded in
+        .onValueChange(of: isExpanded) { expanded in
             if expanded, example == nil {
                 example = WordBank.shared.examples(for: word.text, limit: 1).first
             }
@@ -1231,7 +1238,7 @@ private struct PracticeRetryPickerSheet: View {
                     .frame(maxWidth: .infinity)
 
                     if words.isEmpty {
-                        ContentUnavailableView(
+                        EmptyStateView(
                             language.text(japanese: "たんごがありません", english: "No words"),
                             systemImage: "list.bullet"
                         )
@@ -4102,7 +4109,7 @@ private struct CharacterPickerSheet: View {
                         .contentShape(Rectangle())
                     }
                     .scrollIndicators(.visible)
-                    .scrollBounceBehavior(.basedOnSize)
+                    .scrollBounceBasedOnSizeCompat()
                 }
             }
             .toolbar {

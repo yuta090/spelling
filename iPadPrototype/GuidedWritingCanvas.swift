@@ -241,7 +241,7 @@ struct FourLineGuide: View {
         context.draw(
             Text(label)
                 .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary),
+                .foregroundColor(.secondary),
             at: point,
             anchor: .trailing
         )
