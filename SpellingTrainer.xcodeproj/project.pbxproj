@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A10010E2D00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A10020E2D00000100000001 /* Assets.xcassets */; };
-		0A1001AA2D00000100000001 /* wordbank.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0A1002AA2D00000100000001 /* wordbank.sqlite */; };
 		0A1001012D00000100000001 /* SpellingTrainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002012D00000100000001 /* SpellingTrainerApp.swift */; };
 		0A1001022D00000100000001 /* TestSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002022D00000100000001 /* TestSessionView.swift */; };
 		0A1001032D00000100000001 /* GuidedWritingCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002032D00000100000001 /* GuidedWritingCanvas.swift */; };
@@ -22,11 +20,11 @@
 		0A10010B2D00000100000001 /* ParentWordListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020B2D00000100000001 /* ParentWordListView.swift */; };
 		0A10010C2D00000100000001 /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020C2D00000100000001 /* ResultsView.swift */; };
 		0A10010D2D00000100000001 /* ParentDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020D2D00000100000001 /* ParentDashboardView.swift */; };
+		0A10010E2D00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A10020E2D00000100000001 /* Assets.xcassets */; };
+		0A1001AA2D00000100000001 /* Resources/wordbank.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0A1002AA2D00000100000001 /* Resources/wordbank.sqlite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0A10020E2D00000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0A1002AA2D00000100000001 /* wordbank.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = Resources/wordbank.sqlite; sourceTree = "<group>"; };
 		0A1002012D00000100000001 /* SpellingTrainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpellingTrainerApp.swift; sourceTree = "<group>"; };
 		0A1002022D00000100000001 /* TestSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSessionView.swift; sourceTree = "<group>"; };
 		0A1002032D00000100000001 /* GuidedWritingCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidedWritingCanvas.swift; sourceTree = "<group>"; };
@@ -40,7 +38,10 @@
 		0A10020B2D00000100000001 /* ParentWordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentWordListView.swift; sourceTree = "<group>"; };
 		0A10020C2D00000100000001 /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
 		0A10020D2D00000100000001 /* ParentDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentDashboardView.swift; sourceTree = "<group>"; };
+		0A10020E2D00000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0A1002AA2D00000100000001 /* Resources/wordbank.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = Resources/wordbank.sqlite; sourceTree = "<group>"; };
 		0A1003012D00000100000001 /* SpellingTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpellingTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		97909A8C2FECB3E100375E8A /* SpellingTrainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpellingTrainer.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +58,7 @@
 		0A1005012D00000100000001 = {
 			isa = PBXGroup;
 			children = (
+				97909A8C2FECB3E100375E8A /* SpellingTrainer.entitlements */,
 				0A1005022D00000100000001 /* iPadPrototype */,
 				0A1005032D00000100000001 /* Products */,
 			);
@@ -74,7 +76,7 @@
 				0A10020C2D00000100000001 /* ResultsView.swift */,
 				0A1002022D00000100000001 /* TestSessionView.swift */,
 				0A10020E2D00000100000001 /* Assets.xcassets */,
-				0A1002AA2D00000100000001 /* wordbank.sqlite */,
+				0A1002AA2D00000100000001 /* Resources/wordbank.sqlite */,
 				0A1002032D00000100000001 /* GuidedWritingCanvas.swift */,
 				0A1002042D00000100000001 /* PencilCanvasView.swift */,
 				0A1002052D00000100000001 /* SpeechPlayer.swift */,
@@ -136,6 +138,9 @@
 				Base,
 			);
 			mainGroup = 0A1005012D00000100000001;
+			packageReferences = (
+				976508772FEDA31A0051D674 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			productRefGroup = 0A1005032D00000100000001 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -151,7 +156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A10010E2D00000100000001 /* Assets.xcassets in Resources */,
-				0A1001AA2D00000100000001 /* wordbank.sqlite in Resources */,
+				0A1001AA2D00000100000001 /* Resources/wordbank.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,8 +304,9 @@
 		0A100D012D00000100000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SpellingTrainer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -317,7 +323,10 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MARKETING_VERSION = 0.1;
-				OTHER_LDFLAGS = "-weak_framework SwiftData";
+				OTHER_LDFLAGS = (
+					"-weak_framework",
+					SwiftData,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yuta090.SpellingTrainer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -332,8 +341,9 @@
 		0A100D022D00000100000001 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SpellingTrainer.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -350,7 +360,10 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MARKETING_VERSION = 0.1;
-				OTHER_LDFLAGS = "-weak_framework SwiftData";
+				OTHER_LDFLAGS = (
+					"-weak_framework",
+					SwiftData,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yuta090.SpellingTrainer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -384,6 +397,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		976508772FEDA31A0051D674 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 0A100A012D00000100000001 /* Project object */;
 }
