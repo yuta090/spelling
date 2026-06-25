@@ -1,0 +1,17 @@
+id,category,ja_name,en_name,price,default_unlocked,render,image,art_prompt
+meadow,nature,ひるのまち,Meadow,0,true,procedural,,
+sunset,season,ゆうやけ,Sunset,8,false,procedural,,
+night,season,よぞら,Starry Night,8,false,procedural,,
+beach,sea,うみべ,Beach,12,false,procedural,,
+snow,season,ゆきやま,Snowland,12,false,procedural,,
+space,fantasy,うちゅう,Outer Space,16,false,procedural,,
+forest,nature,もり,Forest,8,false,image,bg_forest.png,Friendly green forest with rounded trees soft sunbeams a small path and gentle bushes calm and cozy
+flowerfield,nature,おはなばたけ,Flower Field,10,false,image,bg_flowerfield.png,Wide field full of colorful round flowers tulips and daisies under a clear blue sky soft pastel palette
+park,city,こうえん,Park,8,false,image,bg_park.png,Cheerful neighborhood park with green lawn a few trees a bench and a winding path bright friendly daytime
+town,city,まち,Town,10,false,image,bg_town.png,Cute small town street with simple rounded houses shops and trees clear blue sky tidy and friendly
+sakura,season,さくら,Cherry Blossoms,12,false,image,bg_sakura.png,Soft pink cherry blossom trees in full bloom with falling petals gentle spring sky calm and dreamy
+autumn,season,こうよう,Autumn Leaves,12,false,image,bg_autumn.png,Cozy autumn scene with red orange and yellow round trees falling leaves warm afternoon light
+underwater,sea,うみのなか,Under the Sea,14,false,image,bg_underwater.png,Soft underwater scene with friendly fish coral seaweed and bubbles gentle blue water rays of light
+rainbow,fantasy,にじ,Rainbow,12,false,image,bg_rainbow.png,Bright cheerful sky with a big soft rainbow fluffy white clouds and gentle sunlight playful and happy
+candyland,fantasy,おかしのくに,Candy Land,16,false,image,bg_candyland.png,Whimsical candy world with lollipop trees gumdrop hills and pastel candy clouds sweet and playful
+castle,fantasy,おしろ,Castle,16,false,image,bg_castle.png,Storybook fairytale castle on a green hill with soft towers flags and a clear blue sky gentle and magical
