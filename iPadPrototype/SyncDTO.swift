@@ -72,3 +72,61 @@ struct WordDTO: SyncedRow {
         case syncVersion = "sync_version"
     }
 }
+
+// MARK: - プッシュ用ペイロード（upsert）
+//
+// サーバー管理列（sync_version / server_changed_at / created_at）は **送らない**（トリガが採番）。
+// `updated_at` はクライアントのLWW時刻（ISO8601文字列）。削除は `deleted_at` を立てて送る（論理削除）。
+
+/// upsert 可能な行（Encodable）。`table` は対象テーブル名。
+protocol UpsertRow: Encodable {
+    static var table: String { get }
+}
+
+struct ProfileUpsert: UpsertRow {
+    static let table = "profiles"
+    let id: UUID
+    let householdId: UUID
+    let displayName: String
+    let appLanguage: String
+    let activeStepId: UUID?
+    let updatedAt: String
+    let deletedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case householdId = "household_id"
+        case displayName = "display_name"
+        case appLanguage = "app_language"
+        case activeStepId = "active_step_id"
+        case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
+    }
+}
+
+struct WordUpsert: UpsertRow {
+    static let table = "words"
+    let id: UUID
+    let householdId: UUID
+    let profileId: UUID?
+    let stepId: UUID?
+    let text: String
+    let promptText: String
+    let source: String
+    let displayOrder: Int
+    let updatedAt: String
+    let deletedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case householdId = "household_id"
+        case profileId = "profile_id"
+        case stepId = "step_id"
+        case text
+        case promptText = "prompt_text"
+        case source
+        case displayOrder = "display_order"
+        case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
+    }
+}
