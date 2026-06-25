@@ -10,3 +10,10 @@ UserInterfaceState.xcuserstate
 
 # Claude Code local state
 .claude/
+
+# Secrets / local env (NEVER commit real values)
+.env
+.env.local
+.env.*.local
+*.p8
+!.env.local.example
