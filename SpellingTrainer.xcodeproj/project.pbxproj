@@ -22,6 +22,7 @@
 		0A10010D2D00000100000001 /* ParentDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020D2D00000100000001 /* ParentDashboardView.swift */; };
 		0A10010E2D00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A10020E2D00000100000001 /* Assets.xcassets */; };
 		0A1001AA2D00000100000001 /* Resources/wordbank.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0A1002AA2D00000100000001 /* Resources/wordbank.sqlite */; };
+		9765087A2FEDA7750051D674 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 976508792FEDA7750051D674 /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9765087A2FEDA7750051D674 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +62,7 @@
 			children = (
 				97909A8C2FECB3E100375E8A /* SpellingTrainer.entitlements */,
 				0A1005022D00000100000001 /* iPadPrototype */,
+				976508782FEDA7600051D674 /* Frameworks */,
 				0A1005032D00000100000001 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,6 +95,13 @@
 				0A1003012D00000100000001 /* SpellingTrainer.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		976508782FEDA7600051D674 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -408,6 +418,14 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		976508792FEDA7750051D674 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 976508772FEDA31A0051D674 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0A100A012D00000100000001 /* Project object */;
 }
