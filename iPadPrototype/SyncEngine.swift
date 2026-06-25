@@ -54,4 +54,24 @@ final class SyncEngine {
         }
         return (all, c)
     }
+
+    // MARK: - プッシュ
+
+    /// 未送信レコード（`SpellingSyncCore.OutboundSync.pending` で選んだもの）を upsert する。
+    /// 競合解決はサーバーの LWW ガード（古い `updated_at` は無視）が担保するため、
+    /// クライアントは素直に upsert してよい。論理削除は `deletedAt` を立てた行を送る。
+    ///
+    /// ⚠️ 適用範囲: `onConflict: "id"` のため、**id 主キー以外の論理unique制約を持たないテーブル
+    /// （現状 profiles / words）に限定**する。`srs_cards`(profile_id,word_id) 等は、別IDで
+    /// 論理重複を作らないよう **決定論UUID 導入後**に対応する（それまで push 対象にしない）。
+    /// ⚠️ `returning: .minimal` のため、ガードに弾かれた行は判別できない。high-water は
+    /// 「**送信済**」を意味し「サーバー適用済」ではない。整合は後続の pull で取る。
+    /// ⚠️ `updatedAt` は **UTCのISO8601(RFC3339)** 文字列で渡すこと（LWW比較の一貫性のため）。
+    func push<T: UpsertRow>(_ rows: [T]) async throws {
+        guard !rows.isEmpty else { return }
+        try await service.client
+            .from(T.table)
+            .upsert(rows, onConflict: "id", returning: .minimal)
+            .execute()
+    }
 }
