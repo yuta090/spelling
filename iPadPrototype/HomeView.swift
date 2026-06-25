@@ -96,7 +96,7 @@ struct HomeView: View {
         ZStack {
             NavigationStack {
             ZStack(alignment: .bottom) {
-                HomeBackground()
+                HomeBackground(themeID: model.selectedBackgroundID)
 
                 VStack(spacing: 20) {
                     header
@@ -674,7 +674,7 @@ private struct ChildStepPickerSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                HomeBackground()
+                HomeBackground(themeID: model.selectedBackgroundID)
 
                 VStack(spacing: 18) {
                     VStack(spacing: 8) {
@@ -835,7 +835,7 @@ private struct PracticeWordPreviewSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                HomeBackground()
+                HomeBackground(themeID: model.selectedBackgroundID)
 
                 VStack(spacing: 18) {
                     HStack {
@@ -947,7 +947,7 @@ private struct ChildAddWordSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                HomeBackground()
+                HomeBackground(themeID: model.selectedBackgroundID)
 
                 VStack(alignment: .leading, spacing: 16) {
                     Text(language.text(japanese: "じぶんで ことばを ふやそう", english: "Add Your Own Words"))
@@ -4064,29 +4064,58 @@ struct HomeRewardCharacter: Identifiable {
     // CATALOG-GENERATED-END
 }
 
+private enum RewardPickerTab: Hashable {
+    case buddy
+    case background
+}
+
 private struct CharacterPickerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var model: AppModel
     var language: AppLanguage
 
+    @State private var tab: RewardPickerTab = .buddy
+
     private let columns = [
         GridItem(.adaptive(minimum: 96, maximum: 122), spacing: 8)
     ]
+
+    private let backgroundColumns = [
+        GridItem(.adaptive(minimum: 150, maximum: 200), spacing: 12)
+    ]
+
+    private var headerTitle: String {
+        switch tab {
+        case .buddy:
+            return language.text(japanese: "なかまをえらぼう", english: "Choose a Buddy")
+        case .background:
+            return language.text(japanese: "はいけいをえらぼう", english: "Choose a Background")
+        }
+    }
+
+    private var headerSubtitle: String {
+        switch tab {
+        case .buddy:
+            return language.text(japanese: "れんしゅうでコインをためて、なかまをふやせます。", english: "Practice to earn coins and unlock buddies.")
+        case .background:
+            return language.text(japanese: "コインをつかって、はいけいをかえられます。", english: "Spend coins to change the background.")
+        }
+    }
 
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
                 ZStack {
-                    HomeBackground()
+                    HomeBackground(themeID: model.selectedBackgroundID)
 
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 14) {
                             HStack(spacing: 14) {
                                 VStack(alignment: .leading, spacing: 5) {
-                                    Text(language.text(japanese: "なかまをえらぼう", english: "Choose a Buddy"))
+                                    Text(headerTitle)
                                         .font(.system(size: 32, weight: .heavy, design: .rounded))
                                         .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
-                                    Text(language.text(japanese: "れんしゅうでコインをためて、なかまをふやせます。", english: "Practice to earn coins and unlock buddies."))
+                                    Text(headerSubtitle)
                                         .font(.subheadline.weight(.bold))
                                         .foregroundStyle(.secondary)
                                 }
@@ -4096,25 +4125,54 @@ private struct CharacterPickerSheet: View {
                                 HomeCoinBadge(coins: model.rewardCoins, language: language)
                             }
 
-                            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-                                ForEach(HomeRewardCharacter.catalog) { character in
-                                    CharacterPickerCard(
-                                        character: character,
-                                        isSelected: model.selectedCharacterID == character.id,
-                                        isUnlocked: model.unlockedCharacterIDs.contains(character.id),
-                                        coinBalance: model.rewardCoins,
-                                        language: language
-                                    ) {
-                                        if model.unlockedCharacterIDs.contains(character.id) {
-                                            model.selectCharacter(id: character.id)
-                                        } else {
-                                            model.unlockCharacter(id: character.id, cost: character.price)
+                            Picker("", selection: $tab) {
+                                Text(language.text(japanese: "なかま", english: "Buddies")).tag(RewardPickerTab.buddy)
+                                Text(language.text(japanese: "はいけい", english: "Backgrounds")).tag(RewardPickerTab.background)
+                            }
+                            .pickerStyle(.segmented)
+
+                            switch tab {
+                            case .buddy:
+                                LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                                    ForEach(HomeRewardCharacter.catalog) { character in
+                                        CharacterPickerCard(
+                                            character: character,
+                                            isSelected: model.selectedCharacterID == character.id,
+                                            isUnlocked: model.unlockedCharacterIDs.contains(character.id),
+                                            coinBalance: model.rewardCoins,
+                                            language: language
+                                        ) {
+                                            if model.unlockedCharacterIDs.contains(character.id) {
+                                                model.selectCharacter(id: character.id)
+                                            } else {
+                                                model.unlockCharacter(id: character.id, cost: character.price)
+                                            }
                                         }
                                     }
                                 }
+                                .padding(.vertical, 2)
+                                .padding(.bottom, 28)
+                            case .background:
+                                LazyVGrid(columns: backgroundColumns, alignment: .leading, spacing: 12) {
+                                    ForEach(HomeBackgroundTheme.catalog) { theme in
+                                        BackgroundPickerCard(
+                                            theme: theme,
+                                            isSelected: model.selectedBackgroundID == theme.id,
+                                            isUnlocked: model.unlockedBackgroundIDs.contains(theme.id),
+                                            coinBalance: model.rewardCoins,
+                                            language: language
+                                        ) {
+                                            if model.unlockedBackgroundIDs.contains(theme.id) {
+                                                model.selectBackground(id: theme.id)
+                                            } else {
+                                                model.unlockBackground(id: theme.id, cost: theme.price)
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding(.vertical, 2)
+                                .padding(.bottom, 28)
                             }
-                            .padding(.vertical, 2)
-                            .padding(.bottom, 28)
                         }
                         .frame(maxWidth: 820, minHeight: geometry.size.height, alignment: .top)
                         .padding(28)
@@ -4242,6 +4300,124 @@ private struct CharacterPickerCard: View {
             return language.text(japanese: "\(character.name(language: language))、選べます", english: "\(character.name(language: language)), unlocked")
         }
         return language.text(japanese: "\(character.name(language: language))、\(character.price)コイン", english: "\(character.name(language: language)), \(character.price) coins")
+    }
+}
+
+private struct BackgroundPickerCard: View {
+    var theme: HomeBackgroundTheme
+    var isSelected: Bool
+    var isUnlocked: Bool
+    var coinBalance: Int
+    var language: AppLanguage
+    var action: () -> Void
+
+    private var canUnlock: Bool {
+        isUnlocked || coinBalance >= theme.price
+    }
+
+    private var borderColor: Color {
+        if isSelected {
+            return Color(red: 0.20, green: 0.62, blue: 0.26)
+        }
+        if isUnlocked || canUnlock {
+            return Color(red: 0.66, green: 0.78, blue: 0.95)
+        }
+        return Color(red: 0.78, green: 0.80, blue: 0.86)
+    }
+
+    var body: some View {
+        VStack(spacing: 8) {
+            HomeBackgroundThumbnail(theme: theme)
+                .frame(height: 84)
+                .opacity(canUnlock ? 1 : 0.5)
+                .overlay(alignment: .topTrailing) {
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(.white, Color(red: 0.20, green: 0.62, blue: 0.26))
+                            .padding(6)
+                    } else if !isUnlocked && !canUnlock {
+                        Image(systemName: "lock.fill")
+                            .font(.subheadline.weight(.heavy))
+                            .foregroundStyle(.white)
+                            .padding(5)
+                            .background(.black.opacity(0.32), in: Circle())
+                            .padding(6)
+                    }
+                }
+
+            Text(theme.name(language: language))
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                .lineLimit(1)
+                .minimumScaleFactor(0.56)
+
+            statePill
+        }
+        .padding(8)
+        .background(.white.opacity(canUnlock ? 0.92 : 0.64))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(borderColor, lineWidth: isSelected ? 2.5 : 1.2)
+        )
+        .shadow(color: .black.opacity(canUnlock ? 0.05 : 0.02), radius: 6, x: 0, y: 4)
+        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .onTapGesture {
+            guard canUnlock else {
+                return
+            }
+            action()
+        }
+        .accessibilityLabel(accessibilityText)
+        .accessibilityAddTraits(canUnlock ? .isButton : .isStaticText)
+    }
+
+    @ViewBuilder
+    private var statePill: some View {
+        if isSelected {
+            Label(language.text(japanese: "つかってる", english: "Active"), systemImage: "checkmark.circle.fill")
+                .font(.caption2.weight(.heavy))
+                .foregroundStyle(.white)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 7)
+                .background(Color(red: 0.20, green: 0.62, blue: 0.26))
+                .clipShape(Capsule())
+        } else if isUnlocked {
+            Label(language.text(japanese: "えらぶ", english: "Choose"), systemImage: "hand.tap.fill")
+                .font(.caption2.weight(.heavy))
+                .foregroundStyle(Color(red: 0.13, green: 0.35, blue: 0.76))
+                .padding(.vertical, 4)
+                .padding(.horizontal, 7)
+                .background(Color(red: 0.91, green: 0.96, blue: 1.0))
+                .clipShape(Capsule())
+        } else {
+            HStack(spacing: 5) {
+                SmallCoinIcon()
+                    .frame(width: 14, height: 14)
+                Text("\(theme.price)")
+                    .font(.caption2.monospacedDigit().weight(.heavy))
+                if !canUnlock {
+                    Image(systemName: "lock.fill")
+                        .font(.caption2.weight(.heavy))
+                }
+            }
+            .foregroundStyle(canUnlock ? Color(red: 0.62, green: 0.36, blue: 0.04) : Color(red: 0.48, green: 0.50, blue: 0.56))
+            .padding(.vertical, 4)
+            .padding(.horizontal, 7)
+            .background(canUnlock ? Color(red: 1.0, green: 0.94, blue: 0.76) : Color(red: 0.91, green: 0.92, blue: 0.95))
+            .clipShape(Capsule())
+        }
+    }
+
+    private var accessibilityText: String {
+        if isSelected {
+            return language.text(japanese: "\(theme.name(language: language))、つかっています", english: "\(theme.name(language: language)), active")
+        }
+        if isUnlocked {
+            return language.text(japanese: "\(theme.name(language: language))、えらべます", english: "\(theme.name(language: language)), unlocked")
+        }
+        return language.text(japanese: "\(theme.name(language: language))、\(theme.price)コイン", english: "\(theme.name(language: language)), \(theme.price) coins")
     }
 }
 
@@ -7493,19 +7669,168 @@ private struct BearMascot: View {
     }
 }
 
+// MARK: - Background themes (coin-unlockable)
+
+enum HomeBackgroundScene {
+    case meadow
+    case sunset
+    case night
+    case beach
+    case snow
+    case space
+}
+
+struct HomeBackgroundTheme: Identifiable {
+    var id: String
+    var japaneseName: String
+    var englishName: String
+    var price: Int
+    var scene: HomeBackgroundScene
+    var skyTop: Color
+    var skyBottom: Color
+    var groundPrimary: Color
+    var groundSecondary: Color
+    var accent: Color
+
+    var isFree: Bool {
+        price == 0
+    }
+
+    func name(language: AppLanguage) -> String {
+        language.text(japanese: japaneseName, english: englishName)
+    }
+
+    static func theme(id: String) -> HomeBackgroundTheme {
+        catalog.first { $0.id == id } ?? catalog[0]
+    }
+
+    static let defaultID = "meadow"
+
+    static let defaultUnlockedIDs: Set<String> = ["meadow"]
+
+    static let catalog: [HomeBackgroundTheme] = [
+        HomeBackgroundTheme(
+            id: "meadow",
+            japaneseName: "ひるのまち",
+            englishName: "Meadow",
+            price: 0,
+            scene: .meadow,
+            skyTop: Color(red: 0.90, green: 0.97, blue: 1.0),
+            skyBottom: Color(red: 0.98, green: 0.99, blue: 1.0),
+            groundPrimary: Color(red: 0.73, green: 0.88, blue: 0.54),
+            groundSecondary: Color(red: 0.52, green: 0.80, blue: 0.73),
+            accent: Color(red: 1.0, green: 0.90, blue: 0.35)
+        ),
+        HomeBackgroundTheme(
+            id: "sunset",
+            japaneseName: "ゆうやけ",
+            englishName: "Sunset",
+            price: 8,
+            scene: .sunset,
+            skyTop: Color(red: 1.0, green: 0.66, blue: 0.42),
+            skyBottom: Color(red: 1.0, green: 0.88, blue: 0.78),
+            groundPrimary: Color(red: 0.74, green: 0.45, blue: 0.40),
+            groundSecondary: Color(red: 0.56, green: 0.36, blue: 0.42),
+            accent: Color(red: 1.0, green: 0.80, blue: 0.34)
+        ),
+        HomeBackgroundTheme(
+            id: "night",
+            japaneseName: "よぞら",
+            englishName: "Starry Night",
+            price: 8,
+            scene: .night,
+            skyTop: Color(red: 0.07, green: 0.10, blue: 0.27),
+            skyBottom: Color(red: 0.18, green: 0.22, blue: 0.44),
+            groundPrimary: Color(red: 0.11, green: 0.17, blue: 0.31),
+            groundSecondary: Color(red: 0.06, green: 0.10, blue: 0.22),
+            accent: Color(red: 0.97, green: 0.96, blue: 0.86)
+        ),
+        HomeBackgroundTheme(
+            id: "beach",
+            japaneseName: "うみべ",
+            englishName: "Beach",
+            price: 12,
+            scene: .beach,
+            skyTop: Color(red: 0.53, green: 0.81, blue: 0.98),
+            skyBottom: Color(red: 0.82, green: 0.94, blue: 1.0),
+            groundPrimary: Color(red: 0.97, green: 0.89, blue: 0.66),
+            groundSecondary: Color(red: 0.20, green: 0.62, blue: 0.80),
+            accent: Color(red: 1.0, green: 0.90, blue: 0.42)
+        ),
+        HomeBackgroundTheme(
+            id: "snow",
+            japaneseName: "ゆきやま",
+            englishName: "Snowland",
+            price: 12,
+            scene: .snow,
+            skyTop: Color(red: 0.76, green: 0.86, blue: 0.96),
+            skyBottom: Color(red: 0.95, green: 0.98, blue: 1.0),
+            groundPrimary: Color(red: 0.98, green: 0.99, blue: 1.0),
+            groundSecondary: Color(red: 0.81, green: 0.89, blue: 0.97),
+            accent: Color(red: 0.66, green: 0.83, blue: 1.0)
+        ),
+        HomeBackgroundTheme(
+            id: "space",
+            japaneseName: "うちゅう",
+            englishName: "Outer Space",
+            price: 16,
+            scene: .space,
+            skyTop: Color(red: 0.04, green: 0.03, blue: 0.16),
+            skyBottom: Color(red: 0.17, green: 0.10, blue: 0.35),
+            groundPrimary: Color(red: 0.56, green: 0.41, blue: 0.86),
+            groundSecondary: Color(red: 0.40, green: 0.28, blue: 0.66),
+            accent: Color(red: 1.0, green: 0.82, blue: 0.45)
+        )
+    ]
+}
+
 private struct HomeBackground: View {
+    var themeID: String = HomeBackgroundTheme.defaultID
+
+    private var theme: HomeBackgroundTheme {
+        HomeBackgroundTheme.theme(id: themeID)
+    }
+
     var body: some View {
         ZStack(alignment: .bottom) {
             LinearGradient(
-                colors: [
-                    Color(red: 0.90, green: 0.97, blue: 1.0),
-                    Color(red: 0.98, green: 0.99, blue: 1.0)
-                ],
+                colors: [theme.skyTop, theme.skyBottom],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
 
+            HomeBackgroundScenery(theme: theme)
+        }
+    }
+}
+
+private struct HomeBackgroundScenery: View {
+    var theme: HomeBackgroundTheme
+
+    var body: some View {
+        switch theme.scene {
+        case .meadow:
+            MeadowScene(theme: theme)
+        case .sunset:
+            SunsetScene(theme: theme)
+        case .night:
+            NightScene(theme: theme)
+        case .beach:
+            BeachScene(theme: theme)
+        case .snow:
+            SnowScene(theme: theme)
+        case .space:
+            SpaceScene(theme: theme)
+        }
+    }
+}
+
+private struct MeadowScene: View {
+    var theme: HomeBackgroundTheme
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
             Cloud()
                 .fill(.white.opacity(0.78))
                 .frame(width: 150, height: 62)
@@ -7516,12 +7841,12 @@ private struct HomeBackground: View {
                 .offset(x: 320, y: -550)
 
             Hills()
-                .fill(Color(red: 0.73, green: 0.88, blue: 0.54))
+                .fill(theme.groundPrimary)
                 .frame(height: 142)
                 .ignoresSafeArea(edges: .bottom)
 
             Hills()
-                .fill(Color(red: 0.52, green: 0.80, blue: 0.73).opacity(0.75))
+                .fill(theme.groundSecondary.opacity(0.75))
                 .frame(height: 118)
                 .offset(y: 12)
                 .ignoresSafeArea(edges: .bottom)
@@ -7537,6 +7862,155 @@ private struct HomeBackground: View {
             }
             .padding(.horizontal, 58)
             .padding(.bottom, 36)
+        }
+    }
+}
+
+private struct SunsetScene: View {
+    var theme: HomeBackgroundTheme
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Circle()
+                .fill(theme.accent)
+                .frame(width: 130, height: 130)
+                .shadow(color: theme.accent.opacity(0.55), radius: 40)
+                .offset(y: -300)
+
+            Cloud()
+                .fill(.white.opacity(0.42))
+                .frame(width: 150, height: 60)
+                .offset(x: -300, y: -480)
+            Cloud()
+                .fill(.white.opacity(0.34))
+                .frame(width: 120, height: 50)
+                .offset(x: 320, y: -520)
+
+            Hills()
+                .fill(theme.groundSecondary.opacity(0.85))
+                .frame(height: 150)
+                .ignoresSafeArea(edges: .bottom)
+            Hills()
+                .fill(theme.groundPrimary)
+                .frame(height: 116)
+                .offset(y: 14)
+                .ignoresSafeArea(edges: .bottom)
+        }
+    }
+}
+
+private struct NightScene: View {
+    var theme: HomeBackgroundTheme
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            ScatteredStars(color: theme.accent)
+
+            CrescentMoonView(color: theme.accent)
+                .frame(width: 78, height: 78)
+                .shadow(color: theme.accent.opacity(0.5), radius: 18)
+                .offset(x: 280, y: -520)
+
+            Hills()
+                .fill(theme.groundSecondary)
+                .frame(height: 150)
+                .ignoresSafeArea(edges: .bottom)
+            Hills()
+                .fill(theme.groundPrimary)
+                .frame(height: 116)
+                .offset(y: 14)
+                .ignoresSafeArea(edges: .bottom)
+        }
+    }
+}
+
+private struct BeachScene: View {
+    var theme: HomeBackgroundTheme
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Circle()
+                .fill(theme.accent)
+                .frame(width: 96, height: 96)
+                .shadow(color: theme.accent.opacity(0.55), radius: 28)
+                .offset(x: -250, y: -520)
+
+            Cloud()
+                .fill(.white.opacity(0.78))
+                .frame(width: 140, height: 56)
+                .offset(x: 300, y: -540)
+
+            Hills()
+                .fill(theme.groundSecondary)
+                .frame(height: 170)
+                .ignoresSafeArea(edges: .bottom)
+            Hills()
+                .fill(theme.groundPrimary)
+                .frame(height: 92)
+                .offset(y: 16)
+                .ignoresSafeArea(edges: .bottom)
+        }
+    }
+}
+
+private struct SnowScene: View {
+    var theme: HomeBackgroundTheme
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            ScatteredStars(color: .white.opacity(0.92), count: 16, asDots: true)
+
+            Cloud()
+                .fill(.white.opacity(0.86))
+                .frame(width: 150, height: 60)
+                .offset(x: -300, y: -540)
+
+            Hills()
+                .fill(theme.groundSecondary)
+                .frame(height: 150)
+                .ignoresSafeArea(edges: .bottom)
+            Hills()
+                .fill(theme.groundPrimary)
+                .frame(height: 118)
+                .offset(y: 14)
+                .ignoresSafeArea(edges: .bottom)
+
+            Snowman()
+                .frame(width: 60, height: 96)
+                .padding(.bottom, 34)
+        }
+    }
+}
+
+private struct SpaceScene: View {
+    var theme: HomeBackgroundTheme
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            ScatteredStars(color: .white, count: 20, asDots: true)
+
+            // Ringed planet
+            ZStack {
+                Ellipse()
+                    .stroke(theme.accent.opacity(0.8), lineWidth: 6)
+                    .frame(width: 150, height: 54)
+                    .rotationEffect(.degrees(-18))
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [theme.groundPrimary, theme.groundSecondary],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 96, height: 96)
+            }
+            .offset(x: 250, y: -470)
+
+            Circle()
+                .fill(.white.opacity(0.9))
+                .frame(width: 46, height: 46)
+                .offset(x: -280, y: -540)
         }
     }
 }
@@ -7584,6 +8058,208 @@ private struct Tree: View {
                 .frame(width: 24, height: 24)
                 .offset(x: -10, y: -18)
         }
+    }
+}
+
+private struct CrescentMoonView: View {
+    var color: Color
+
+    var body: some View {
+        GeometryReader { geo in
+            let size = min(geo.size.width, geo.size.height)
+            Circle()
+                .fill(color)
+                .overlay(
+                    Circle()
+                        .fill(Color.black)
+                        .frame(width: size * 0.86, height: size * 0.86)
+                        .offset(x: size * 0.30)
+                        .blendMode(.destinationOut)
+                )
+                .compositingGroup()
+        }
+    }
+}
+
+/// Deterministic scatter of small stars/dots across the upper screen.
+private struct ScatteredStars: View {
+    var color: Color
+    var count: Int = 12
+    var asDots: Bool = false
+
+    // Fixed pseudo-random positions (fraction of width/height) + size.
+    private static let layout: [(x: CGFloat, y: CGFloat, s: CGFloat)] = [
+        (0.08, 0.10, 6), (0.20, 0.22, 4), (0.33, 0.08, 7), (0.46, 0.18, 4),
+        (0.58, 0.06, 6), (0.70, 0.20, 5), (0.84, 0.10, 7), (0.92, 0.26, 4),
+        (0.12, 0.34, 5), (0.27, 0.40, 4), (0.40, 0.32, 6), (0.54, 0.42, 4),
+        (0.66, 0.34, 5), (0.78, 0.44, 6), (0.88, 0.38, 4), (0.16, 0.50, 5),
+        (0.36, 0.52, 4), (0.50, 0.48, 6), (0.62, 0.54, 4), (0.80, 0.52, 5)
+    ]
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .topLeading) {
+                ForEach(0..<min(count, Self.layout.count), id: \.self) { i in
+                    let item = Self.layout[i]
+                    Group {
+                        if asDots {
+                            Circle().fill(color)
+                        } else {
+                            Star(points: 4).fill(color)
+                        }
+                    }
+                    .frame(width: item.s, height: item.s)
+                    .position(x: item.x * geo.size.width, y: item.y * geo.size.height)
+                }
+            }
+        }
+        .ignoresSafeArea()
+    }
+}
+
+private struct Star: Shape {
+    var points: Int = 5
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let outer = min(rect.width, rect.height) / 2
+        let inner = outer * 0.42
+        let step = Double.pi / Double(points)
+        for i in 0..<(points * 2) {
+            let radius = i.isMultiple(of: 2) ? outer : inner
+            let angle = Double(i) * step - Double.pi / 2
+            let pt = CGPoint(
+                x: center.x + CGFloat(cos(angle)) * radius,
+                y: center.y + CGFloat(sin(angle)) * radius
+            )
+            if i == 0 {
+                path.move(to: pt)
+            } else {
+                path.addLine(to: pt)
+            }
+        }
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct Snowman: View {
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Circle()
+                .fill(.white)
+                .frame(width: 56, height: 56)
+            Circle()
+                .fill(.white)
+                .frame(width: 40, height: 40)
+                .offset(y: -44)
+                .overlay(alignment: .top) {
+                    HStack(spacing: 7) {
+                        Circle().fill(.black.opacity(0.7)).frame(width: 4, height: 4)
+                        Circle().fill(.black.opacity(0.7)).frame(width: 4, height: 4)
+                    }
+                    .offset(y: -32)
+                }
+        }
+        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+    }
+}
+
+/// Compact preview of a background theme for store cards.
+private struct HomeBackgroundThumbnail: View {
+    var theme: HomeBackgroundTheme
+    var cornerRadius: CGFloat = 10
+
+    private var isDark: Bool {
+        theme.scene == .night || theme.scene == .space
+    }
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [theme.skyTop, theme.skyBottom],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            GeometryReader { geo in
+                ZStack(alignment: .bottom) {
+                    if isDark {
+                        ForEach(thumbStars.indices, id: \.self) { i in
+                            Circle()
+                                .fill(.white.opacity(0.9))
+                                .frame(width: 2.2, height: 2.2)
+                                .position(
+                                    x: thumbStars[i].0 * geo.size.width,
+                                    y: thumbStars[i].1 * geo.size.height
+                                )
+                        }
+                    }
+
+                    accent
+                        .position(
+                            x: geo.size.width * (theme.scene == .night || theme.scene == .space ? 0.74 : 0.26),
+                            y: geo.size.height * 0.3
+                        )
+
+                    ThumbnailHill()
+                        .fill(theme.groundSecondary)
+                        .frame(height: geo.size.height * 0.42)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                    ThumbnailHill()
+                        .fill(theme.groundPrimary)
+                        .frame(height: geo.size.height * 0.30)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                }
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(.white.opacity(0.35), lineWidth: 1)
+        )
+    }
+
+    private var thumbStars: [(CGFloat, CGFloat)] {
+        [(0.18, 0.18), (0.4, 0.1), (0.62, 0.22), (0.82, 0.14), (0.3, 0.34), (0.7, 0.4)]
+    }
+
+    @ViewBuilder
+    private var accent: some View {
+        switch theme.scene {
+        case .night:
+            CrescentMoonView(color: theme.accent).frame(width: 16, height: 16)
+        case .space:
+            Circle()
+                .fill(LinearGradient(colors: [theme.groundPrimary, theme.groundSecondary], startPoint: .topLeading, endPoint: .bottomTrailing))
+                .frame(width: 18, height: 18)
+                .overlay(
+                    Ellipse().stroke(theme.accent.opacity(0.85), lineWidth: 2)
+                        .frame(width: 28, height: 10)
+                        .rotationEffect(.degrees(-18))
+                )
+        default:
+            Circle()
+                .fill(theme.accent)
+                .frame(width: 18, height: 18)
+                .shadow(color: theme.accent.opacity(0.5), radius: 5)
+        }
+    }
+}
+
+private struct ThumbnailHill: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.midY + 6))
+        path.addQuadCurve(
+            to: CGPoint(x: rect.maxX, y: rect.midY + 2),
+            control: CGPoint(x: rect.midX, y: rect.minY - 4)
+        )
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
     }
 }
 
