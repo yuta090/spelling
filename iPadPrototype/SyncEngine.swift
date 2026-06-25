@@ -1,0 +1,57 @@
+import Foundation
+
+/// Supabase との差分同期エンジン（第1段：プル）。
+///
+/// プルは **`sync_version`（サーバー採番の単調増加 bigint）カーソル**で差分取得する。
+/// 単一列・厳密単調・タイ無しなので、ページングや同時刻でも取りこぼさない
+/// （`server_changed_at` の文字列比較/同時刻タイ問題を回避）。
+/// tombstone（`deleted_at`）行も取得し、呼び出し側のローカルキャッシュで削除を反映する。
+///
+/// 次段：プッシュ（upsert＋サーバーLWWガード）、SpellingSyncCore.LastWriteWins でのマージ、
+/// 決定論UUID、Storage。設計: docs/supabase-adapter-design.md
+@MainActor
+final class SyncEngine {
+    private let service: SupabaseService
+    /// 1ページの最大件数。返却件数がこれ未満なら最終ページ。
+    let pageSize: Int
+
+    init(service: SupabaseService = .shared, pageSize: Int = 500) {
+        self.service = service
+        self.pageSize = pageSize
+    }
+
+    struct Page<T: SyncedRow> {
+        let rows: [T]
+        let nextCursor: Int
+        let hasMore: Bool
+    }
+
+    /// 1ページ分を `sync_version > cursor` の昇順で取得する。
+    /// - Parameter cursor: 前回同期で得た最大 sync_version（初回は 0）
+    func pullPage<T: SyncedRow>(_ type: T.Type, since cursor: Int) async throws -> Page<T> {
+        let rows: [T] = try await service.client
+            .from(T.table)
+            .select()
+            .gt("sync_version", value: cursor)
+            .order("sync_version", ascending: true)
+            .limit(pageSize)
+            .execute()
+            .value
+        // 昇順なので最後の行が最大。max() ではなく順序済み結果の末尾を採る。
+        let nextCursor = rows.last?.syncVersion ?? cursor
+        return Page(rows: rows, nextCursor: nextCursor, hasMore: rows.count == pageSize)
+    }
+
+    /// 最終ページまで全ページを取得する（tombstone含む）。
+    func pullAll<T: SyncedRow>(_ type: T.Type, since cursor: Int) async throws -> (rows: [T], nextCursor: Int) {
+        var all: [T] = []
+        var c = cursor
+        while true {
+            let page = try await pullPage(type, since: c)
+            all.append(contentsOf: page.rows)
+            c = page.nextCursor
+            if !page.hasMore { break }
+        }
+        return (all, c)
+    }
+}
