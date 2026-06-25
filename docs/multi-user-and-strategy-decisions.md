@@ -10,6 +10,7 @@ Date: 2026-06-25
 - ユーザー作業（iCloud有効化）: `あなたの作業-iCloud有効化.md`
 - 英検級マッピング＆親メニュー: `eiken-level-mapping.md`
 - LPコピー: `lp-copy-draft.md`
+- 定着エンジン(SRS)設計: `srs-retention-design.md`
 - 同期コア実装（TDD済み）: `Sources/SpellingSyncCore/`（PR #13）
 
 ---
@@ -41,11 +42,12 @@ Date: 2026-06-25
 
 ## 2. 実装済み（DONE・PR #13, branch `feat/cloudkit-sync-20260625`）
 - `UserDataStore` 境界プロトコル（永続化を抽象化。挙動不変・完全後方互換）。
-- `SpellingSyncCore`（SwiftPM・**TDD 28テスト・カバレッジ100%**）
+- `SpellingSyncCore`（SwiftPM・**TDD・カバレッジ100%**。同期コア28テスト＋SRS 13テスト＝計41テスト）
   - `SyncMetadata`（UUID/household/profile/updatedAt/**tombstone**）
   - `LastWriteWins`（record単位・順序非依存・削除優先・id決定論タイブレーク）
   - `ReviewProgress.pendingCount`（採点待ち＝通知トリガ算出）
   - `Migration`（旧JSON→正準レコード、後方互換。**id二重採番バグ発見・修正**）
+  - `SRSScheduler`（Leitner方式の定着エンジン。13テスト。commit `12a2430`）
 - 設計書・CKShare検証ランブック・英検マッピング・LPコピー（docs/）。
 - ※**アプリ本体はまだローカル保存のまま**（同期は未接続・iCloud未使用・費用未発生）。
 
@@ -92,7 +94,7 @@ Date: 2026-06-25
 ## 7. ロードマップ上の次手（順序）
 1. ✅ #1 英検級マッピング＋親メニュー再定義（`eiken-level-mapping.md`）
 2. ✅ #2 LPコピー骨子（`lp-copy-draft.md`）
-3. ⏳ #3 **定着エンジン(SRS)設計**（次）— ライトニング箱方式、今日の出題生成、`ReviewQueueItem`拡張、英検ゴール逆算。可能なら`SpellingSyncCore`でTDD。
+3. ✅ #3 **定着エンジン(SRS)設計＋実装**（`srs-retention-design.md` / `SRSScheduler` Leitner方式・TDD13テスト, commit `12a2430`）。残：今日の出題生成のアプリ本体組み込み・英検ゴール逆算UI。
 4. （Q1決定後）同期の実装 or Supabase切替。
 5. 継続ループ（streak/デイリー目標）＋親レポート＋通知。
 
