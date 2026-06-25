@@ -149,6 +149,14 @@ final class AppModel: ObservableObject {
         didSet { saveUnlockedCharacterIDs() }
     }
 
+    @Published var selectedBackgroundID: String {
+        didSet { saveSelectedBackgroundID() }
+    }
+
+    @Published var unlockedBackgroundIDs: Set<String> {
+        didSet { saveUnlockedBackgroundIDs() }
+    }
+
     @Published var homeReviewWordIDs: Set<UUID> {
         didSet { saveHomeReviewWordIDs() }
     }
@@ -158,6 +166,8 @@ final class AppModel: ObservableObject {
     static let practiceCoinReward = 3
     static let defaultCharacterID = HomeRewardCharacter.defaultID
     static let defaultUnlockedCharacterIDs: Set<String> = HomeRewardCharacter.defaultUnlockedIDs
+    static let defaultBackgroundID = HomeBackgroundTheme.defaultID
+    static let defaultUnlockedBackgroundIDs: Set<String> = HomeBackgroundTheme.defaultUnlockedIDs
 
     private let persistenceStore: UserDataStore
     private let wordsKey = "spellingTrainer.words"
@@ -169,6 +179,8 @@ final class AppModel: ObservableObject {
     private let rewardCoinsKey = "spellingTrainer.rewardCoins"
     private let selectedCharacterIDKey = "spellingTrainer.selectedCharacterID"
     private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
+    private let selectedBackgroundIDKey = "spellingTrainer.selectedBackgroundID"
+    private let unlockedBackgroundIDsKey = "spellingTrainer.unlockedBackgroundIDs"
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
 
     init(persistenceStore: UserDataStore = AppPersistenceStore()) {
@@ -192,6 +204,10 @@ final class AppModel: ObservableObject {
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
         let savedCharacterID = persistenceStore.load(String.self, key: selectedCharacterIDKey) ?? Self.defaultCharacterID
         selectedCharacterID = initialUnlockedCharacterIDs.contains(savedCharacterID) ? savedCharacterID : Self.defaultCharacterID
+        let initialUnlockedBackgroundIDs = (persistenceStore.load(Set<String>.self, key: unlockedBackgroundIDsKey) ?? []).union(Self.defaultUnlockedBackgroundIDs)
+        unlockedBackgroundIDs = initialUnlockedBackgroundIDs
+        let savedBackgroundID = persistenceStore.load(String.self, key: selectedBackgroundIDKey) ?? Self.defaultBackgroundID
+        selectedBackgroundID = initialUnlockedBackgroundIDs.contains(savedBackgroundID) ? savedBackgroundID : Self.defaultBackgroundID
         ensureSelectedWordStepStillExists()
     }
 
@@ -830,6 +846,33 @@ final class AppModel: ObservableObject {
         return true
     }
 
+    func selectBackground(id: String) {
+        guard unlockedBackgroundIDs.contains(id) else {
+            return
+        }
+        selectedBackgroundID = id
+    }
+
+    @discardableResult
+    func unlockBackground(id: String, cost: Int) -> Bool {
+        if unlockedBackgroundIDs.contains(id) {
+            selectedBackgroundID = id
+            return true
+        }
+
+        let safeCost = max(cost, 0)
+        guard rewardCoins >= safeCost else {
+            return false
+        }
+
+        rewardCoins -= safeCost
+        var updatedUnlockedIDs = unlockedBackgroundIDs
+        updatedUnlockedIDs.insert(id)
+        unlockedBackgroundIDs = updatedUnlockedIDs
+        selectedBackgroundID = id
+        return true
+    }
+
     private func saveWords() {
         persistenceStore.save(words, key: wordsKey)
     }
@@ -864,6 +907,14 @@ final class AppModel: ObservableObject {
 
     private func saveUnlockedCharacterIDs() {
         persistenceStore.save(unlockedCharacterIDs, key: unlockedCharacterIDsKey)
+    }
+
+    private func saveSelectedBackgroundID() {
+        persistenceStore.save(selectedBackgroundID, key: selectedBackgroundIDKey)
+    }
+
+    private func saveUnlockedBackgroundIDs() {
+        persistenceStore.save(unlockedBackgroundIDs, key: unlockedBackgroundIDsKey)
     }
 
     private func saveHomeReviewWordIDs() {
