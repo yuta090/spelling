@@ -7685,12 +7685,17 @@ struct HomeBackgroundTheme: Identifiable {
     var japaneseName: String
     var englishName: String
     var price: Int
-    var scene: HomeBackgroundScene
-    var skyTop: Color
-    var skyBottom: Color
-    var groundPrimary: Color
-    var groundSecondary: Color
-    var accent: Color
+    /// Non-nil → rendered from a bundled image asset (an imageset in Assets.xcassets).
+    /// Nil → rendered procedurally from `scene` + the color fields below.
+    var imageName: String? = nil
+    var scene: HomeBackgroundScene = .meadow
+    var skyTop: Color = .clear
+    var skyBottom: Color = .clear
+    var groundPrimary: Color = .clear
+    var groundSecondary: Color = .clear
+    var accent: Color = .clear
+
+    var isImage: Bool { imageName != nil }
 
     var isFree: Bool {
         price == 0
@@ -7708,7 +7713,10 @@ struct HomeBackgroundTheme: Identifiable {
 
     static let defaultUnlockedIDs: Set<String> = ["meadow"]
 
-    static let catalog: [HomeBackgroundTheme] = [
+    static let catalog: [HomeBackgroundTheme] = proceduralThemes + imageThemes
+
+    /// Hand-drawn (SwiftUI) themes — color/scene data lives here, not in the CSV.
+    static let proceduralThemes: [HomeBackgroundTheme] = [
         HomeBackgroundTheme(
             id: "meadow",
             japaneseName: "ひるのまち",
@@ -7782,6 +7790,23 @@ struct HomeBackgroundTheme: Identifiable {
             accent: Color(red: 1.0, green: 0.82, blue: 0.45)
         )
     ]
+
+    // BG-CATALOG-GENERATED-BEGIN
+    // Image-backed themes. Source of truth: scripts/backgrounds.csv
+    // Regenerate with: python3 scripts/generate_backgrounds.py
+    static let imageThemes: [HomeBackgroundTheme] = [
+        HomeBackgroundTheme(id: "forest", japaneseName: "もり", englishName: "Forest", price: 8, imageName: "bg_forest"),
+        HomeBackgroundTheme(id: "flowerfield", japaneseName: "おはなばたけ", englishName: "Flower Field", price: 10, imageName: "bg_flowerfield"),
+        HomeBackgroundTheme(id: "park", japaneseName: "こうえん", englishName: "Park", price: 8, imageName: "bg_park"),
+        HomeBackgroundTheme(id: "town", japaneseName: "まち", englishName: "Town", price: 10, imageName: "bg_town"),
+        HomeBackgroundTheme(id: "sakura", japaneseName: "さくら", englishName: "Cherry Blossoms", price: 12, imageName: "bg_sakura"),
+        HomeBackgroundTheme(id: "autumn", japaneseName: "こうよう", englishName: "Autumn Leaves", price: 12, imageName: "bg_autumn"),
+        HomeBackgroundTheme(id: "underwater", japaneseName: "うみのなか", englishName: "Under the Sea", price: 14, imageName: "bg_underwater"),
+        HomeBackgroundTheme(id: "rainbow", japaneseName: "にじ", englishName: "Rainbow", price: 12, imageName: "bg_rainbow"),
+        HomeBackgroundTheme(id: "candyland", japaneseName: "おかしのくに", englishName: "Candy Land", price: 16, imageName: "bg_candyland"),
+        HomeBackgroundTheme(id: "castle", japaneseName: "おしろ", englishName: "Castle", price: 16, imageName: "bg_castle")
+    ]
+    // BG-CATALOG-GENERATED-END
 }
 
 private struct HomeBackground: View {
@@ -7792,15 +7817,22 @@ private struct HomeBackground: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            LinearGradient(
-                colors: [theme.skyTop, theme.skyBottom],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+        if let imageName = theme.imageName {
+            Image(imageName)
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+        } else {
+            ZStack(alignment: .bottom) {
+                LinearGradient(
+                    colors: [theme.skyTop, theme.skyBottom],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
 
-            HomeBackgroundScenery(theme: theme)
+                HomeBackgroundScenery(theme: theme)
+            }
         }
     }
 }
@@ -8176,6 +8208,23 @@ private struct HomeBackgroundThumbnail: View {
     }
 
     var body: some View {
+        Group {
+            if let imageName = theme.imageName {
+                Image(imageName)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                proceduralThumbnail
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(.white.opacity(0.35), lineWidth: 1)
+        )
+    }
+
+    private var proceduralThumbnail: some View {
         ZStack(alignment: .bottom) {
             LinearGradient(
                 colors: [theme.skyTop, theme.skyBottom],
@@ -8214,11 +8263,6 @@ private struct HomeBackgroundThumbnail: View {
                 }
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-        .overlay(
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .stroke(.white.opacity(0.35), lineWidth: 1)
-        )
     }
 
     private var thumbStars: [(CGFloat, CGFloat)] {
