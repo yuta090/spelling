@@ -53,7 +53,39 @@ final class SupabaseService {
         client.auth.currentUser?.id
     }
 
+    /// 表示用：現在のユーザーが匿名（子端末）か（キャッシュ値）。
+    var displayIsAnonymous: Bool {
+        client.auth.currentUser?.isAnonymous ?? false
+    }
+
     // MARK: - 世帯
+
+    /// `household_members` の自分の行。
+    struct HouseholdMembership: Decodable, Sendable {
+        let householdId: UUID
+        let role: String
+
+        enum CodingKeys: String, CodingKey {
+            case householdId = "household_id"
+            case role
+        }
+    }
+
+    /// 現在ユーザー自身の世帯メンバーシップ一覧。
+    ///
+    /// ⚠️ RLS の `members_access` は「同じ世帯のメンバーなら全員の行を読める」ポリシーなので、
+    /// **自分の行に限定するには明示的に `user_id` で絞る必要がある**（RLS任せにすると他の親の行も返る）。
+    /// 併せて論理削除済み行を除外する。未サインイン時は空配列。
+    func myHouseholdMemberships() async throws -> [HouseholdMembership] {
+        guard let userID = client.auth.currentUser?.id else { return [] }
+        return try await client
+            .from("household_members")
+            .select("household_id, role")
+            .eq("user_id", value: userID.uuidString)
+            .is("deleted_at", value: nil)
+            .execute()
+            .value
+    }
 
     /// 親が世帯を作成しオーナーになる（SECURITY DEFINER RPC。匿名ユーザーはサーバー側で拒否）。
     /// - Returns: 作成された household の id

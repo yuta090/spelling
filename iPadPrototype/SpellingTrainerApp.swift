@@ -8,6 +8,12 @@ struct SpellingTrainerApp: App {
         WindowGroup {
             HomeView()
                 .environmentObject(model)
+            #if DEBUG
+                // 同期バックエンドの疎通用デバッグ導線（製品UIには出さない）。
+                .overlay(alignment: .bottomLeading) {
+                    SyncDebugLauncher()
+                }
+            #endif
         }
     }
 }

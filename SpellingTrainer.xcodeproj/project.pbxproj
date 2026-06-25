@@ -18,6 +18,8 @@
 		FACE0000000000000000CF03 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF04 /* SupabaseService.swift */; };
 		FACE0000000000000000CF05 /* SyncDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF06 /* SyncDTO.swift */; };
 		FACE0000000000000000CF07 /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF08 /* SyncEngine.swift */; };
+		FACE0000000000000000CF09 /* SyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0A /* SyncSession.swift */; };
+		FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0C /* SyncDebugView.swift */; };
 		0A1001082D00000100000001 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002082D00000100000001 /* AppModel.swift */; };
 		0A1001092D00000100000001 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002092D00000100000001 /* HomeView.swift */; };
 		0A10010A2D00000100000001 /* SpellingSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020A2D00000100000001 /* SpellingSessionView.swift */; };
@@ -41,6 +43,8 @@
 		FACE0000000000000000CF04 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF06 /* SyncDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncDTO.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF08 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CF0A /* SyncSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSession.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CF0C /* SyncDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncDebugView.swift; sourceTree = "<group>"; };
 		0A1002082D00000100000001 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		0A1002092D00000100000001 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0A10020A2D00000100000001 /* SpellingSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpellingSessionView.swift; sourceTree = "<group>"; };
@@ -97,6 +101,8 @@
 				FACE0000000000000000CF04 /* SupabaseService.swift */,
 				FACE0000000000000000CF06 /* SyncDTO.swift */,
 				FACE0000000000000000CF08 /* SyncEngine.swift */,
+				FACE0000000000000000CF0A /* SyncSession.swift */,
+				FACE0000000000000000CF0C /* SyncDebugView.swift */,
 			);
 			path = iPadPrototype;
 			sourceTree = "<group>";
@@ -195,6 +201,8 @@
 				FACE0000000000000000CF03 /* SupabaseService.swift in Sources */,
 				FACE0000000000000000CF05 /* SyncDTO.swift in Sources */,
 				FACE0000000000000000CF07 /* SyncEngine.swift in Sources */,
+				FACE0000000000000000CF09 /* SyncSession.swift in Sources */,
+				FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */,
 				0A1001082D00000100000001 /* AppModel.swift in Sources */,
 				0A1001092D00000100000001 /* HomeView.swift in Sources */,
 				0A10010A2D00000100000001 /* SpellingSessionView.swift in Sources */,

@@ -65,6 +65,24 @@ SwiftUI Views
 - [ ] StoreKit2 課金 → entitlements 反映。
 - [ ] 接続情報のアプリ注入（公開可の URL/anonKey を xcconfig 経由）。
 
+## 7.5 決定: ローカル⇄サーバーの橋渡しは「サイドカー同期ストア」方式（2026-06-26）
+**背景（モデル差）**: ローカルの `SpellingWord` は単一ユーザー/オフライン前提で、
+`household_id`/`profile_id`/`updated_at`/`deleted_at` を持たず、`stepID` は **String**（ステップは実行時に
+`makeWordSteps` で導出する派生物で、サーバーの **UUID `step_id`** と一致しない）。一方サーバーの
+`words`/`steps` は多人数前提で上記列が必須。よって「pull→merge→push を AppModel に結線」は単純な配線ではなく、
+**モデル差を埋める橋渡し**が要る。
+
+**採用方針（サイドカー同期ストア）**: `SpellingWord` 等のUIモデルは触らず、
+`id → SyncMetadata（updatedAt/deletedAt/household/profile）` を**別ストア**で保持し、
+DTO ⇄ `SyncableRecord` に射影する。巨大なView層（HomeView/ParentDashboard 600KB+）を壊さず、
+まず `words` だけ疎通させる。`stepID(String) → step_id(UUID)` は当面**別管理のマップ**で対応し、
+論理一意行（srs_cards等）は `DeterministicID.uuidV5` で採番してから push 対象に加える。
+（不採用: `SpellingWord` に直接 SyncMetadata を生やす案＝View層全体に波及し高リスク。）
+
+**現在地**: 親メールOTPサインイン/世帯作成の**デバッグ導線**（`SyncSession` + `SyncDebugView`、
+DEBUG限定ランチャ）と **active household_id の端末永続化**を実装済み。これでOTP疎通テストが叩ける。
+次段でサイドカーストア本体（pull→reconcile→push＋カーソル/high-water永続化）を実装する。
+
 ## 8. 純粋ロジックでTDDできる単位（SDK不要）
 - カーソル前進＋差分マージ（`reconcile`＋max(server_changed_at)）
 - 決定論UUID生成（uuidv5 ヘルパ）
