@@ -19,18 +19,26 @@
   `SUPABASE_DB_URL=postgresql://postgres.iygptyalwmfwtproixfr:<PW>@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres`
 - マイグレーション: `scripts/db/migrate.sh status|up|baseline`（CLI不要）
 
-## 次にやること（#2：ローカルキャッシュ統合）
-**pull→merge→push を `AppModel` に結線する**のが本丸。
-1. 親サインイン＋世帯作成の**デバッグ導線**（最小UI）を作り、#3 の疎通を叩けるようにする。
-2. `AppModel` のローカルデータ ⇄ DTO ⇄ `SyncableRecord` のマッピング。
-3. pull(`SyncEngine.pullAll`) → `LastWriteWins.reconcile` でローカルとマージ → `OutboundSync.pending` で
-   未送信を選び push。カーソル/high-water を永続化。
-4. `srs_cards`等の論理一意行は **`DeterministicID.uuidV5`** で採番してから push 対象に追加。
-- 設計の詳細: `docs/supabase-adapter-design.md`
+## 完了（#2 の一部）: 親サインイン/世帯作成のデバッグ導線
+- `iPadPrototype/SyncSession.swift`：認証＋**active household_id の端末永続化**（push スコープの前提）。
+- `iPadPrototype/SyncDebugView.swift`：メールOTPサインイン→世帯作成→profiles件数の疎通UI。
+  `SpellingTrainerApp` に **DEBUG限定**の起動ボタン（左下のアンテナ）を overlay。製品UIには出ない。
+- `SupabaseService` に `displayIsAnonymous` / `ownedHouseholds()` を追加。
+- ビルド成功（iPad sim）／`swift test` 53件グリーン。
 
-## あなたの事前作業（#3 疎通の前提）
-- Supabase ダッシュボード → Authentication → Email テンプレートに **`{{ .Token }}`（6桁コード）** を含める
-  （OTPコード方式でサインインを完結させるため）。
+## 次にやること（#2 本丸：サイドカー同期ストア）
+**方針は決定済み＝「サイドカー同期ストア」**（UIモデル `SpellingWord` は触らず、id→SyncMetadata を別ストアで
+保持し DTO⇄`SyncableRecord` に射影。まず `words` だけ疎通。詳細と理由は `docs/supabase-adapter-design.md` §7.5）。
+1. サイドカーストア（id→SyncMetadata: updatedAt/deletedAt/household/profile）を実装し、`SpellingWord` と射影する。
+2. pull(`SyncEngine.pullAll`) → `LastWriteWins.reconcile` でマージ → `OutboundSync.pending` で未送信を push。
+   カーソル(`sync_version`)/high-water を永続化（`SyncSession` の active household をスコープに）。
+3. `stepID(String) → step_id(UUID)` は当面**別管理のマップ**。論理一意行は `DeterministicID.uuidV5` で採番。
+- 純粋ロジックは `SpellingSyncCore` に足して **TDD**（射影・dirty抽出・カーソル前進）。
+
+## あなたの事前作業（OTP疎通テストの前提）
+- Supabase ダッシュボード → Authentication → Email テンプレートに **`{{ .Token }}`（6桁コード）** を含める。
+- 実機/シミュレータでアプリを起動 → **左下のアンテナボタン**（DEBUGビルドのみ）→ メール入力→コード送信→
+  6桁コードで検証→「世帯を作成」→「profiles件数を取得」で疎通確認。
 
 ## 開発ルール（CLAUDE.md・必読）
 - **TDDで開発**（純粋ロジックは `SpellingSyncCore`＝`swift test`、アプリI/Oは薄く）。
