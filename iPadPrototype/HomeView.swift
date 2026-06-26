@@ -7838,9 +7838,14 @@ struct HomeBackground: View {
 
     var body: some View {
         if let imageName = theme.imageName {
+            // 利用可能領域いっぱいに敷き、はみ出しは clip する。
+            // frame/clipped が無いと scaledToFill が本来サイズを主張し、シート等の
+            // 「中身に合わせて縮む」コンテナ内でレイアウトを押し広げて崩す（きょうのたんご画面）。
             Image(imageName)
                 .resizable()
                 .scaledToFill()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
                 .ignoresSafeArea()
         } else {
             ZStack(alignment: .bottom) {
