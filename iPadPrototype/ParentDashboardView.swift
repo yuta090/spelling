@@ -5143,6 +5143,8 @@ private struct WordCameraPicker: UIViewControllerRepresentable {
 
 private struct TestSettingsPanel: View {
     @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var session: SyncSession
+    @State private var showingAccount = false
     var language: AppLanguage
 
     var body: some View {
@@ -5150,6 +5152,22 @@ private struct TestSettingsPanel: View {
             title: language.text(japanese: "テスト設定", english: "Test Settings"),
             systemImage: "slider.horizontal.3"
         ) {
+            SettingBlock(title: language.text(japanese: "アカウント・同期", english: "Account & Sync")) {
+                Button {
+                    showingAccount = true
+                } label: {
+                    HStack {
+                        Image(systemName: session.activeHouseholdID != nil ? "checkmark.icloud.fill" : "icloud")
+                        Text(session.activeHouseholdID != nil
+                             ? language.text(japanese: "同期オン（タップで管理）", english: "Sync on (tap to manage)")
+                             : language.text(japanese: "サインインして同期（任意）", english: "Sign in to sync (optional)"))
+                    }
+                }
+                .sheet(isPresented: $showingAccount) {
+                    AccountSyncView(session: session)
+                }
+            }
+
             SettingBlock(title: language.text(japanese: "表示言語", english: "Screen Language")) {
                 Picker("", selection: $model.settings.appLanguage) {
                     ForEach(AppLanguage.allCases) { item in
@@ -7251,4 +7269,5 @@ private struct ParentBackground: View {
 #Preview {
     ParentDashboardView()
         .environmentObject(AppModel())
+        .environmentObject(SyncSession())
 }
