@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// 初回だけ出す**子ども向けミニツアー**（オフライン優先・全部任意）。
 ///
@@ -18,6 +19,8 @@ struct OnboardingView: View {
     @State private var name = ""
     @State private var didLoadName = false
     @State private var bounce = false
+    @State private var launched = false
+    @State private var pressPop = false
     @State private var showingAccount = false
     @State private var showingSkipConfirm = false
 
@@ -26,20 +29,31 @@ struct OnboardingView: View {
             // 選んだ背景をそのまま下敷きにして、変更が即反映される楽しさを出す。
             HomeBackground(themeID: model.selectedBackgroundID)
                 .ignoresSafeArea()
+                .opacity(launched ? 1 : 0)
 
             VStack(spacing: 20) {
                 header
-                Spacer(minLength: 8)
-                content
-                Spacer(minLength: 8)
-                controls
+                Spacer(minLength: 12)
+                // ボタンはコンテンツ直下に置いて中央寄せ（最下部に固定しない）。
+                VStack(spacing: 28) {
+                    content
+                    controls
+                }
+                Spacer(minLength: 12)
             }
             .padding(28)
             .frame(maxWidth: 760)
+            .opacity(launched ? 1 : 0)
+            .scaleEffect(launched ? 1 : 0.94)
+            .offset(y: launched ? 0 : 16)
         }
         .onAppear {
             // 既存ユーザーのニックネームを引き継ぐ（空で上書きして消さないため）。
             if !didLoadName { name = model.childName; didLoadName = true }
+            // 初回起動の入場トランジション（全体をふわっと出す）。
+            if !launched {
+                withAnimation(.spring(response: 0.6, dampingFraction: 0.82)) { launched = true }
+            }
         }
         .sheet(isPresented: $showingAccount) { AccountSyncView(session: session) }
         .confirmationDialog("ほんとうに スキップする？", isPresented: $showingSkipConfirm, titleVisibility: .visible) {
@@ -76,10 +90,39 @@ struct OnboardingView: View {
 
     @ViewBuilder
     private var controls: some View {
-        Button(primaryTitle) { primaryAction() }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(step == .grade && pickedGrade == nil)
+        if step == .welcome {
+            startButton
+        } else {
+            Button(primaryTitle) { primaryAction() }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(step == .grade && pickedGrade == nil)
+        }
+    }
+
+    /// ウェルカムの「はじめる」。タップで派手にポップ＋スパークル＋触覚 → 次へ。
+    private var startButton: some View {
+        Button { celebrateAndStart() } label: {
+            Text("はじめる")
+                .font(.title2.weight(.heavy))
+                .padding(.horizontal, 40)
+                .padding(.vertical, 16)
+                .foregroundStyle(.white)
+                .background(Capsule().fill(Color.accentColor))
+                .scaleEffect(pressPop ? 1.18 : 1.0)
+                .shadow(color: Color.accentColor.opacity(0.45), radius: pressPop ? 18 : 8, y: 5)
+                .overlay { if pressPop { SparkleBurst() } }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func celebrateAndStart() {
+        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        withAnimation(.spring(response: 0.22, dampingFraction: 0.45)) { pressPop = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            withAnimation(.easeOut(duration: 0.15)) { pressPop = false }
+            primaryAction()
+        }
     }
 
     private var primaryTitle: String {
@@ -290,5 +333,28 @@ struct OnboardingView: View {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmed.isEmpty { model.childName = trimmed }
         model.hasCompletedOnboarding = true   // RootView がホームへ切り替える
+    }
+}
+
+/// 「はじめる」タップ時に放射するスパークル（楽しさの演出）。
+private struct SparkleBurst: View {
+    @State private var go = false
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<8, id: \.self) { i in
+                let angle = Double(i) / 8.0 * 2 * .pi
+                Image(systemName: "sparkle")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(.yellow)
+                    .offset(x: go ? cos(angle) * 72 : 0, y: go ? sin(angle) * 72 : 0)
+                    .opacity(go ? 0 : 1)
+                    .scaleEffect(go ? 0.3 : 1)
+            }
+        }
+        .allowsHitTesting(false)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.5)) { go = true }
+        }
     }
 }
