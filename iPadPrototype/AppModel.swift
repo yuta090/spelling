@@ -115,6 +115,8 @@ final class AppModel: ObservableObject {
         didSet {
             saveWords()
             ensureSelectedWordStepStillExists()
+            // 単語編集後の自動同期（同期由来の反映では起こさない）。
+            if !isApplyingMergedWords { requestSync() }
         }
     }
 
@@ -538,12 +540,54 @@ final class AppModel: ObservableObject {
                     source: WordSource(rawValue: record.payload.source) ?? .parent
                 )
             }
-        if mapped != words { words = mapped }
+        if mapped != words {
+            // 同期由来の更新では編集トリガ（requestSync）を起こさない。
+            isApplyingMergedWords = true
+            words = mapped
+            isApplyingMergedWords = false
+        }
     }
 
     /// `words` を 1 サイクル同期する（世帯未選択なら何もしない）。
     func syncWords(householdID: UUID?) async throws {
         try await wordSyncCoordinator.sync(appModel: self, householdID: householdID)
+    }
+
+    // MARK: 自動同期トリガ（前面化／編集後／サインイン・世帯確定時）
+
+    /// アクティブ世帯の供給元。アプリ起動時に `SyncSession` を注入する（未設定なら同期は無効）。
+    private var householdIDProvider: () -> UUID? = { nil }
+    /// 編集連打をまとめるためのデバウンス用タスク。
+    private var pendingSyncTask: Task<Void, Never>?
+    /// `applyMergedWords` による `words` 更新が、編集トリガを再帰的に誘発しないためのフラグ。
+    private var isApplyingMergedWords = false
+
+    /// 自動同期の世帯供給元を設定する（アプリ起動時に 1 回）。
+    func configureSync(householdIDProvider: @escaping () -> UUID?) {
+        self.householdIDProvider = householdIDProvider
+    }
+
+    /// 即時に 1 サイクル同期する（前面化・サインイン・世帯確定時など）。
+    /// バックグラウンド同期なので失敗は握りつぶす（次トリガで回収。多重実行は coordinator がガード）。
+    func syncNow() async {
+        guard let household = householdIDProvider() else { return }
+        do { try await syncWords(householdID: household) }
+        catch { /* バックグラウンド同期: 失敗は次トリガで回収 */ }
+    }
+
+    /// デバウンス付きで同期を要求する（単語の編集直後などに呼ぶ）。
+    /// 直前の予約はキャンセルし、`seconds` 静かになってから 1 回だけ走らせる。
+    /// **発火時に世帯が変わっていたら破棄**する（古い世帯のローカル編集を新世帯へ流さない）。
+    func requestSync(debounce seconds: Double = 1.5) {
+        guard let scheduledHousehold = householdIDProvider() else { return }
+        pendingSyncTask?.cancel()
+        pendingSyncTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            if Task.isCancelled { return }
+            guard let self else { return }
+            guard self.householdIDProvider() == scheduledHousehold else { return }
+            await self.syncNow()
+        }
     }
 
     /// 指定IDの単語をまとめて削除する（親メニューの一括削除用）。

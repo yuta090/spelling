@@ -252,7 +252,8 @@ private struct LabeledRow: View {
 /// `SpellingTrainerApp` のルートに overlay として差し込む。
 struct SyncDebugLauncher: View {
     @EnvironmentObject var model: AppModel
-    @StateObject private var session = SyncSession()
+    /// アプリ全体で共有する SyncSession（自動同期と同じ世帯状態をデバッグから操作するため）。
+    @EnvironmentObject var session: SyncSession
     @State private var isPresented = false
 
     var body: some View {
