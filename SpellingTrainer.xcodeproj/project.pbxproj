@@ -20,6 +20,7 @@
 		FACE0000000000000000CF07 /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF08 /* SyncEngine.swift */; };
 		FACE0000000000000000CF09 /* SyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0A /* SyncSession.swift */; };
 		FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0C /* SyncDebugView.swift */; };
+		FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0E /* WordSyncCoordinator.swift */; };
 		0A1001082D00000100000001 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002082D00000100000001 /* AppModel.swift */; };
 		0A1001092D00000100000001 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002092D00000100000001 /* HomeView.swift */; };
 		0A10010A2D00000100000001 /* SpellingSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020A2D00000100000001 /* SpellingSessionView.swift */; };
@@ -29,6 +30,7 @@
 		0A10010E2D00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A10020E2D00000100000001 /* Assets.xcassets */; };
 		0A1001AA2D00000100000001 /* Resources/wordbank.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0A1002AA2D00000100000001 /* Resources/wordbank.sqlite */; };
 		9765087A2FEDA7750051D674 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 976508792FEDA7750051D674 /* Supabase */; };
+		FACE0000000000000000CF0F /* SpellingSyncCore in Frameworks */ = {isa = PBXBuildFile; productRef = FACE0000000000000000CF10 /* SpellingSyncCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +47,7 @@
 		FACE0000000000000000CF08 /* SyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncEngine.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF0A /* SyncSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSession.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF0C /* SyncDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncDebugView.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CF0E /* WordSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSyncCoordinator.swift; sourceTree = "<group>"; };
 		0A1002082D00000100000001 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		0A1002092D00000100000001 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0A10020A2D00000100000001 /* SpellingSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpellingSessionView.swift; sourceTree = "<group>"; };
@@ -63,6 +66,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9765087A2FEDA7750051D674 /* Supabase in Frameworks */,
+				FACE0000000000000000CF0F /* SpellingSyncCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +107,7 @@
 				FACE0000000000000000CF08 /* SyncEngine.swift */,
 				FACE0000000000000000CF0A /* SyncSession.swift */,
 				FACE0000000000000000CF0C /* SyncDebugView.swift */,
+				FACE0000000000000000CF0E /* WordSyncCoordinator.swift */,
 			);
 			path = iPadPrototype;
 			sourceTree = "<group>";
@@ -137,6 +142,9 @@
 			);
 			dependencies = (
 			);
+			packageProductDependencies = (
+				FACE0000000000000000CF10 /* SpellingSyncCore */,
+			);
 			name = SpellingTrainer;
 			productName = SpellingTrainer;
 			productReference = 0A1003012D00000100000001 /* SpellingTrainer.app */;
@@ -168,6 +176,7 @@
 			mainGroup = 0A1005012D00000100000001;
 			packageReferences = (
 				976508772FEDA31A0051D674 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				FACE0000000000000000CF11 /* XCLocalSwiftPackageReference "." */,
 			);
 			productRefGroup = 0A1005032D00000100000001 /* Products */;
 			projectDirPath = "";
@@ -203,6 +212,7 @@
 				FACE0000000000000000CF07 /* SyncEngine.swift in Sources */,
 				FACE0000000000000000CF09 /* SyncSession.swift in Sources */,
 				FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */,
+				FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */,
 				0A1001082D00000100000001 /* AppModel.swift in Sources */,
 				0A1001092D00000100000001 /* HomeView.swift in Sources */,
 				0A10010A2D00000100000001 /* SpellingSessionView.swift in Sources */,
@@ -443,11 +453,23 @@
 		};
 /* End XCRemoteSwiftPackageReference section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		FACE0000000000000000CF11 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ".";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		976508792FEDA7750051D674 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 976508772FEDA31A0051D674 /* XCRemoteSwiftPackageReference "supabase-swift" */;
 			productName = Supabase;
+		};
+		FACE0000000000000000CF10 /* SpellingSyncCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FACE0000000000000000CF11 /* XCLocalSwiftPackageReference "." */;
+			productName = SpellingSyncCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

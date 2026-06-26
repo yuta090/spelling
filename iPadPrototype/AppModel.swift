@@ -1,6 +1,7 @@
 import Foundation
 import SQLite3
 import SwiftData
+import SpellingSyncCore
 
 /// 同梱 wordbank.sqlite（EJDict訳語＋Tanaka例文）への読み取り専用アクセス。
 struct WordExample: Identifiable, Equatable, Sendable {
@@ -487,6 +488,62 @@ final class AppModel: ObservableObject {
     /// 過去ぶんも含めて判定するので、いちど満点にすれば次の追加が解放される。
     func childStepIsMastered(_ step: WordStep) -> Bool {
         hasPerfectRun(for: step.words, in: attempts)
+    }
+
+    // MARK: - words 同期（サイドカー方式 / SpellingSyncCore）
+
+    /// `words` の 1 サイクル同期を回すコーディネータ（pull→merge→push）。
+    /// AppModel の永続化ストアを共有し、サイドカー/カーソルを端末に保存する。
+    private lazy var wordSyncCoordinator = WordSyncCoordinator(persistenceStore: persistenceStore)
+
+    /// UI 単語 → 同期素材（`LocalWord`）。
+    /// - `displayOrder` は配列インデックス（並び順をそのまま順序に写す）。
+    /// - `stepID` は **同期しない**（ローカルの派生ステップで、サーバー `step_id`(UUID) と一致しない。§7.5）。
+    func localWordsForSync() -> [LocalWord] {
+        words.enumerated().map { index, word in
+            LocalWord(
+                id: word.id,
+                payload: WordPayload(
+                    text: word.text,
+                    promptText: word.promptText,
+                    source: word.source.rawValue,
+                    stepID: nil,
+                    displayOrder: index
+                ),
+                createdAt: word.registeredAt
+            )
+        }
+    }
+
+    /// マージ後の生存レコードを `words` に反映する。
+    /// - 既存 id は `stepID`/`registeredAt`（ローカル固有値）を保持し、本文だけ更新する。
+    /// - 墓石になった id は除外される（生存レコードのみ渡される前提）。
+    /// - 並びは `displayOrder` 昇順（同値は id で安定化）。
+    func applyMergedWords(_ live: [WordSyncRecord]) {
+        let existingByID = Dictionary(words.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let mapped = live
+            .sorted {
+                $0.payload.displayOrder != $1.payload.displayOrder
+                    ? $0.payload.displayOrder < $1.payload.displayOrder
+                    : $0.sync.id.uuidString < $1.sync.id.uuidString
+            }
+            .map { record -> SpellingWord in
+                let prior = existingByID[record.sync.id]
+                return SpellingWord(
+                    id: record.sync.id,
+                    text: record.payload.text,
+                    promptText: record.payload.promptText,
+                    registeredAt: prior?.registeredAt ?? record.sync.createdAt,
+                    stepID: prior?.stepID,                                   // ローカルのステップ割当を保持
+                    source: WordSource(rawValue: record.payload.source) ?? .parent
+                )
+            }
+        if mapped != words { words = mapped }
+    }
+
+    /// `words` を 1 サイクル同期する（世帯未選択なら何もしない）。
+    func syncWords(householdID: UUID?) async throws {
+        try await wordSyncCoordinator.sync(appModel: self, householdID: householdID)
     }
 
     /// 指定IDの単語をまとめて削除する（親メニューの一括削除用）。
