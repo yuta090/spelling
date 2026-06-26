@@ -3,18 +3,47 @@ import SwiftUI
 @main
 struct SpellingTrainerApp: App {
     @StateObject private var model = AppModel()
+    /// 認証・アクティブ世帯。自動同期のスコープ供給元としてアプリ全体で共有する。
+    @StateObject private var session = SyncSession()
 
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            RootView()
                 .environmentObject(model)
-            #if DEBUG
-                // 同期バックエンドの疎通用デバッグ導線（製品UIには出さない）。
-                .overlay(alignment: .bottomLeading) {
-                    SyncDebugLauncher()
-                }
-            #endif
+                .environmentObject(session)
         }
+    }
+}
+
+/// ルート。`words` の**自動同期トリガ**をここで束ねる:
+/// 起動時／前面化（`scenePhase == .active`）／サインイン・世帯確定（`activeHouseholdID` 変化）。
+/// 単語編集後のデバウンス同期は `AppModel.words` 側で発火する。
+/// いずれも世帯未選択なら no-op（`AppModel.syncNow` がガード）。
+private struct RootView: View {
+    @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var session: SyncSession
+    @Environment(\.scenePhase) private var scenePhase
+
+    var body: some View {
+        HomeView()
+            .task {
+                // 世帯供給元を注入し、認証状態を読み直してから起動時同期。
+                model.configureSync { [weak session] in session?.activeHouseholdID }
+                await session.refreshOnAppear()
+                await model.syncNow()
+            }
+            .onChange(of: scenePhase) { phase in
+                if phase == .active { Task { await model.syncNow() } }
+            }
+            .onChange(of: session.activeHouseholdID) { _ in
+                Task { await model.syncNow() }
+            }
+        #if DEBUG
+            // 同期バックエンドの疎通用デバッグ導線（製品UIには出さない）。
+            .overlay(alignment: .bottomLeading) {
+                SyncDebugLauncher()
+            }
+        #endif
     }
 }
 
