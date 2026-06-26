@@ -4510,7 +4510,7 @@ private struct SmallCoinIcon: View {
     }
 }
 
-private struct RewardCharacterAvatar: View {
+struct RewardCharacterAvatar: View {
     var character: HomeRewardCharacter
 
     var body: some View {
@@ -7825,7 +7825,7 @@ struct HomeBackgroundTheme: Identifiable {
     // BG-CATALOG-GENERATED-END
 }
 
-private struct HomeBackground: View {
+struct HomeBackground: View {
     var themeID: String = HomeBackgroundTheme.defaultID
 
     private var theme: HomeBackgroundTheme {
@@ -8215,7 +8215,7 @@ private struct Snowman: View {
 }
 
 /// Compact preview of a background theme for store cards.
-private struct HomeBackgroundThumbnail: View {
+struct HomeBackgroundThumbnail: View {
     var theme: HomeBackgroundTheme
     var cornerRadius: CGFloat = 10
 
