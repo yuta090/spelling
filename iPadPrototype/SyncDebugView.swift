@@ -7,6 +7,7 @@ import SwiftUI
 /// 設計: docs/supabase-adapter-design.md
 struct SyncDebugView: View {
     @ObservedObject var session: SyncSession
+    @EnvironmentObject var model: AppModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var email = ""
@@ -26,6 +27,7 @@ struct SyncDebugView: View {
                 parentSignInSection
                 householdSection
                 connectivitySection
+                wordSyncSection
                 childSection
                 if session.isSignedIn { signOutSection }
             }
@@ -183,6 +185,26 @@ struct SyncDebugView: View {
         }
     }
 
+    /// words のサイドカー同期（pull→merge→push）を手動で叩く。
+    /// active な世帯が必要（push スコープの前提）。
+    @ViewBuilder
+    private var wordSyncSection: some View {
+        Section("単語同期（words）") {
+            LabeledRow(label: "ローカル単語数", value: "\(model.words.count)")
+            Button("単語を同期") {
+                run("単語を同期しました") {
+                    try await model.syncWords(householdID: session.activeHouseholdID)
+                }
+            }
+            .disabled(session.activeHouseholdID == nil)
+            if session.activeHouseholdID == nil {
+                Text("世帯を選択/作成すると同期できます。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
     // MARK: - Actions
 
     /// 非同期アクションを busy 表示・エラー捕捉つきで実行する。
@@ -229,6 +251,7 @@ private struct LabeledRow: View {
 /// 製品UIを汚さずに `SyncDebugView` を開く、DEBUG限定の小さな起動ボタン。
 /// `SpellingTrainerApp` のルートに overlay として差し込む。
 struct SyncDebugLauncher: View {
+    @EnvironmentObject var model: AppModel
     @StateObject private var session = SyncSession()
     @State private var isPresented = false
 
@@ -248,6 +271,7 @@ struct SyncDebugLauncher: View {
         .accessibilityLabel("同期デバッグ")
         .sheet(isPresented: $isPresented) {
             SyncDebugView(session: session)
+                .environmentObject(model)
         }
     }
 }
