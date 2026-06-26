@@ -10,13 +10,14 @@ struct OnboardingView: View {
     @ObservedObject var session: SyncSession
 
     private enum Step: Int, CaseIterable {
-        case grade, lookAndFeel, parent
+        case welcome, grade, lookAndFeel, parent
     }
 
-    @State private var step: Step = .grade
+    @State private var step: Step = .welcome
     @State private var pickedGrade: GradeLevel?
     @State private var name = ""
     @State private var didLoadName = false
+    @State private var bounce = false
     @State private var showingAccount = false
     @State private var showingSkipConfirm = false
 
@@ -53,19 +54,24 @@ struct OnboardingView: View {
 
     private var header: some View {
         HStack {
-            // 進み具合（小さなドット）。
-            HStack(spacing: 6) {
-                ForEach(Step.allCases, id: \.rawValue) { s in
-                    Circle()
-                        .fill(s.rawValue <= step.rawValue ? Color.accentColor : Color.secondary.opacity(0.3))
-                        .frame(width: 8, height: 8)
+            // 進み具合（小さなドット）。ウェルカムは“表紙”なので出さない。
+            if step != .welcome {
+                HStack(spacing: 6) {
+                    ForEach(Step.allCases.filter { $0 != .welcome }, id: \.rawValue) { s in
+                        Circle()
+                            .fill(s.rawValue <= step.rawValue ? Color.accentColor : Color.secondary.opacity(0.3))
+                            .frame(width: 8, height: 8)
+                    }
                 }
             }
             Spacer()
-            Button("スキップ") { showingSkipConfirm = true }
-                .font(.callout.weight(.bold))
-                .foregroundStyle(.secondary)
+            if step != .welcome {
+                Button("スキップ") { showingSkipConfirm = true }
+                    .font(.callout.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
         }
+        .frame(height: 22)
     }
 
     @ViewBuilder
@@ -77,11 +83,17 @@ struct OnboardingView: View {
     }
 
     private var primaryTitle: String {
-        step == .parent ? "やってみる！" : "つぎへ"
+        switch step {
+        case .welcome: return "はじめる"
+        case .parent: return "やってみる！"
+        default: return "つぎへ"
+        }
     }
 
     private func primaryAction() {
         switch step {
+        case .welcome:
+            advance()
         case .grade:
             if let pickedGrade {
                 model.seedStarterWordsIfDefault(for: pickedGrade)
@@ -99,9 +111,34 @@ struct OnboardingView: View {
     @ViewBuilder
     private var content: some View {
         switch step {
+        case .welcome: welcomeStep
         case .grade: gradeStep
         case .lookAndFeel: lookAndFeelStep
         case .parent: parentStep
+        }
+    }
+
+    private var welcomeStep: some View {
+        VStack(spacing: 18) {
+            RewardCharacterAvatar(character: HomeRewardCharacter.character(id: model.selectedCharacterID))
+                .frame(width: 150, height: 150)
+                .scaleEffect(bounce ? 1.0 : 0.86)
+                .rotationEffect(.degrees(bounce ? 0 : -6))
+                .shadow(color: .black.opacity(0.12), radius: 12, y: 6)
+
+            Text("はじめまして！")
+                .font(.system(size: 36, weight: .heavy, design: .rounded))
+                .foregroundStyle(.primary)
+
+            Text("えいごの たんごで\nいっしょに あそぼう！")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.55, dampingFraction: 0.5).repeatCount(3, autoreverses: true)) {
+                bounce = true
+            }
         }
     }
 
