@@ -1,0 +1,6 @@
+{
+  "images" : [
+    { "filename" : "bg_farm.png", "idiom" : "universal" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}

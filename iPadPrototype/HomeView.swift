@@ -2192,7 +2192,7 @@ struct HomeRewardCharacter: Identifiable {
     // CATALOG-GENERATED-BEGIN
     static let defaultID = "bear"
 
-    static let defaultUnlockedIDs: Set<String> = ["bear", "cat", "dog"]
+    static let defaultUnlockedIDs: Set<String> = ["bear", "cat", "dog", "rabbit", "panda", "penguin", "fox", "owl"]
 
     static let catalog: [HomeRewardCharacter] = [
         HomeRewardCharacter(
@@ -2233,7 +2233,7 @@ struct HomeRewardCharacter: Identifiable {
             category: .animal,
             japaneseName: "うさぎ",
             englishName: "Rabbit",
-            price: 3,
+            price: 0,
             style: .rabbit,
             primary: Color(red: 0.9490, green: 0.8000, blue: 0.9020),
             secondary: Color(red: 1.0000, green: 0.9412, blue: 0.9804),
@@ -2244,7 +2244,7 @@ struct HomeRewardCharacter: Identifiable {
             category: .animal,
             japaneseName: "パンダ",
             englishName: "Panda",
-            price: 3,
+            price: 0,
             style: .panda,
             primary: Color(red: 0.1686, green: 0.1882, blue: 0.2314),
             secondary: Color(red: 0.9608, green: 0.9608, blue: 0.9216),
@@ -2255,7 +2255,7 @@ struct HomeRewardCharacter: Identifiable {
             category: .animal,
             japaneseName: "ペンギン",
             englishName: "Penguin",
-            price: 4,
+            price: 0,
             style: .penguin,
             primary: Color(red: 0.1804, green: 0.3098, blue: 0.6196),
             secondary: Color(red: 0.9412, green: 0.9686, blue: 1.0000),
@@ -2277,7 +2277,7 @@ struct HomeRewardCharacter: Identifiable {
             category: .animal,
             japaneseName: "きつね",
             englishName: "Fox",
-            price: 4,
+            price: 0,
             style: .fox,
             primary: Color(red: 0.9216, green: 0.4314, blue: 0.1216),
             secondary: Color(red: 1.0000, green: 0.8784, blue: 0.6980),
@@ -2343,7 +2343,7 @@ struct HomeRewardCharacter: Identifiable {
             category: .animal,
             japaneseName: "ふくろう",
             englishName: "Owl",
-            price: 5,
+            price: 0,
             style: .owl,
             primary: Color(red: 0.6000, green: 0.3804, blue: 0.1804),
             secondary: Color(red: 0.9490, green: 0.7804, blue: 0.4784),
@@ -4510,7 +4510,7 @@ private struct SmallCoinIcon: View {
     }
 }
 
-private struct RewardCharacterAvatar: View {
+struct RewardCharacterAvatar: View {
     var character: HomeRewardCharacter
 
     var body: some View {
@@ -7727,7 +7727,8 @@ struct HomeBackgroundTheme: Identifiable {
 
     static let defaultID = "meadow"
 
-    static let defaultUnlockedIDs: Set<String> = ["meadow"]
+    // オンボーディングで選べるよう、スターターとして数個を無料解放（残りはコインで解放）。
+    static let defaultUnlockedIDs: Set<String> = ["meadow", "sunset", "forest", "park", "rainbow"]
 
     static let catalog: [HomeBackgroundTheme] = proceduralThemes + imageThemes
 
@@ -7811,21 +7812,24 @@ struct HomeBackgroundTheme: Identifiable {
     // Image-backed themes. Source of truth: scripts/backgrounds.csv
     // Regenerate with: python3 scripts/generate_backgrounds.py
     static let imageThemes: [HomeBackgroundTheme] = [
-        HomeBackgroundTheme(id: "forest", japaneseName: "もり", englishName: "Forest", price: 8, imageName: "bg_forest"),
+        HomeBackgroundTheme(id: "forest", japaneseName: "もり", englishName: "Forest", price: 0, imageName: "bg_forest"),
         HomeBackgroundTheme(id: "flowerfield", japaneseName: "おはなばたけ", englishName: "Flower Field", price: 10, imageName: "bg_flowerfield"),
-        HomeBackgroundTheme(id: "park", japaneseName: "こうえん", englishName: "Park", price: 8, imageName: "bg_park"),
+        HomeBackgroundTheme(id: "park", japaneseName: "こうえん", englishName: "Park", price: 0, imageName: "bg_park"),
         HomeBackgroundTheme(id: "town", japaneseName: "まち", englishName: "Town", price: 10, imageName: "bg_town"),
         HomeBackgroundTheme(id: "sakura", japaneseName: "さくら", englishName: "Cherry Blossoms", price: 12, imageName: "bg_sakura"),
         HomeBackgroundTheme(id: "autumn", japaneseName: "こうよう", englishName: "Autumn Leaves", price: 12, imageName: "bg_autumn"),
         HomeBackgroundTheme(id: "underwater", japaneseName: "うみのなか", englishName: "Under the Sea", price: 14, imageName: "bg_underwater"),
-        HomeBackgroundTheme(id: "rainbow", japaneseName: "にじ", englishName: "Rainbow", price: 12, imageName: "bg_rainbow"),
+        HomeBackgroundTheme(id: "rainbow", japaneseName: "にじ", englishName: "Rainbow", price: 0, imageName: "bg_rainbow"),
         HomeBackgroundTheme(id: "candyland", japaneseName: "おかしのくに", englishName: "Candy Land", price: 16, imageName: "bg_candyland"),
-        HomeBackgroundTheme(id: "castle", japaneseName: "おしろ", englishName: "Castle", price: 16, imageName: "bg_castle")
+        HomeBackgroundTheme(id: "castle", japaneseName: "おしろ", englishName: "Castle", price: 16, imageName: "bg_castle"),
+        HomeBackgroundTheme(id: "farm", japaneseName: "ぼくじょう", englishName: "Farm", price: 10, imageName: "bg_farm"),
+        HomeBackgroundTheme(id: "aquarium", japaneseName: "すいぞくかん", englishName: "Aquarium", price: 12, imageName: "bg_aquarium"),
+        HomeBackgroundTheme(id: "amusement", japaneseName: "ゆうえんち", englishName: "Amusement Park", price: 14, imageName: "bg_amusement")
     ]
     // BG-CATALOG-GENERATED-END
 }
 
-private struct HomeBackground: View {
+struct HomeBackground: View {
     var themeID: String = HomeBackgroundTheme.defaultID
 
     private var theme: HomeBackgroundTheme {
@@ -8215,7 +8219,7 @@ private struct Snowman: View {
 }
 
 /// Compact preview of a background theme for store cards.
-private struct HomeBackgroundThumbnail: View {
+struct HomeBackgroundThumbnail: View {
     var theme: HomeBackgroundTheme
     var cornerRadius: CGFloat = 10
 

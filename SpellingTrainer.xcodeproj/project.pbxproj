@@ -24,6 +24,7 @@
 		FACE0000000000000000CF13 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF14 /* OnboardingView.swift */; };
 		FACE0000000000000000CF15 /* ParentGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF16 /* ParentGateView.swift */; };
 		FACE0000000000000000CF17 /* AccountSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF18 /* AccountSyncView.swift */; };
+		FACE0000000000000000CF19 /* StarterWords.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF1A /* StarterWords.swift */; };
 		0A1001082D00000100000001 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002082D00000100000001 /* AppModel.swift */; };
 		0A1001092D00000100000001 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002092D00000100000001 /* HomeView.swift */; };
 		0A10010A2D00000100000001 /* SpellingSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020A2D00000100000001 /* SpellingSessionView.swift */; };
@@ -54,6 +55,7 @@
 		FACE0000000000000000CF14 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF16 /* ParentGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentGateView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF18 /* AccountSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSyncView.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CF1A /* StarterWords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarterWords.swift; sourceTree = "<group>"; };
 		0A1002082D00000100000001 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		0A1002092D00000100000001 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0A10020A2D00000100000001 /* SpellingSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpellingSessionView.swift; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 				FACE0000000000000000CF14 /* OnboardingView.swift */,
 				FACE0000000000000000CF16 /* ParentGateView.swift */,
 				FACE0000000000000000CF18 /* AccountSyncView.swift */,
+				FACE0000000000000000CF1A /* StarterWords.swift */,
 			);
 			path = iPadPrototype;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 				FACE0000000000000000CF13 /* OnboardingView.swift in Sources */,
 				FACE0000000000000000CF15 /* ParentGateView.swift in Sources */,
 				FACE0000000000000000CF17 /* AccountSyncView.swift in Sources */,
+				FACE0000000000000000CF19 /* StarterWords.swift in Sources */,
 				0A1001082D00000100000001 /* AppModel.swift in Sources */,
 				0A1001092D00000100000001 /* HomeView.swift in Sources */,
 				0A10010A2D00000100000001 /* SpellingSessionView.swift in Sources */,

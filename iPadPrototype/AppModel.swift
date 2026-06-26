@@ -174,6 +174,11 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(childName, key: childNameKey) }
     }
 
+    /// 選んだ学年（`GradeLevel.rawValue`、未選択は空）。初期単語のシードに使う。
+    @Published var selectedGrade: String {
+        didSet { persistenceStore.save(selectedGrade, key: selectedGradeKey) }
+    }
+
     @Published var focusedPracticeWordIDs = Set<UUID>()
 
     static let practiceCoinReward = 3
@@ -197,6 +202,13 @@ final class AppModel: ObservableObject {
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
     private let hasCompletedOnboardingKey = "spellingTrainer.hasCompletedOnboarding"
     private let childNameKey = "spellingTrainer.childName"
+    private let selectedGradeKey = "spellingTrainer.selectedGrade"
+
+    /// オンボーディング初期状態の判定に使う、同梱デフォルト単語（text＋訳語のペア）。
+    /// text だけでなく訳語・件数も含めて厳密一致を見て、ユーザーが少しでも触っていたら置き換えない。
+    private static let defaultSeedPairs: Set<String> = [
+        "cat\u{1}ねこ", "dog\u{1}いぬ", "friend\u{1}友[とも]だち", "school\u{1}学校[がっこう]"
+    ]
 
     init(persistenceStore: UserDataStore = AppPersistenceStore()) {
         self.persistenceStore = persistenceStore
@@ -219,6 +231,7 @@ final class AppModel: ObservableObject {
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
         hasCompletedOnboarding = persistenceStore.load(Bool.self, key: hasCompletedOnboardingKey) ?? false
         childName = persistenceStore.load(String.self, key: childNameKey) ?? ""
+        selectedGrade = persistenceStore.load(String.self, key: selectedGradeKey) ?? ""
         let savedCharacterID = persistenceStore.load(String.self, key: selectedCharacterIDKey) ?? Self.defaultCharacterID
         selectedCharacterID = initialUnlockedCharacterIDs.contains(savedCharacterID) ? savedCharacterID : Self.defaultCharacterID
         let initialUnlockedBackgroundIDs = (persistenceStore.load(Set<String>.self, key: unlockedBackgroundIDsKey) ?? []).union(Self.defaultUnlockedBackgroundIDs)
@@ -575,6 +588,18 @@ final class AppModel: ObservableObject {
     private var pendingSyncTask: Task<Void, Never>?
     /// `applyMergedWords` による `words` 更新が、編集トリガを再帰的に誘発しないためのフラグ。
     private var isApplyingMergedWords = false
+
+    /// 学年に合った初期単語をシードする（オンボーディングで学年を選んだとき）。
+    /// - ユーザーがまだ単語をいじっていない（＝同梱デフォルトのまま）ときだけ置き換える。
+    ///   既存ユーザーのアップグレード時に、本人の単語を消さないための保険。
+    func seedStarterWordsIfDefault(for grade: GradeLevel) {
+        selectedGrade = grade.rawValue
+        let current = Set(words.map { "\($0.text.lowercased())\u{1}\($0.promptText)" })
+        guard current == Self.defaultSeedPairs else { return }   // 触っていたら置き換えない
+        words = StarterWords.seeds(for: grade).map {
+            SpellingWord(text: $0.text, promptText: $0.promptText)
+        }
+    }
 
     /// 自動同期の世帯供給元を設定する（アプリ起動時に 1 回）。
     func configureSync(householdIDProvider: @escaping () -> UUID?) {
