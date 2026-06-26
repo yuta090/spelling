@@ -25,10 +25,21 @@ private struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        HomeView()
+        Group {
+            if model.hasCompletedOnboarding {
+                HomeView()
+            } else {
+                // 初回だけ保護者向けオンボーディング。完了でホームへ切り替わる。
+                OnboardingView(session: session)
+            }
+        }
             .task {
                 // 世帯供給元を注入し、認証状態を読み直してから起動時同期。
-                model.configureSync { [weak session] in session?.activeHouseholdID }
+                // サインイン済みの親のときだけ世帯を返す（古い active ID で no-account 同期を走らせない）。
+                model.configureSync { [weak session] in
+                    guard let session, session.isSignedIn, !session.isAnonymous else { return nil }
+                    return session.activeHouseholdID
+                }
                 await session.refreshOnAppear()
                 await model.syncNow()
             }

@@ -164,6 +164,16 @@ final class AppModel: ObservableObject {
         didSet { saveHomeReviewWordIDs() }
     }
 
+    /// 初回オンボーディング完了フラグ。false の間だけ初回フローを出す。
+    @Published var hasCompletedOnboarding: Bool {
+        didSet { persistenceStore.save(hasCompletedOnboarding, key: hasCompletedOnboardingKey) }
+    }
+
+    /// 子どものニックネーム（任意）。ホームの呼びかけや将来のプロファイル表示名に使う。
+    @Published var childName: String {
+        didSet { persistenceStore.save(childName, key: childNameKey) }
+    }
+
     @Published var focusedPracticeWordIDs = Set<UUID>()
 
     static let practiceCoinReward = 3
@@ -185,6 +195,8 @@ final class AppModel: ObservableObject {
     private let selectedBackgroundIDKey = "spellingTrainer.selectedBackgroundID"
     private let unlockedBackgroundIDsKey = "spellingTrainer.unlockedBackgroundIDs"
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
+    private let hasCompletedOnboardingKey = "spellingTrainer.hasCompletedOnboarding"
+    private let childNameKey = "spellingTrainer.childName"
 
     init(persistenceStore: UserDataStore = AppPersistenceStore()) {
         self.persistenceStore = persistenceStore
@@ -205,6 +217,8 @@ final class AppModel: ObservableObject {
         let initialUnlockedCharacterIDs = (persistenceStore.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
         unlockedCharacterIDs = initialUnlockedCharacterIDs
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
+        hasCompletedOnboarding = persistenceStore.load(Bool.self, key: hasCompletedOnboardingKey) ?? false
+        childName = persistenceStore.load(String.self, key: childNameKey) ?? ""
         let savedCharacterID = persistenceStore.load(String.self, key: selectedCharacterIDKey) ?? Self.defaultCharacterID
         selectedCharacterID = initialUnlockedCharacterIDs.contains(savedCharacterID) ? savedCharacterID : Self.defaultCharacterID
         let initialUnlockedBackgroundIDs = (persistenceStore.load(Set<String>.self, key: unlockedBackgroundIDsKey) ?? []).union(Self.defaultUnlockedBackgroundIDs)

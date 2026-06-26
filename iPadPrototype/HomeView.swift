@@ -3,10 +3,13 @@ import UIKit
 
 struct HomeView: View {
     @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var session: SyncSession
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @StateObject private var iris = IrisController()
     @State private var activeMode: SessionMode?
     @State private var showingParent = false
+    @State private var showingParentGate = false
+    @State private var pendingParentOpen = false
     @State private var showingResults = false
     @State private var showingWordPreview = false
     @State private var showingCharacterPicker = false
@@ -179,6 +182,19 @@ struct HomeView: View {
             .fullScreenCover(isPresented: $showingParent) {
                 ParentDashboardView()
                     .environmentObject(model)
+                    .environmentObject(session)
+            }
+            // 親メニューは「かんたんな大人ゲート」の奥に隠す（子の誤操作で開かない）。
+            .sheet(isPresented: $showingParentGate, onDismiss: {
+                if pendingParentOpen {
+                    pendingParentOpen = false
+                    showingParent = true
+                }
+            }) {
+                ParentGateView {
+                    pendingParentOpen = true
+                    showingParentGate = false
+                }
             }
             .sheet(isPresented: $showingResults) {
                 ResultsView()
@@ -408,7 +424,7 @@ struct HomeView: View {
             .accessibilityLabel(language.text(japanese: "結果", english: "Results"))
 
             Button {
-                showingParent = true
+                showingParentGate = true
             } label: {
                 Image(systemName: "gearshape.fill")
                     .font(.title2.weight(.bold))
@@ -8310,4 +8326,5 @@ private struct ThumbnailHill: Shape {
 #Preview {
     HomeView()
         .environmentObject(AppModel())
+        .environmentObject(SyncSession())
 }
