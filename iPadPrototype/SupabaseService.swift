@@ -20,7 +20,14 @@ final class SupabaseService {
     private init() {
         client = SupabaseClient(
             supabaseURL: SupabaseConfig.url,
-            supabaseKey: SupabaseConfig.anonKey
+            supabaseKey: SupabaseConfig.anonKey,
+            options: SupabaseClientOptions(
+                // supabase-swift の次メジャーで既定になる新挙動に今から合わせる
+                // （ローカル保存セッションを初期セッションとして常に emit する）。
+                // 認証判定は currentUser を読む実装なので挙動差は実質無く、起動時の警告も消える。
+                // 参考: https://github.com/supabase/supabase-swift/pull/822
+                auth: SupabaseClientOptions.AuthOptions(emitLocalSessionAsInitialSession: true)
+            )
         )
     }
 
