@@ -78,7 +78,15 @@ struct WordOrderingDemoView: View {
         NavigationStack {
             VStack(spacing: 22) {
                 prompt
-                answerRow
+                VStack(spacing: 10) {
+                    answerRow
+                    // 完成させた文の真下に「きいてみる」。読むのは“子が並べた文”なので答えは漏れない。
+                    if isComplete {
+                        listenButton
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
+                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isComplete)
                 trayRow
                 Spacer(minLength: 0)
                 feedbackAndActions
@@ -151,6 +159,26 @@ struct WordOrderingDemoView: View {
         .frame(maxWidth: .infinity, alignment: .center)
     }
 
+    /// 完成した文を聞くボタン。読み上げるのは **子が並べた文**（`placed`）。
+    /// 正解文ではないので、間違っていても答えは漏れず、耳でのセルフチェックになる。
+    private var listenButton: some View {
+        Button {
+            WordOrderingHaptics.tap()
+            let sentence = placed.map(\.text).joined(separator: " ")
+            speech.speak(sentence, language: "en-US")
+        } label: {
+            Label("きいてみる", systemImage: "speaker.wave.2.fill")
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(WO.accent)
+                .padding(.horizontal, 22)
+                .padding(.vertical, 11)
+                .background(Capsule().fill(WO.tileFill))
+                .overlay(Capsule().stroke(WO.tileStroke, lineWidth: 2))
+        }
+        .buttonStyle(.plain)
+        .tapFeedback(bounce: true)
+    }
+
     private enum TileRole { case tray, placed }
 
     private func tileButton(_ tile: OrderingTile, role: TileRole) -> some View {
@@ -196,30 +224,9 @@ struct WordOrderingDemoView: View {
                 }
             }
         } else {
-            VStack(spacing: 12) {
-                // 全部ならべ終えたら、答え合わせの前に英文を聞ける。
-                if isComplete {
-                    Button {
-                        WordOrderingHaptics.tap()
-                        speech.speak(item.en, language: "en-US")
-                    } label: {
-                        Label("きいてみる", systemImage: "speaker.wave.2.fill")
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundStyle(WO.accent)
-                            .padding(.horizontal, 22)
-                            .padding(.vertical, 11)
-                            .background(Capsule().fill(WO.tileFill))
-                            .overlay(Capsule().stroke(WO.tileStroke, lineWidth: 2))
-                    }
-                    .buttonStyle(.plain)
-                    .tapFeedback(bounce: true)
-                    .transition(.scale.combined(with: .opacity))
-                }
-                bigButton("こたえあわせ", tint: isComplete ? WO.accent : Color.gray.opacity(0.4),
-                          action: check)
-                    .disabled(!isComplete)
-            }
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isComplete)
+            bigButton("こたえあわせ", tint: isComplete ? WO.accent : Color.gray.opacity(0.4),
+                      action: check)
+                .disabled(!isComplete)
         }
     }
 
