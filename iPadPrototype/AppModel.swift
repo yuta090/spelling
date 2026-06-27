@@ -154,6 +154,11 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(lastLoginDay, key: lastLoginDayKey) }
     }
 
+    /// 最後にテスト満点ボーナスを付与した日（1日1回の判定に使う）。
+    @Published var lastPerfectBonusDay: Date? {
+        didSet { persistenceStore.save(lastPerfectBonusDay, key: lastPerfectBonusDayKey) }
+    }
+
     @Published var selectedCharacterID: String {
         didSet { saveSelectedCharacterID() }
     }
@@ -212,6 +217,7 @@ final class AppModel: ObservableObject {
     private let rewardCoinsKey = "spellingTrainer.rewardCoins"
     private let loginStreakKey = "spellingTrainer.loginStreak"
     private let lastLoginDayKey = "spellingTrainer.lastLoginDay"
+    private let lastPerfectBonusDayKey = "spellingTrainer.lastPerfectBonusDay"
     private let selectedCharacterIDKey = "spellingTrainer.selectedCharacterID"
     private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
     private let selectedBackgroundIDKey = "spellingTrainer.selectedBackgroundID"
@@ -246,6 +252,7 @@ final class AppModel: ObservableObject {
         rewardCoins = max(persistenceStore.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
         loginStreak = max(persistenceStore.load(Int.self, key: loginStreakKey) ?? 0, 0)
         lastLoginDay = persistenceStore.load(Date.self, key: lastLoginDayKey)
+        lastPerfectBonusDay = persistenceStore.load(Date.self, key: lastPerfectBonusDayKey)
         let initialUnlockedCharacterIDs = (persistenceStore.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
         unlockedCharacterIDs = initialUnlockedCharacterIDs
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
@@ -985,6 +992,18 @@ final class AppModel: ObservableObject {
         lastLoginDay = now
         rewardCoins = max(rewardCoins + outcome.coins, 0)
         return outcome
+    }
+
+    /// テスト満点ボーナス。**今日まだ**なら単語数に応じた 5〜10 コインを付与し、その額を返す。
+    /// すでに今日付与済みなら nil（1日1回）。途中で単語を足していても、完了した問題数で計算する。
+    func awardPerfectTestBonusIfEligible(wordCount: Int, now: Date = Date(), calendar: Calendar = .current) -> Int? {
+        guard CoinRewards.canAwardPerfectBonus(lastAward: lastPerfectBonusDay, today: now, calendar: calendar) else {
+            return nil
+        }
+        let bonus = CoinRewards.perfectTestBonus(wordCount: wordCount)
+        lastPerfectBonusDay = now
+        rewardCoins = max(rewardCoins + bonus, 0)
+        return bonus
     }
 
     func awardPracticeCoins(_ amount: Int = AppModel.practiceCoinReward) {
