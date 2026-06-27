@@ -232,7 +232,6 @@ struct HomeView: View {
         }
         .onAppear {
             schedulePracticeSelectionSync()
-            startFirstSessionIfNeeded()
         }
         .onValueChange(of: model.activeWords.map(\.id)) { _ in
             schedulePracticeSelectionSync()
@@ -249,18 +248,6 @@ struct HomeView: View {
         }
 
             IrisTransitionOverlay(controller: iris)
-        }
-    }
-
-    /// オンボーディング直後だけ、ホーム表示後に自動で最初のテストを始める（「やってみる！」の続き）。
-    /// 一時フラグなので一度だけ。少し待ってから iris 演出つきで開始する。
-    private func startFirstSessionIfNeeded() {
-        guard model.pendingFirstSession else { return }
-        model.pendingFirstSession = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            iris.cover(animated: !reduceMotion) {
-                activeMode = .test
-            }
         }
     }
 
