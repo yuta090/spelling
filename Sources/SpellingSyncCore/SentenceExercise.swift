@@ -32,7 +32,8 @@ public enum ExerciseFormat: String, Sendable, CaseIterable, Codable {
 
 /// 文バンクの1文（学年タグ・トークン済み）。出題はここから生成する。
 /// `tokens` は正解の語順そのもの（並べ替えの正解列）。
-/// `gradeBand` は内容語の最大 NGSL バンド（1...5）。`contentLemmas` は学年判定に使った内容語。
+/// `gradeBand` は内容語の最大 NGSL バンド（1...5）＝**語彙の壁**。`contentLemmas` は判定に使った内容語。
+/// `grammar` は文の**文法タグ**（1つ）＝**文法の壁**。nil は文法制約なし（暫定文・機能語のみ等）。
 public struct SentenceItem: Equatable, Sendable, Codable, Identifiable {
     public var id: UUID
     public var en: String
@@ -40,6 +41,7 @@ public struct SentenceItem: Equatable, Sendable, Codable, Identifiable {
     public var tokens: [String]
     public var gradeBand: Int
     public var contentLemmas: [String]
+    public var grammar: GrammarPoint?
 
     public init(
         id: UUID = UUID(),
@@ -47,7 +49,8 @@ public struct SentenceItem: Equatable, Sendable, Codable, Identifiable {
         ja: String,
         tokens: [String],
         gradeBand: Int,
-        contentLemmas: [String] = []
+        contentLemmas: [String] = [],
+        grammar: GrammarPoint? = nil
     ) {
         self.id = id
         self.en = en
@@ -55,12 +58,18 @@ public struct SentenceItem: Equatable, Sendable, Codable, Identifiable {
         self.tokens = tokens
         self.gradeBand = gradeBand
         self.contentLemmas = contentLemmas
+        self.grammar = grammar
     }
 
     /// 並べ替え問題として成立するか（少なくとも2種類の異なるトークンが要る）。
     /// 全同一語・単語1個・空はシャッフルしても正解順から崩せないため不成立。
     public var isScramblable: Bool {
         Set(tokens).count >= 2
+    }
+
+    /// この文の文法段階（タグから導出）。タグ無しは nil＝文法の壁にかからない。
+    public var grammarStage: GrammarStage? {
+        grammar?.stage
     }
 }
 
