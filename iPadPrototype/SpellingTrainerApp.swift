@@ -2,9 +2,19 @@ import SwiftUI
 
 @main
 struct SpellingTrainerApp: App {
-    @StateObject private var model = AppModel()
+    @StateObject private var model: AppModel
     /// 認証・アクティブ世帯。自動同期のスコープ供給元としてアプリ全体で共有する。
     @StateObject private var session = SyncSession()
+
+    init() {
+        // UIテスト時は揮発ストアでまっさらに開始する（実データを汚さない）。Release は通常ストアのみ。
+        #if DEBUG
+        let store: UserDataStore = UITestSupport.isActive ? InMemoryUserDataStore() : AppPersistenceStore()
+        #else
+        let store: UserDataStore = AppPersistenceStore()
+        #endif
+        _model = StateObject(wrappedValue: AppModel(persistenceStore: store))
+    }
 
     var body: some Scene {
         WindowGroup {

@@ -303,6 +303,11 @@ final class AppModel: ObservableObject {
         unlockedBackgroundIDs = initialUnlockedBackgroundIDs
         let savedBackgroundID = persistenceStore.load(String.self, key: selectedBackgroundIDKey) ?? Self.defaultBackgroundID
         selectedBackgroundID = initialUnlockedBackgroundIDs.contains(savedBackgroundID) ? savedBackgroundID : Self.defaultBackgroundID
+        #if DEBUG
+        if UITestSupport.isActive {
+            hasCompletedOnboarding = true   // UIテストはオンボーディングを飛ばしてホームから開始する
+        }
+        #endif
         ensureSelectedWordStepStillExists()
     }
 
@@ -1484,6 +1489,48 @@ final class AppPersistenceStore: @unchecked Sendable {
 // ローカルファイル保存を `UserDataStore` 境界に適合させる。
 // `load`/`save` は既存シグネチャと一致するため、宣言のみで準拠が成立する。
 extension AppPersistenceStore: UserDataStore {}
+
+// MARK: - UIテスト支援（E2E）
+
+/// UIテスト（XCUITest）からの起動かどうか。**Release では常に false**（`#if DEBUG` で無効）。
+/// 起動引数 `-uitests` で、状態リセット（揮発ストア）・親ゲートのバイパス・初期タブを切り替える。
+enum UITestSupport {
+    static var isActive: Bool {
+        #if DEBUG
+        return ProcessInfo.processInfo.arguments.contains("-uitests")
+        #else
+        return false
+        #endif
+    }
+
+    /// 起動時に親メニューを自動で開く（ホームのギアは bounce 付きで XCUITest の合成タップを飲むため迂回）。
+    static var opensParentOnLaunch: Bool {
+        #if DEBUG
+        return ProcessInfo.processInfo.arguments.contains("-uitest-open-parent")
+        #else
+        return false
+        #endif
+    }
+}
+
+#if DEBUG
+/// UIテスト用の**揮発**永続ストア（毎起動まっさら）。実ファイルを汚さない。DEBUG ビルドのみ。
+final class InMemoryUserDataStore: UserDataStore, @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: [String: Data] = [:]
+
+    func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
+        lock.lock(); defer { lock.unlock() }
+        guard let data = storage[key] else { return nil }
+        return try? JSONDecoder().decode(T.self, from: data)
+    }
+
+    func save<T: Encodable & Sendable>(_ value: T, key: String) {
+        lock.lock(); defer { lock.unlock() }
+        storage[key] = try? JSONEncoder().encode(value)
+    }
+}
+#endif
 
 // MARK: - StoreManager（StoreKit2）
 
