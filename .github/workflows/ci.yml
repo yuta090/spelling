@@ -41,6 +41,12 @@ jobs:
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           echo "Using simulator id=$UDID"
 
+      - name: Boot simulator and wait until ready
+        run: |
+          # コールド起動の初回 app.launch() タイムアウトを避けるため、事前に起動して完了を待つ。
+          xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
+          xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
+
       - name: Run E2E (builds app + UI tests)
         run: |
           set -o pipefail
@@ -50,6 +56,7 @@ jobs:
             -destination "id=${{ steps.sim.outputs.udid }}" \
             -only-testing:SpellingTrainerUITests \
             -resultBundlePath TestResults.xcresult \
+            -retry-tests-on-failure -test-iterations 2 \
             CODE_SIGNING_ALLOWED=NO
 
       - name: Upload test results on failure
