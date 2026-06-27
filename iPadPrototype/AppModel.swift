@@ -144,6 +144,16 @@ final class AppModel: ObservableObject {
         didSet { saveRewardCoins() }
     }
 
+    /// 連続ログイン日数（スタンプ）。
+    @Published var loginStreak: Int {
+        didSet { persistenceStore.save(loginStreak, key: loginStreakKey) }
+    }
+
+    /// 最後にログイン報酬を付与した日。
+    @Published var lastLoginDay: Date? {
+        didSet { persistenceStore.save(lastLoginDay, key: lastLoginDayKey) }
+    }
+
     @Published var selectedCharacterID: String {
         didSet { saveSelectedCharacterID() }
     }
@@ -200,6 +210,8 @@ final class AppModel: ObservableObject {
     private let settingsKey = "spellingTrainer.settings"
     private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"
     private let rewardCoinsKey = "spellingTrainer.rewardCoins"
+    private let loginStreakKey = "spellingTrainer.loginStreak"
+    private let lastLoginDayKey = "spellingTrainer.lastLoginDay"
     private let selectedCharacterIDKey = "spellingTrainer.selectedCharacterID"
     private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
     private let selectedBackgroundIDKey = "spellingTrainer.selectedBackgroundID"
@@ -232,6 +244,8 @@ final class AppModel: ObservableObject {
         settings = persistenceStore.load(TestSettings.self, key: settingsKey) ?? TestSettings()
         selectedWordStepID = persistenceStore.load(String.self, key: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
         rewardCoins = max(persistenceStore.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
+        loginStreak = max(persistenceStore.load(Int.self, key: loginStreakKey) ?? 0, 0)
+        lastLoginDay = persistenceStore.load(Date.self, key: lastLoginDayKey)
         let initialUnlockedCharacterIDs = (persistenceStore.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
         unlockedCharacterIDs = initialUnlockedCharacterIDs
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
@@ -960,6 +974,17 @@ final class AppModel: ObservableObject {
     func sendReviewWordsToHome(_ wordIDs: Set<UUID>, stepID: String) {
         selectedWordStepID = stepID
         homeReviewWordIDs = wordIDs
+    }
+
+    /// 今日まだなら連続ログイン報酬を付与し、結果（連続日数・コイン）を返す。付与済みなら nil。
+    func recordDailyLogin(now: Date = Date(), calendar: Calendar = .current) -> CoinRewards.LoginOutcome? {
+        guard let outcome = CoinRewards.dailyLogin(
+            lastLogin: lastLoginDay, today: now, currentStreak: loginStreak, calendar: calendar
+        ) else { return nil }
+        loginStreak = outcome.streak
+        lastLoginDay = now
+        rewardCoins = max(rewardCoins + outcome.coins, 0)
+        return outcome
     }
 
     func awardPracticeCoins(_ amount: Int = AppModel.practiceCoinReward) {
