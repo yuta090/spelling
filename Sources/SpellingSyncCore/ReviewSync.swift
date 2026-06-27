@@ -24,12 +24,15 @@ public struct ReviewPayload: Equatable, Codable, Sendable {
     public var exampleStoragePath: String?
     /// 採点した親（`reviewed_by` = auth.uid）。
     public var reviewedBy: UUID?
+    /// 採点時刻（`reviewed_at`）。未採点なら nil。同期メタの `updatedAt`（LWW基準）とは別の業務時刻。
+    public var reviewedAt: Date?
 
-    public init(attemptID: UUID, decision: ReviewDecision, exampleStoragePath: String? = nil, reviewedBy: UUID? = nil) {
+    public init(attemptID: UUID, decision: ReviewDecision, exampleStoragePath: String? = nil, reviewedBy: UUID? = nil, reviewedAt: Date? = nil) {
         self.attemptID = attemptID
         self.decision = decision
         self.exampleStoragePath = exampleStoragePath
         self.reviewedBy = reviewedBy
+        self.reviewedAt = reviewedAt
     }
 }
 
@@ -66,6 +69,7 @@ public enum ReviewIdentity {
         profileID: UUID?,
         exampleStoragePath: String? = nil,
         reviewedBy: UUID? = nil,
+        reviewedAt: Date? = nil,
         now: Date
     ) -> ReviewRecord {
         let meta = SyncMetadata(
@@ -79,7 +83,8 @@ public enum ReviewIdentity {
             attemptID: attemptID,
             decision: decision,
             exampleStoragePath: exampleStoragePath,
-            reviewedBy: reviewedBy
+            reviewedBy: reviewedBy,
+            reviewedAt: reviewedAt
         )
         return ReviewRecord(sync: meta, payload: payload)
     }
