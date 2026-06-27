@@ -5184,6 +5184,8 @@ private struct TestSettingsPanel: View {
                     titleVisibility: .visible
                 ) {
                     Button(language.text(japanese: "やり直す", english: "Redo"), role: .destructive) {
+                        // 初回体験をもう一度。ホームの「タップで きせかえ」ヒントも復活させる。
+                        model.hasShownHomeCharacterHint = false
                         // RootView がこれを見てオンボーディングを再表示する（この画面は自動的に閉じる）。
                         model.hasCompletedOnboarding = false
                     }

@@ -318,8 +318,14 @@ struct OnboardingView: View {
     private var coinGiftStep: some View {
         VStack(spacing: 18) {
             Text("🎁 プレゼント！")
-                .font(.system(size: 30, weight: .heavy, design: .rounded))
-                .foregroundStyle(.primary)
+                .font(.system(size: 32, weight: .heavy, design: .rounded))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Color(red: 1.0, green: 0.45, blue: 0.22), Color(red: 0.95, green: 0.28, blue: 0.55)],
+                        startPoint: .leading, endPoint: .trailing
+                    )
+                )
+                .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
 
             Button { tapCoin() } label: {
                 ZStack {
