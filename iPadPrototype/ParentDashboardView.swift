@@ -1,4 +1,5 @@
 import PencilKit
+import SpellingSyncCore
 import SwiftUI
 import UIKit
 
@@ -4001,12 +4002,25 @@ private struct WordLevelSetSheet: View {
     }
 
     @State private var axis: Axis = .grade
-    @State private var grade = "1"
+    @State private var grade = "pre-K"
     @State private var band = 1
     @State private var count = 15
     @State private var statusMessage: String?
+    @State private var showingPaywall = false
 
     private let grades = ["pre-K", "K", "1", "2", "3"]
+
+    /// いま選んでいるレベル（学年軸 or 難易度軸）を型付きで表す。
+    private var selectedLevel: ContentLevel? {
+        ContentLevel(dolch: axis == .grade ? grade : nil, band: axis == .difficulty ? band : nil)
+    }
+
+    /// 選択中レベルが解放済みか（無料＝pre-K/K のみ、ほかは保護者プランで解放）。
+    /// レベルを解釈できない（想定外の）場合は安全側に倒してロック扱い（fail-closed）。
+    private var isSelectedLevelUnlocked: Bool {
+        guard let level = selectedLevel else { return false }
+        return ContentGate.isUnlocked(level, isSubscribed: model.hasFullAccess)
+    }
 
     private func gradeLabel(_ g: String) -> String {
         switch g {
@@ -4117,6 +4131,20 @@ private struct WordLevelSetSheet: View {
                         }
                     }
 
+                    if !isSelectedLevelUnlocked {
+                        HStack(spacing: 6) {
+                            Image(systemName: "lock.fill")
+                            Text(language.text(
+                                japanese: "このレベルは保護者プランで解放されます（pre-K・K と手書き登録は無料）。",
+                                english: "This level unlocks with the parent plan (pre-K, K, and handwriting entry are free)."
+                            ))
+                            .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(ParentPalette.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+
                     if let statusMessage {
                         Text(statusMessage)
                             .font(.headline.weight(.bold))
@@ -4124,17 +4152,26 @@ private struct WordLevelSetSheet: View {
                     }
 
                     Button {
-                        createSet()
+                        if isSelectedLevelUnlocked {
+                            createSet()
+                        } else {
+                            showingPaywall = true
+                        }
                     } label: {
-                        Label(language.text(japanese: "このセットを作る", english: "Create This Set"), systemImage: "plus.circle.fill")
-                            .font(.headline.weight(.heavy))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
+                        Label(
+                            isSelectedLevelUnlocked
+                                ? language.text(japanese: "このセットを作る", english: "Create This Set")
+                                : language.text(japanese: "プランで解放する", english: "Unlock with Plan"),
+                            systemImage: isSelectedLevelUnlocked ? "plus.circle.fill" : "lock.fill"
+                        )
+                        .font(.headline.weight(.heavy))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
                     }
                     .buttonStyle(.borderedProminent)
                     .tapFeedback()
                     .tint(ParentPalette.primary)
-                    .disabled(candidates.isEmpty)
+                    .disabled(isSelectedLevelUnlocked && candidates.isEmpty)
                 }
                 .padding(20)
             }
@@ -4150,10 +4187,19 @@ private struct WordLevelSetSheet: View {
                     .font(.headline.weight(.bold))
                 }
             }
+            .alert(language.text(japanese: "保護者プラン", english: "Parent Plan"), isPresented: $showingPaywall) {
+                Button(language.text(japanese: "OK", english: "OK"), role: .cancel) {}
+            } message: {
+                Text(language.text(
+                    japanese: "Grade 1以降と難易度（NGSL）の単語セットは、保護者プランで解放されます（近日対応）。pre-K・K と手書きの単語登録は無料です。",
+                    english: "Grade 1+ and difficulty (NGSL) word sets unlock with the parent plan (coming soon). pre-K, K, and handwriting entry are free."
+                ))
+            }
         }
     }
 
     private func createSet() {
+        guard isSelectedLevelUnlocked else { return }
         let words = candidates
         guard !words.isEmpty else { return }
         let rawText = words.map { "\($0.word) | \($0.ja)" }.joined(separator: "\n")
@@ -5321,6 +5367,24 @@ private struct TestSettingsPanel: View {
                     format: "%.2f"
                 )
             }
+
+            #if DEBUG
+            SettingBlock(title: language.text(japanese: "デバッグ（開発用）", english: "Debug (Dev)")) {
+                Toggle(isOn: $model.debugUnlockAll) {
+                    Text(language.text(japanese: "有料コンテンツを全解放", english: "Unlock all paid content"))
+                        .font(.subheadline.weight(.bold))
+                }
+                .tint(ParentPalette.primary)
+                Text(language.text(
+                    japanese: "開発ビルドのみ表示。課金ゲート（レベル生成のロック）の動作確認用。効果は DEBUG ビルドのみ。",
+                    english: "Dev build only. For testing the content gate (level-set lock). Effective in DEBUG builds only."
+                ))
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            #endif
 
             SettingBlock(title: language.text(japanese: "クレジット", english: "Credits")) {
                 Text(language.text(

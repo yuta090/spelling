@@ -144,6 +144,28 @@ final class AppModel: ObservableObject {
         didSet { saveRewardCoins() }
     }
 
+    /// 課金（保護者プラン）が有効か。フェーズ1では未配線（既定 false）。
+    /// 将来 StoreKit2 から反映する。デバッグ時は設定のトグルでシミュレートできる。
+    @Published var isSubscribed: Bool {
+        didSet { persistenceStore.save(isSubscribed, key: isSubscribedKey) }
+    }
+
+    /// デバッグ用：有料コンテンツを全解放（StoreKit なしで挙動確認）。
+    /// 効果は DEBUG ビルドの `hasFullAccess` のみ。Release では無視される。
+    @Published var debugUnlockAll: Bool {
+        didSet { persistenceStore.save(debugUnlockAll, key: debugUnlockAllKey) }
+    }
+
+    /// 有料コンテンツへのフルアクセス権があるか（購読中 or デバッグ全解放）。
+    /// コンテンツゲートの判定はこの値を使う。
+    var hasFullAccess: Bool {
+        #if DEBUG
+        return isSubscribed || debugUnlockAll
+        #else
+        return isSubscribed
+        #endif
+    }
+
     /// 連続ログイン日数（スタンプ）。
     @Published var loginStreak: Int {
         didSet { persistenceStore.save(loginStreak, key: loginStreakKey) }
@@ -215,6 +237,8 @@ final class AppModel: ObservableObject {
     private let settingsKey = "spellingTrainer.settings"
     private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"
     private let rewardCoinsKey = "spellingTrainer.rewardCoins"
+    private let isSubscribedKey = "spellingTrainer.isSubscribed"
+    private let debugUnlockAllKey = "spellingTrainer.debugUnlockAll"
     private let loginStreakKey = "spellingTrainer.loginStreak"
     private let lastLoginDayKey = "spellingTrainer.lastLoginDay"
     private let lastPerfectBonusDayKey = "spellingTrainer.lastPerfectBonusDay"
@@ -250,6 +274,8 @@ final class AppModel: ObservableObject {
         settings = persistenceStore.load(TestSettings.self, key: settingsKey) ?? TestSettings()
         selectedWordStepID = persistenceStore.load(String.self, key: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
         rewardCoins = max(persistenceStore.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
+        isSubscribed = persistenceStore.load(Bool.self, key: isSubscribedKey) ?? false
+        debugUnlockAll = persistenceStore.load(Bool.self, key: debugUnlockAllKey) ?? false
         loginStreak = max(persistenceStore.load(Int.self, key: loginStreakKey) ?? 0, 0)
         lastLoginDay = persistenceStore.load(Date.self, key: lastLoginDayKey)
         lastPerfectBonusDay = persistenceStore.load(Date.self, key: lastPerfectBonusDayKey)

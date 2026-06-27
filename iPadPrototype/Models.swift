@@ -14,6 +14,10 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
     var registeredAt = Date()
     var stepID: String?
     var source: WordSource = .parent
+    /// この単語が初めて練習へ「新規導入」された時刻。未練習なら nil。
+    /// 1日10語の新規導入予算（`NewWordBudget`）の当日カウントに使う。フェーズ1では追加のみ
+    /// （スタンプの配線は次フェーズ）。既存データは nil として読み込まれる。
+    var firstIntroducedAt: Date?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -22,15 +26,17 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
         case registeredAt
         case stepID
         case source
+        case firstIntroducedAt
     }
 
-    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date(), stepID: String? = nil, source: WordSource = .parent) {
+    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date(), stepID: String? = nil, source: WordSource = .parent, firstIntroducedAt: Date? = nil) {
         self.id = id
         self.text = text
         self.promptText = promptText
         self.registeredAt = registeredAt
         self.stepID = stepID
         self.source = source
+        self.firstIntroducedAt = firstIntroducedAt
     }
 
     init(from decoder: Decoder) throws {
@@ -41,6 +47,7 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
         registeredAt = try container.decodeIfPresent(Date.self, forKey: .registeredAt) ?? Date()
         stepID = try container.decodeIfPresent(String.self, forKey: .stepID)
         source = try container.decodeIfPresent(WordSource.self, forKey: .source) ?? .parent
+        firstIntroducedAt = try container.decodeIfPresent(Date.self, forKey: .firstIntroducedAt)
     }
 }
 
