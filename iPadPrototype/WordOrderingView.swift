@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import SpellingSyncCore
 
 // 文づくり（並べ替え）の最小プレイ画面。
@@ -45,6 +46,9 @@ struct WordOrderingDemoView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let items: [SentenceItem]
+    @StateObject private var speech = SpeechPlayer()
+    /// タイルがトレイ↔解答欄を「飛んで」移動するための共有ネームスペース。
+    @Namespace private var tileNS
     @State private var index = 0
     @State private var reshuffle = 0
 
@@ -152,6 +156,7 @@ struct WordOrderingDemoView: View {
     private func tileButton(_ tile: OrderingTile, role: TileRole) -> some View {
         Button {
             guard grade == nil else { return }
+            WordOrderingHaptics.tap()
             switch role {
             case .tray:
                 move(tile, from: &tray, to: &placed)
@@ -168,6 +173,8 @@ struct WordOrderingDemoView: View {
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(WO.tileStroke, lineWidth: 2))
         }
         .buttonStyle(.plain)
+        // トレイ↔解答欄でタイルが実際に飛んで移動する（選んだ気持ちよさ）。
+        .matchedGeometryEffect(id: tile.id, in: tileNS)
         .tapFeedback(bounce: true)
     }
 
@@ -189,9 +196,30 @@ struct WordOrderingDemoView: View {
                 }
             }
         } else {
-            bigButton("こたえあわせ", tint: isComplete ? WO.accent : Color.gray.opacity(0.4),
-                      action: check)
-                .disabled(!isComplete)
+            VStack(spacing: 12) {
+                // 全部ならべ終えたら、答え合わせの前に英文を聞ける。
+                if isComplete {
+                    Button {
+                        WordOrderingHaptics.tap()
+                        speech.speak(item.en, language: "en-US")
+                    } label: {
+                        Label("きいてみる", systemImage: "speaker.wave.2.fill")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundStyle(WO.accent)
+                            .padding(.horizontal, 22)
+                            .padding(.vertical, 11)
+                            .background(Capsule().fill(WO.tileFill))
+                            .overlay(Capsule().stroke(WO.tileStroke, lineWidth: 2))
+                    }
+                    .buttonStyle(.plain)
+                    .tapFeedback(bounce: true)
+                    .transition(.scale.combined(with: .opacity))
+                }
+                bigButton("こたえあわせ", tint: isComplete ? WO.accent : Color.gray.opacity(0.4),
+                          action: check)
+                    .disabled(!isComplete)
+            }
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isComplete)
         }
     }
 
@@ -212,7 +240,8 @@ struct WordOrderingDemoView: View {
 
     private func move(_ tile: OrderingTile, from src: inout [OrderingTile], to dst: inout [OrderingTile]) {
         guard let i = src.firstIndex(of: tile) else { return }
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+        // 低ダンピングで少し行き過ぎてプルッと戻る（タイルが飛ぶ動きに弾みをつける）。
+        withAnimation(.spring(response: 0.34, dampingFraction: 0.62)) {
             src.remove(at: i)
             dst.append(tile)
         }
@@ -284,6 +313,16 @@ private struct FlowLayout: Layout {
             x += size.width + spacing
             rowHeight = max(rowHeight, size.height)
         }
+    }
+}
+
+// MARK: - ハプティクス
+
+/// タイル選択時の軽い触覚フィードバック（選んだ手応え）。
+private enum WordOrderingHaptics {
+    static func tap() {
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
     }
 }
 
