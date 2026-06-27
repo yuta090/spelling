@@ -156,6 +156,12 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(debugUnlockAll, key: debugUnlockAllKey) }
     }
 
+    /// デバッグ用：1日の新規導入上限（10語）を無効化して挙動確認する。
+    /// 効果は DEBUG ビルドの `dailyCappedPracticeWords` のみ。Release では無視される。
+    @Published var debugDisableDailyLimit: Bool {
+        didSet { persistenceStore.save(debugDisableDailyLimit, key: debugDisableDailyLimitKey) }
+    }
+
     /// 有料コンテンツへのフルアクセス権があるか（購読中 or デバッグ全解放）。
     /// コンテンツゲートの判定はこの値を使う。
     var hasFullAccess: Bool {
@@ -239,6 +245,7 @@ final class AppModel: ObservableObject {
     private let rewardCoinsKey = "spellingTrainer.rewardCoins"
     private let isSubscribedKey = "spellingTrainer.isSubscribed"
     private let debugUnlockAllKey = "spellingTrainer.debugUnlockAll"
+    private let debugDisableDailyLimitKey = "spellingTrainer.debugDisableDailyLimit"
     private let loginStreakKey = "spellingTrainer.loginStreak"
     private let lastLoginDayKey = "spellingTrainer.lastLoginDay"
     private let lastPerfectBonusDayKey = "spellingTrainer.lastPerfectBonusDay"
@@ -276,6 +283,7 @@ final class AppModel: ObservableObject {
         rewardCoins = max(persistenceStore.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
         isSubscribed = persistenceStore.load(Bool.self, key: isSubscribedKey) ?? false
         debugUnlockAll = persistenceStore.load(Bool.self, key: debugUnlockAllKey) ?? false
+        debugDisableDailyLimit = persistenceStore.load(Bool.self, key: debugDisableDailyLimitKey) ?? false
         loginStreak = max(persistenceStore.load(Int.self, key: loginStreakKey) ?? 0, 0)
         lastLoginDay = persistenceStore.load(Date.self, key: lastLoginDayKey)
         lastPerfectBonusDay = persistenceStore.load(Date.self, key: lastPerfectBonusDayKey)
@@ -311,6 +319,70 @@ final class AppModel: ObservableObject {
         let practicedWords = practiceSamples.map { normalize($0.word) }
         let testedWords = attempts.map { normalize($0.word) }
         return Set((practicedWords + testedWords).filter { !$0.isEmpty }).count
+    }
+
+    // MARK: - 1日の新規導入上限（学習リズム / 課金とは無関係）
+
+    /// これまでに練習・テストで触れた語（正規化テキスト）の集合。
+    private var practicedWordTexts: Set<String> {
+        let practiced = practiceSamples.map { normalize($0.word) }
+        let tested = attempts.map { normalize($0.word) }
+        return Set((practiced + tested).filter { !$0.isEmpty })
+    }
+
+    /// その語が「未導入かつ未練習の新規候補」か。既習語や導入済み語は false。
+    /// 既存データ（`firstIntroducedAt == nil` だが練習済み）は新規候補に含めない。
+    func isNewWordCandidate(_ word: SpellingWord, practicedTexts: Set<String>? = nil) -> Bool {
+        guard word.firstIntroducedAt == nil else { return false }
+        let practiced = practicedTexts ?? practicedWordTexts
+        return !practiced.contains(normalize(word.text))
+    }
+
+    /// 今日すでに新規導入した語数（全単語の `firstIntroducedAt` から決定的に数える）。
+    func newWordsIntroducedToday(now: Date = Date(), calendar: Calendar = .current) -> Int {
+        NewWordBudget.introducedCount(
+            firstIntroducedDates: words.map(\.firstIntroducedAt),
+            today: now,
+            calendar: calendar
+        )
+    }
+
+    /// 「アクティブ全語をそのまま練習する」既定選択のときだけ、1日の新規導入上限を適用する。
+    /// 明示的な部分選択（復習・フォーカス・リトライ）は `isFullActiveSelection == false` で素通り。
+    /// 既習・導入済み語は常に残し、新規候補だけ残り枠ぶんに絞る。
+    func dailyCappedPracticeWords(
+        _ selected: [SpellingWord],
+        isFullActiveSelection: Bool,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> [SpellingWord] {
+        #if DEBUG
+        if debugDisableDailyLimit { return selected }
+        #endif
+        guard isFullActiveSelection else { return selected }
+        let practiced = practicedWordTexts
+        let flags = selected.map { isNewWordCandidate($0, practicedTexts: practiced) }
+        let keep = NewWordBudget.cappedIndices(
+            isNewCandidate: flags,
+            introducedToday: newWordsIntroducedToday(now: now, calendar: calendar)
+        )
+        return keep.map { selected[$0] }
+    }
+
+    /// 練習に新規導入した語へ `firstIntroducedAt` を一度だけスタンプする（冪等）。
+    /// 新規候補（未導入かつ未練習）だけを対象にし、既習語の誤スタンプを避ける。
+    func stampFirstIntroducedIfNeeded(_ candidates: [SpellingWord], at date: Date = Date()) {
+        let practiced = practicedWordTexts
+        let ids = Set(candidates.filter { isNewWordCandidate($0, practicedTexts: practiced) }.map(\.id))
+        guard !ids.isEmpty else { return }
+        // ローカルコピーを一括更新してから 1 回だけ代入する（didSet の保存/同期要求の連発を避ける）。
+        var updated = words
+        var changed = false
+        for i in updated.indices where ids.contains(updated[i].id) && updated[i].firstIntroducedAt == nil {
+            updated[i].firstIntroducedAt = date
+            changed = true
+        }
+        if changed { words = updated }
     }
 
     var testWordsForSelectedStep: [SpellingWord] {
@@ -618,7 +690,8 @@ final class AppModel: ObservableObject {
                     promptText: record.payload.promptText,
                     registeredAt: prior?.registeredAt ?? record.sync.createdAt,
                     stepID: prior?.stepID,                                   // ローカルのステップ割当を保持
-                    source: WordSource(rawValue: record.payload.source) ?? .parent
+                    source: WordSource(rawValue: record.payload.source) ?? .parent,
+                    firstIntroducedAt: prior?.firstIntroducedAt              // 学習リズムのローカル値を保持（同期で消さない）
                 )
             }
         if mapped != words {

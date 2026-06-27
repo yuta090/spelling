@@ -5377,9 +5377,14 @@ private struct TestSettingsPanel: View {
                         .font(.subheadline.weight(.bold))
                 }
                 .tint(ParentPalette.primary)
+                Toggle(isOn: $model.debugDisableDailyLimit) {
+                    Text(language.text(japanese: "1日10語の上限を無効化", english: "Disable 10-words/day limit"))
+                        .font(.subheadline.weight(.bold))
+                }
+                .tint(ParentPalette.primary)
                 Text(language.text(
-                    japanese: "開発ビルドのみ表示。課金ゲート（レベル生成のロック）の動作確認用。効果は DEBUG ビルドのみ。",
-                    english: "Dev build only. For testing the content gate (level-set lock). Effective in DEBUG builds only."
+                    japanese: "開発ビルドのみ表示。課金ゲート（レベル生成のロック）と新規導入上限の動作確認用。効果は DEBUG ビルドのみ。",
+                    english: "Dev build only. For testing the content gate and the daily new-word limit. Effective in DEBUG builds only."
                 ))
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
