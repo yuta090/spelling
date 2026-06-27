@@ -21,6 +21,30 @@ jobs:
       - name: swift test
         run: swift test
 
+  sql-tests:
+    name: SQL/RLS tests (migrations + RPC)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: spelling_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run SQL tests
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/spelling_test
+        run: bash scripts/db/test.sh
+
   e2e:
     name: E2E (XCUITest)
     runs-on: macos-15
