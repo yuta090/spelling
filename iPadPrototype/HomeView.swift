@@ -232,6 +232,7 @@ struct HomeView: View {
         }
         .onAppear {
             schedulePracticeSelectionSync()
+            startFirstSessionIfNeeded()
         }
         .onValueChange(of: model.activeWords.map(\.id)) { _ in
             schedulePracticeSelectionSync()
@@ -248,6 +249,18 @@ struct HomeView: View {
         }
 
             IrisTransitionOverlay(controller: iris)
+        }
+    }
+
+    /// オンボーディング直後だけ、ホーム表示後に自動で最初のテストを始める（「やってみる！」の続き）。
+    /// 一時フラグなので一度だけ。少し待ってから iris 演出つきで開始する。
+    private func startFirstSessionIfNeeded() {
+        guard model.pendingFirstSession else { return }
+        model.pendingFirstSession = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            iris.cover(animated: !reduceMotion) {
+                activeMode = .test
+            }
         }
     }
 
@@ -404,9 +417,15 @@ struct HomeView: View {
         }
     }
 
+    private var homeTitle: String {
+        let name = model.childName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return language.text(japanese: "ホーム", english: "Home") }
+        return language.text(japanese: "\(name)の ホーム", english: "\(name)'s Home")
+    }
+
     private var header: some View {
         HStack(spacing: 14) {
-            Label(language.text(japanese: "ホーム", english: "Home"), systemImage: "house.fill")
+            Label(homeTitle, systemImage: "house.fill")
                 .font(.headline.weight(.bold))
                 .foregroundStyle(Color(red: 0.10, green: 0.32, blue: 0.74))
 

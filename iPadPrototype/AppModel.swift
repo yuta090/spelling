@@ -181,6 +181,9 @@ final class AppModel: ObservableObject {
 
     @Published var focusedPracticeWordIDs = Set<UUID>()
 
+    /// オンボーディング完了直後にホームで自動的に1回プレイを始めるための一時フラグ（永続化しない）。
+    @Published var pendingFirstSession = false
+
     static let practiceCoinReward = 3
     static let defaultCharacterID = HomeRewardCharacter.defaultID
     static let defaultUnlockedCharacterIDs: Set<String> = HomeRewardCharacter.defaultUnlockedIDs
