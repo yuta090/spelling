@@ -1,0 +1,4 @@
+# 秘密情報・生成物はコミットしない
+.env
+results-*.csv
+samples/
