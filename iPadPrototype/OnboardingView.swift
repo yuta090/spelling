@@ -395,7 +395,6 @@ struct OnboardingView: View {
         // 入力があったときだけ更新（空で既存ニックネームを消さない）。
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmed.isEmpty { model.childName = trimmed }
-        model.pendingFirstSession = true      // ホームで自動的に1回プレイを始める
         model.hasCompletedOnboarding = true   // RootView がホームへ切り替える
     }
 }
