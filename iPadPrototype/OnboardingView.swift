@@ -11,8 +11,11 @@ struct OnboardingView: View {
     @ObservedObject var session: SyncSession
 
     private enum Step: Int, CaseIterable {
-        case welcome, grade, lookAndFeel, parent
+        case welcome, grade, lookAndFeel, coinGift, parent
     }
+
+    /// 初回プレゼントするコイン数（なかま4〜6・はいけい8〜のので、最初の解放を体験できる量）。
+    private let coinGift = 12
 
     @State private var step: Step = .welcome
     @State private var pickedGrade: GradeLevel?
@@ -21,6 +24,9 @@ struct OnboardingView: View {
     @State private var bounce = false
     @State private var launched = false
     @State private var pressPop = false
+    @State private var coinsGranted = false
+    @State private var coinPop = false
+    @State private var coinBurst = false
     @State private var showingAccount = false
     @State private var showingSkipConfirm = false
 
@@ -144,6 +150,8 @@ struct OnboardingView: View {
             advance()
         case .lookAndFeel:
             advance()
+        case .coinGift:
+            advance()
         case .parent:
             finish()
         }
@@ -157,6 +165,7 @@ struct OnboardingView: View {
         case .welcome: welcomeStep
         case .grade: gradeStep
         case .lookAndFeel: lookAndFeelStep
+        case .coinGift: coinGiftStep
         case .parent: parentStep
         }
     }
@@ -294,6 +303,58 @@ struct OnboardingView: View {
         }
     }
 
+    /// コインのプレゼント演出。表示と同時に派手に付与し、タップでもう一度はじける。
+    private var coinGiftStep: some View {
+        VStack(spacing: 18) {
+            Text("🎁 プレゼント！")
+                .font(.system(size: 30, weight: .heavy, design: .rounded))
+                .foregroundStyle(.primary)
+
+            Button { tapCoin() } label: {
+                ZStack {
+                    if coinBurst { CoinBurst() }
+                    CoinView()
+                        .frame(width: 132, height: 132)
+                        .scaleEffect(coinPop ? 1.16 : 1.0)
+                        .rotation3DEffect(.degrees(coinPop ? 18 : 0), axis: (x: 0, y: 1, z: 0))
+                        .shadow(color: .orange.opacity(0.4), radius: coinPop ? 18 : 10, y: 6)
+                }
+            }
+            .buttonStyle(.plain)
+
+            Text("コインを \(coinGift)こ もらったよ！")
+                .font(.system(size: 26, weight: .heavy, design: .rounded))
+                .foregroundStyle(Color(red: 0.85, green: 0.55, blue: 0.10))
+
+            Text("コインで なかま や はいけい を\nふやせるよ！ タップしてみてね")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .onAppear {
+            // 初回だけ付与（行き来しても二重に増やさない）。
+            if !coinsGranted {
+                coinsGranted = true
+                model.rewardCoins += coinGift
+            }
+            popCoin()
+        }
+    }
+
+    private func tapCoin() {
+        popCoin()
+    }
+
+    private func popCoin() {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        coinBurst = false
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.45)) { coinPop = true }
+        coinBurst = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.easeOut(duration: 0.18)) { coinPop = false }
+        }
+    }
+
     // MARK: - Helpers
 
     private var unlockedCharacters: [HomeRewardCharacter] {
@@ -355,6 +416,56 @@ private struct SparkleBurst: View {
         .allowsHitTesting(false)
         .onAppear {
             withAnimation(.easeOut(duration: 0.5)) { go = true }
+        }
+    }
+}
+
+/// 金貨の見た目（金グラデの円＋星）。
+private struct CoinView: View {
+    private let gold = LinearGradient(
+        colors: [Color(red: 1.0, green: 0.86, blue: 0.35), Color(red: 0.96, green: 0.66, blue: 0.13)],
+        startPoint: .topLeading, endPoint: .bottomTrailing
+    )
+
+    var body: some View {
+        ZStack {
+            Circle().fill(gold)
+            Circle().stroke(Color(red: 0.82, green: 0.52, blue: 0.08), lineWidth: 5)
+            Image(systemName: "star.fill")
+                .font(.system(size: 54, weight: .bold))
+                .foregroundStyle(.white.opacity(0.95))
+        }
+    }
+}
+
+/// コイン付与時にはじける小さな金貨（外へ放射＋少し落下）。
+private struct CoinBurst: View {
+    @State private var go = false
+    private let gold = LinearGradient(
+        colors: [Color(red: 1.0, green: 0.86, blue: 0.35), Color(red: 0.96, green: 0.66, blue: 0.13)],
+        startPoint: .top, endPoint: .bottom
+    )
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<10, id: \.self) { i in
+                let angle = Double(i) / 10.0 * 2 * .pi
+                Circle()
+                    .fill(gold)
+                    .frame(width: 18, height: 18)
+                    .overlay(
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.9))
+                    )
+                    .offset(x: go ? cos(angle) * 92 : 0, y: go ? sin(angle) * 70 + 56 : 0)
+                    .opacity(go ? 0 : 1)
+                    .scaleEffect(go ? 0.5 : 1)
+            }
+        }
+        .allowsHitTesting(false)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.6)) { go = true }
         }
     }
 }
