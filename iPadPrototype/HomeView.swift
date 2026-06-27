@@ -7776,7 +7776,7 @@ struct HomeBackgroundTheme: Identifiable {
     static let defaultID = "meadow"
 
     // オンボーディングで選べるよう、スターターとして数個を無料解放（残りはコインで解放）。
-    static let defaultUnlockedIDs: Set<String> = ["meadow", "sunset", "forest", "park", "rainbow"]
+    static let defaultUnlockedIDs: Set<String> = ["meadow", "sunset", "forest", "park", "rainbow", "sakura", "candyland"]
 
     static let catalog: [HomeBackgroundTheme] = proceduralThemes + imageThemes
 
@@ -7864,11 +7864,11 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "flowerfield", japaneseName: "おはなばたけ", englishName: "Flower Field", price: 10, imageName: "bg_flowerfield"),
         HomeBackgroundTheme(id: "park", japaneseName: "こうえん", englishName: "Park", price: 0, imageName: "bg_park"),
         HomeBackgroundTheme(id: "town", japaneseName: "まち", englishName: "Town", price: 10, imageName: "bg_town"),
-        HomeBackgroundTheme(id: "sakura", japaneseName: "さくら", englishName: "Cherry Blossoms", price: 12, imageName: "bg_sakura"),
+        HomeBackgroundTheme(id: "sakura", japaneseName: "さくら", englishName: "Cherry Blossoms", price: 0, imageName: "bg_sakura"),
         HomeBackgroundTheme(id: "autumn", japaneseName: "こうよう", englishName: "Autumn Leaves", price: 12, imageName: "bg_autumn"),
         HomeBackgroundTheme(id: "underwater", japaneseName: "うみのなか", englishName: "Under the Sea", price: 14, imageName: "bg_underwater"),
         HomeBackgroundTheme(id: "rainbow", japaneseName: "にじ", englishName: "Rainbow", price: 0, imageName: "bg_rainbow"),
-        HomeBackgroundTheme(id: "candyland", japaneseName: "おかしのくに", englishName: "Candy Land", price: 16, imageName: "bg_candyland"),
+        HomeBackgroundTheme(id: "candyland", japaneseName: "おかしのくに", englishName: "Candy Land", price: 0, imageName: "bg_candyland"),
         HomeBackgroundTheme(id: "castle", japaneseName: "おしろ", englishName: "Castle", price: 16, imageName: "bg_castle"),
         HomeBackgroundTheme(id: "farm", japaneseName: "ぼくじょう", englishName: "Farm", price: 10, imageName: "bg_farm"),
         HomeBackgroundTheme(id: "aquarium", japaneseName: "すいぞくかん", englishName: "Aquarium", price: 12, imageName: "bg_aquarium"),
@@ -7882,7 +7882,11 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "stadium", japaneseName: "スタジアム", englishName: "Stadium", price: 24, imageName: "bg_stadium"),
         HomeBackgroundTheme(id: "gamingroom", japaneseName: "ゲーミングルーム", englishName: "Gaming Room", price: 22, imageName: "bg_gamingroom"),
         HomeBackgroundTheme(id: "shibuya", japaneseName: "しぶや", englishName: "Shibuya", price: 26, imageName: "bg_shibuya"),
-        HomeBackgroundTheme(id: "paris", japaneseName: "パリ", englishName: "Paris", price: 24, imageName: "bg_paris")
+        HomeBackgroundTheme(id: "paris", japaneseName: "パリ", englishName: "Paris", price: 24, imageName: "bg_paris"),
+        HomeBackgroundTheme(id: "newyork", japaneseName: "ニューヨーク", englishName: "New York", price: 26, imageName: "bg_newyork"),
+        HomeBackgroundTheme(id: "london", japaneseName: "ロンドン", englishName: "London", price: 24, imageName: "bg_london"),
+        HomeBackgroundTheme(id: "basketball", japaneseName: "バスケアリーナ", englishName: "Basketball Arena", price: 22, imageName: "bg_basketball"),
+        HomeBackgroundTheme(id: "airport", japaneseName: "くうこうラウンジ", englishName: "Airport Lounge", price: 22, imageName: "bg_airport")
     ]
     // BG-CATALOG-GENERATED-END
 }
