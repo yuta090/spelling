@@ -22,6 +22,8 @@ struct OnboardingView: View {
     @State private var name = ""
     @State private var didLoadName = false
     @State private var bounce = false
+    @State private var hintPulse = false
+    @State private var charPop = false
     @State private var launched = false
     @State private var pressPop = false
     @State private var coinsGranted = false
@@ -172,12 +174,25 @@ struct OnboardingView: View {
     }
 
     private var welcomeStep: some View {
-        VStack(spacing: 18) {
-            RewardCharacterAvatar(character: HomeRewardCharacter.character(id: model.selectedCharacterID))
-                .frame(width: 150, height: 150)
-                .scaleEffect(bounce ? 1.0 : 0.86)
-                .rotationEffect(.degrees(bounce ? 0 : -6))
-                .shadow(color: .black.opacity(0.12), radius: 12, y: 6)
+        VStack(spacing: 14) {
+            // キャラの上に「タップで きせかえ できるよ」のヒント（軽く脈打たせて気づかせる）。
+            Label("タップで きせかえ できるよ", systemImage: "hand.tap.fill")
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(Color.accentColor)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(Capsule().fill(.white.opacity(0.92)))
+                .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+                .scaleEffect(hintPulse ? 1.06 : 1.0)
+
+            Button { cycleCharacter() } label: {
+                RewardCharacterAvatar(character: HomeRewardCharacter.character(id: model.selectedCharacterID))
+                    .frame(width: 150, height: 150)
+                    .scaleEffect((bounce ? 1.0 : 0.86) * (charPop ? 1.12 : 1.0))
+                    .rotationEffect(.degrees(bounce ? 0 : -6))
+                    .shadow(color: .black.opacity(0.12), radius: 12, y: 6)
+            }
+            .buttonStyle(.plain)
 
             Text("はじめまして！")
                 .font(.system(size: 36, weight: .heavy, design: .rounded))
@@ -192,6 +207,23 @@ struct OnboardingView: View {
             withAnimation(.spring(response: 0.55, dampingFraction: 0.5).repeatCount(3, autoreverses: true)) {
                 bounce = true
             }
+            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                hintPulse = true
+            }
+        }
+    }
+
+    /// ウェルカムのキャラをタップ → 解放済みキャラを順に切り替える（その場で「きせかえ」）。
+    private func cycleCharacter() {
+        let unlocked = unlockedCharacters
+        guard !unlocked.isEmpty else { return }
+        let index = unlocked.firstIndex { $0.id == model.selectedCharacterID } ?? -1
+        let next = unlocked[(index + 1) % unlocked.count]
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        model.selectCharacter(id: next.id)
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.45)) { charPop = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+            withAnimation(.easeOut(duration: 0.15)) { charPop = false }
         }
     }
 
