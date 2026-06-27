@@ -2026,6 +2026,28 @@ private enum PracticeCelebrationStyle: CaseIterable {
         allCases.randomElement() ?? .gold
     }
 
+    /// コインの絵柄（スタイルごとに変える＝完了ごとにランダムで違う見た目）。
+    var coinSymbol: String {
+        switch self {
+        case .gold: return "star.fill"
+        case .blue: return "suit.diamond.fill"
+        case .green: return "leaf.fill"
+        case .pink: return "heart.fill"
+        case .sunrise: return "crown.fill"
+        }
+    }
+
+    /// コイン登場時の回転量（向き・回数を変えてアニメをばらけさせる）。
+    var coinSpin: Double {
+        switch self {
+        case .gold: return 360
+        case .blue: return -360
+        case .green: return 180
+        case .pink: return 540
+        case .sunrise: return -180
+        }
+    }
+
     var systemImage: String {
         switch self {
         case .gold:
@@ -2132,10 +2154,10 @@ private struct PracticeWordCelebrationOverlay: View {
                         .scaleEffect(reduceMotion ? 1 : (animateCoin ? 1.08 : 0.72))
                         .opacity(reduceMotion ? 0 : (animateCoin ? 0 : 1))
 
-                    PracticeCoinView(tint: style.tint)
+                    PracticeCoinView(tint: style.tint, symbol: style.coinSymbol)
                         .frame(width: 78, height: 78)
                         .scaleEffect(reduceMotion ? 1 : (animateCoin ? 1 : 0.62))
-                        .rotationEffect(.degrees(reduceMotion ? 0 : (animateCoin ? 0 : -18)))
+                        .rotation3DEffect(.degrees(reduceMotion ? 0 : (animateCoin ? 0 : -style.coinSpin)), axis: (x: 0, y: 1, z: 0))
                         .offset(y: reduceMotion ? 0 : (animateCoin ? 0 : -46))
                         .opacity(animateCoin ? 1 : 0)
                         .shadow(color: style.tint.opacity(0.34), radius: animateCoin ? 14 : 4, x: 0, y: animateCoin ? 8 : 2)
@@ -2195,6 +2217,7 @@ private struct PracticeWordCelebrationOverlay: View {
 
 private struct PracticeCoinView: View {
     var tint: Color
+    var symbol: String = "star.fill"
 
     var body: some View {
         ZStack {
@@ -2218,7 +2241,7 @@ private struct PracticeCoinView: View {
                 .stroke(tint.opacity(0.46), lineWidth: 3)
                 .padding(14)
 
-            Image(systemName: "star.fill")
+            Image(systemName: symbol)
                 .font(.system(size: 32, weight: .heavy))
                 .foregroundStyle(.white)
                 .shadow(color: .orange.opacity(0.32), radius: 3, x: 0, y: 2)
