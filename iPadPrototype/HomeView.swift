@@ -7853,7 +7853,17 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "castle", japaneseName: "おしろ", englishName: "Castle", price: 16, imageName: "bg_castle"),
         HomeBackgroundTheme(id: "farm", japaneseName: "ぼくじょう", englishName: "Farm", price: 10, imageName: "bg_farm"),
         HomeBackgroundTheme(id: "aquarium", japaneseName: "すいぞくかん", englishName: "Aquarium", price: 12, imageName: "bg_aquarium"),
-        HomeBackgroundTheme(id: "amusement", japaneseName: "ゆうえんち", englishName: "Amusement Park", price: 14, imageName: "bg_amusement")
+        HomeBackgroundTheme(id: "amusement", japaneseName: "ゆうえんち", englishName: "Amusement Park", price: 14, imageName: "bg_amusement"),
+        HomeBackgroundTheme(id: "boutique", japaneseName: "ブティック", englishName: "Boutique", price: 20, imageName: "bg_boutique"),
+        HomeBackgroundTheme(id: "sneakers", japaneseName: "スニーカーショップ", englishName: "Sneaker Shop", price: 18, imageName: "bg_sneakers"),
+        HomeBackgroundTheme(id: "carshowroom", japaneseName: "カーショールーム", englishName: "Car Showroom", price: 28, imageName: "bg_carshowroom"),
+        HomeBackgroundTheme(id: "racetrack", japaneseName: "サーキット", englishName: "Race Track", price: 22, imageName: "bg_racetrack"),
+        HomeBackgroundTheme(id: "concert", japaneseName: "コンサート", englishName: "Concert", price: 24, imageName: "bg_concert"),
+        HomeBackgroundTheme(id: "studio", japaneseName: "スタジオ", englishName: "Studio", price: 20, imageName: "bg_studio"),
+        HomeBackgroundTheme(id: "stadium", japaneseName: "スタジアム", englishName: "Stadium", price: 24, imageName: "bg_stadium"),
+        HomeBackgroundTheme(id: "gamingroom", japaneseName: "ゲーミングルーム", englishName: "Gaming Room", price: 22, imageName: "bg_gamingroom"),
+        HomeBackgroundTheme(id: "shibuya", japaneseName: "しぶや", englishName: "Shibuya", price: 26, imageName: "bg_shibuya"),
+        HomeBackgroundTheme(id: "paris", japaneseName: "パリ", englishName: "Paris", price: 24, imageName: "bg_paris")
     ]
     // BG-CATALOG-GENERATED-END
 }
