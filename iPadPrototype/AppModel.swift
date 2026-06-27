@@ -169,6 +169,11 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(hasCompletedOnboarding, key: hasCompletedOnboardingKey) }
     }
 
+    /// キャラ選択を一度でも開いたか。ホームの「タップで きせかえ」ヒントは未開封のあいだだけ出す。
+    @Published var hasOpenedCharacterPicker: Bool {
+        didSet { persistenceStore.save(hasOpenedCharacterPicker, key: hasOpenedCharacterPickerKey) }
+    }
+
     /// 子どものニックネーム（任意）。ホームの呼びかけや将来のプロファイル表示名に使う。
     @Published var childName: String {
         didSet { persistenceStore.save(childName, key: childNameKey) }
@@ -201,6 +206,7 @@ final class AppModel: ObservableObject {
     private let unlockedBackgroundIDsKey = "spellingTrainer.unlockedBackgroundIDs"
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
     private let hasCompletedOnboardingKey = "spellingTrainer.hasCompletedOnboarding"
+    private let hasOpenedCharacterPickerKey = "spellingTrainer.hasOpenedCharacterPicker"
     private let childNameKey = "spellingTrainer.childName"
     private let selectedGradeKey = "spellingTrainer.selectedGrade"
 
@@ -230,6 +236,7 @@ final class AppModel: ObservableObject {
         unlockedCharacterIDs = initialUnlockedCharacterIDs
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
         hasCompletedOnboarding = persistenceStore.load(Bool.self, key: hasCompletedOnboardingKey) ?? false
+        hasOpenedCharacterPicker = persistenceStore.load(Bool.self, key: hasOpenedCharacterPickerKey) ?? false
         childName = persistenceStore.load(String.self, key: childNameKey) ?? ""
         selectedGrade = persistenceStore.load(String.self, key: selectedGradeKey) ?? ""
         let savedCharacterID = persistenceStore.load(String.self, key: selectedCharacterIDKey) ?? Self.defaultCharacterID
