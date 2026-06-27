@@ -13,6 +13,8 @@ struct HomeView: View {
     @State private var showingResults = false
     @State private var showingWordPreview = false
     @State private var showingCharacterPicker = false
+    /// このセッションでホームのキャラヒントを出すか（初回起動の1回だけ true になる）。
+    @State private var showCharHint = false
     @State private var showingStepPicker = false
     @State private var showingPracticeRetryPicker = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
@@ -124,12 +126,12 @@ struct HomeView: View {
                             isReviewPractice: isHomeReviewActive,
                             latestTestSummary: latestTestButtonSummary,
                             character: selectedCharacter,
-                            showCharacterHint: !model.hasOpenedCharacterPicker,
+                            showCharacterHint: showCharHint,
                             startPractice: startPractice,
                             showWords: { showingWordPreview = true },
                             showStepPicker: { showingStepPicker = true },
                             showCharacters: {
-                                model.hasOpenedCharacterPicker = true
+                                showCharHint = false   // タップしたらこのセッションでも消す
                                 showingCharacterPicker = true
                             },
                             startTest: {
@@ -236,6 +238,11 @@ struct HomeView: View {
         }
         .onAppear {
             schedulePracticeSelectionSync()
+            // キャラヒントは初回起動の1回だけ。次回からは出さない（毎回起動では出さない）。
+            if !model.hasShownHomeCharacterHint {
+                showCharHint = true
+                model.hasShownHomeCharacterHint = true
+            }
         }
         .onValueChange(of: model.activeWords.map(\.id)) { _ in
             schedulePracticeSelectionSync()
