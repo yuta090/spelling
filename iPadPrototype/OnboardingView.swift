@@ -463,26 +463,27 @@ private struct CoinView: View {
 /// コイン付与時にはじける**たくさんの金貨**（全方向へ噴出＋回転＋落下）。
 private struct CoinBurst: View {
     @State private var go = false
-    private let count = 28
+    private let count = 46
 
     var body: some View {
         ZStack {
             ForEach(0..<count, id: \.self) { i in
-                let angle = Double(i) / Double(count) * 2 * .pi + (i % 2 == 0 ? 0.0 : 0.18)
-                let dist = 80.0 + Double((i * 37) % 95)     // ばらけた飛距離 80〜175
-                let size = 14.0 + Double(i % 4) * 6.0       // 14〜32
+                // 2周ぶんに散らして全方向をびっしり埋める。
+                let angle = Double(i) / Double(count) * 4 * .pi + (i % 2 == 0 ? 0.0 : 0.22)
+                let dist = 90.0 + Double((i * 53) % 135)    // ばらけた飛距離 90〜225
+                let size = 13.0 + Double(i % 5) * 5.0       // 13〜33
                 CoinFace(symbolSize: size * 0.5, rim: 1.5, bevelInset: 3)
                     .frame(width: size, height: size)
-                    .rotationEffect(.degrees(go ? Double((i * 67) % 360) + 360 : 0))
+                    .rotationEffect(.degrees(go ? Double((i * 71) % 360) + 540 : 0))
                     .offset(x: go ? cos(angle) * dist : 0,
-                            y: go ? sin(angle) * dist + 120 : 0)   // 外へ＋重力で落下
+                            y: go ? sin(angle) * dist + 170 : 0)   // 外へ＋重力で落下（やや遠くまで）
                     .opacity(go ? 0 : 1)
                     .scaleEffect(go ? 0.4 : 1)
             }
         }
         .allowsHitTesting(false)
         .onAppear {
-            withAnimation(.easeOut(duration: 0.95)) { go = true }
+            withAnimation(.easeOut(duration: 1.4)) { go = true }
         }
     }
 }
