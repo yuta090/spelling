@@ -67,6 +67,10 @@ private struct RootView: View {
             .overlay(alignment: .bottomLeading) {
                 SyncDebugLauncher()
             }
+            // 文づくり（並べ替え）の試遊導線（製品UIには出さない）。
+            .overlay(alignment: .bottomTrailing) {
+                WordOrderingDebugLauncher()
+            }
         #endif
     }
 }
