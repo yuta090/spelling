@@ -17,3 +17,4 @@ UserInterfaceState.xcuserstate
 .env.*.local
 *.p8
 !.env.local.example
+supabase/.temp/
