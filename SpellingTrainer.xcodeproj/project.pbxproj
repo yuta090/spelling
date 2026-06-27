@@ -14,17 +14,6 @@
 		0A1001052D00000100000001 /* SpeechPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002052D00000100000001 /* SpeechPlayer.swift */; };
 		0A1001062D00000100000001 /* VisionTextRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002062D00000100000001 /* VisionTextRecognizer.swift */; };
 		0A1001072D00000100000001 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002072D00000100000001 /* Models.swift */; };
-		FACE0000000000000000CF01 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF02 /* SupabaseConfig.swift */; };
-		FACE0000000000000000CF03 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF04 /* SupabaseService.swift */; };
-		FACE0000000000000000CF05 /* SyncDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF06 /* SyncDTO.swift */; };
-		FACE0000000000000000CF07 /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF08 /* SyncEngine.swift */; };
-		FACE0000000000000000CF09 /* SyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0A /* SyncSession.swift */; };
-		FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0C /* SyncDebugView.swift */; };
-		FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0E /* WordSyncCoordinator.swift */; };
-		FACE0000000000000000CF13 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF14 /* OnboardingView.swift */; };
-		FACE0000000000000000CF15 /* ParentGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF16 /* ParentGateView.swift */; };
-		FACE0000000000000000CF17 /* AccountSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF18 /* AccountSyncView.swift */; };
-		FACE0000000000000000CF19 /* StarterWords.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF1A /* StarterWords.swift */; };
 		0A1001082D00000100000001 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002082D00000100000001 /* AppModel.swift */; };
 		0A1001092D00000100000001 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002092D00000100000001 /* HomeView.swift */; };
 		0A10010A2D00000100000001 /* SpellingSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020A2D00000100000001 /* SpellingSessionView.swift */; };
@@ -32,10 +21,33 @@
 		0A10010C2D00000100000001 /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020C2D00000100000001 /* ResultsView.swift */; };
 		0A10010D2D00000100000001 /* ParentDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020D2D00000100000001 /* ParentDashboardView.swift */; };
 		0A10010E2D00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A10020E2D00000100000001 /* Assets.xcassets */; };
-		0A1001AA2D00000100000001 /* Resources/wordbank.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0A1002AA2D00000100000001 /* Resources/wordbank.sqlite */; };
+		0A1001AA2D00000100000001 /* wordbank.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0A1002AA2D00000100000001 /* wordbank.sqlite */; };
+		5F7E2D37D6864BDF4D0DF14F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E2E2BB39714843CDD21EACC /* Foundation.framework */; };
 		9765087A2FEDA7750051D674 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 976508792FEDA7750051D674 /* Supabase */; };
+		B2C76506BF718B7F87B0EFA1 /* PaywallE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7550C658CF5DC65B7A824C3A /* PaywallE2ETests.swift */; };
+		FACE0000000000000000CF01 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF02 /* SupabaseConfig.swift */; };
+		FACE0000000000000000CF03 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF04 /* SupabaseService.swift */; };
+		FACE0000000000000000CF05 /* SyncDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF06 /* SyncDTO.swift */; };
+		FACE0000000000000000CF07 /* SyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF08 /* SyncEngine.swift */; };
+		FACE0000000000000000CF09 /* SyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0A /* SyncSession.swift */; };
+		FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0C /* SyncDebugView.swift */; };
+		FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0E /* WordSyncCoordinator.swift */; };
 		FACE0000000000000000CF0F /* SpellingSyncCore in Frameworks */ = {isa = PBXBuildFile; productRef = FACE0000000000000000CF10 /* SpellingSyncCore */; };
+		FACE0000000000000000CF13 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF14 /* OnboardingView.swift */; };
+		FACE0000000000000000CF15 /* ParentGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF16 /* ParentGateView.swift */; };
+		FACE0000000000000000CF17 /* AccountSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF18 /* AccountSyncView.swift */; };
+		FACE0000000000000000CF19 /* StarterWords.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF1A /* StarterWords.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A8C7D651DB756BC23B496594 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A100A012D00000100000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A1006012D00000100000001;
+			remoteInfo = SpellingTrainer;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0A1002012D00000100000001 /* SpellingTrainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpellingTrainerApp.swift; sourceTree = "<group>"; };
@@ -45,6 +57,19 @@
 		0A1002052D00000100000001 /* SpeechPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechPlayer.swift; sourceTree = "<group>"; };
 		0A1002062D00000100000001 /* VisionTextRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionTextRecognizer.swift; sourceTree = "<group>"; };
 		0A1002072D00000100000001 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		0A1002082D00000100000001 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		0A1002092D00000100000001 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		0A10020A2D00000100000001 /* SpellingSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpellingSessionView.swift; sourceTree = "<group>"; };
+		0A10020B2D00000100000001 /* ParentWordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentWordListView.swift; sourceTree = "<group>"; };
+		0A10020C2D00000100000001 /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
+		0A10020D2D00000100000001 /* ParentDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentDashboardView.swift; sourceTree = "<group>"; };
+		0A10020E2D00000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0A1002AA2D00000100000001 /* wordbank.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = Resources/wordbank.sqlite; sourceTree = "<group>"; };
+		0A1003012D00000100000001 /* SpellingTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpellingTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E2E2BB39714843CDD21EACC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		7550C658CF5DC65B7A824C3A /* PaywallE2ETests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallE2ETests.swift; sourceTree = "<group>"; };
+		97909A8C2FECB3E100375E8A /* SpellingTrainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpellingTrainer.entitlements; sourceTree = "<group>"; };
+		BA231912C2A5C48377C65383 /* SpellingTrainerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpellingTrainerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FACE0000000000000000CF02 /* SupabaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfig.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF04 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF06 /* SyncDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncDTO.swift; sourceTree = "<group>"; };
@@ -56,16 +81,6 @@
 		FACE0000000000000000CF16 /* ParentGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentGateView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF18 /* AccountSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSyncView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF1A /* StarterWords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarterWords.swift; sourceTree = "<group>"; };
-		0A1002082D00000100000001 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
-		0A1002092D00000100000001 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		0A10020A2D00000100000001 /* SpellingSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpellingSessionView.swift; sourceTree = "<group>"; };
-		0A10020B2D00000100000001 /* ParentWordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentWordListView.swift; sourceTree = "<group>"; };
-		0A10020C2D00000100000001 /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
-		0A10020D2D00000100000001 /* ParentDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentDashboardView.swift; sourceTree = "<group>"; };
-		0A10020E2D00000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0A1002AA2D00000100000001 /* Resources/wordbank.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = Resources/wordbank.sqlite; sourceTree = "<group>"; };
-		0A1003012D00000100000001 /* SpellingTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpellingTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		97909A8C2FECB3E100375E8A /* SpellingTrainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpellingTrainer.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +90,14 @@
 			files = (
 				9765087A2FEDA7750051D674 /* Supabase in Frameworks */,
 				FACE0000000000000000CF0F /* SpellingSyncCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC080E7F33A528BE96C4F82E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F7E2D37D6864BDF4D0DF14F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +111,7 @@
 				0A1005022D00000100000001 /* iPadPrototype */,
 				976508782FEDA7600051D674 /* Frameworks */,
 				0A1005032D00000100000001 /* Products */,
+				3AA9AD062580F0FC34FD69C7 /* SpellingTrainerUITests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -103,7 +127,7 @@
 				0A10020C2D00000100000001 /* ResultsView.swift */,
 				0A1002022D00000100000001 /* TestSessionView.swift */,
 				0A10020E2D00000100000001 /* Assets.xcassets */,
-				0A1002AA2D00000100000001 /* Resources/wordbank.sqlite */,
+				0A1002AA2D00000100000001 /* wordbank.sqlite */,
 				0A1002032D00000100000001 /* GuidedWritingCanvas.swift */,
 				0A1002042D00000100000001 /* PencilCanvasView.swift */,
 				0A1002052D00000100000001 /* SpeechPlayer.swift */,
@@ -128,20 +152,57 @@
 			isa = PBXGroup;
 			children = (
 				0A1003012D00000100000001 /* SpellingTrainer.app */,
+				BA231912C2A5C48377C65383 /* SpellingTrainerUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3AA9AD062580F0FC34FD69C7 /* SpellingTrainerUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7550C658CF5DC65B7A824C3A /* PaywallE2ETests.swift */,
+			);
+			name = SpellingTrainerUITests;
+			path = SpellingTrainerUITests;
 			sourceTree = "<group>";
 		};
 		976508782FEDA7600051D674 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FC79AD8E8953E005521258B9 /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FC79AD8E8953E005521258B9 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				3E2E2BB39714843CDD21EACC /* Foundation.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		098BB3047ECF50FC114C904F /* SpellingTrainerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0BE3FBC09004877CC7960636 /* Build configuration list for PBXNativeTarget "SpellingTrainerUITests" */;
+			buildPhases = (
+				E38E0887CBA254BB5DCFD978 /* Sources */,
+				EC080E7F33A528BE96C4F82E /* Frameworks */,
+				5D3B3F2DD52027AD74BCCBA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CA730B31574178BB8BD9B913 /* PBXTargetDependency */,
+			);
+			name = SpellingTrainerUITests;
+			productName = SpellingTrainerUITests;
+			productReference = BA231912C2A5C48377C65383 /* SpellingTrainerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		0A1006012D00000100000001 /* SpellingTrainer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0A1009012D00000100000001 /* Build configuration list for PBXNativeTarget "SpellingTrainer" */;
@@ -154,10 +215,10 @@
 			);
 			dependencies = (
 			);
+			name = SpellingTrainer;
 			packageProductDependencies = (
 				FACE0000000000000000CF10 /* SpellingSyncCore */,
 			);
-			name = SpellingTrainer;
 			productName = SpellingTrainer;
 			productReference = 0A1003012D00000100000001 /* SpellingTrainer.app */;
 			productType = "com.apple.product-type.application";
@@ -195,6 +256,7 @@
 			projectRoot = "";
 			targets = (
 				0A1006012D00000100000001 /* SpellingTrainer */,
+				098BB3047ECF50FC114C904F /* SpellingTrainerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -205,7 +267,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A10010E2D00000100000001 /* Assets.xcassets in Resources */,
-				0A1001AA2D00000100000001 /* Resources/wordbank.sqlite in Resources */,
+				0A1001AA2D00000100000001 /* wordbank.sqlite in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5D3B3F2DD52027AD74BCCBA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,7 +312,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E38E0887CBA254BB5DCFD978 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2C76506BF718B7F87B0EFA1 /* PaywallE2ETests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CA730B31574178BB8BD9B913 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SpellingTrainer;
+			target = 0A1006012D00000100000001 /* SpellingTrainer */;
+			targetProxy = A8C7D651DB756BC23B496594 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0A100C012D00000100000001 /* Debug */ = {
@@ -435,6 +521,45 @@
 			};
 			name = Release;
 		};
+		0C99CDA4E5E2A477CE614156 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yuta090.SpellingTrainerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SpellingTrainer;
+			};
+			name = Debug;
+		};
+		865CF71677E09A2C1DBFABE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yuta090.SpellingTrainerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SpellingTrainer;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -456,7 +581,23 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		0BE3FBC09004877CC7960636 /* Build configuration list for PBXNativeTarget "SpellingTrainerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				865CF71677E09A2C1DBFABE5 /* Release */,
+				0C99CDA4E5E2A477CE614156 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		FACE0000000000000000CF11 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		976508772FEDA31A0051D674 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
@@ -468,13 +609,6 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		FACE0000000000000000CF11 /* XCLocalSwiftPackageReference "." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ".";
-		};
-/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		976508792FEDA7750051D674 /* Supabase */ = {

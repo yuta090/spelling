@@ -22,6 +22,10 @@ struct HomeView: View {
     @State private var showingStepPicker = false
     @State private var showingPracticeRetryPicker = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
+    #if DEBUG
+    /// UIテストで親メニューを一度だけ自動オープンしたか。
+    @State private var didUITestAutoOpenParent = false
+    #endif
     /// 現在の練習選択が「既定（アクティブ全語）」由来か。復習・フォーカス・リトライの明示選択では false。
     /// 1日の新規導入上限はこれが true のときだけ適用する。
     @State private var isDefaultPracticeSelection = false
@@ -200,6 +204,14 @@ struct HomeView: View {
                     .environmentObject(model)
                     .environmentObject(session)
             }
+            #if DEBUG
+            .onAppear {
+                if UITestSupport.opensParentOnLaunch && !didUITestAutoOpenParent {
+                    didUITestAutoOpenParent = true
+                    showingParent = true
+                }
+            }
+            #endif
             // 親メニューは「かんたんな大人ゲート」の奥に隠す（子の誤操作で開かない）。
             .sheet(isPresented: $showingParentGate, onDismiss: {
                 if pendingParentOpen {
@@ -253,8 +265,8 @@ struct HomeView: View {
                 showCharHint = true
                 model.hasShownHomeCharacterHint = true
             }
-            // 連続ログイン報酬（本日初回のみ）。
-            if !didCheckLogin {
+            // 連続ログイン報酬（本日初回のみ）。UIテストではオーバーレイのノイズを避けて出さない。
+            if !didCheckLogin && !UITestSupport.isActive {
                 didCheckLogin = true
                 if let reward = model.recordDailyLogin() {
                     withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { loginReward = reward }
@@ -473,6 +485,12 @@ struct HomeView: View {
             .accessibilityLabel(language.text(japanese: "結果", english: "Results"))
 
             Button {
+                #if DEBUG
+                if UITestSupport.isActive {
+                    showingParent = true   // UIテストは親ゲートをバイパスして親メニューを開く
+                    return
+                }
+                #endif
                 showingParentGate = true
             } label: {
                 Image(systemName: "gearshape.fill")
@@ -480,6 +498,7 @@ struct HomeView: View {
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(HomeIconButtonStyle())
+            .accessibilityIdentifier("home.parentButton")
             .tapFeedback(scale: 0.88, bounce: true)
             .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
         }

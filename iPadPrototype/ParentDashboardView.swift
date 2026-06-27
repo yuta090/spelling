@@ -23,7 +23,7 @@ private enum ParentPalette {
 struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedSection: ParentSection = .grading
+    @State private var selectedSection: ParentSection = UITestSupport.isActive ? .words : .grading
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -3693,6 +3693,7 @@ private struct ParentWordListPanel: View {
                             .font(.subheadline.weight(.bold))
                     }
                     .buttonStyle(.bordered)
+                    .accessibilityIdentifier("parent.byLevel")
                     .tapFeedback()
                     .tint(ParentPalette.primary)
 
@@ -4173,6 +4174,7 @@ private struct WordLevelSetSheet: View {
                     .tapFeedback()
                     .tint(ParentPalette.primary)
                     .disabled(isSelectedLevelUnlocked && candidates.isEmpty)
+                    .accessibilityIdentifier(isSelectedLevelUnlocked ? "level.create" : "level.unlock")
                 }
                 .padding(20)
             }
@@ -4361,6 +4363,7 @@ private struct PaywallView: View {
                     }
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("paywall.debugUnlock")
                     #endif
                 }
                 .padding(20)
