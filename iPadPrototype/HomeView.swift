@@ -852,6 +852,8 @@ private struct SheetHomeBackground: View {
             HomeBackground(themeID: themeID, ignoresSafeArea: false)
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .clipped()
+                // 写実的・濃い背景でも中身（タイトルやカード）が読めるよう、薄い白で覆ってコントラストを確保。
+                .overlay(Color.white.opacity(0.62))
         }
         .allowsHitTesting(false)
     }
