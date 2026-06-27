@@ -5744,9 +5744,13 @@ private struct TestSettingsPanel: View {
                         .font(.subheadline.weight(.bold))
                 }
                 .tint(ParentPalette.primary)
+
+                Divider()
+                BenchExportRow()
+
                 Text(language.text(
-                    japanese: "開発ビルドのみ表示。課金ゲート（レベル生成のロック）と新規導入上限の動作確認用。効果は DEBUG ビルドのみ。",
-                    english: "Dev build only. For testing the content gate and the daily new-word limit. Effective in DEBUG builds only."
+                    japanese: "開発ビルドのみ表示。課金ゲートと新規導入上限の動作確認、AI-OCRベンチ用の書き出し（手書きPNG＋親判定ラベル）。効果は DEBUG ビルドのみ。",
+                    english: "Dev build only. Content gate / daily-limit testing, plus AI-OCR bench export (handwriting PNG + parent-decision labels)."
                 ))
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -7732,3 +7736,143 @@ private struct ParentBackground: View {
         .environmentObject(AppModel())
         .environmentObject(SyncSession())
 }
+
+#if DEBUG
+// MARK: - AI-OCRベンチ用ローカル書き出し（暫定A / docs/HANDOFF-ai-ocr-2026-06-27.md）
+// 端末ローカルの practiceSamples / attempts を、手書きPNG＋親判定ラベルのCSVにして zip 共有する。
+// バックエンド不要で「実使用＋実親ラベル」の初回計測データを得る最速ルート。DEBUG ビルドのみ。
+
+private struct BenchExportRow: View {
+    @EnvironmentObject private var model: AppModel
+    @State private var exportURL: URL?
+    @State private var status: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Button {
+                do {
+                    exportURL = try BenchExport.makeZip(samples: model.practiceSamples, attempts: model.attempts)
+                    let n = model.practiceSamples.count + model.attempts.count
+                    status = "書き出し: 候補\(n)件（手書きありのみPNG化）"
+                } catch {
+                    exportURL = nil
+                    status = "失敗: \(error.localizedDescription)"
+                }
+            } label: {
+                Label("ベンチ用に書き出す（手書きPNG＋ラベル）", systemImage: "square.and.arrow.down.on.square")
+                    .font(.subheadline.weight(.bold))
+            }
+            if let exportURL {
+                ShareLink(item: exportURL) {
+                    Label("zip を共有 / 保存", systemImage: "square.and.arrow.up")
+                        .font(.subheadline.weight(.bold))
+                }
+            }
+            if let status {
+                Text(status).font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+enum BenchExport {
+    /// 手書きありの sample/attempt を PNG 化し、labels.csv とともに 1 つの zip にまとめて返す。
+    static func makeZip(samples: [PracticeSample], attempts: [SpellingAttempt]) throws -> URL {
+        let fm = FileManager.default
+        let stamp = Int(Date().timeIntervalSince1970)
+        let dir = fm.temporaryDirectory.appendingPathComponent("ocr-bench-export-\(stamp)", isDirectory: true)
+        try? fm.removeItem(at: dir)
+        try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+
+        // 列: filename, target(出題語), verdict(親判定), recognized_text(ローカルOCR), mode, source, date
+        var rows = ["filename,target,verdict,recognized_text,mode,source,date"]
+        var index = 0
+
+        func emit(word: String, recognized: String, drawingData: Data?, canvasSize: DrawingCanvasSize?,
+                  mode: String, source: String, decision: ParentReviewDecision, date: Date) {
+            guard let drawingData,
+                  let drawing = try? PKDrawing(data: drawingData),
+                  let image = drawing.previewImage(canvasSize: canvasSize),
+                  let png = whiteBacked(image).pngData() else { return }
+            // 書き込み成功時のみ採番＆CSV行追加（labels.csv が欠損ファイルを指さないように）。
+            let name = String(format: "%04d.png", index + 1)
+            do {
+                try png.write(to: dir.appendingPathComponent(name))
+            } catch {
+                return
+            }
+            index += 1
+            rows.append([
+                name, csv(word), verdict(decision), csv(recognized), csv(mode), source, iso(date)
+            ].joined(separator: ","))
+        }
+
+        for s in samples {
+            emit(word: s.word, recognized: "", drawingData: s.drawingData, canvasSize: s.canvasSize,
+                 mode: s.mode, source: "practice", decision: s.parentReviewDecision, date: s.date)
+        }
+        for a in attempts {
+            emit(word: a.word, recognized: a.recognizedText, drawingData: a.drawingData, canvasSize: a.canvasSize,
+                 mode: "test", source: "test", decision: a.parentReviewDecision, date: a.date)
+        }
+
+        let csvData = Data((rows.joined(separator: "\n") + "\n").utf8)
+        try csvData.write(to: dir.appendingPathComponent("labels.csv"))
+        return try zipDirectory(dir)
+    }
+
+    private static func verdict(_ d: ParentReviewDecision) -> String {
+        switch d {
+        case .approved: return "correct"
+        case .needsPractice: return "incorrect"
+        case .unreviewed: return "unreviewed"
+        }
+    }
+
+    private static func whiteBacked(_ image: UIImage) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: image.size)
+        return renderer.image { ctx in
+            UIColor.white.setFill()
+            ctx.fill(CGRect(origin: .zero, size: image.size))
+            image.draw(at: .zero)
+        }
+    }
+
+    private static func csv(_ s: String) -> String {
+        if s.contains(",") || s.contains("\"") || s.contains("\n") {
+            return "\"" + s.replacingOccurrences(of: "\"", with: "\"\"") + "\""
+        }
+        return s
+    }
+
+    private static func iso(_ date: Date) -> String {
+        ISO8601DateFormatter().string(from: date)
+    }
+
+    /// ディレクトリを zip 化（依存なし。NSFileCoordinator の forUploading で zip コピーを得る）。
+    private static func zipDirectory(_ dir: URL) throws -> URL {
+        var zipURL: URL?
+        var thrown: Error?
+        var coordError: NSError?
+        NSFileCoordinator().coordinate(readingItemAt: dir, options: .forUploading, error: &coordError) { tmp in
+            let dest = FileManager.default.temporaryDirectory
+                .appendingPathComponent(dir.lastPathComponent + ".zip")
+            try? FileManager.default.removeItem(at: dest)
+            do {
+                try FileManager.default.copyItem(at: tmp, to: dest)
+                zipURL = dest
+            } catch {
+                thrown = error
+            }
+        }
+        if let coordError { throw coordError }
+        if let thrown { throw thrown }
+        guard let zipURL else {
+            throw NSError(domain: "BenchExport", code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "zip 生成に失敗"])
+        }
+        return zipURL
+    }
+}
+#endif
