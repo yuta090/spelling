@@ -5145,6 +5145,7 @@ private struct TestSettingsPanel: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var session: SyncSession
     @State private var showingAccount = false
+    @State private var showingOnboardingResetConfirm = false
     var language: AppLanguage
 
     var body: some View {
@@ -5165,6 +5166,33 @@ private struct TestSettingsPanel: View {
                 }
                 .sheet(isPresented: $showingAccount) {
                     AccountSyncView(session: session)
+                }
+            }
+
+            SettingBlock(title: language.text(japanese: "初回設定", english: "First-time Setup")) {
+                Button(role: .destructive) {
+                    showingOnboardingResetConfirm = true
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.counterclockwise")
+                        Text(language.text(japanese: "初回設定をやり直す", english: "Redo first-time setup"))
+                    }
+                }
+                .confirmationDialog(
+                    language.text(japanese: "初回設定をやり直しますか？", english: "Redo first-time setup?"),
+                    isPresented: $showingOnboardingResetConfirm,
+                    titleVisibility: .visible
+                ) {
+                    Button(language.text(japanese: "やり直す", english: "Redo"), role: .destructive) {
+                        // RootView がこれを見てオンボーディングを再表示する（この画面は自動的に閉じる）。
+                        model.hasCompletedOnboarding = false
+                    }
+                    Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {}
+                } message: {
+                    Text(language.text(
+                        japanese: "学年やキャラ・はいけいを選び直せます。登録した単語は消えません。",
+                        english: "Re-pick grade, character and background. Your words are kept."
+                    ))
                 }
             }
 
