@@ -44,6 +44,15 @@ export OPENROUTER_API_KEY=sk-or-...
    python3 bench.py
    ```
 
+### C. 暫定A：アプリのデバッグ書き出し（親判定ラベルに相乗り・最速）
+[docs/HANDOFF-ai-ocr-2026-06-27.md](../../docs/HANDOFF-ai-ocr-2026-06-27.md)。バックエンド不要で「実使用＋実親ラベル」を得る。
+1. DEBUG ビルドのアプリ → 親メニュー → デバッグ → **「ベンチ用に書き出す」** → zip を共有/保存。
+2. zip を解凍し、中の `samples/`(PNG群) と `labels.csv` を `scripts/ocr-bench/` に置く（既存を置換）。
+3. `python3 bench.py`（ローカルモード）。`labels.csv` に `verdict` 列があれば**親判定ラベル形式**として自動処理：
+   - `verdict` = correct / incorrect（unreviewed は対象外）。**FA/FR を親判定で測る**。
+   - `recognized_text` = ローカルOCRベースライン → AIがこれを上回るか比較表示。
+   - OCR精度/判読不能は `-`（正確な綴り真値が無いため。必要なら少数を別途文字起こし）。
+
 ## サンプル設計のコツ（§7）
 - **同じ画像を全モデルに通す**（都度書かせて別々に試さない）。まず30〜50枚。
 - 3種類を必ず混ぜる:

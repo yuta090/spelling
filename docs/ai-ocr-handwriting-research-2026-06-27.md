@@ -147,6 +147,26 @@
 ### 収集とラベリングの設計（実使用で集める／手入力をほぼ消す）
 アプリで普通に使ってもらったものを試験したい。ただし**実使用の画像には「実際に何と書いたか(ground_truth)」が付かない**ので、そこを設計で解く。
 
+#### 最良案：リモート採点（親採点）データに相乗り 〔2026-06-27 追記〕
+関連: [remote-grading-spec.md](./remote-grading-spec.md)。「親が別端末で子の書き取りを採点する」リモート採点機能が、ベンチに必要なものをほぼ全部すでに持っている。**専用のラベル収集を別途作らず、これに相乗りするのが最善。**
+
+| ベンチに必要 | リモート採点が持つ（`Models.swift` / `attempts`・`reviews`） |
+|---|---|
+| 画像 | `drawingData`(PencilKit) / Storage `drawing_path`（`.pkdrawing`）。※手書きは端末にローカル永続化済み（破棄されない） |
+| target | `expected_word`（端末マスタ由来・自動） |
+| **ラベル(ground_truth相当)** | **`parentReviewDecision` = approved / needsPractice（親の正誤判定）** |
+| ローカルOCRベースライン | `recognized_text` |
+
+- **親がレビューする＝ラベル付け**そのもの。手入力ゼロ。AI採点の目的が「親採点の代替」なので、**親判定を正解(ground truth)としてAIを評価**するのは方法論的にも正しい。
+- 制約: `parentReviewDecision` は「正解/不正解」で**正確な綴り文字列ではない**。→ 最重要の**誤受理/誤拒否は正誤判定だけで測れる**。文字列レベルのOCR精度のみ別途（必要なら少数を文字起こし）。
+- bench.py の横並びエンジンはそのまま流用し、**データ源を `attempts`/`reviews` に差し替える**。先に作った独立の `ocr_bench_samples` テーブルは不要（暫定/参考に格下げ）。
+
+**依存（BUILT vs PLANNED — remote-grading-spec C/I より）**: attempts/reviews/手書きの同期は**未実装**（現状 words/profiles のみ同期）。2経路:
+- **A. 暫定（バックエンド不要・最速）**: テスト端末で、ローカルの `practiceSamples`/`attempts` を PNG に描き出し＋親判定をラベルにしたファイルを書き出すデバッグ機能 → bench.py にローカル投入。Supabase不要・実使用＋実親ラベルで即計測。
+- **B. 本筋**: 同期DTO(`AttemptDTO`/`ReviewDTO`)＋手書きStorage(`storage-sign`)が実装されたら、ベンチは Supabase の `attempts`/`reviews` を直接読む（製品としてどのみち作る部分）。
+
+#### （参考）独立収集の設計（最良案が無理なときのフォールバック）
+
 前提（コード確認済み 2026-06）:
 - 採点時に `UIImage`＋出題語(`expected = currentWord.text`)＋ローカルOCR結果が揃う（`SpellingSessionView.swift` / `TestSessionView.swift`）。
 - **`target`（出題語）は端末マスタと紐付き済み → 収集時に自動で分かる。手入力不要。**
@@ -169,10 +189,10 @@
 
 ## 8. 未決事項・次の一手
 
+- [ ] **方針確定：ベンチはリモート採点データに相乗り**（親判定=ラベル）。独立収集は使わない前提で進める。
+- [ ] **暫定A：テスト端末ローカル書き出し**（バックエンド不要）: `practiceSamples`/`attempts` を PNG＋親判定ラベルで書き出すデバッグ機能 → bench.py へ。これが最速で実データを得る道。
+- [ ] bench.py のデータ源を `attempts`/`reviews`（または暫定の書き出しファイル）に差し替え。`parentReviewDecision`→ 正誤の真値、`recognized_text`→ ローカルOCRベースライン。
 - [ ] メインの判定エンジン選定: 第一候補は **nano/Flash-Lite で採点もコメントも兼ねる**前提で実測。安いモデルでコメント品質が落ちると分かった場合のみ Haiku 等へフォールバック（"Haiku前提"は決めつけだったので排除）。
-- [ ] **アプリの収集フック実装**（設計合意済み・未実装）: `SupabaseService` にアップロード関数、`SpellingSessionView`/`TestSessionView` の採点点でフック、オプトインフラグ。①自動ラベル収集 ②指定収集モード。
-- [ ] 指定収集モードの誤字パターン表（どの語にどの典型誤字を書かせるか）を作る。
-- [ ] ①自動ラベルの目視監査フロー（ランダムN枚）の決め。
 - [ ] エスカレーション可否・確信度判定ロジックを `SpellingSyncCore` に純粋関数で実装（TDD）。
 - [ ] 画像最小化（クロップ／特徴量送信）とプライバシー文言の整理。
 - [ ] 料金体系: AIサポートを上位の保護者プランに内包する形の検討（StoreKit2 実装済みを活用）。

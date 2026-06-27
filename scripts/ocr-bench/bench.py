@@ -117,6 +117,7 @@ def load_samples_supabase():
             "id": row["id"],
             "path": row["storage_path"],
             "target": row["target"],
+            "label_kind": "ground_truth",
             "ground_truth": row["ground_truth"],
             "legible_truth": bool(row["legible"]),
             "image": obj.content,
@@ -125,22 +126,44 @@ def load_samples_supabase():
 
 
 def load_samples_local():
-    # ./labels.csv: path,target,ground_truth,legible（path は ./samples/ からの相対）
+    # ./samples + ./labels.csv。2 形式に両対応:
+    #  (1) 親判定ラベル形式（暫定A・アプリのデバッグ書き出し）:
+    #      filename,target,verdict(correct/incorrect/unreviewed),recognized_text,mode,source,date
+    #      → label_kind="verdict"。unreviewed はラベル無しなので除外。
+    #  (2) 旧 ground_truth 形式: path,target,ground_truth,legible → label_kind="ground_truth"。
     base = os.path.join(os.path.dirname(__file__), "samples")
     csv_path = os.path.join(os.path.dirname(__file__), "labels.csv")
     samples = []
     with open(csv_path, newline="", encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            p = os.path.join(base, row["path"])
-            with open(p, "rb") as img:
-                samples.append({
-                    "id": row["path"],
-                    "path": row["path"],
-                    "target": row["target"],
-                    "ground_truth": row["ground_truth"],
-                    "legible_truth": row.get("legible", "true").strip().lower() != "false",
-                    "image": img.read(),
-                })
+        reader = csv.DictReader(f)
+        cols = reader.fieldnames or []
+        verdict_mode = "verdict" in cols
+        for row in reader:
+            fname = (row.get("filename") or row.get("path") or "").strip()
+            if not fname:
+                continue
+            p = os.path.join(base, fname)
+            if verdict_mode:
+                v = (row.get("verdict") or "").strip().lower()
+                if v not in ("correct", "incorrect"):
+                    continue  # unreviewed 等は真値ラベルが無いので対象外
+                with open(p, "rb") as img:
+                    samples.append({
+                        "id": fname, "path": fname, "target": row["target"],
+                        "label_kind": "verdict",
+                        "verdict_correct": (v == "correct"),
+                        "recognized_text": (row.get("recognized_text") or ""),
+                        "image": img.read(),
+                    })
+            else:
+                with open(p, "rb") as img:
+                    samples.append({
+                        "id": fname, "path": fname, "target": row["target"],
+                        "label_kind": "ground_truth",
+                        "ground_truth": row.get("ground_truth", ""),
+                        "legible_truth": (row.get("legible", "true") or "true").strip().lower() != "false",
+                        "image": img.read(),
+                    })
     return samples
 
 
@@ -218,7 +241,8 @@ def main():
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow([
-            "model", "sample_id", "target", "ground_truth", "legible_truth",
+            "model", "sample_id", "target", "label_kind",
+            "ground_truth", "legible_truth", "verdict_correct", "recognized_text",
             "predicted_word", "legible", "matches_target", "comment",
             "latency_ms", "prompt_tokens", "completion_tokens", "error",
         ])
@@ -233,7 +257,9 @@ def main():
                            "completion_tokens": ""}
                     err = str(e)[:200]
                 w.writerow([
-                    model, s["id"], s["target"], s["ground_truth"], s["legible_truth"],
+                    model, s["id"], s["target"], s.get("label_kind", ""),
+                    s.get("ground_truth", ""), s.get("legible_truth", ""),
+                    s.get("verdict_correct", ""), s.get("recognized_text", ""),
                     res["predicted_word"], res["legible"], res["matches_target"], res["comment"],
                     res["latency_ms"], res["prompt_tokens"], res["completion_tokens"], err,
                 ])
@@ -252,19 +278,27 @@ def summarize(rows):
 
     header = f"{'model':32s} {'n':>3} {'OCR精度':>7} {'誤受理':>6} {'誤拒否':>6} {'判読不能検出':>10} {'捏造':>5} {'遅延ms':>7}"
     print(header)
+    def truth_correct_of(s):
+        if s.get("label_kind") == "verdict":
+            return bool(s["verdict_correct"])               # 親判定（correct/incorrect）
+        return norm(s.get("ground_truth", "")) == norm(s["target"])  # 旧: 実際に書かれた文字==出題語
+
     for model, rs in by_model.items():
         ok = [r for r in rs if not r["err"]]
         n = len(ok)
         if n == 0:
             print(f"{model:32s} {'全件エラー'}")
             continue
-        ocr_hit = sum(1 for r in ok if norm(r["res"]["predicted_word"]) == norm(r["sample"]["ground_truth"]))
-        fa = fr = 0
-        illeg = [r for r in ok if not r["sample"]["legible_truth"]]
+        # OCR精度・判読不能は「正確な綴り/legible 真値」がある ground_truth 形式のみ算出。
+        gt_rows = [r for r in ok if r["sample"].get("label_kind") == "ground_truth"]
+        ocr_hit = sum(1 for r in gt_rows
+                      if norm(r["res"]["predicted_word"]) == norm(r["sample"].get("ground_truth", "")))
+        illeg = [r for r in gt_rows if not r["sample"].get("legible_truth", True)]
         illeg_detected = sum(1 for r in illeg if r["res"]["legible"] is False)
         fabricate = sum(1 for r in illeg if r["res"]["legible"] is True)  # 読めないのに読めた=捏造
+        fa = fr = 0
         for r in ok:
-            truth_correct = norm(r["sample"]["ground_truth"]) == norm(r["sample"]["target"])
+            truth_correct = truth_correct_of(r["sample"])
             says_correct = r["res"]["matches_target"] is True
             if (not truth_correct) and says_correct:
                 fa += 1
@@ -272,11 +306,28 @@ def summarize(rows):
                 fr += 1
         lat = [r["res"]["latency_ms"] for r in ok if isinstance(r["res"]["latency_ms"], int)]
         avg_lat = int(sum(lat) / len(lat)) if lat else 0
+        ocr_str = f"{ocr_hit / len(gt_rows):.0%}" if gt_rows else "-"
         illeg_str = f"{illeg_detected}/{len(illeg)}" if illeg else "-"
-        print(f"{model:32s} {n:>3} {ocr_hit/n:>6.0%} {fa:>6} {fr:>6} {illeg_str:>10} {fabricate:>5} {avg_lat:>7}")
+        print(f"{model:32s} {n:>3} {ocr_str:>7} {fa:>6} {fr:>6} {illeg_str:>10} {fabricate:>5} {avg_lat:>7}")
+
+    # 親判定ラベル形式のときは、ローカルOCR(recognized_text)のベースラインFA/FRも出す（AIが勝るか比較）。
+    verdict_samples = {r["sample"]["id"]: r["sample"]
+                       for r in rows if r["sample"].get("label_kind") == "verdict"}
+    if verdict_samples:
+        b_fa = b_fr = 0
+        for s in verdict_samples.values():
+            local_correct = norm(s.get("recognized_text", "")) == norm(s["target"])
+            tc = bool(s["verdict_correct"])
+            if (not tc) and local_correct:
+                b_fa += 1
+            if tc and (not local_correct):
+                b_fr += 1
+        print(f"\nローカルOCRベースライン（recognized_text vs 親判定 / n={len(verdict_samples)}）: "
+              f"誤受理={b_fa} 誤拒否={b_fr} ← AIモデルのFA/FRがこれを下回れば導入価値あり")
 
     print("\n注意:")
     print("  - 誤受理(FA)が最重要。0 が理想。1つでも出るモデルは本番では危険。")
+    print("  - 親判定ラベル形式（暫定A）では FA/FR を親の正誤で測る。OCR精度/判読不能は '-'（綴り真値が無いため）。")
     print("  - 捏造列が0でないモデルは『きれいに書こう』導線が誤発火しない前提を満たさない。")
     print("  - コメント品質は CSV の comment 列を目視評価（安いモデルで足りるかの判定）。")
     print("  - レイテンシは OpenRouter 経由の上限値。最終候補は各社直APIで再計測。")
