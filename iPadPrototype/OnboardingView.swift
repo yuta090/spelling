@@ -27,6 +27,7 @@ struct OnboardingView: View {
     @State private var coinsGranted = false
     @State private var coinPop = false
     @State private var coinBurst = false
+    @State private var coinSpin = 0.0
     @State private var showingAccount = false
     @State private var showingSkipConfirm = false
 
@@ -315,9 +316,9 @@ struct OnboardingView: View {
                     if coinBurst { CoinBurst() }
                     CoinView()
                         .frame(width: 132, height: 132)
-                        .scaleEffect(coinPop ? 1.16 : 1.0)
-                        .rotation3DEffect(.degrees(coinPop ? 18 : 0), axis: (x: 0, y: 1, z: 0))
-                        .shadow(color: .orange.opacity(0.4), radius: coinPop ? 18 : 10, y: 6)
+                        .scaleEffect(coinPop ? 1.2 : 1.0)
+                        .rotation3DEffect(.degrees(coinSpin), axis: (x: 0, y: 1, z: 0))
+                        .shadow(color: .orange.opacity(0.45), radius: coinPop ? 20 : 10, y: 6)
                 }
             }
             .buttonStyle(.plain)
@@ -346,11 +347,12 @@ struct OnboardingView: View {
     }
 
     private func popCoin() {
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         coinBurst = false
-        withAnimation(.spring(response: 0.25, dampingFraction: 0.45)) { coinPop = true }
+        withAnimation(.spring(response: 0.28, dampingFraction: 0.45)) { coinPop = true }
+        withAnimation(.easeOut(duration: 0.6)) { coinSpin += 360 }   // 1回ぐるっと
         coinBurst = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
             withAnimation(.easeOut(duration: 0.18)) { coinPop = false }
         }
     }
@@ -421,52 +423,57 @@ private struct SparkleBurst: View {
     }
 }
 
-/// 金貨の見た目（金グラデの円＋星）。
-private struct CoinView: View {
-    private let gold = LinearGradient(
-        colors: [Color(red: 1.0, green: 0.86, blue: 0.35), Color(red: 0.96, green: 0.66, blue: 0.13)],
-        startPoint: .topLeading, endPoint: .bottomTrailing
-    )
+/// ツヤのある“鋳造された金貨”の見た目（放射状ハイライト＋ふち＋ベベル＋星）。
+private struct CoinFace: View {
+    var symbolSize: CGFloat
+    var rim: CGFloat = 7
+    var bevelInset: CGFloat = 12
 
     var body: some View {
         ZStack {
-            Circle().fill(gold)
-            Circle().stroke(Color(red: 0.82, green: 0.52, blue: 0.08), lineWidth: 5)
+            Circle().fill(RadialGradient(
+                colors: [Color(red: 1.0, green: 0.96, blue: 0.66),
+                         Color(red: 1.0, green: 0.80, blue: 0.26),
+                         Color(red: 0.93, green: 0.58, blue: 0.08)],
+                center: .init(x: 0.36, y: 0.30), startRadius: 1, endRadius: 80))
+            Circle().stroke(Color(red: 0.78, green: 0.46, blue: 0.05), lineWidth: rim)   // ふち
+            Circle().stroke(Color.white.opacity(0.55), lineWidth: 2).padding(bevelInset)  // 内側のツヤ
             Image(systemName: "star.fill")
-                .font(.system(size: 54, weight: .bold))
-                .foregroundStyle(.white.opacity(0.95))
+                .font(.system(size: symbolSize, weight: .heavy))
+                .foregroundStyle(Color(red: 1.0, green: 0.98, blue: 0.82))
+                .shadow(color: Color(red: 0.7, green: 0.4, blue: 0.05).opacity(0.5), radius: 1, y: 1)
         }
     }
 }
 
-/// コイン付与時にはじける小さな金貨（外へ放射＋少し落下）。
+/// 中央の大きな金貨。
+private struct CoinView: View {
+    var body: some View { CoinFace(symbolSize: 50) }
+}
+
+/// コイン付与時にはじける**たくさんの金貨**（全方向へ噴出＋回転＋落下）。
 private struct CoinBurst: View {
     @State private var go = false
-    private let gold = LinearGradient(
-        colors: [Color(red: 1.0, green: 0.86, blue: 0.35), Color(red: 0.96, green: 0.66, blue: 0.13)],
-        startPoint: .top, endPoint: .bottom
-    )
+    private let count = 28
 
     var body: some View {
         ZStack {
-            ForEach(0..<10, id: \.self) { i in
-                let angle = Double(i) / 10.0 * 2 * .pi
-                Circle()
-                    .fill(gold)
-                    .frame(width: 18, height: 18)
-                    .overlay(
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(.white.opacity(0.9))
-                    )
-                    .offset(x: go ? cos(angle) * 92 : 0, y: go ? sin(angle) * 70 + 56 : 0)
+            ForEach(0..<count, id: \.self) { i in
+                let angle = Double(i) / Double(count) * 2 * .pi + (i % 2 == 0 ? 0.0 : 0.18)
+                let dist = 80.0 + Double((i * 37) % 95)     // ばらけた飛距離 80〜175
+                let size = 14.0 + Double(i % 4) * 6.0       // 14〜32
+                CoinFace(symbolSize: size * 0.5, rim: 1.5, bevelInset: 3)
+                    .frame(width: size, height: size)
+                    .rotationEffect(.degrees(go ? Double((i * 67) % 360) + 360 : 0))
+                    .offset(x: go ? cos(angle) * dist : 0,
+                            y: go ? sin(angle) * dist + 120 : 0)   // 外へ＋重力で落下
                     .opacity(go ? 0 : 1)
-                    .scaleEffect(go ? 0.5 : 1)
+                    .scaleEffect(go ? 0.4 : 1)
             }
         }
         .allowsHitTesting(false)
         .onAppear {
-            withAnimation(.easeOut(duration: 0.6)) { go = true }
+            withAnimation(.easeOut(duration: 0.95)) { go = true }
         }
     }
 }
