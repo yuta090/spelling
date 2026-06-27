@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import SpellingSyncCore
 
 struct HomeView: View {
     @EnvironmentObject private var model: AppModel
@@ -15,6 +16,9 @@ struct HomeView: View {
     @State private var showingCharacterPicker = false
     /// このセッションでホームのキャラヒントを出すか（初回起動の1回だけ true になる）。
     @State private var showCharHint = false
+    /// 連続ログイン報酬（受け取り済みなら nil）。本日初回ホーム表示で 1 回だけ判定する。
+    @State private var loginReward: CoinRewards.LoginOutcome?
+    @State private var didCheckLogin = false
     @State private var showingStepPicker = false
     @State private var showingPracticeRetryPicker = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
@@ -242,6 +246,21 @@ struct HomeView: View {
             if !model.hasShownHomeCharacterHint {
                 showCharHint = true
                 model.hasShownHomeCharacterHint = true
+            }
+            // 連続ログイン報酬（本日初回のみ）。
+            if !didCheckLogin {
+                didCheckLogin = true
+                if let reward = model.recordDailyLogin() {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) { loginReward = reward }
+                }
+            }
+        }
+        .overlay {
+            if let reward = loginReward {
+                LoginRewardView(streak: reward.streak, coins: reward.coins, language: language) {
+                    withAnimation(.easeOut(duration: 0.2)) { loginReward = nil }
+                }
+                .transition(.opacity)
             }
         }
         .onValueChange(of: model.activeWords.map(\.id)) { _ in
@@ -8429,4 +8448,77 @@ private struct ThumbnailHill: Shape {
     HomeView()
         .environmentObject(AppModel())
         .environmentObject(SyncSession())
+}
+
+/// 連続ログイン報酬のポップアップ（7日スタンプカード＋もらえるコイン）。
+private struct LoginRewardView: View {
+    let streak: Int
+    let coins: Int
+    var language: AppLanguage
+    let onClose: () -> Void
+
+    /// 今週のスタンプ位置（1〜7）。7日を超えたら1に戻る。
+    private var weekDay: Int { ((max(streak, 1) - 1) % 7) + 1 }
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+                .onTapGesture(perform: onClose)
+
+            VStack(spacing: 18) {
+                Text("🎉 " + language.text(japanese: "ログインボーナス！", english: "Login Bonus!"))
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+
+                HStack(spacing: 10) {
+                    coin.frame(width: 46, height: 46)
+                    Text("＋\(coins)")
+                        .font(.system(size: 36, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Color(red: 0.90, green: 0.60, blue: 0.10))
+                }
+
+                Text(language.text(japanese: "\(streak)にち れんぞく！", english: "\(streak)-day streak!"))
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.secondary)
+
+                HStack(spacing: 8) {
+                    ForEach(1...7, id: \.self) { i in
+                        ZStack {
+                            Circle()
+                                .fill(i <= weekDay
+                                      ? Color(red: 1.0, green: 0.82, blue: 0.30)
+                                      : Color.secondary.opacity(0.18))
+                                .frame(width: 28, height: 28)
+                            if i <= weekDay {
+                                Image(systemName: "star.fill")
+                                    .font(.system(size: 13, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                    }
+                }
+
+                Button(language.text(japanese: "やったー！", english: "Yay!"), action: onClose)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+            }
+            .padding(28)
+            .frame(maxWidth: 420)
+            .background(RoundedRectangle(cornerRadius: 24).fill(Color(.systemBackground)))
+            .shadow(color: .black.opacity(0.2), radius: 20, y: 8)
+            .padding(40)
+        }
+    }
+
+    private var coin: some View {
+        ZStack {
+            Circle().fill(LinearGradient(
+                colors: [Color(red: 1.0, green: 0.86, blue: 0.35), Color(red: 0.96, green: 0.62, blue: 0.12)],
+                startPoint: .topLeading, endPoint: .bottomTrailing))
+            Circle().stroke(Color(red: 0.80, green: 0.50, blue: 0.08), lineWidth: 2)
+            Image(systemName: "star.fill")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(.white.opacity(0.95))
+        }
+    }
 }
