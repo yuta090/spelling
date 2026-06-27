@@ -37,4 +37,29 @@ public enum NewWordBudget {
     ) -> ArraySlice<W> {
         candidates.prefix(remainingSlots(introducedToday: introducedToday, dailyLimit: dailyLimit))
     }
+
+    /// 既定（アクティブ全語）の練習選択に 1日の新規導入上限を適用し、**出す要素のインデックス**を返す。
+    /// - `isNewCandidate[i]`: その語が「未導入かつ未練習の新規候補」か。
+    /// - `false` の要素（既習・導入済み）は **常に含む**。`true`（新規候補）は残り枠ぶんだけ
+    ///   配列の**先頭順**で含む。順序＝呼び出し側が望む新規導入の優先順。
+    public static func cappedIndices(
+        isNewCandidate: [Bool],
+        introducedToday: Int,
+        dailyLimit: Int = dailyLimit
+    ) -> [Int] {
+        var remaining = remainingSlots(introducedToday: introducedToday, dailyLimit: dailyLimit)
+        var result: [Int] = []
+        result.reserveCapacity(isNewCandidate.count)
+        for (i, isNew) in isNewCandidate.enumerated() {
+            if isNew {
+                if remaining > 0 {
+                    result.append(i)
+                    remaining -= 1
+                }
+            } else {
+                result.append(i)
+            }
+        }
+        return result
+    }
 }

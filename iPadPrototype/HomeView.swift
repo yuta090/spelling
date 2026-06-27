@@ -22,6 +22,9 @@ struct HomeView: View {
     @State private var showingStepPicker = false
     @State private var showingPracticeRetryPicker = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
+    /// 現在の練習選択が「既定（アクティブ全語）」由来か。復習・フォーカス・リトライの明示選択では false。
+    /// 1日の新規導入上限はこれが true のときだけ適用する。
+    @State private var isDefaultPracticeSelection = false
     @State private var retryPracticeWordIDs = Set<UUID>()
     @State private var lastPracticeWordIDs = Set<UUID>()
     @State private var completedPracticeWordIDs = Set<UUID>()
@@ -32,7 +35,10 @@ struct HomeView: View {
     }
 
     private var selectedPracticeWords: [SpellingWord] {
-        model.activeWords.filter { selectedPracticeWordIDs.contains($0.id) }
+        let selected = model.activeWords.filter { selectedPracticeWordIDs.contains($0.id) }
+        // 1日の新規導入上限は「既定（アクティブ全語）選択」のときだけ適用する。
+        // 復習・フォーカス・リトライの明示選択は対象外（等価判定では誤爆するためソースをフラグで持つ）。
+        return model.dailyCappedPracticeWords(selected, isFullActiveSelection: isDefaultPracticeSelection)
     }
 
     private var selectedPracticeWordIDsInOrder: [UUID] {
@@ -294,6 +300,8 @@ struct HomeView: View {
 
         completedPracticeWordIDs = []
         clearPracticeResumeIfWordsChanged()
+        // 実際に練習へ出す（キャップ適用後の）新規語に導入スタンプを押す。
+        model.stampFirstIntroducedIfNeeded(selectedPracticeWords)
         iris.cover(animated: !reduceMotion) {
             activeMode = .practice
         }
@@ -308,6 +316,7 @@ struct HomeView: View {
         }
 
         selectedPracticeWordIDs = retryIDs
+        isDefaultPracticeSelection = false
         lastPracticeWordIDs = activeIDs
         completedPracticeWordIDs = []
         practiceResumeState = nil
@@ -325,6 +334,7 @@ struct HomeView: View {
         }
 
         selectedPracticeWordIDs = retryIDs
+        isDefaultPracticeSelection = false
         completedPracticeWordIDs = []
         practiceResumeState = nil
         showingPracticeRetryPicker = false
@@ -369,6 +379,7 @@ struct HomeView: View {
         }
 
         selectedPracticeWordIDs = activeIDs
+        isDefaultPracticeSelection = true
         lastPracticeWordIDs = activeIDs
         completedPracticeWordIDs = []
         clearPracticeResumeIfWordsChanged()
@@ -383,6 +394,7 @@ struct HomeView: View {
         }
 
         selectedPracticeWordIDs = reviewIDs
+        isDefaultPracticeSelection = false
         lastPracticeWordIDs = activeIDs
         completedPracticeWordIDs = []
         clearPracticeResumeIfWordsChanged()
@@ -398,6 +410,7 @@ struct HomeView: View {
         }
 
         selectedPracticeWordIDs = focusedIDs
+        isDefaultPracticeSelection = false
         lastPracticeWordIDs = activeIDs
         completedPracticeWordIDs = []
         model.focusedPracticeWordIDs = []

@@ -101,4 +101,42 @@ final class NewWordBudgetTests: XCTestCase {
         let picked = NewWordBudget.selectNewWords(candidates: [Int](), introducedToday: 0)
         XCTAssertTrue(picked.isEmpty)
     }
+
+    // MARK: - cappedIndices（既存語は常に含み、新規候補は残り枠まで）
+
+    func testCappedIndicesKeepsAllNonCandidates() {
+        // 全て既習/導入済み（新規候補なし）→ 全部含む
+        let idx = NewWordBudget.cappedIndices(isNewCandidate: [false, false, false], introducedToday: 0)
+        XCTAssertEqual(idx, [0, 1, 2])
+    }
+
+    func testCappedIndicesLimitsNewCandidatesToRemaining() {
+        // 並び: 既習, 新規, 新規, 既習, 新規。introducedToday=8 → 残り 2 枠。
+        // 新規はインデックス 1,2,4 のうち先頭 2 つ（1,2）まで。4 は落ちる。
+        let flags = [false, true, true, false, true]
+        let idx = NewWordBudget.cappedIndices(isNewCandidate: flags, introducedToday: 8)
+        XCTAssertEqual(idx, [0, 1, 2, 3])
+    }
+
+    func testCappedIndicesDropsAllNewWhenFull() {
+        let flags = [true, false, true]
+        let idx = NewWordBudget.cappedIndices(isNewCandidate: flags, introducedToday: 10)
+        XCTAssertEqual(idx, [1], "枠ゼロなら新規は全部落とし、既習だけ残す")
+    }
+
+    func testCappedIndicesKeepsAllNewWhenUnderBudget() {
+        let flags = [true, true, false]
+        let idx = NewWordBudget.cappedIndices(isNewCandidate: flags, introducedToday: 0)
+        XCTAssertEqual(idx, [0, 1, 2], "新規が残り枠以下なら全部含む")
+    }
+
+    func testCappedIndicesEmpty() {
+        XCTAssertEqual(NewWordBudget.cappedIndices(isNewCandidate: [], introducedToday: 0), [])
+    }
+
+    func testCappedIndicesRespectsCustomLimit() {
+        let flags = [true, true, true]
+        let idx = NewWordBudget.cappedIndices(isNewCandidate: flags, introducedToday: 1, dailyLimit: 2)
+        XCTAssertEqual(idx, [0], "上限2・既導入1 → 残り1枠で先頭の新規のみ")
+    }
 }
