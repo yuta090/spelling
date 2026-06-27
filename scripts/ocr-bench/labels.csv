@@ -1,5 +1,0 @@
-path,target,ground_truth,legible
-neat/apple_01.png,apple,apple,true
-messy/because_01.png,because,becuase,true
-messy/friend_01.png,friend,freind,true
-illegible/water_01.png,water,water,false
