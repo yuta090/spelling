@@ -4059,6 +4059,7 @@ private struct WordLevelSetSheet: View {
 
     var body: some View {
         NavigationStack {
+            VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Picker("", selection: $axis) {
@@ -4133,53 +4134,64 @@ private struct WordLevelSetSheet: View {
                         }
                     }
 
-                    if !isSelectedLevelUnlocked {
-                        HStack(spacing: 6) {
-                            Image(systemName: "lock.fill")
-                            Text(language.text(
-                                japanese: "このレベルは保護者プランで解放されます（pre-K・K と手書き登録は無料）。",
-                                english: "This level unlocks with the parent plan (pre-K, K, and handwriting entry are free)."
-                            ))
-                            .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(ParentPalette.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-
-                    if let statusMessage {
-                        Text(statusMessage)
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(ParentPalette.success)
-                    }
-
-                    Button {
-                        if isSelectedLevelUnlocked {
-                            createSet()
-                        } else {
-                            showingPaywall = true
-                        }
-                    } label: {
-                        Label(
-                            isSelectedLevelUnlocked
-                                ? language.text(japanese: "このセットを作る", english: "Create This Set")
-                                : language.text(japanese: "プランで解放する", english: "Unlock with Plan"),
-                            systemImage: isSelectedLevelUnlocked ? "plus.circle.fill" : "lock.fill"
-                        )
-                        .font(.headline.weight(.heavy))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tapFeedback()
-                    .tint(ParentPalette.primary)
-                    .disabled(isSelectedLevelUnlocked && candidates.isEmpty)
-                    .accessibilityIdentifier(isSelectedLevelUnlocked ? "level.create" : "level.unlock")
                 }
                 .padding(20)
             }
+
+            // 主ボタンは最下部に固定して常に見えるようにする（スクロール不要）。
+            VStack(alignment: .leading, spacing: 10) {
+                if !isSelectedLevelUnlocked {
+                    HStack(spacing: 6) {
+                        Image(systemName: "lock.fill")
+                        Text(language.text(
+                            japanese: "このレベルは保護者プランで解放されます（pre-K・K と手書き登録は無料）。",
+                            english: "This level unlocks with the parent plan (pre-K, K, and handwriting entry are free)."
+                        ))
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(ParentPalette.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                if let statusMessage {
+                    Text(statusMessage)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(ParentPalette.success)
+                }
+
+                Button {
+                    if isSelectedLevelUnlocked {
+                        createSet()
+                    } else {
+                        showingPaywall = true
+                    }
+                } label: {
+                    Label(
+                        isSelectedLevelUnlocked
+                            ? language.text(japanese: "このセットを作る", english: "Create This Set")
+                            : language.text(japanese: "プランで解放する", english: "Unlock with Plan"),
+                        systemImage: isSelectedLevelUnlocked ? "plus.circle.fill" : "lock.fill"
+                    )
+                    .font(.headline.weight(.heavy))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                }
+                .buttonStyle(.borderedProminent)
+                .tapFeedback()
+                .tint(ParentPalette.primary)
+                .disabled(isSelectedLevelUnlocked && candidates.isEmpty)
+                .accessibilityIdentifier(isSelectedLevelUnlocked ? "level.create" : "level.unlock")
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity)
+            .background(.bar)
+            }
             .navigationTitle(language.text(japanese: "レベルで単語を作る", english: "Add Words by Level"))
             .navigationBarTitleDisplayMode(.inline)
+            // レベルを変えたら、前の「作成しました」表示は消す（固定フッターに古い結果を残さない）。
+            .onValueChange(of: selectedLevel) { _ in statusMessage = nil }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
@@ -4355,16 +4367,6 @@ private struct PaywallView: View {
                     }
                     .font(.caption.weight(.bold))
                     .tint(ParentPalette.primary)
-
-                    #if DEBUG
-                    Button(language.text(japanese: "デバッグ: 全解放して閉じる", english: "Debug: unlock all & close")) {
-                        model.debugUnlockAll = true
-                        dismiss()
-                    }
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(.secondary)
-                    .accessibilityIdentifier("paywall.debugUnlock")
-                    #endif
                 }
                 .padding(20)
             }
@@ -4379,6 +4381,16 @@ private struct PaywallView: View {
                     }
                     .font(.headline.weight(.bold))
                 }
+                #if DEBUG
+                // デバッグ用：スクロール不要で確実に解放（開発・E2E用）。Release では出さない。
+                ToolbarItem(placement: .primaryAction) {
+                    Button(language.text(japanese: "解放", english: "Unlock")) {
+                        model.debugUnlockAll = true
+                        dismiss()
+                    }
+                    .accessibilityIdentifier("paywall.debugUnlock")
+                }
+                #endif
             }
             .alert(language.text(japanese: "準備中", english: "Coming soon"), isPresented: $showComingSoon) {
                 Button(language.text(japanese: "OK", english: "OK"), role: .cancel) {}

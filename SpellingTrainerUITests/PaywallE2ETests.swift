@@ -43,10 +43,9 @@ final class PaywallE2ETests: XCTestCase {
                        "無料レベルで解放ボタンが出てはいけない")
     }
 
-    /// 有料レベル（US 1年生）はロックされ、ペイウォール入口（解放ボタン）と説明が出る。
-    /// （購入→解放の実操作は iPad フォームシートのスクロール制約で自動化が不安定なため、
-    ///   StoreManager のユニットテスト＋手動確認でカバーする。）
-    func testLockedLevelShowsLockAndPaywallEntry() {
+    /// 有料レベル（US 1年生）はロックされ、ペイウォール経由で解放すると作成ボタンに変わる。
+    /// 主ボタンは下部固定、ペイウォールの解放はツールバーにあり、どちらもスクロール不要で届く。
+    func testLockedLevelShowsPaywallThenUnlocks() {
         let app = launchApp()
         openLevelSheet(app)
 
@@ -55,10 +54,21 @@ final class PaywallE2ETests: XCTestCase {
         XCTAssertTrue(grade1.waitForExistence(timeout: 15), "学年セグメント US 1年生 が見つからない")
         grade1.tap()
 
-        // 有料レベルはロックされ、解放ボタン（ペイウォール入口）が出て、作成ボタンは出ない。
-        XCTAssertTrue(app.buttons["level.unlock"].waitForExistence(timeout: 15),
-                      "有料レベルはロックされ解放ボタンが出るはず")
-        XCTAssertFalse(app.buttons["level.create"].exists,
-                       "有料レベルで作成ボタンが出てはいけない")
+        // ロック中は解放ボタン（下部固定）。作成ボタンは出ない。
+        let unlock = app.buttons["level.unlock"]
+        XCTAssertTrue(unlock.waitForExistence(timeout: 15), "有料レベルはロックされ解放ボタンが出るはず")
+        XCTAssertFalse(app.buttons["level.create"].exists, "有料レベルで作成ボタンが出てはいけない")
+        unlock.tap()
+
+        // ペイウォール → ツールバーの「解放」（デバッグ）で閉じる。
+        let debugUnlock = app.buttons["paywall.debugUnlock"]
+        XCTAssertTrue(debugUnlock.waitForExistence(timeout: 15), "ペイウォールの解放（デバッグ）が見つからない")
+        debugUnlock.tap()
+
+        // 解放後はロックが外れ、作成ボタンに変わる。
+        XCTAssertTrue(app.buttons["level.create"].waitForExistence(timeout: 15),
+                      "解放後は作成ボタンに変わるはず")
+        XCTAssertFalse(app.buttons["level.unlock"].exists,
+                       "解放後に解放ボタンが残ってはいけない")
     }
 }
