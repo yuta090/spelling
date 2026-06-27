@@ -34,6 +34,9 @@ private struct RootView: View {
             }
         }
             .task {
+                // StoreKit を開始（商品ロード・取引監視・権利再検証）。起動時に権利を上書きするので、
+                // キャッシュやデバッグ値が残っていても実際の購入状態に揃う。
+                model.startStoreKit()
                 // 世帯供給元を注入し、認証状態を読み直してから起動時同期。
                 // サインイン済みの親のときだけ世帯を返す（古い active ID で no-account 同期を走らせない）。
                 model.configureSync { [weak session] in

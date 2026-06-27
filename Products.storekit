@@ -1,0 +1,76 @@
+{
+  "identifier" : "STKIT-PARENTPLAN-0001",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja_JP",
+    "_storefront" : "JPN",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "PARENTPLAN-GROUP-1",
+      "localizations" : [],
+      "name" : "Parent Plan",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4800",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "PARENTPLAN-YEARLY-1",
+          "introductoryOffer" : {
+            "internalID" : "PARENTPLAN-YEARLY-INTRO-1",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "ぜんぶの単語セット・リモート採点・学習レポート・複数端末同期",
+              "displayName" : "保護者プラン（年額）",
+              "locale" : "ja_JP"
+            }
+          ],
+          "productID" : "com.yuta090.SpellingTrainer.parentplan.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Parent Plan Yearly",
+          "subscriptionGroupID" : "PARENTPLAN-GROUP-1",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "580",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "PARENTPLAN-MONTHLY-1",
+          "introductoryOffer" : {
+            "internalID" : "PARENTPLAN-MONTHLY-INTRO-1",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "ぜんぶの単語セット・リモート採点・学習レポート・複数端末同期",
+              "displayName" : "保護者プラン（月額）",
+              "locale" : "ja_JP"
+            }
+          ],
+          "productID" : "com.yuta090.SpellingTrainer.parentplan.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Parent Plan Monthly",
+          "subscriptionGroupID" : "PARENTPLAN-GROUP-1",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : []
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
