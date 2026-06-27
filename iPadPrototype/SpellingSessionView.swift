@@ -34,6 +34,8 @@ struct SpellingSessionView: View {
     @State private var showingPracticeReview = false
     @State private var sessionAttempts: [SpellingAttempt] = []
     @State private var showingTestResults = false
+    /// テスト満点で付与したボーナスコイン（無し/付与済みなら nil）。
+    @State private var testPerfectBonus: Int?
     @State private var practiceRepeatIndex = 0
     @State private var sessionID = UUID()
     @State private var didLoadSessionPracticeSamples = false
@@ -376,6 +378,7 @@ struct SpellingSessionView: View {
             } else if showingTestResults {
                 TestSessionResultsView(
                     attempts: sessionAttempts,
+                    perfectBonusCoins: testPerfectBonus,
                     language: language,
                     onDone: {
                         goHome()
@@ -1477,6 +1480,12 @@ struct SpellingSessionView: View {
 
         isChecking = false
         shouldShowTestResultsAfterGrading = false
+        // テスト満点なら、1日1回のボーナスコインを付与（途中で単語を足していても完了問題数で計算）。
+        if mode == .test,
+           !sessionAttempts.isEmpty,
+           sessionAttempts.allSatisfy({ $0.decision == .autoCorrect }) {
+            testPerfectBonus = model.awardPerfectTestBonusIfEligible(wordCount: sessionAttempts.count)
+        }
         withAnimation(.easeInOut(duration: 0.18)) {
             showingTestResults = true
         }
@@ -3204,6 +3213,7 @@ private struct PracticeReviewHomeButton: View {
 
 private struct TestSessionResultsView: View {
     var attempts: [SpellingAttempt]
+    var perfectBonusCoins: Int? = nil
     var language: AppLanguage
     var onDone: () -> Void
 
@@ -3277,6 +3287,19 @@ private struct TestSessionResultsView: View {
                         .padding(.horizontal, 24)
                         .background(Color(red: 0.91, green: 0.96, blue: 1.0))
                         .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                    if let bonus = perfectBonusCoins {
+                        HStack(spacing: 8) {
+                            Image(systemName: "star.circle.fill")
+                            Text(language.text(japanese: "まんてんボーナス ＋\(bonus)", english: "Perfect bonus +\(bonus)"))
+                        }
+                        .font(.title3.weight(.heavy))
+                        .foregroundStyle(Color(red: 0.88, green: 0.56, blue: 0.05))
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 20)
+                        .background(Capsule().fill(.white.opacity(0.92)))
+                        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(isPerfect ? 24 : 18)
