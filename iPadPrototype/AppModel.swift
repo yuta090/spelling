@@ -632,6 +632,21 @@ final class AppModel: ObservableObject {
         return attempt.decision == .autoCorrect
     }
 
+    /// 直近 `days` 日（当日含む）の学習レポートを作る。
+    /// テスト(attempts)はクリア可否つき、練習(practiceSamples)は「取り組み(=未クリア)」として集計に含める。
+    /// 純粋集計は `SpellingSyncCore.LearningReportBuilder`。
+    func learningReport(days: Int, now: Date = Date(), calendar: Calendar = .current) -> LearningReport {
+        let to = now
+        let from = calendar.date(byAdding: .day, value: -(max(days, 1) - 1), to: calendar.startOfDay(for: now)) ?? calendar.startOfDay(for: now)
+        var events: [LearningEvent] = attempts.map {
+            LearningEvent(word: normalize($0.word), date: $0.date, cleared: isCleared($0))
+        }
+        events += practiceSamples.map {
+            LearningEvent(word: normalize($0.word), date: $0.date, cleared: false)
+        }
+        return LearningReportBuilder.build(events: events, from: from, to: to, calendar: calendar)
+    }
+
     var todaysAttempts: [SpellingAttempt] {
         attempts.filter { Calendar.current.isDateInToday($0.date) }
     }
