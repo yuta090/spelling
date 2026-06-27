@@ -19,23 +19,25 @@ private enum WO {
     static let correct = Color(red: 0.30, green: 0.62, blue: 0.28)
     static let retry = Color(red: 0.84, green: 0.36, blue: 0.08)
     static let bg = Color(red: 1.0, green: 0.99, blue: 0.95)
+    static let hintFill = Color(red: 1.0, green: 0.98, blue: 0.90)
 }
 
 // MARK: - サンプル文（仮データ。後で sentence_bank に差し替え）
 
 private enum WordOrderingSamples {
     static func make() -> [SentenceItem] {
-        func item(_ en: String, _ ja: String, band: Int) -> SentenceItem {
+        func item(_ en: String, _ ja: String, band: Int, _ grammar: GrammarPoint) -> SentenceItem {
             SentenceItem(en: en, ja: ja, tokens: en.split(separator: " ").map(String.init),
-                         gradeBand: band)
+                         gradeBand: band, grammar: grammar)
         }
+        // 文法タグを散らして、不正解時の「かいせつ」が項目ごとに変わるのを確認できるようにする。
         return [
-            item("I like apples", "わたしは りんごが すき", band: 1),
-            item("We go to school", "わたしたちは がっこうへ いく", band: 1),
-            item("The cat is cute", "その ねこは かわいい", band: 1),
-            item("She is my friend", "かのじょは わたしの ともだち", band: 2),
-            item("He can run fast", "かれは はやく はしれる", band: 2),
-            item("I want some water", "みずが ほしい", band: 2)
+            item("I like apples", "わたしは りんごが すき", band: 1, .presentSimple),
+            item("She is my friend", "かのじょは わたしの ともだち", band: 2, .beVerb),
+            item("He can run fast", "かれは はやく はしれる", band: 2, .canModal),
+            item("I am reading a book", "わたしは 本を よんでいる", band: 1, .presentContinuous),
+            item("We played soccer", "わたしたちは サッカーを した", band: 1, .pastSimple),
+            item("This bag is bigger", "この かばんは もっと 大きい", band: 2, .comparativeEr)
         ]
     }
 }
@@ -179,6 +181,24 @@ struct WordOrderingDemoView: View {
         .tapFeedback(bounce: true)
     }
 
+    /// 不正解時の文法解説カード。`GrammarPoint` の事前作成された固定文（トンマナ安全）。
+    private func explanationCard(_ point: GrammarPoint) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label(point.titleJa, systemImage: "lightbulb.fill")
+                .font(.system(size: 15, weight: .bold, design: .rounded))
+                .foregroundStyle(WO.accent)
+            Text(point.explanationJa)
+                .font(.system(size: 16, weight: .medium, design: .rounded))
+                .foregroundStyle(WO.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(RoundedRectangle(cornerRadius: 14).fill(WO.hintFill))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(WO.tileStroke, lineWidth: 1.5))
+        .transition(.scale(scale: 0.96).combined(with: .opacity))
+    }
+
     private enum TileRole { case tray, placed }
 
     private func tileButton(_ tile: OrderingTile, role: TileRole) -> some View {
@@ -220,6 +240,10 @@ struct WordOrderingDemoView: View {
                           systemImage: "arrow.uturn.left.circle.fill")
                         .font(.system(size: 20, weight: .heavy, design: .rounded))
                         .foregroundStyle(WO.retry)
+                    // 不正解のときだけ、その文の文法の「かいせつ」を出す（事前作成の固定文）。
+                    if let grammar = item.grammar {
+                        explanationCard(grammar)
+                    }
                     bigButton("もういちど", tint: WO.retry, action: retry)
                 }
             }
