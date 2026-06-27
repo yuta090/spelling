@@ -124,10 +124,14 @@ struct HomeView: View {
                             isReviewPractice: isHomeReviewActive,
                             latestTestSummary: latestTestButtonSummary,
                             character: selectedCharacter,
+                            showCharacterHint: !model.hasOpenedCharacterPicker,
                             startPractice: startPractice,
                             showWords: { showingWordPreview = true },
                             showStepPicker: { showingStepPicker = true },
-                            showCharacters: { showingCharacterPicker = true },
+                            showCharacters: {
+                                model.hasOpenedCharacterPicker = true
+                                showingCharacterPicker = true
+                            },
                             startTest: {
                                 iris.cover(animated: !reduceMotion) {
                                     activeMode = .test
@@ -458,11 +462,14 @@ private struct ChildMissionPanel: View {
     var isReviewPractice: Bool
     var latestTestSummary: HomeLatestTestButtonSummary?
     var character: HomeRewardCharacter
+    var showCharacterHint: Bool = false
     var startPractice: () -> Void
     var showWords: () -> Void
     var showStepPicker: () -> Void
     var showCharacters: () -> Void
     var startTest: () -> Void
+
+    @State private var hintPulse = false
 
     private var missionText: String {
         if hasFinishedPracticeRound {
@@ -534,6 +541,22 @@ private struct ChildMissionPanel: View {
         VStack(spacing: 22) {
             HStack(spacing: 22) {
                 VStack(spacing: 8) {
+                    if showCharacterHint {
+                        Label(language.text(japanese: "タップで きせかえ", english: "Tap to change"), systemImage: "hand.tap.fill")
+                            .font(.caption.weight(.heavy))
+                            .foregroundStyle(Color(red: 0.16, green: 0.42, blue: 0.84))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Capsule().fill(.white.opacity(0.95)))
+                            .shadow(color: .black.opacity(0.10), radius: 3, y: 1)
+                            .scaleEffect(hintPulse ? 1.08 : 1.0)
+                            .onAppear {
+                                withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                                    hintPulse = true
+                                }
+                            }
+                    }
+
                     Button(action: showCharacters) {
                         RewardCharacterAvatar(character: character)
                             .frame(width: 118, height: 118)

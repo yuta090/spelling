@@ -11,7 +11,7 @@ struct OnboardingView: View {
     @ObservedObject var session: SyncSession
 
     private enum Step: Int, CaseIterable {
-        case welcome, grade, lookAndFeel, coinGift, parent
+        case welcome, grade, lookAndFeel, coinGift
     }
 
     /// 初回プレゼントするコイン数（なかま4〜6・はいけい8〜のので、最初の解放を体験できる量）。
@@ -30,7 +30,6 @@ struct OnboardingView: View {
     @State private var coinPop = false
     @State private var coinBurst = false
     @State private var coinSpin = 0.0
-    @State private var showingAccount = false
     @State private var showingSkipConfirm = false
 
     var body: some View {
@@ -64,7 +63,6 @@ struct OnboardingView: View {
                 withAnimation(.spring(response: 0.6, dampingFraction: 0.82)) { launched = true }
             }
         }
-        .sheet(isPresented: $showingAccount) { AccountSyncView(session: session) }
         .confirmationDialog("ほんとうに スキップする？", isPresented: $showingSkipConfirm, titleVisibility: .visible) {
             Button("スキップする", role: .destructive) { advance() }
             Button("つづける", role: .cancel) {}
@@ -137,7 +135,7 @@ struct OnboardingView: View {
     private var primaryTitle: String {
         switch step {
         case .welcome: return "はじめる"
-        case .parent: return "やってみる！"
+        case .coinGift: return "やってみる！"   // 最後のステップ
         default: return "つぎへ"
         }
     }
@@ -154,9 +152,7 @@ struct OnboardingView: View {
         case .lookAndFeel:
             advance()
         case .coinGift:
-            advance()
-        case .parent:
-            finish()
+            advance()   // 最後のステップなので finish() に落ちる
         }
     }
 
@@ -169,7 +165,6 @@ struct OnboardingView: View {
         case .grade: gradeStep
         case .lookAndFeel: lookAndFeelStep
         case .coinGift: coinGiftStep
-        case .parent: parentStep
         }
     }
 
@@ -316,23 +311,6 @@ struct OnboardingView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
-        }
-    }
-
-    private var parentStep: some View {
-        VStack(spacing: 16) {
-            title(emoji: "👋", text: "保護者の方へ")
-            subtitle("ニックネームや、ほかの端末との同期は任意です（あとでも設定できます）。")
-
-            TextField("お子さんのニックネーム（任意）", text: $name)
-                .textFieldStyle(.roundedBorder)
-                .font(.title3)
-                .frame(maxWidth: 360)
-
-            Button(session.activeHouseholdID != nil ? "同期は設定済み ✓" : "サインインして同期する（任意）") {
-                showingAccount = true
-            }
-            .buttonStyle(.bordered)
         }
     }
 
