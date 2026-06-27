@@ -609,6 +609,70 @@ private enum ParentRecordDetailSheet: String, Identifiable {
     }
 }
 
+/// 親向け「学習レポート」カード。直近7/30日の頑張りを数字で見せる（採点感より努力を肯定する）。
+/// 集計は純粋ロジック `SpellingSyncCore.LearningReportBuilder`（AppModel.learningReport 経由）。
+private struct LearningReportCard: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+    @State private var days = 7
+
+    var body: some View {
+        // 1回だけ集計する（body 内で複数回参照しても再集計しないように local に保持）。
+        let report = model.learningReport(days: days)
+        ParentPanel(
+            title: language.text(japanese: "学習レポート", english: "Learning Report"),
+            systemImage: "chart.bar.fill",
+            tint: ParentPalette.primary,
+            showsHeader: true
+        ) {
+            VStack(alignment: .leading, spacing: 14) {
+                Picker("", selection: $days) {
+                    Text(language.text(japanese: "7日", english: "7 days")).tag(7)
+                    Text(language.text(japanese: "30日", english: "30 days")).tag(30)
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel(language.text(japanese: "レポートの期間", english: "Report period"))
+
+                if report.totalEvents == 0 {
+                    Text(language.text(japanese: "この期間の記録はまだありません。", english: "No records in this period yet."))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                } else {
+                    HStack(spacing: 8) {
+                        Image(systemName: "flame.fill").foregroundStyle(.orange)
+                        Text(language.text(japanese: "\(report.currentStreakDays)日 れんぞく学習", english: "\(report.currentStreakDays)-day streak"))
+                            .font(.title3.weight(.heavy))
+                            .foregroundStyle(ParentPalette.ink)
+                    }
+                }
+
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 10)], spacing: 10) {
+                    metric(report.totalEvents, label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"))
+                    metric(report.distinctWords, label: language.text(japanese: "とりくんだ語", english: "Words worked on"))
+                    metric(report.learnedWords, label: language.text(japanese: "おぼえた語", english: "Words learned"))
+                    metric(report.activeDays, label: language.text(japanese: "学習した日数", english: "Active days"))
+                }
+            }
+        }
+    }
+
+    private func metric(_ value: Int, label: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("\(value)")
+                .font(.title2.weight(.heavy)).monospacedDigit()
+                .foregroundStyle(ParentPalette.primary)
+            Text(label)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(ParentPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+}
+
 private struct ParentRecordsWorkspace: View {
     @EnvironmentObject private var model: AppModel
     @State private var showingOtherSteps = false
@@ -633,6 +697,9 @@ private struct ParentRecordsWorkspace: View {
 
     var body: some View {
         VStack(spacing: 14) {
+            LearningReportCard(language: language)
+                .environmentObject(model)
+
             ParentPanel(
                 title: language.text(japanese: "ステップ別の結果", english: "Step Results"),
                 systemImage: "rectangle.stack.fill",

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apple Developer Program 登録マニュアル — SpellingTrainer</title>
+<style>
+  :root{
+    --ink:#1b2733; --muted:#5b6b7a; --line:#e3e9ef; --bg:#f6f8fa;
+    --brand:#1f7a4d; --brand-soft:#e8f4ee; --accent:#0b5fff; --warn:#b54708; --warn-soft:#fff4e6;
+    --card:#fff; --code:#0f172a;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    color:var(--ink); background:var(--bg); margin:0; line-height:1.75; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px; margin:0 auto; padding:40px 22px 80px}
+  header{background:linear-gradient(135deg,#1f7a4d,#0e5e6e); color:#fff; border-radius:18px; padding:30px 28px; margin-bottom:28px}
+  header h1{margin:0 0 6px; font-size:25px; letter-spacing:.2px}
+  header p{margin:0; opacity:.92; font-size:14px}
+  h2{margin:42px 0 12px; font-size:20px; padding-bottom:8px; border-bottom:2px solid var(--line)}
+  h3{margin:24px 0 8px; font-size:16px}
+  p,li{font-size:15px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:14px 0}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  table{width:100%; border-collapse:collapse; margin:12px 0; background:#fff; border-radius:10px; overflow:hidden; border:1px solid var(--line)}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:top}
+  th{background:#f0f4f8; font-weight:700}
+  tr:last-child td{border-bottom:none}
+  code{background:#eef2f6; padding:2px 6px; border-radius:6px; font-size:13px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--code)}
+  .kv code{background:#0f172a; color:#d7e7ff}
+  .pill{display:inline-block; font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--brand-soft); color:var(--brand)}
+  .note{background:var(--warn-soft); border:1px solid #f3cf9f; border-left:4px solid var(--warn); border-radius:10px; padding:12px 14px; margin:14px 0}
+  .note b{color:var(--warn)}
+  .ok{background:var(--brand-soft); border:1px solid #bfe3ce; border-left:4px solid var(--brand); border-radius:10px; padding:12px 14px; margin:14px 0}
+  ol.steps{counter-reset:s; list-style:none; padding-left:0}
+  ol.steps>li{counter-increment:s; position:relative; padding:10px 0 10px 44px; border-bottom:1px dashed var(--line)}
+  ol.steps>li:last-child{border-bottom:none}
+  ol.steps>li::before{content:counter(s); position:absolute; left:0; top:9px; width:30px; height:30px; border-radius:50%;
+    background:var(--brand); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:14px}
+  .check{list-style:none; padding-left:0}
+  .check li{padding:5px 0 5px 28px; position:relative}
+  .check li::before{content:"☐"; position:absolute; left:0; color:var(--brand); font-size:16px}
+  .muted{color:var(--muted); font-size:13px}
+  a{color:var(--accent)}
+  .toc{columns:2; font-size:14px}
+  @media(max-width:680px){.toc{columns:1}}
+  footer{margin-top:50px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Apple Developer Program 登録マニュアル</h1>
+  <p>SpellingTrainer（英単語スペル練習 iPad アプリ）公開・課金・親通知の準備 / 2026年6月時点の手順に基づく</p>
+</header>
+
+<div class="card">
+  <span class="pill">このアプリ固有の値（あとで使います）</span>
+  <table class="kv">
+    <tr><th>項目</th><th>値</th></tr>
+    <tr><td>Bundle ID</td><td><code>com.yuta090.SpellingTrainer</code></td></tr>
+    <tr><td>月額サブスク Product ID</td><td><code>com.yuta090.SpellingTrainer.parentplan.monthly</code> ／ ¥580</td></tr>
+    <tr><td>年額サブスク Product ID</td><td><code>com.yuta090.SpellingTrainer.parentplan.yearly</code> ／ ¥4,800</td></tr>
+    <tr><td>サブスクグループ</td><td>Parent Plan（保護者プラン）</td></tr>
+    <tr><td>無料トライアル</td><td>7日間（Introductory Offer）</td></tr>
+  </table>
+  <p class="muted">※ これらはアプリのコードと <code>Products.storekit</code> に既に設定済み。App Store Connect 側を<strong>同じ ID・価格</strong>で作れば本番化できます。</p>
+</div>
+
+<h2>目次</h2>
+<div class="toc">
+  <ol>
+    <li><a href="#choose">個人 or 法人 を選ぶ</a></li>
+    <li><a href="#prep">事前準備（共通）</a></li>
+    <li><a href="#duns">法人なら：D‑U‑N‑S番号を取る</a></li>
+    <li><a href="#indiv">個人で登録する手順</a></li>
+    <li><a href="#org">法人で登録する手順</a></li>
+    <li><a href="#asc">登録後：App Store Connect 初期設定</a></li>
+    <li><a href="#sub">サブスク2商品＋7日トライアルを作る</a></li>
+    <li><a href="#apns">（将来）親通知用 APNs キー</a></li>
+    <li><a href="#pitfalls">ハマりどころ＆チェックリスト</a></li>
+  </ol>
+</div>
+
+<h2 id="choose">1. 個人 or 法人 を選ぶ</h2>
+<p>まず<strong>どちらの名義で登録するか</strong>を決めます。年会費はどちらも <strong>$99/年（標準プログラム）</strong>です。<br>
+（$299/年の「Enterprise Program」は社内配布専用で App Store には出せません。<u>今回は不要</u>です。）</p>
+<table>
+  <tr><th></th><th>個人（Individual）</th><th>法人（Organization）</th></tr>
+  <tr><td><b>App Storeの販売者名</b></td><td>あなたの<strong>本名</strong>が公開される</td><td><strong>会社名（法人名）</strong>が公開される</td></tr>
+  <tr><td><b>必要なもの</b></td><td>Apple Account＋2ファクタ認証、本名、本人のクレカ</td><td>左記＋<strong>D‑U‑N‑S番号</strong>、法人サイト、法人ドメインのメール、契約締結権限</td></tr>
+  <tr><td><b>所要</b></td><td>速い（最短即日〜数日）</td><td>遅い（D‑U‑N‑S取得＋審査で1〜2週間〜）</td></tr>
+  <tr><td><b>登録方法</b></td><td>Apple Developer アプリ（推奨）/ Web</td><td>主に Web</td></tr>
+</table>
+<div class="ok"><b>おすすめ：</b> 会社（skara）として正式に出すなら<strong>法人</strong>が筋。ただし D‑U‑N‑S 取得で時間がかかるため、<strong>「まず個人で登録して開発・テスト・サンドボックスを進め、後から法人へ」</strong>という入り方も実用上アリ（販売者名は個人名で公開されます）。急ぐなら個人、会社名で出したいなら法人。</div>
+<div class="note"><b>注意：</b> 個人→法人の「移行」は手続きが必要で手間。会社名で出すと決めているなら、最初から法人で取るのが結局はラクです。</div>
+
+<h2 id="prep">2. 事前準備（共通）</h2>
+<ul class="check">
+  <li><strong>Apple Account</strong>（旧 Apple ID）を用意し、<strong>2ファクタ認証を必ずオン</strong>にする</li>
+  <li>Apple Account の<strong>姓・名は「本名」</strong>にする（ニックネーム・会社名は審査遅延の原因）</li>
+  <li>支払い用の<strong>クレジットカード</strong>（個人登録は<strong>本人名義のカード必須</strong>）</li>
+  <li>法人の場合：<strong>法人ドメインのメール</strong>（例 <code>@skara.co.jp</code>）、<strong>稼働している自社サイト</strong>、<strong>D‑U‑N‑S番号</strong></li>
+</ul>
+
+<h2 id="duns">3. 法人なら：D‑U‑N‑S番号を取る（無料）</h2>
+<p>D‑U‑N‑S（ダンズナンバー）は Dun &amp; Bradstreet が発行する9桁の企業識別番号。法人登録の本人確認に必須です。</p>
+<ol class="steps">
+  <li>まず Apple の確認ページで<strong>自社が既に D‑U‑N‑S を持っていないか検索</strong>する（持っていればそのまま使える）。<br>
+    <span class="muted">Apple の D‑U‑N‑S 確認: <a href="https://developer.apple.com/enroll/duns-lookup/">developer.apple.com/enroll/duns-lookup/</a></span></li>
+  <li>無ければ同ページから<strong>無料で申請</strong>。法人名・住所・代表電話などが登記と一致している必要あり。</li>
+  <li>発行・反映まで<strong>数営業日〜2週間程度</strong>かかることがある（早めに着手）。</li>
+</ol>
+<div class="note"><b>ポイント：</b> 登録する法人名・住所は<strong>登記情報と完全一致</strong>させること。屋号・略称・支店名はNG。</div>
+
+<h2 id="indiv">4. 個人で登録する手順（Apple Developer アプリ推奨）</h2>
+<ol class="steps">
+  <li>iPhone/iPad に <strong>「Apple Developer」アプリ</strong>を App Store からインストール。</li>
+  <li>2ファクタ認証済みの Apple Account でサインイン。</li>
+  <li>アプリ内の <strong>Account → Enroll</strong> を開く。</li>
+  <li><strong>Entity Type で「Individual / Sole Proprietor」</strong>を選ぶ。</li>
+  <li>氏名・住所などを<strong>本名・正確に</strong>入力（販売者名として公開される）。本人確認を求められたら画面の指示に従う。</li>
+  <li>規約（Apple Developer Program License Agreement）に同意。</li>
+  <li><strong>年会費 $99（円表示）を支払う</strong>。アプリ経由は<strong>自動更新サブスク</strong>として課金（更新は後でオフ可）。</li>
+  <li>確認メールが届く。反映まで時間差あり（24時間以内に来なければ Enrollment ID を控えてサポートへ）。</li>
+</ol>
+<div class="muted">Web でやる場合：<a href="https://developer.apple.com/programs/enroll/">developer.apple.com/programs/enroll/</a> から同様に進められます。</div>
+
+<h2 id="org">5. 法人で登録する手順（Web）</h2>
+<ol class="steps">
+  <li><strong>契約締結権限を持つ人</strong>（代表・役員・権限委譲された社員）の Apple Account（2ファクタ認証済み）を用意。</li>
+  <li><a href="https://developer.apple.com/programs/enroll/">developer.apple.com/programs/enroll/</a> にサインインして開始。</li>
+  <li><strong>Entity Type で「Company / Organization」</strong>を選択。</li>
+  <li><strong>法人名（登記名）・D‑U‑N‑S番号・法人ドメインのメール・自社サイトURL</strong>を入力。</li>
+  <li>Apple による<strong>本人確認（D‑U‑N‑S照合＋締結権限の確認）</strong>。場合により<strong>公証済み書類</strong>や担当者への電話確認あり。</li>
+  <li>確認完了の連絡（メール）後に、規約同意＋<strong>$99 を支払い</strong>。</li>
+  <li>反映後、必要なら<strong>チームメンバーを追加</strong>できる。</li>
+</ol>
+<div class="note"><b>遅延の主因：</b> 法人名/住所が登記やD‑U‑N‑Sと不一致／サイトが未完成・ドメイン不一致／メールが法人ドメイン外。ここを揃えるとスムーズです。</div>
+
+<h2 id="asc">6. 登録後：App Store Connect 初期設定</h2>
+<p>登録が完了したら <a href="https://appstoreconnect.apple.com/">App Store Connect</a> で以下を行います（課金アプリに必須）。</p>
+<ol class="steps">
+  <li><strong>契約・税・銀行（Agreements, Tax, and Banking）</strong>で <strong>「Paid Applications（有料App契約）」を締結</strong>。
+    銀行口座・税情報（日本の税フォーム）・連絡先を登録。<u>これが未完だとサブスクを売れません。</u></li>
+  <li><strong>Identifiers</strong> で App ID <code>com.yuta090.SpellingTrainer</code> を登録（Xcode 連携で自動作成されることも）。</li>
+  <li>App Store Connect で<strong>新規 App を作成</strong>し、上記 Bundle ID を紐付け。名称・カテゴリ（教育）・年齢区分（Kids カテゴリにするなら子ども向け設定）等を入力。</li>
+  <li>プライバシーポリシー・サポートURL・スクショ等のメタデータを用意（Kids＋サブスクは記載要件が多い。アプリ内ペイウォールの必須記載と整合させる）。</li>
+</ol>
+
+<h2 id="sub">7. サブスク2商品＋7日トライアルを作る</h2>
+<p>App Store Connect → 対象App → <strong>「収益化 / サブスクリプション」</strong> で作成します。<strong>Product ID と価格はアプリ側と完全一致</strong>させてください。</p>
+<ol class="steps">
+  <li><strong>サブスクリプショングループ</strong>を作成：名称 <code>Parent Plan</code>（保護者プラン）。</li>
+  <li>グループ内に<strong>自動更新サブスクを2つ</strong>作成：
+    <div class="card" style="margin-top:8px">
+      <table>
+        <tr><th>表示名</th><th>Product ID</th><th>期間</th><th>価格</th></tr>
+        <tr><td>保護者プラン（月額）</td><td><code>com.yuta090.SpellingTrainer.parentplan.monthly</code></td><td>1ヶ月</td><td>¥580</td></tr>
+        <tr><td>保護者プラン（年額）</td><td><code>com.yuta090.SpellingTrainer.parentplan.yearly</code></td><td>1年</td><td>¥4,800</td></tr>
+      </table>
+    </div>
+  </li>
+  <li>各サブスクに<strong>Introductory Offer（イントロオファー）= 無料・7日間（Free, 1 week）</strong>を追加。</li>
+  <li>各サブスクの<strong>ローカライズ（日本語の表示名・説明）</strong>とレビュー用情報を入力。</li>
+  <li>審査用に<strong>サンドボックステスター</strong>（Users and Access → Sandbox）を作成し、実機サインアウト状態で購入テスト。</li>
+</ol>
+<div class="ok"><b>コードはもう準備済み：</b> アプリ内の <code>StoreManager</code> はこの Product ID を参照しています。ローカルの <code>Products.storekit</code> で購入フローはテスト済みなので、ASC 側を同じ値で作れば本番接続できます（実URL・価格の整合だけ確認）。</div>
+
+<h2 id="apns">8. （将来）親通知用 APNs キー</h2>
+<p>「子が学習したら親に通知」を実装する段階で必要になります（今は不要、登録後にいつでも作成可）。</p>
+<ol class="steps">
+  <li>Certificates, Identifiers &amp; Profiles → <strong>Keys</strong> → <strong>＋</strong> で新規キー作成、<strong>Apple Push Notifications service (APNs)</strong> を有効化。</li>
+  <li>生成される <strong><code>.p8</code> 鍵ファイル（1回だけDL可）</strong>と <strong>Key ID</strong>・<strong>Team ID</strong> を安全に保管。</li>
+  <li>これをサーバ（Supabase Edge Function 等）に登録して、親端末へプッシュ送信に使う。</li>
+</ol>
+
+<h2 id="pitfalls">9. ハマりどころ＆チェックリスト</h2>
+<ul class="check">
+  <li>Apple Account の<strong>2ファクタ認証</strong>が有効</li>
+  <li>氏名/法人名が<strong>本名・登記名と一致</strong>（ニックネーム・屋号NG）</li>
+  <li>個人登録は<strong>本人名義のクレカ</strong></li>
+  <li>法人は<strong>D‑U‑N‑S・法人ドメインのメール・稼働サイト</strong>を事前に用意</li>
+  <li>登録後すぐ<strong>Paid Applications 契約（銀行・税）</strong>を締結（サブスク販売の前提）</li>
+  <li>サブスクの<strong>Product ID/価格をアプリと完全一致</strong>（<code>…parentplan.monthly</code>=¥580 /<code>…parentplan.yearly</code>=¥4,800）</li>
+  <li>各サブスクに<strong>7日無料（Introductory Offer）</strong>を設定</li>
+  <li>Kids＋サブスクの<strong>メタデータ/プライバシー/保護者ゲート</strong>要件を満たす</li>
+</ul>
+
+<footer>
+  <p><b>料金の注意：</b> 標準プログラムは個人・法人とも <b>$99/年</b>（登録画面で円建て表示・要確認。日本は近年 ¥12,000 前後）。<b>$299</b> は Enterprise Program で App Store 配布には不要。</p>
+  <p><b>出典（2026年6月確認）：</b></p>
+  <ul>
+    <li><a href="https://developer.apple.com/programs/enroll/">Apple Developer Program — Enroll</a></li>
+    <li><a href="https://developer.apple.com/help/account/membership/program-enrollment/">Help — Program Enrollment</a></li>
+    <li><a href="https://developer.apple.com/help/account/membership/enrolling-in-the-app/">Help — Enrolling with the Apple Developer app</a></li>
+    <li><a href="https://developer.apple.com/support/compare-memberships/">Choosing a Membership</a></li>
+    <li><a href="https://developer.apple.com/enroll/duns-lookup/">D‑U‑N‑S Number Lookup</a></li>
+  </ul>
+  <p class="muted">※ Apple の手続きは随時更新されます。最終的な文言・価格・手順は登録画面（上記公式ページ）の表示を正としてください。</p>
+</footer>
+</div>
+</body>
+</html>
