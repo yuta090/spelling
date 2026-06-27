@@ -4187,13 +4187,9 @@ private struct WordLevelSetSheet: View {
                     .font(.headline.weight(.bold))
                 }
             }
-            .alert(language.text(japanese: "保護者プラン", english: "Parent Plan"), isPresented: $showingPaywall) {
-                Button(language.text(japanese: "OK", english: "OK"), role: .cancel) {}
-            } message: {
-                Text(language.text(
-                    japanese: "Grade 1以降と難易度（NGSL）の単語セットは、保護者プランで解放されます（近日対応）。pre-K・K と手書きの単語登録は無料です。",
-                    english: "Grade 1+ and difficulty (NGSL) word sets unlock with the parent plan (coming soon). pre-K, K, and handwriting entry are free."
-                ))
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView(language: language)
+                    .environmentObject(model)
             }
         }
     }
@@ -4208,6 +4204,198 @@ private struct WordLevelSetSheet: View {
             japanese: "\(result.added)語のステップを作りました。",
             english: "Created a step with \(result.added) words."
         )
+    }
+}
+
+/// 保護者プラン（サブスク）の案内画面。**親ゲートの奥**でのみ表示する。
+///
+/// フェーズ1: UI のみ（StoreKit 未接続）。購入・復元は次アップデートで `StoreManager` に接続する。
+/// App Store 審査の必須記載（プラン名/期間・含まれる機能・更新後の満額・トライアル長＋後価格・
+/// 復元・利用規約・プライバシーポリシー）を満たすレイアウトにしてある。
+private struct PaywallView: View {
+    @EnvironmentObject private var model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    var language: AppLanguage
+
+    private enum Plan: String, CaseIterable, Identifiable {
+        case year, month
+        var id: String { rawValue }
+    }
+
+    @State private var selectedPlan: Plan = .year
+    @State private var showComingSoon = false
+
+    // 価格（App Store Connect の商品価格と一致させること）。
+    private let monthlyPriceText = "¥580"
+    private let yearlyPriceText = "¥4,800"
+    // TODO(本番): 実URLに差し替える（審査で必須・到達可能であること）。
+    private let termsURL = URL(string: "https://example.com/terms")!
+    private let privacyURL = URL(string: "https://example.com/privacy")!
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(language.text(japanese: "保護者プラン", english: "Parent Plan"))
+                            .font(.largeTitle.weight(.heavy))
+                            .foregroundStyle(ParentPalette.ink)
+                        Text(language.text(
+                            japanese: "おうちの英語スペル学習を、フルに使えるように。",
+                            english: "Unlock the full spelling-learning experience at home."
+                        ))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    }
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        benefitRow(icon: "books.vertical.fill",
+                                   title: language.text(japanese: "ぜんぶの単語セット", english: "All word sets"),
+                                   detail: language.text(japanese: "US学年（Grade 1以降）・難易度（NGSL）ぜんぶからレベル生成。", english: "Generate sets from all US grades (1+) and NGSL difficulty bands."))
+                        benefitRow(icon: "pencil.and.outline",
+                                   title: language.text(japanese: "リモート採点", english: "Remote grading"),
+                                   detail: language.text(japanese: "はなれていても、子の書き取りをスマホで採点。", english: "Grade your child's writing from your phone, anywhere."))
+                        benefitRow(icon: "chart.bar.fill",
+                                   title: language.text(japanese: "学習レポート", english: "Learning reports"),
+                                   detail: language.text(japanese: "覚えた語数・連続日数など、がんばりを数字で。", english: "See words learned, streaks, and progress in numbers."))
+                        benefitRow(icon: "arrow.triangle.2.circlepath",
+                                   title: language.text(japanese: "複数端末で同期", english: "Multi-device sync"),
+                                   detail: language.text(japanese: "iPad と iPhone など、家族の端末で続きを。", english: "Continue across the family's iPad and iPhone."))
+                    }
+
+                    VStack(spacing: 10) {
+                        planCard(.year,
+                                 title: language.text(japanese: "年額", english: "Yearly"),
+                                 price: yearlyPriceText,
+                                 per: language.text(japanese: "/年", english: "/yr"),
+                                 badge: language.text(japanese: "おすすめ・約2ヶ月分お得", english: "Best value · ~2 months free"))
+                        planCard(.month,
+                                 title: language.text(japanese: "月額", english: "Monthly"),
+                                 price: monthlyPriceText,
+                                 per: language.text(japanese: "/月", english: "/mo"),
+                                 badge: nil)
+                    }
+
+                    // TODO(StoreKit): トライアル文言は eligibility で出し分け、満額更新価格は Product から表示。
+                    Text(language.text(
+                        japanese: "初回は7日間無料。体験後は選んだプラン（年額 \(yearlyPriceText) / 月額 \(monthlyPriceText)）で自動更新されます。いつでも解約できます。",
+                        english: "7-day free trial. After the trial it auto-renews at the selected plan (Yearly \(yearlyPriceText) / Monthly \(monthlyPriceText)). Cancel anytime."
+                    ))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                    Button {
+                        showComingSoon = true
+                    } label: {
+                        Label(language.text(japanese: "無料で始める", english: "Start free trial"), systemImage: "sparkles")
+                            .font(.headline.weight(.heavy))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 13)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(ParentPalette.primary)
+                    .tapFeedback()
+
+                    HStack(spacing: 16) {
+                        Button(language.text(japanese: "購入を復元", english: "Restore purchases")) {
+                            showComingSoon = true
+                        }
+                        Spacer()
+                        Link(language.text(japanese: "利用規約", english: "Terms"), destination: termsURL)
+                        Link(language.text(japanese: "プライバシー", english: "Privacy"), destination: privacyURL)
+                    }
+                    .font(.caption.weight(.bold))
+                    .tint(ParentPalette.primary)
+
+                    #if DEBUG
+                    Button(language.text(japanese: "デバッグ: 全解放して閉じる", english: "Debug: unlock all & close")) {
+                        model.debugUnlockAll = true
+                        dismiss()
+                    }
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    #endif
+                }
+                .padding(20)
+            }
+            .navigationTitle(language.text(japanese: "プラン", english: "Plan"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                }
+            }
+            .alert(language.text(japanese: "準備中", english: "Coming soon"), isPresented: $showComingSoon) {
+                Button(language.text(japanese: "OK", english: "OK"), role: .cancel) {}
+            } message: {
+                Text(language.text(
+                    japanese: "課金は次のアップデートで有効になります。",
+                    english: "Purchases will be enabled in the next update."
+                ))
+            }
+        }
+    }
+
+    private func benefitRow(icon: String, title: String, detail: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(ParentPalette.primary)
+                .frame(width: 28)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline.weight(.heavy))
+                    .foregroundStyle(ParentPalette.ink)
+                Text(detail)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func planCard(_ plan: Plan, title: String, price: String, per: String, badge: String?) -> some View {
+        let isSelected = selectedPlan == plan
+        return Button {
+            selectedPlan = plan
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(isSelected ? ParentPalette.primary : Color.secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                    if let badge {
+                        Text(badge)
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(ParentPalette.success)
+                    }
+                }
+                Spacer()
+                HStack(alignment: .firstTextBaseline, spacing: 1) {
+                    Text(price).font(.title3.weight(.heavy)).foregroundStyle(ParentPalette.ink)
+                    Text(per).font(.caption.weight(.bold)).foregroundStyle(.secondary)
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity)
+            .background(ParentPalette.surfaceTint)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? ParentPalette.primary : Color.clear, lineWidth: 2)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
     }
 }
 
