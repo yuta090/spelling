@@ -1,5 +1,6 @@
 import PencilKit
 import SpellingSyncCore
+import StoreKit
 import SwiftUI
 import UIKit
 
@@ -4188,7 +4189,7 @@ private struct WordLevelSetSheet: View {
                 }
             }
             .sheet(isPresented: $showingPaywall) {
-                PaywallView(language: language)
+                PaywallView(language: language, store: model.store)
                     .environmentObject(model)
             }
         }
@@ -4222,15 +4223,57 @@ private struct PaywallView: View {
         var id: String { rawValue }
     }
 
+    @ObservedObject var store: StoreManager
+
     @State private var selectedPlan: Plan = .year
     @State private var showComingSoon = false
+    @State private var statusMessage: String?
+    @State private var showStatus = false
 
-    // 価格（App Store Connect の商品価格と一致させること）。
+    // 商品ロード前/失敗時のフォールバック価格（実価格は StoreKit `Product.displayPrice`）。
     private let monthlyPriceText = "¥580"
     private let yearlyPriceText = "¥4,800"
     // TODO(本番): 実URLに差し替える（審査で必須・到達可能であること）。
     private let termsURL = URL(string: "https://example.com/terms")!
     private let privacyURL = URL(string: "https://example.com/privacy")!
+
+    /// 商品がロードできているか（`.storekit`/ASC 未設定なら false → CTA は「準備中」）。
+    private var hasProducts: Bool { !store.products.isEmpty }
+
+    private func planKind(_ plan: Plan) -> StoreManager.PlanKind { plan == .year ? .yearly : .monthly }
+
+    private var selectedProduct: Product? { store.product(for: planKind(selectedPlan)) }
+
+    /// 表示価格（商品があれば実価格、なければフォールバック）。
+    private func priceText(_ plan: Plan) -> String {
+        if let product = store.product(for: planKind(plan)) { return product.displayPrice }
+        return plan == .year ? yearlyPriceText : monthlyPriceText
+    }
+
+    /// CTA の文言（対象者ならトライアル訴求、そうでなければ購読）。
+    private var ctaTitle: String {
+        if hasProducts && !store.isTrialEligible {
+            return language.text(japanese: "購読する", english: "Subscribe")
+        }
+        return language.text(japanese: "無料で始める", english: "Start free trial")
+    }
+
+    /// 自動更新・トライアルの開示文（選択プランの実価格・eligibility で出し分け）。
+    private var disclosureText: String {
+        let renew = priceText(selectedPlan)
+        let perJa = selectedPlan == .year ? "年" : "月"
+        let perEn = selectedPlan == .year ? "yr" : "mo"
+        if hasProducts && store.isTrialEligible {
+            return language.text(
+                japanese: "初回は7日間無料。体験後は \(renew)/\(perJa) で自動更新されます。いつでも解約できます。",
+                english: "7-day free trial. After the trial it auto-renews at \(renew)/\(perEn). Cancel anytime."
+            )
+        }
+        return language.text(
+            japanese: "\(renew)/\(perJa) で自動更新されます。いつでも解約できます。",
+            english: "Auto-renews at \(renew)/\(perEn). Cancel anytime."
+        )
+    }
 
     var body: some View {
         NavigationStack {
@@ -4266,41 +4309,44 @@ private struct PaywallView: View {
                     VStack(spacing: 10) {
                         planCard(.year,
                                  title: language.text(japanese: "年額", english: "Yearly"),
-                                 price: yearlyPriceText,
+                                 price: priceText(.year),
                                  per: language.text(japanese: "/年", english: "/yr"),
                                  badge: language.text(japanese: "おすすめ・約2ヶ月分お得", english: "Best value · ~2 months free"))
                         planCard(.month,
                                  title: language.text(japanese: "月額", english: "Monthly"),
-                                 price: monthlyPriceText,
+                                 price: priceText(.month),
                                  per: language.text(japanese: "/月", english: "/mo"),
                                  badge: nil)
                     }
 
-                    // TODO(StoreKit): トライアル文言は eligibility で出し分け、満額更新価格は Product から表示。
-                    Text(language.text(
-                        japanese: "初回は7日間無料。体験後は選んだプラン（年額 \(yearlyPriceText) / 月額 \(monthlyPriceText)）で自動更新されます。いつでも解約できます。",
-                        english: "7-day free trial. After the trial it auto-renews at the selected plan (Yearly \(yearlyPriceText) / Monthly \(monthlyPriceText)). Cancel anytime."
-                    ))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                    Text(disclosureText)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     Button {
-                        showComingSoon = true
+                        Task { await startPurchase() }
                     } label: {
-                        Label(language.text(japanese: "無料で始める", english: "Start free trial"), systemImage: "sparkles")
-                            .font(.headline.weight(.heavy))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 13)
+                        HStack(spacing: 8) {
+                            if store.purchaseInFlight {
+                                ProgressView().tint(.white)
+                            }
+                            Label(ctaTitle, systemImage: "sparkles")
+                        }
+                        .font(.headline.weight(.heavy))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 13)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(ParentPalette.primary)
                     .tapFeedback()
+                    .disabled(store.purchaseInFlight)
 
                     HStack(spacing: 16) {
                         Button(language.text(japanese: "購入を復元", english: "Restore purchases")) {
-                            showComingSoon = true
+                            Task { await startRestore() }
                         }
+                        .disabled(store.purchaseInFlight)
                         Spacer()
                         Link(language.text(japanese: "利用規約", english: "Terms"), destination: termsURL)
                         Link(language.text(japanese: "プライバシー", english: "Privacy"), destination: privacyURL)
@@ -4335,11 +4381,57 @@ private struct PaywallView: View {
                 Button(language.text(japanese: "OK", english: "OK"), role: .cancel) {}
             } message: {
                 Text(language.text(
-                    japanese: "課金は次のアップデートで有効になります。",
-                    english: "Purchases will be enabled in the next update."
+                    japanese: "商品を読み込めませんでした。少し時間をおいて試してください。",
+                    english: "Couldn't load products. Please try again shortly."
                 ))
             }
+            .alert(language.text(japanese: "お知らせ", english: "Notice"), isPresented: $showStatus) {
+                Button(language.text(japanese: "OK", english: "OK"), role: .cancel) {}
+            } message: {
+                Text(statusMessage ?? "")
+            }
         }
+    }
+
+    /// 選択プランを購入する。商品が無ければ「準備中」、成功なら閉じる、承認待ちは通知。
+    private func startPurchase() async {
+        guard let product = selectedProduct else {
+            showComingSoon = true
+            return
+        }
+        do {
+            switch try await store.purchase(product) {
+            case .success:
+                dismiss()
+            case .pending:
+                statusMessage = language.text(
+                    japanese: "購入は承認待ちです。承認されると自動で反映されます。",
+                    english: "Your purchase is pending approval and will apply automatically once approved."
+                )
+                showStatus = true
+            case .cancelled:
+                break
+            }
+        } catch {
+            statusMessage = language.text(
+                japanese: "購入を完了できませんでした。もう一度お試しください。",
+                english: "Could not complete the purchase. Please try again."
+            )
+            showStatus = true
+        }
+    }
+
+    /// 購入を復元する（商品ロードに依存しない）。
+    private func startRestore() async {
+        do {
+            try await store.restore()
+            statusMessage = model.isSubscribed
+                ? language.text(japanese: "購入を復元しました。", english: "Your purchase was restored.")
+                : language.text(japanese: "復元できる購入が見つかりませんでした。", english: "No purchases to restore.")
+        } catch {
+            statusMessage = language.text(japanese: "復元できませんでした。", english: "Couldn't restore purchases.")
+        }
+        showStatus = true
     }
 
     private func benefitRow(icon: String, title: String, detail: String) -> some View {

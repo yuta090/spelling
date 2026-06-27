@@ -1,5 +1,6 @@
 import Foundation
 import SQLite3
+import StoreKit
 import SwiftData
 import SpellingSyncCore
 
@@ -144,11 +145,12 @@ final class AppModel: ObservableObject {
         didSet { saveRewardCoins() }
     }
 
-    /// 課金（保護者プラン）が有効か。フェーズ1では未配線（既定 false）。
-    /// 将来 StoreKit2 から反映する。デバッグ時は設定のトグルでシミュレートできる。
-    @Published var isSubscribed: Bool {
-        didSet { persistenceStore.save(isSubscribed, key: isSubscribedKey) }
-    }
+    /// 課金（保護者プラン）が有効か。`StoreManager` が StoreKit2 から駆動する（`applyEntitlement`）。
+    /// 起動直後・オフラインは保存したキャッシュ（失効時刻まで）で復元する。設定で直接は変えない。
+    @Published private(set) var isSubscribed: Bool
+
+    /// StoreKit2 の購入・権利・商品を扱うマネージャ（アプリ起動時に `startStoreKit()` で開始）。
+    let store = StoreManager()
 
     /// デバッグ用：有料コンテンツを全解放（StoreKit なしで挙動確認）。
     /// 効果は DEBUG ビルドの `hasFullAccess` のみ。Release では無視される。
@@ -243,7 +245,7 @@ final class AppModel: ObservableObject {
     private let settingsKey = "spellingTrainer.settings"
     private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"
     private let rewardCoinsKey = "spellingTrainer.rewardCoins"
-    private let isSubscribedKey = "spellingTrainer.isSubscribed"
+    private let cachedEntitlementKey = "spellingTrainer.cachedEntitlement"
     private let debugUnlockAllKey = "spellingTrainer.debugUnlockAll"
     private let debugDisableDailyLimitKey = "spellingTrainer.debugDisableDailyLimit"
     private let loginStreakKey = "spellingTrainer.loginStreak"
@@ -281,7 +283,8 @@ final class AppModel: ObservableObject {
         settings = persistenceStore.load(TestSettings.self, key: settingsKey) ?? TestSettings()
         selectedWordStepID = persistenceStore.load(String.self, key: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
         rewardCoins = max(persistenceStore.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
-        isSubscribed = persistenceStore.load(Bool.self, key: isSubscribedKey) ?? false
+        let cachedEntitlement = persistenceStore.load(CachedEntitlement.self, key: cachedEntitlementKey) ?? .none
+        isSubscribed = cachedEntitlement.isActive(now: Date())
         debugUnlockAll = persistenceStore.load(Bool.self, key: debugUnlockAllKey) ?? false
         debugDisableDailyLimit = persistenceStore.load(Bool.self, key: debugDisableDailyLimitKey) ?? false
         loginStreak = max(persistenceStore.load(Int.self, key: loginStreakKey) ?? 0, 0)
@@ -383,6 +386,22 @@ final class AppModel: ObservableObject {
             changed = true
         }
         if changed { words = updated }
+    }
+
+    // MARK: - 課金権利（StoreKit2 / StoreManager から駆動）
+
+    /// アプリ起動時に StoreKit を開始する（商品ロード・取引監視・権利の再検証）。
+    func startStoreKit() {
+        store.start(appModel: self)
+    }
+
+    /// `StoreManager` が検証した権利を反映し、オフライン用キャッシュに保存する。
+    /// - active: いずれかの保護者プランの権利が有効か。
+    /// - expiresAt: 現在の期間終了（失効）時刻。キャッシュの有効判定に使う。
+    func applyEntitlement(active: Bool, expiresAt: Date?) {
+        isSubscribed = active
+        let cached = CachedEntitlement(isSubscribed: active, expiresAt: expiresAt)
+        persistenceStore.save(cached, key: cachedEntitlementKey)
     }
 
     var testWordsForSelectedStep: [SpellingWord] {
@@ -1465,3 +1484,145 @@ final class AppPersistenceStore: @unchecked Sendable {
 // ローカルファイル保存を `UserDataStore` 境界に適合させる。
 // `load`/`save` は既存シグネチャと一致するため、宣言のみで準拠が成立する。
 extension AppPersistenceStore: UserDataStore {}
+
+// MARK: - StoreManager（StoreKit2）
+
+/// 保護者プランの商品ロード・購入・復元・権利検証を担う薄い I/O 層。
+///
+/// 開発中はローカルの `Products.storekit` 構成で購入フローをシミュレータ検証できる
+/// （Apple Developer 登録・課金は不要）。本番化のときは同じ Product ID で
+/// App Store Connect に商品を作るだけ。権利の決定的判定（オフライン）は
+/// `SpellingSyncCore.CachedEntitlement` 側にある。
+@MainActor
+final class StoreManager: ObservableObject {
+    /// Product ID（App Store Connect / Products.storekit と一致させること）。
+    static let monthlyID = "com.yuta090.SpellingTrainer.parentplan.monthly"
+    static let yearlyID = "com.yuta090.SpellingTrainer.parentplan.yearly"
+    static let productIDs: Set<String> = [monthlyID, yearlyID]
+
+    enum PlanKind { case monthly, yearly }
+    enum StoreError: Error { case failedVerification }
+    enum PurchaseOutcome { case success, pending, cancelled }
+
+    /// ロード済み商品（年額→月額の順）。`.storekit` 未設定時は空のまま。
+    @Published private(set) var products: [Product] = []
+    /// 現在有効な権利の Product ID 集合。
+    @Published private(set) var purchasedProductIDs: Set<String> = []
+    /// 無料トライアル（Introductory Offer）の対象か。再課金者には false。
+    @Published private(set) var isTrialEligible = false
+    /// 購入処理中フラグ（UI のスピナー用）。
+    @Published private(set) var purchaseInFlight = false
+
+    private weak var appModel: AppModel?
+    private var updatesTask: Task<Void, Never>?
+
+    /// 取引監視を開始し、商品ロードと権利の再検証を行う（多重開始はガード）。
+    func start(appModel: AppModel) {
+        self.appModel = appModel
+        if updatesTask == nil {
+            updatesTask = observeTransactionUpdates()
+        }
+        Task {
+            await loadProducts()
+            await refreshEntitlements()
+        }
+    }
+
+    deinit { updatesTask?.cancel() }
+
+    /// 指定プランの商品。
+    func product(for plan: PlanKind) -> Product? {
+        let id = plan == .yearly ? Self.yearlyID : Self.monthlyID
+        return products.first { $0.id == id }
+    }
+
+    /// 商品をロードする（価格・トライアル文言の表示に使う）。失敗時は空のまま（UI はフォールバック）。
+    func loadProducts() async {
+        do {
+            let loaded = try await Product.products(for: Self.productIDs)
+            // 年額（高い方）を先頭に。
+            products = loaded.sorted { $0.price > $1.price }
+            await refreshTrialEligibility()
+        } catch {
+            // 取得失敗（`.storekit` 未設定/ネット断など）。UI は固定文言にフォールバックする。
+        }
+    }
+
+    /// トライアル対象かを更新する（サブスクグループ単位）。
+    func refreshTrialEligibility() async {
+        guard let subscription = products.first?.subscription else {
+            isTrialEligible = false
+            return
+        }
+        isTrialEligible = await subscription.isEligibleForIntroOffer
+    }
+
+    /// 購入する。成功・承認待ち・キャンセルを返す。
+    func purchase(_ product: Product) async throws -> PurchaseOutcome {
+        purchaseInFlight = true
+        defer { purchaseInFlight = false }
+        let result = try await product.purchase()
+        switch result {
+        case .success(let verification):
+            let transaction = try checkVerified(verification)
+            await transaction.finish()
+            await refreshEntitlements()
+            return .success
+        case .pending:
+            // 承認待ち（ファミリー承認など）。後で Transaction.updates が反映する。
+            return .pending
+        case .userCancelled:
+            return .cancelled
+        @unknown default:
+            return .cancelled
+        }
+    }
+
+    /// 購入を復元する（App Store と同期して権利を再検証）。商品ロードに依存しない。
+    func restore() async throws {
+        purchaseInFlight = true
+        defer { purchaseInFlight = false }
+        try await AppStore.sync()
+        await refreshEntitlements()
+    }
+
+    /// 現在の権利を集計して AppModel に反映する。
+    func refreshEntitlements() async {
+        var active: Set<String> = []
+        var latestExpiry: Date?
+        for await result in Transaction.currentEntitlements {
+            guard case .verified(let transaction) = result else { continue }
+            // 自動更新サブスクのみを権利として扱う（誤設定の非更新商品で永久解放されない保険）。
+            guard Self.productIDs.contains(transaction.productID),
+                  transaction.productType == .autoRenewable,
+                  transaction.revocationDate == nil else { continue }
+            active.insert(transaction.productID)
+            if let expiration = transaction.expirationDate {
+                latestExpiry = max(latestExpiry ?? expiration, expiration)
+            }
+        }
+        // TODO(本番): 課金リトライ/猶予期間(grace)では expirationDate が過去になり得る。
+        // オフライン継続のため SubscriptionInfo.Status / gracePeriodExpirationDate からキャッシュ失効を導出する。
+        purchasedProductIDs = active
+        await refreshTrialEligibility()
+        appModel?.applyEntitlement(active: !active.isEmpty, expiresAt: latestExpiry)
+    }
+
+    private func observeTransactionUpdates() -> Task<Void, Never> {
+        Task { [weak self] in
+            for await update in Transaction.updates {
+                if case .verified(let transaction) = update {
+                    await transaction.finish()
+                }
+                await self?.refreshEntitlements()
+            }
+        }
+    }
+
+    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+        switch result {
+        case .verified(let safe): return safe
+        case .unverified: throw StoreError.failedVerification
+        }
+    }
+}
