@@ -895,6 +895,31 @@ final class AppModel: ObservableObject {
         return .added(addedCount)
     }
 
+    /// 文づくり等で出会った「知らない語」を、その場で復習に積む軽量登録。
+    /// `addChildWords` の満点ゲート/新ステップ生成は通さず、既存のこどもステップへ 1 語足すだけ。
+    /// すでに語彙にある語は二重登録しない（既存の SRS/復習にそのまま乗る）。
+    /// 戻り値: 実際に新規追加したら true。
+    /// 設計: docs/sentence-builder-design-2026-06-27.md（未習語タップ→復習導線）
+    @discardableResult
+    func enrollReviewWord(_ rawText: String, at now: Date = Date()) -> Bool {
+        let key = normalize(rawText)
+        guard !key.isEmpty else { return false }
+        guard !words.contains(where: { normalize($0.text) == key }) else { return false }
+        // 過去の満点済みステップを書き換えないよう、最新のこどもステップへ積む（無ければ正準ID）。
+        let stepID = latestChildStep?.id ?? Self.childWordStepID
+        words.append(
+            SpellingWord(
+                text: key,
+                promptText: "",
+                registeredAt: now,
+                stepID: stepID,
+                source: .child
+            )
+        )
+        ensureSelectedWordStepStillExists()
+        return true
+    }
+
     @discardableResult
     func replaceWords(in step: WordStep, from rawText: String) -> Int {
         let entries = parseWordListEntries(from: rawText)

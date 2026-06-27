@@ -48,6 +48,8 @@ struct WordOrderingDemoView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let items: [SentenceItem]
+    /// 「しらない ことば」を選んだときに復習へ積むコールバック（AppModel に依存させないため）。
+    private let onEnrollReviewWord: (String) -> Void
     @StateObject private var speech = SpeechPlayer()
     /// タイルがトレイ↔解答欄を「飛んで」移動するための共有ネームスペース。
     @Namespace private var tileNS
@@ -59,9 +61,15 @@ struct WordOrderingDemoView: View {
     /// まだ置いていないタイル。
     @State private var tray: [OrderingTile] = []
     @State private var grade: OrderingGrade?
+    /// この問題で「しらない」と選んだ語（復習に積んだ＝マーカー表示）。
+    @State private var markedUnknown: Set<String> = []
 
-    init(items: [SentenceItem] = WordOrderingSamples.make()) {
+    init(
+        items: [SentenceItem] = WordOrderingSamples.make(),
+        onEnrollReviewWord: @escaping (String) -> Void = { _ in }
+    ) {
         self.items = items
+        self.onEnrollReviewWord = onEnrollReviewWord
     }
 
     private var item: SentenceItem { items[index] }
@@ -230,28 +238,96 @@ struct WordOrderingDemoView: View {
     private var feedbackAndActions: some View {
         if let grade {
             VStack(spacing: 14) {
+                // テストではなく“ゲーム”：間違えても前向き＆何度でも。
                 if grade.isCorrect {
-                    Label("せいかい！", systemImage: "checkmark.seal.fill")
+                    Label("やったね！ せいかい！", systemImage: "star.fill")
                         .font(.system(size: 22, weight: .heavy, design: .rounded))
                         .foregroundStyle(WO.correct)
-                    bigButton("つぎへ", tint: WO.accent, action: next)
                 } else {
-                    Label("おしい！ \(grade.correctPositions)/\(grade.total) あってる",
-                          systemImage: "arrow.uturn.left.circle.fill")
-                        .font(.system(size: 20, weight: .heavy, design: .rounded))
-                        .foregroundStyle(WO.retry)
-                    // 不正解のときだけ、その文の文法の「かいせつ」を出す（事前作成の固定文）。
+                    VStack(spacing: 4) {
+                        Label("ナイス チャレンジ！", systemImage: "flame.fill")
+                            .font(.system(size: 20, weight: .heavy, design: .rounded))
+                            .foregroundStyle(WO.accent)
+                        Text(grade.correctPositions > 0
+                             ? "あと \(grade.total - grade.correctPositions)こ！ もういちど やってみよう"
+                             : "だいじょうぶ、なんども やってみよう")
+                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.secondary)
+                    }
+                    // 不正解のときは、その文の文法の「ヒント」を出す（事前作成の固定文）。
                     if let grammar = item.grammar {
                         explanationCard(grammar)
                     }
+                }
+                // 回答後に「しらない ことば」を選んで復習へ積む（並べ替えのタップとは衝突しない）。
+                unknownWordChooser
+                if grade.isCorrect {
+                    bigButton("つぎへ", tint: WO.accent, action: next)
+                } else {
                     bigButton("もういちど", tint: WO.retry, action: retry)
                 }
             }
         } else {
-            bigButton("こたえあわせ", tint: isComplete ? WO.accent : Color.gray.opacity(0.4),
+            bigButton("できた！", tint: isComplete ? WO.accent : Color.gray.opacity(0.4),
                       action: check)
                 .disabled(!isComplete)
         }
+    }
+
+    /// 回答後に出す「しらない ことばは？」チューザー。タップした語を復習へ積む（★マーカー）。
+    private var unknownWordChooser: some View {
+        VStack(spacing: 8) {
+            Text("しらない ことばは？ タップで ふくしゅうに ついか")
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundStyle(.secondary)
+            FlowLayout(spacing: 8) {
+                ForEach(sentenceWords, id: \.self) { unknownChip($0) }
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+
+    /// 文の単語チップ（重複は1つに）。タップで「しらない」マーク＝復習登録。
+    private func unknownChip(_ word: String) -> some View {
+        let key = word.lowercased()
+        let marked = markedUnknown.contains(key)
+        return Button {
+            WordOrderingHaptics.tap()
+            if marked {
+                markedUnknown.remove(key)            // マーク解除（既に積んだ復習は取り消さない）
+            } else {
+                markedUnknown.insert(key)
+                onEnrollReviewWord(word)             // 復習へ積む（重複は AppModel 側で無視）
+            }
+        } label: {
+            HStack(spacing: 4) {
+                if marked {
+                    Image(systemName: "star.fill").font(.system(size: 12, weight: .bold))
+                }
+                Text(word)
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+            }
+            .foregroundStyle(marked ? .white : WO.ink)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Capsule().fill(marked ? WO.accent : WO.tileFill))
+            .overlay(Capsule().stroke(WO.tileStroke, lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+        .tapFeedback(bounce: true)
+    }
+
+    /// 文の単語（出現順・重複を除く）。チューザーの表示元。
+    private var sentenceWords: [String] {
+        var seen = Set<String>()
+        var out: [String] = []
+        for token in item.tokens {
+            let key = token.lowercased()
+            if seen.insert(key).inserted {
+                out.append(token)
+            }
+        }
+        return out
     }
 
     private func bigButton(_ title: String, tint: Color, action: @escaping () -> Void) -> some View {
@@ -303,6 +379,7 @@ struct WordOrderingDemoView: View {
     private func next() {
         index = (index + 1) % items.count
         reshuffle = 0
+        markedUnknown = []   // 次の文へ。マーカーはリセット（retry では保持）。
         load()
     }
 }
@@ -362,6 +439,7 @@ private enum WordOrderingHaptics {
 #if DEBUG
 /// 文づくり（並べ替え）の試遊画面を開く DEBUG 限定ボタン。`RootView` に overlay で差し込む。
 struct WordOrderingDebugLauncher: View {
+    @EnvironmentObject private var model: AppModel
     @State private var isPresented = false
     var body: some View {
         Button {
@@ -377,7 +455,8 @@ struct WordOrderingDebugLauncher: View {
         .padding(.bottom, 12)
         .accessibilityLabel("文づくり試遊")
         .sheet(isPresented: $isPresented) {
-            WordOrderingDemoView()
+            // 「しらない ことば」を実際に子の復習へ積む（既存語彙にあれば無視）。
+            WordOrderingDemoView(onEnrollReviewWord: { model.enrollReviewWord($0) })
         }
     }
 }
