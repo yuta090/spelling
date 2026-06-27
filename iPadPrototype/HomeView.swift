@@ -833,6 +833,24 @@ private struct ChildStepPickerCard: View {
     }
 }
 
+private func sheetContentWidth(in geometry: GeometryProxy, maxWidth: CGFloat, horizontalPadding: CGFloat) -> CGFloat {
+    let safeWidth = geometry.size.width - geometry.safeAreaInsets.leading - geometry.safeAreaInsets.trailing
+    return min(maxWidth, max(1, safeWidth - horizontalPadding * 2))
+}
+
+private struct SheetHomeBackground: View {
+    var themeID: String
+
+    var body: some View {
+        GeometryReader { geometry in
+            HomeBackground(themeID: themeID, ignoresSafeArea: false)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
+        }
+        .allowsHitTesting(false)
+    }
+}
+
 private struct PracticeWordPreviewSheet: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
@@ -850,66 +868,73 @@ private struct PracticeWordPreviewSheet: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                HomeBackground(themeID: model.selectedBackgroundID)
+            GeometryReader { geometry in
+                let contentWidth = sheetContentWidth(in: geometry, maxWidth: 760, horizontalPadding: 28)
 
-                VStack(spacing: 18) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(language.text(japanese: "きょうのたんご", english: "Words"))
-                                .font(.system(size: 34, weight: .heavy, design: .rounded))
-                                .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
-                            Text(stepTitle)
-                                .font(.title3.monospacedDigit().weight(.heavy))
-                                .foregroundStyle(Color(red: 0.14, green: 0.35, blue: 0.76))
-                        }
+                ZStack {
+                    SheetHomeBackground(themeID: model.selectedBackgroundID)
 
-                        Spacer()
-
-                        Button {
-                            showingChildAddWords = true
-                        } label: {
-                            Label(
-                                language.text(japanese: "ことばをふやす", english: "Add Words"),
-                                systemImage: "plus.circle.fill"
-                            )
-                            .font(.title3.weight(.heavy))
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 18)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(Color(red: 0.49, green: 0.30, blue: 0.78))
-                        .tapFeedback(scale: 0.93, bounce: true)
-                        .accessibilityLabel(language.text(japanese: "じぶんでことばをふやす", english: "Add your own words"))
-                    }
-
-                    if words.isEmpty {
-                        EmptyStateView(
-                            language.text(japanese: "たんごがありません", english: "No words"),
-                            systemImage: "list.bullet",
-                            description: Text(language.text(japanese: "保護者メニューで単語を入れてください。", english: "Add words in the parent menu."))
-                        )
-                    } else {
-                        ScrollView {
-                            LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
-                                ForEach(words) { word in
-                                    PracticeWordPreviewChip(
-                                        word: word,
-                                        language: language,
-                                        isExpanded: expandedWordID == word.id,
-                                        onTap: { tapWord(word) },
-                                        speak: { text in
-                                            speech.speak(text, language: model.settings.language, rate: model.settings.speechRate)
-                                        }
-                                    )
-                                }
+                    VStack(spacing: 18) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(language.text(japanese: "きょうのたんご", english: "Words"))
+                                    .font(.system(size: 34, weight: .heavy, design: .rounded))
+                                    .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
+                                Text(stepTitle)
+                                    .font(.title3.monospacedDigit().weight(.heavy))
+                                    .foregroundStyle(Color(red: 0.14, green: 0.35, blue: 0.76))
                             }
-                            .padding(.vertical, 2)
+
+                            Spacer()
+
+                            Button {
+                                showingChildAddWords = true
+                            } label: {
+                                Label(
+                                    language.text(japanese: "ことばをふやす", english: "Add Words"),
+                                    systemImage: "plus.circle.fill"
+                                )
+                                .font(.title3.weight(.heavy))
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 18)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(Color(red: 0.49, green: 0.30, blue: 0.78))
+                            .tapFeedback(scale: 0.93, bounce: true)
+                            .accessibilityLabel(language.text(japanese: "じぶんでことばをふやす", english: "Add your own words"))
+                        }
+
+                        if words.isEmpty {
+                            EmptyStateView(
+                                language.text(japanese: "たんごがありません", english: "No words"),
+                                systemImage: "list.bullet",
+                                description: Text(language.text(japanese: "保護者メニューで単語を入れてください。", english: "Add words in the parent menu."))
+                            )
+                        } else {
+                            ScrollView {
+                                LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
+                                    ForEach(words) { word in
+                                        PracticeWordPreviewChip(
+                                            word: word,
+                                            language: language,
+                                            isExpanded: expandedWordID == word.id,
+                                            onTap: { tapWord(word) },
+                                            speak: { text in
+                                                speech.speak(text, language: model.settings.language, rate: model.settings.speechRate)
+                                            }
+                                        )
+                                    }
+                                }
+                                .padding(.vertical, 2)
+                            }
                         }
                     }
+                    .frame(maxWidth: contentWidth)
+                    .padding(28)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .frame(maxWidth: 760)
-                .padding(28)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
             }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -4121,8 +4146,10 @@ private struct CharacterPickerSheet: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
+                let contentWidth = sheetContentWidth(in: geometry, maxWidth: 820, horizontalPadding: 28)
+
                 ZStack {
-                    HomeBackground(themeID: model.selectedBackgroundID)
+                    SheetHomeBackground(themeID: model.selectedBackgroundID)
 
                     ScrollView {
                         VStack(alignment: .leading, spacing: 14) {
@@ -4190,7 +4217,7 @@ private struct CharacterPickerSheet: View {
                                 .padding(.bottom, 28)
                             }
                         }
-                        .frame(maxWidth: 820, minHeight: geometry.size.height, alignment: .top)
+                        .frame(maxWidth: contentWidth, minHeight: geometry.size.height, alignment: .top)
                         .padding(28)
                         .frame(maxWidth: .infinity, alignment: .top)
                         .background(Color.white.opacity(0.001))
@@ -4199,6 +4226,8 @@ private struct CharacterPickerSheet: View {
                     .scrollIndicators(.visible)
                     .scrollBounceBasedOnSizeCompat()
                 }
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
             }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -7831,6 +7860,7 @@ struct HomeBackgroundTheme: Identifiable {
 
 struct HomeBackground: View {
     var themeID: String = HomeBackgroundTheme.defaultID
+    var ignoresSafeArea: Bool = true
 
     private var theme: HomeBackgroundTheme {
         HomeBackgroundTheme.theme(id: themeID)
@@ -7841,23 +7871,34 @@ struct HomeBackground: View {
             // 利用可能領域いっぱいに敷き、はみ出しは clip する。
             // frame/clipped が無いと scaledToFill が本来サイズを主張し、シート等の
             // 「中身に合わせて縮む」コンテナ内でレイアウトを押し広げて崩す（きょうのたんご画面）。
-            Image(imageName)
+            safeAreaBackground(
+                Image(imageName)
                 .resizable()
                 .scaledToFill()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
-                .ignoresSafeArea()
+            )
         } else {
             ZStack(alignment: .bottom) {
-                LinearGradient(
-                    colors: [theme.skyTop, theme.skyBottom],
-                    startPoint: .top,
-                    endPoint: .bottom
+                safeAreaBackground(
+                    LinearGradient(
+                        colors: [theme.skyTop, theme.skyBottom],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                 )
-                .ignoresSafeArea()
 
                 HomeBackgroundScenery(theme: theme)
             }
+        }
+    }
+
+    @ViewBuilder
+    private func safeAreaBackground<Background: View>(_ background: Background) -> some View {
+        if ignoresSafeArea {
+            background.ignoresSafeArea()
+        } else {
+            background
         }
     }
 }
