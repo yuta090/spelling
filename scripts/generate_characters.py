@@ -58,6 +58,8 @@ VALID_STYLES = {
     "astronaut", "ufo", "saturn", "moon", "alien",
     "velociraptor", "ankylosaurus", "spinosaurus", "parasaurolophus",
     "plesiosaurus", "dinoEgg",
+    # 画像ベースの「なかま」共通スタイル。画像は id から nakama_<id>(WebP DataSet) で引く。
+    "imageAsset",
 }
 
 
@@ -93,6 +95,14 @@ def load_rows():
             raise SystemExit(f"Row {i} ({cid}): unknown category {row['category']!r}")
         if row["style"] not in VALID_STYLES:
             raise SystemExit(f"Row {i} ({cid}): unknown style {row['style']!r}")
+        if row["style"] == "imageAsset":
+            # 画像ベースは Assets の Data Set `nakama_<id>` が必須（無いとアプリで 🐾 に化ける）
+            ds = ROOT / "iPadPrototype" / "Assets.xcassets" / f"nakama_{cid}.dataset" / "Contents.json"
+            if not ds.exists():
+                raise SystemExit(
+                    f"Row {i} ({cid}): style=imageAsset だが画像が無い → "
+                    f"iPadPrototype/Assets.xcassets/nakama_{cid}.dataset/ を作って WebP を入れて"
+                )
         int(row["price"])  # validate
     return rows
 
