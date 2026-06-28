@@ -79,6 +79,10 @@ private struct RootView: View {
             .overlay(alignment: .bottomLeading) {
                 MixedSessionDebugLauncher()
             }
+            // 本物テンプレ（名前入り）を実ループで再生する試遊導線（製品UIには出さない）。
+            .overlay(alignment: .trailing) {
+                RealContentSessionDebugLauncher()
+            }
         #endif
     }
 }
