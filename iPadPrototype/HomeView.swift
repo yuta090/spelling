@@ -4251,6 +4251,14 @@ private struct CharacterPickerSheet: View {
                                         .font(.subheadline.weight(.bold))
                                         .foregroundStyle(.secondary)
                                 }
+                                // どんな背景画像・端末でもタイトルが読めるよう、白い角丸パネルで隔離する。
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 16)
+                                .background(
+                                    .white.opacity(0.86),
+                                    in: RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                )
+                                .shadow(color: .black.opacity(0.06), radius: 5, x: 0, y: 2)
 
                                 Spacer()
 
@@ -4371,7 +4379,7 @@ private struct CharacterPickerCard: View {
         .frame(maxWidth: .infinity, minHeight: 108)
         .padding(.vertical, 8)
         .padding(.horizontal, 6)
-        .background(.white.opacity(canUnlock ? 0.92 : 0.64))
+        .background(.white.opacity(canUnlock ? 0.95 : 0.85))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
@@ -4489,7 +4497,7 @@ private struct BackgroundPickerCard: View {
             statePill
         }
         .padding(8)
-        .background(.white.opacity(canUnlock ? 0.92 : 0.64))
+        .background(.white.opacity(canUnlock ? 0.95 : 0.85))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
