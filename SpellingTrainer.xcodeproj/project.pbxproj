@@ -37,6 +37,8 @@
 		FACE0000000000000000CE0D /* ListeningClozeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0E /* ListeningClozeView.swift */; };
 		FACE0000000000000000CE0F /* ConfusablesBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE10 /* ConfusablesBundle.swift */; };
 		FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE06 /* MixedSessionView.swift */; };
+		FACE0000000000000000CE20 /* PuzzleKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE21 /* PuzzleKit.swift */; };
+		FACE0000000000000000CE22 /* PuzzleSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE23 /* PuzzleSessionView.swift */; };
 		FACE0000000000000000CE07 /* RealContentSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE08 /* RealContentSession.swift */; };
 		FACE0000000000000000CE09 /* person_templates.authoring.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0A /* person_templates.authoring.json */; };
 		FACE0000000000000000CE11 /* confusables_sound.build.csv in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE12 /* confusables_sound.build.csv */; };
@@ -91,6 +93,8 @@
 		FACE0000000000000000CF0C /* SyncDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncDebugView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE02 /* WordOrderingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOrderingView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE04 /* ClozeChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClozeChoiceView.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CE21 /* PuzzleKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleKit.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CE23 /* PuzzleSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleSessionView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0C /* WordListeningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListeningView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0E /* ListeningClozeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningClozeView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE10 /* ConfusablesBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfusablesBundle.swift; sourceTree = "<group>"; };
@@ -170,6 +174,8 @@
 				FACE0000000000000000CF0C /* SyncDebugView.swift */,
 				FACE0000000000000000CE02 /* WordOrderingView.swift */,
 				FACE0000000000000000CE04 /* ClozeChoiceView.swift */,
+				FACE0000000000000000CE21 /* PuzzleKit.swift */,
+				FACE0000000000000000CE23 /* PuzzleSessionView.swift */,
 				FACE0000000000000000CE0C /* WordListeningView.swift */,
 				FACE0000000000000000CE0E /* ListeningClozeView.swift */,
 				FACE0000000000000000CE10 /* ConfusablesBundle.swift */,
@@ -337,6 +343,8 @@
 				FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */,
 				FACE0000000000000000CE01 /* WordOrderingView.swift in Sources */,
 				FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */,
+				FACE0000000000000000CE20 /* PuzzleKit.swift in Sources */,
+				FACE0000000000000000CE22 /* PuzzleSessionView.swift in Sources */,
 				FACE0000000000000000CE0B /* WordListeningView.swift in Sources */,
 				FACE0000000000000000CE0D /* ListeningClozeView.swift in Sources */,
 				FACE0000000000000000CE0F /* ConfusablesBundle.swift in Sources */,
