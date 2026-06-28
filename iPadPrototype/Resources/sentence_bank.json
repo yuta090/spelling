@@ -9,6 +9,7 @@
     "grammar" : "presentSimple",
     "id" : "DFF69D5D-61F2-5BD0-98DB-617478AD1E9B",
     "ja" : "かのじょは りんごが すき",
+    "sourceID" : "like-apples-friend",
     "tokens" : [
       "She",
       "likes",
@@ -24,6 +25,7 @@
     "grammar" : "beVerb",
     "id" : "A0FEFD9B-3EDB-531B-BDED-FBEFDCC7D76B",
     "ja" : "かのじょは わたしの ともだち",
+    "sourceID" : "is-my-friend",
     "tokens" : [
       "She",
       "is",
@@ -41,6 +43,7 @@
     "grammar" : "canModal",
     "id" : "C8F28CF9-6533-50C8-99E4-581139CF7D39",
     "ja" : "かれは はやく はしれる",
+    "sourceID" : "can-run-fast",
     "tokens" : [
       "He",
       "can",
@@ -58,6 +61,7 @@
     "grammar" : "presentContinuous",
     "id" : "63009D49-36B9-5F79-81F4-028F448DA7CD",
     "ja" : "かれは 本を よんでいる",
+    "sourceID" : "reading-book-friend",
     "tokens" : [
       "He",
       "is",
@@ -77,6 +81,7 @@
     "grammar" : "pastSimple",
     "id" : "18A4874F-059A-5CA2-8F37-DF62F46EA173",
     "ja" : "わたしは ともだちと サッカーを したよ",
+    "sourceID" : "played-soccer-with",
     "tokens" : [
       "I",
       "played",
@@ -96,6 +101,7 @@
     "grammar" : "comparativeEr",
     "id" : "57A16AE8-E94F-5AAB-91B5-64FFA5514BE3",
     "ja" : "かのじょの かばんは もっと 大きい",
+    "sourceID" : "bag-is-bigger",
     "tokens" : [
       "Her",
       "bag",
@@ -112,6 +118,7 @@
     "gradeBand" : 1,
     "id" : "F5599723-C654-554F-A1FA-268E903EC172",
     "ja" : "おはよう",
+    "sourceID" : "good-morning-child",
     "tokens" : [
       "Good",
       "morning"
@@ -127,6 +134,7 @@
     "grammar" : "imperative",
     "id" : "6D666ABB-9E59-557E-B7A4-3AA695AFC41F",
     "ja" : "きょう あそぼう",
+    "sourceID" : "lets-play-today",
     "tokens" : [
       "Let's",
       "play",
@@ -142,6 +150,7 @@
     "grammar" : "imperative",
     "id" : "8098DCA7-BFE6-5948-88AB-CE6617A5C505",
     "ja" : "これを見て",
+    "sourceID" : "look-at-this",
     "tokens" : [
       "Look",
       "at",
@@ -158,6 +167,7 @@
     "grammar" : "imperative",
     "id" : "C1FC2C56-BC32-5CA2-8BBA-2BEC64143A89",
     "ja" : "へやを かたづけて",
+    "sourceID" : "clean-your-room",
     "tokens" : [
       "Clean",
       "your",
@@ -173,6 +183,7 @@
     "grammar" : "beVerb",
     "id" : "C102FC10-B202-5DA4-9F62-FF1DC08CD578",
     "ja" : "じゅんびは できた？",
+    "sourceID" : "are-you-ready",
     "tokens" : [
       "Are",
       "you",
@@ -188,6 +199,7 @@
     "grammar" : "presentContinuous",
     "id" : "EA7DF010-32A6-5BF0-B6C3-8E3C79F72669",
     "ja" : "ふたりは あそんでいる",
+    "sourceID" : "two-friends-playing",
     "tokens" : [
       "They",
       "are",
@@ -204,6 +216,7 @@
     "grammar" : "presentContinuous",
     "id" : "3207EC3E-4794-57E0-900B-24EDDD7E4041",
     "ja" : "ふたりは がっこうへ あるいている",
+    "sourceID" : "two-friends-walking",
     "tokens" : [
       "They",
       "are",
@@ -222,6 +235,7 @@
     "grammar" : "presentContinuous",
     "id" : "CEAB2586-BE79-5182-BC7C-40EAE0F52E95",
     "ja" : "ふたりは うたを うたっている",
+    "sourceID" : "two-friends-singing",
     "tokens" : [
       "They",
       "are",
@@ -239,6 +253,7 @@
     "grammar" : "comparativeEr",
     "id" : "411E511C-195F-53A3-9C85-EC2CBD98F7DD",
     "ja" : "かれは かのじょより せが たかい",
+    "sourceID" : "two-friends-taller",
     "tokens" : [
       "He",
       "is",
@@ -257,6 +272,7 @@
     "grammar" : "presentSimple",
     "id" : "F36D0353-C1C4-5854-8984-6CC43A91F6E8",
     "ja" : "かのじょは さんすうが すき",
+    "sourceID" : "friend-likes-math",
     "tokens" : [
       "She",
       "likes",
@@ -273,6 +289,7 @@
     "grammar" : "presentSimple",
     "id" : "19C49F4E-632D-54E5-9B4E-D40451092846",
     "ja" : "かれは あかい えんぴつを もっている",
+    "sourceID" : "friend-has-pencil",
     "tokens" : [
       "He",
       "has",
@@ -293,6 +310,7 @@
     "grammar" : "presentSimple",
     "id" : "F01AAD37-4472-5E24-9FC1-EB07B24378C7",
     "ja" : "かのじょは 毎日 がんばって べんきょうする",
+    "sourceID" : "friend-studies-hard",
     "tokens" : [
       "She",
       "studies",
@@ -310,6 +328,7 @@
     "grammar" : "beVerb",
     "id" : "F0378FE0-A1C6-5772-BB93-5282C39EDF5C",
     "ja" : "かのじょは とても やさしい",
+    "sourceID" : "friend-is-kind",
     "tokens" : [
       "She",
       "is",
@@ -327,6 +346,7 @@
     "grammar" : "pastSimple",
     "id" : "23386354-CDEA-5324-9DD6-AA92A2AD9D8C",
     "ja" : "かれは としょかんへ 行った",
+    "sourceID" : "friend-went-to-library",
     "tokens" : [
       "He",
       "went",
@@ -345,6 +365,7 @@
     "grammar" : "canModal",
     "id" : "308C3069-8D2A-5B8B-9EEA-F6834E3FDECA",
     "ja" : "あした あそべる？",
+    "sourceID" : "play-park-tomorrow",
     "tokens" : [
       "Can",
       "you",
@@ -362,6 +383,7 @@
     "grammar" : "imperative",
     "id" : "BDB3B088-FEF7-5A20-8012-40DB295C1CB3",
     "ja" : "じてんしゃに のろう",
+    "sourceID" : "lets-ride-bikes",
     "tokens" : [
       "Let's",
       "ride",
@@ -378,6 +400,7 @@
     "grammar" : "canModal",
     "id" : "FF8B38C4-2564-5EDE-95E6-CACF9CDF4C76",
     "ja" : "かのじょは じょうずに およげる",
+    "sourceID" : "friend-can-swim",
     "tokens" : [
       "She",
       "can",
@@ -396,6 +419,7 @@
     "grammar" : "pastSimple",
     "id" : "1F3A68D9-B550-539F-96FE-4F8831E0FE4D",
     "ja" : "わたしは ともだちと おにごっこを した",
+    "sourceID" : "played-tag",
     "tokens" : [
       "I",
       "played",
@@ -415,6 +439,7 @@
     "grammar" : "presentSimple",
     "id" : "5E1F0478-B326-52EF-946B-06A3F0D49060",
     "ja" : "かのじょは この ボールが ほしい",
+    "sourceID" : "friend-wants-ball",
     "tokens" : [
       "She",
       "wants",
@@ -431,6 +456,7 @@
     "gradeBand" : 2,
     "id" : "EC6A52ED-6A67-5C72-AB9E-61956939B8DB",
     "ja" : "また あしたね",
+    "sourceID" : "see-you-tomorrow-friend",
     "tokens" : [
       "See",
       "you",
@@ -446,6 +472,7 @@
     "gradeBand" : 2,
     "id" : "36DF60A9-58A5-5D52-A522-14315FE32BDE",
     "ja" : "お誕生日 おめでとう！",
+    "sourceID" : "happy-birthday-friend",
     "tokens" : [
       "Happy",
       "birthday"
@@ -460,6 +487,7 @@
     "gradeBand" : 1,
     "id" : "7D67F72B-009C-5238-B4EA-EB05833D1354",
     "ja" : "はじめまして",
+    "sourceID" : "nice-to-meet-friend",
     "tokens" : [
       "Nice",
       "to",
@@ -477,6 +505,7 @@
     "grammar" : "beVerb",
     "id" : "DE9C6F2E-69D6-5B9A-A5B3-10F76CEC3459",
     "ja" : "かのじょの ねこは かわいい",
+    "sourceID" : "friend-cat-cute",
     "tokens" : [
       "Her",
       "cat",
@@ -495,6 +524,7 @@
     "grammar" : "presentSimple",
     "id" : "1A9E3533-33F9-59BF-929A-72301317DE77",
     "ja" : "かれは わたしの 家の 近所に すんでいる",
+    "sourceID" : "friend-lives-near",
     "tokens" : [
       "He",
       "lives",
@@ -512,6 +542,7 @@
     "grammar" : "comparativeEr",
     "id" : "2B438E3E-50D6-5995-B343-D078AEEBF710",
     "ja" : "かれは わたしより はやい",
+    "sourceID" : "friend-is-faster",
     "tokens" : [
       "He",
       "is",
@@ -530,6 +561,7 @@
     "grammar" : "pastSimple",
     "id" : "E73282D7-DE44-5556-B0F3-867201F74D47",
     "ja" : "わたしは かのじょの 家を たずねた",
+    "sourceID" : "visit-friend-home",
     "tokens" : [
       "I",
       "visited",
@@ -547,6 +579,7 @@
     "grammar" : "presentSimple",
     "id" : "EBB77B91-1C07-5850-9D45-87CDE947F1A3",
     "ja" : "かれは おんがくが すき",
+    "sourceID" : "friend-likes-music",
     "tokens" : [
       "He",
       "likes",
@@ -563,6 +596,7 @@
     "grammar" : "beVerb",
     "id" : "8007D655-0368-51B5-85F8-22B3E7C4A2A3",
     "ja" : "いぬは ねむい",
+    "sourceID" : "the-dog-is-sleepy",
     "tokens" : [
       "The",
       "dog",
@@ -580,6 +614,7 @@
     "grammar" : "demonstratives",
     "id" : "8BF02508-91BE-5B05-9767-23ED164D6D05",
     "ja" : "あの つくえは あたらしい",
+    "sourceID" : "that-desk-is-new",
     "tokens" : [
       "That",
       "desk",
@@ -597,6 +632,7 @@
     "grammar" : "articles",
     "id" : "3ADA6589-68D0-5D51-9670-2AFF537193F4",
     "ja" : "りんごが つくえの うえに ある",
+    "sourceID" : "an-apple-is-on-the-table",
     "tokens" : [
       "An",
       "apple",
@@ -617,6 +653,7 @@
     "grammar" : "canModal",
     "id" : "A9B0AB4D-0B34-5D69-B368-EBE69B297CFF",
     "ja" : "とりは たかく とべる",
+    "sourceID" : "birds-can-fly-high",
     "tokens" : [
       "Birds",
       "can",
@@ -634,6 +671,7 @@
     "grammar" : "pronouns",
     "id" : "4C66400E-F087-556C-B1D6-12FC7511B7A9",
     "ja" : "わたしたちは おかあさんを てつだう",
+    "sourceID" : "we-help-our-mom",
     "tokens" : [
       "We",
       "help",
@@ -653,6 +691,7 @@
     "grammar" : "plurals",
     "id" : "4AADFD0F-8826-5D50-B868-314C6FFB70DA",
     "ja" : "にひきの うさぎが こうえんで はねる",
+    "sourceID" : "two-rabbits-jump-in-the-park",
     "tokens" : [
       "Two",
       "rabbits",
@@ -673,6 +712,7 @@
     "grammar" : "presentSimple",
     "id" : "EA6DC942-A378-5952-9DE4-8EA63057381D",
     "ja" : "みんなで あさごはんを たべる",
+    "sourceID" : "we-eat-breakfast-together",
     "tokens" : [
       "We",
       "eat",
@@ -691,6 +731,7 @@
     "grammar" : "presentContinuous",
     "id" : "5FA09C37-4C20-5FB2-B7B5-C2F450C609F5",
     "ja" : "たいようが あかるく かがやいている",
+    "sourceID" : "the-sun-is-shining-brightly",
     "tokens" : [
       "The",
       "sun",
@@ -708,6 +749,7 @@
     "grammar" : "negation",
     "id" : "9C79C0F9-373F-5A8E-BA77-2740C25BF172",
     "ja" : "わたしは けしごむを もっていない",
+    "sourceID" : "i-do-not-have-an-eraser",
     "tokens" : [
       "I",
       "do",
@@ -727,6 +769,7 @@
     "grammar" : "yesNoQuestion",
     "id" : "5BD68113-9A8D-5ECD-B298-3B580E5D299B",
     "ja" : "ねこが すきですか",
+    "sourceID" : "do-you-like-cats",
     "tokens" : [
       "Do",
       "you",
@@ -744,6 +787,7 @@
     "grammar" : "beVerbPast",
     "id" : "B04E9296-A68A-5F10-B3E4-2EEC62FC1565",
     "ja" : "スープは あたたかかった",
+    "sourceID" : "the-soup-was-warm",
     "tokens" : [
       "The",
       "soup",
@@ -762,6 +806,7 @@
     "grammar" : "frequencyAdverb",
     "id" : "A21012B5-BF4E-5B76-81ED-690D675E7EE0",
     "ja" : "わたしは いつも てを あらう",
+    "sourceID" : "i-always-wash-my-hands",
     "tokens" : [
       "I",
       "always",
@@ -781,6 +826,7 @@
     "grammar" : "pastSimple",
     "id" : "C33EC5CE-214F-5ABC-BDFA-9D57F8E5B97B",
     "ja" : "わたしたちは おおきい バスを みた",
+    "sourceID" : "we-saw-a-big-bus",
     "tokens" : [
       "We",
       "saw",
@@ -798,6 +844,7 @@
     "grammar" : "whQuestion",
     "id" : "7F371EED-BC16-534A-960C-A82AFDFDABB6",
     "ja" : "きょうは げんきですか",
+    "sourceID" : "how-are-you-today",
     "tokens" : [
       "How",
       "are",

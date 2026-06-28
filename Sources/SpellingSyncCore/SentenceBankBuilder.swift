@@ -26,14 +26,17 @@ public enum SentenceBankBuilder {
         public var grammar: GrammarPoint?
         public var declaredBand: Int?
         public var source: String
+        /// 安定 sourceID（教材＝authoring 由来）。built 文へそのまま通す。nil＝未指定（後方互換）。
+        public var sourceID: String?
 
         public init(en: String, ja: String, grammar: GrammarPoint? = nil,
-                    declaredBand: Int? = nil, source: String) {
+                    declaredBand: Int? = nil, source: String, sourceID: String? = nil) {
             self.en = en
             self.ja = ja
             self.grammar = grammar
             self.declaredBand = declaredBand
             self.source = source
+            self.sourceID = sourceID
         }
     }
 
@@ -173,7 +176,8 @@ public enum SentenceBankBuilder {
                 tokens: tokens,
                 gradeBand: maxBand,
                 contentLemmas: lemmas,
-                grammar: c.grammar
+                grammar: c.grammar,
+                sourceID: c.sourceID
             ))
         }
 
