@@ -1,201 +1,201 @@
-id,category,ja_name,en_name,price,style,primary_hex,secondary_hex,accent_hex,default_unlocked
-bear,starter,くま,Bear,0,bear,#DE8C38,#F7C470,#7D4C29,true
-cat,starter,ねこ,Cat,0,cat,#94A3C7,#EBDEC2,#525775,true
-dog,starter,いぬ,Dog,0,dog,#C2874C,#FAC77A,#704729,true
-rabbit,animal,うさぎ,Rabbit,0,rabbit,#F2CCE6,#FFF0FA,#BF619E,true
-panda,animal,パンダ,Panda,0,panda,#2B303B,#F5F5EB,#599E5C,true
-penguin,animal,ペンギン,Penguin,0,penguin,#2E4F9E,#F0F7FF,#F59E1F,true
-lion,animal,ライオン,Lion,50,lion,#F0871F,#FFC74C,#944214,false
-fox,animal,きつね,Fox,0,fox,#EB6E1F,#FFE0B2,#6E2E14,true
-koala,animal,コアラ,Koala,40,koala,#8F9CA8,#E0E6EB,#383D47,false
-hamster,animal,ハムスター,Hamster,40,bear,#DBA361,#FFDB9E,#80471F,false
-sheep,animal,ひつじ,Sheep,50,sheep,#F5F5E6,#B8C2D1,#616675,false
-elephant,animal,ぞう,Elephant,50,elephant,#8CA1BD,#D1E0F5,#3D4F70,false
-giraffe,animal,キリン,Giraffe,50,giraffe,#F0AD38,#FFDB70,#914F14,false
-owl,animal,ふくろう,Owl,0,owl,#99612E,#F2C77A,#472B1A,true
-turtle,animal,かめ,Turtle,50,turtle,#38944C,#B8DB6B,#1F5C2E,false
-whale,animal,くじら,Whale,60,whale,#387ACC,#C7EBFF,#1F4285,false
-frog,animal,かえる,Frog,40,panda,#268F42,#C2F094,#145224,false
-tiger,animal,トラ,Tiger,60,lion,#F5801A,#FFC247,#332114,false
-squirrel,animal,リス,Squirrel,50,cat,#A86129,#F0AD5C,#572E14,false
-deer,animal,しか,Deer,60,rabbit,#AB6B33,#F5C27A,#5C331A,false
-car,vehicle,くるま,Car,40,car,#2E75DB,#A8DBFF,#142E5C,false
-train,vehicle,でんしゃ,Train,50,train,#339E61,#D1F5BD,#1A5233,false
-rocket,vehicle,ロケット,Rocket,60,rocket,#C74CB8,#FAE6FF,#F58C1A,false
-plane,vehicle,ひこうき,Plane,60,plane,#479EE6,#DBF5FF,#2457B2,false
-bus,vehicle,バス,Bus,50,bus,#F5B21F,#FFEB8A,#945C0F,false
-truck,vehicle,トラック,Truck,50,car,#3885B8,#B8E6FF,#1A405C,false
-ship,vehicle,ふね,Ship,60,ship,#336BC7,#D6F0FF,#D1572E,false
-helicopter,vehicle,ヘリコプター,Helicopter,60,helicopter,#D64747,#FFD1BD,#7A1F1F,false
-bicycle,vehicle,じてんしゃ,Bicycle,50,bicycle,#8557D1,#EBDBFF,#47298A,false
-tractor,vehicle,トラクター,Tractor,60,tractor,#389E47,#E0F5A8,#1F5229,false
-balloon,vehicle,ききゅう,Balloon,60,balloon,#D152A8,#FFD6F0,#70335C,false
-submarine,vehicle,せんすいかん,Submarine,70,ship,#E09E14,#FFE666,#85570D,false
-firetruck,vehicle,しょうぼうしゃ,Fire Truck,70,bus,#DB291F,#FFC7B2,#7A0F0A,false
-scooter,vehicle,スクーター,Scooter,60,bicycle,#2E9EB2,#CCF5FF,#145766,false
-monkey,animal,さる,Monkey,50,monkey,#9E6B3C,#F2D2A6,#5C3A1A,false
-pig,animal,ぶた,Pig,40,pig,#F2A6BC,#FFD6E0,#C46B85,false
-kid_haru,people,ハル,Haru,40,personShort,#F2C9A6,#6EC1E4,#1F1B17,false
-kid_sora,people,ソラ,Sora,40,personLong,#D89B6C,#F2A6C2,#3B2A1A,false
-kid_niko,people,ニコ,Niko,50,personCurly,#6B4226,#F5D04C,#15110D,false
-kid_mei,people,メイ,Mei,50,personBun,#C68A5E,#8FD17A,#20160F,false
-kid_leo,people,レオ,Leo,40,personBuzz,#F7D7B5,#E0563B,#6B4423,false
-kid_aya,people,アヤ,Aya,50,personPonytail,#E0A878,#B98CE0,#1A1622,false
-kid_ken,people,ケン,Ken,50,personShort,#5C3A21,#4CA66B,#120E0A,false
-kid_luna,people,ルナ,Luna,50,personLong,#FCE0C2,#E06AA8,#E0B85C,false
-kid_jin,people,ジン,Jin,50,personBuzz,#B57A50,#3A6EA5,#14100C,false
-kid_mio,people,ミオ,Mio,60,personCurly,#D49A6A,#F2C14E,#B5482A,false
-kid_nao,people,ナオ,Nao,60,personBun,#F2CBA8,#66C2C2,#9AA0A6,false
-kid_riku,people,リク,Riku,60,personPonytail,#66422A,#E08A3C,#E06AA8,false
-kid_yui,people,ユイ,Yui,40,personTwintails,#F7D7B5,#F2A6C2,#1A1410,false
-kid_rin,people,リン,Rin,50,personTwintails,#D89B6C,#66C2C2,#4A2F1A,false
-kid_emma,people,エマ,Emma,50,personBob,#FCE0C2,#F2C14E,#E0B85C,false
-kid_hana,people,ハナ,Hana,40,personBob,#C68A5E,#E0563B,#15110D,false
-kid_max,people,マックス,Max,60,personAfro,#8A5A38,#E0773C,#1A1410,false
-kid_zoe,people,ゾーイ,Zoe,60,personAfro,#A56A3E,#3A9E9E,#2A1B10,false
-kid_taku,people,タク,Taku,40,personSpiky,#F2C9A6,#3A6EA5,#15110D,false
-kid_kai,people,カイ,Kai,50,personSpiky,#D89B6C,#4CA66B,#4A2F1A,false
-kid_sara,people,サラ,Sara,60,personBraids,#8A5A38,#8B5CC7,#1A1410,false
-kid_noa,people,ノア,Noa,50,personBraids,#C68A5E,#E06AA8,#2A1B10,false
-kid_lily,people,リリー,Lily,50,personWavy,#FCE0C2,#B98CE0,#8B3A2A,false
-kid_yuna,people,ユナ,Yuna,50,personWavy,#E0A878,#F08A6C,#4A2F1A,false
-kid_ren,people,レン,Ren,50,personShort,#D89B6C,#2A4A7A,#3A6EA5,false
-kid_aoi,people,アオイ,Aoi,50,personLong,#F2C9A6,#66C2C2,#8B5CC7,false
-kid_sho,people,ショウ,Sho,40,personBuzz,#8A5A38,#F2C14E,#1A1410,false
-kid_momo,people,モモ,Momo,50,personPonytail,#FCE0C2,#F2A6C2,#E06AA8,false
-kid_gen,people,ゲン,Gen,50,personCurly,#D89B6C,#4CA66B,#C0392B,false
-kid_eri,people,エリ,Eri,60,personBun,#F7D7B5,#3A9E9E,#B8BCC2,false
-robot,fantasy,ロボット,Robot,60,robot,#8C98A8,#D6E0EB,#E0563B,false
-ghost,fantasy,おばけ,Ghost,50,ghost,#EDEDF5,#C9C9E0,#4A4A66,false
-star,fantasy,おほしさま,Star,50,star,#F5C842,#FFE89E,#E0942E,false
-unicorn,fantasy,ユニコーン,Unicorn,70,unicorn,#F4DCEF,#C9A6E0,#F2A6C2,false
-dragon,fantasy,ドラゴン,Dragon,70,dragon,#4CA66B,#B8E69E,#E0563B,false
-police,vehicle,パトカー,Police Car,50,car,#2B3340,#EDEFF2,#3A6EA5,false
-ambulance,vehicle,きゅうきゅうしゃ,Ambulance,60,bus,#F2F4F7,#FFD6D1,#DB291F,false
-excavator,vehicle,ショベルカー,Excavator,60,excavator,#F2B01F,#FFE08A,#3A4453,false
-crane,vehicle,クレーンしゃ,Crane Truck,70,crane,#E0883C,#FFE0B2,#3A4453,false
-dumptruck,vehicle,ダンプカー,Dump Truck,60,dumpTruck,#E0A53C,#FFE0A6,#3A4453,false
-mixer,vehicle,ミキサーしゃ,Mixer Truck,60,dumpTruck,#5B86C7,#CFE0F5,#2E3A4A,false
-garbage,vehicle,ごみしゅうしゅうしゃ,Garbage Truck,60,dumpTruck,#4FA06B,#CDEBD6,#2E3A2E,false
-house,building,おうち,House,40,house,#E0563B,#FFE7C2,#7A4A2E,false
-school,building,がっこう,School,50,school,#E0A53C,#FFEFC2,#9E5A2E,false
-shop,building,おみせ,Shop,50,house,#4FA06B,#E8F5D6,#2E5A3A,false
-castle,building,おしろ,Castle,70,castle,#9AA6C2,#EDEFF7,#C7472E,false
-tower,building,タワー,Tower,60,tower,#E0883C,#FFE0B2,#5B86C7,false
-lipstick,cosme,くちべに,Lipstick,50,lipstick,#C24A8A,#3A3340,#E0563B,false
-perfume,cosme,こうすい,Perfume,60,perfume,#E0A6C2,#F2E0EB,#C24A8A,false
-compact,cosme,コンパクト,Compact,50,compact,#D17AA6,#F7E0EE,#C24A8A,false
-nailpolish,cosme,マニキュア,Nail Polish,50,nailPolish,#E0563B,#3A3340,#F2A6BC,false
-octopus,sea,たこ,Octopus,50,octopus,#E0563B,#FFC2B2,#7A2A1A,false
-crab,sea,かに,Crab,50,crab,#E0432E,#FFB8A6,#7A1F12,false
-fish,sea,さかな,Fish,40,fish,#3A9ED1,#BDEBFF,#1F5A7A,false
-dolphin,sea,いるか,Dolphin,60,dolphin,#5B8FC7,#DCEBFF,#2E4A6E,false
-shark,sea,さめ,Shark,60,shark,#8FA0B2,#E0E8F0,#3A4656,false
-jellyfish,sea,くらげ,Jellyfish,60,jellyfish,#D17AC2,#F2D6F0,#7A3A6E,false
-starfish,sea,ひとで,Starfish,50,starfish,#F2994A,#FFD6A6,#9E5A1F,false
-strawberry,food,いちご,Strawberry,40,strawberry,#E0322E,#4FA06B,#7A1212,false
-cake,food,ケーキ,Cake,50,cake,#F2A6C2,#FFE8D6,#D14A4A,false
-icecream,food,アイス,Ice Cream,50,iceCream,#F2B6D6,#E0A53C,#C24A8A,false
-donut,food,ドーナツ,Donut,50,donut,#C2784A,#F7B0C2,#E0432E,false
-riceball,food,おにぎり,Rice Ball,40,riceBall,#F7F4EC,#3A3F46,#E0883C,false
-sushi,food,すし,Sushi,60,sushi,#E0653C,#F7F2E8,#D14A2E,false
-burger,food,ハンバーガー,Hamburger,60,hamburger,#E0A53C,#7AB04F,#9E5A2E,false
-soccer,sports,サッカー,Soccer Ball,40,soccerBall,#EDEFF2,#EDEFF2,#2B3340,false
-baseball,sports,やきゅう,Baseball,50,baseball,#F2B01F,#F7F4EC,#DB291F,false
-basketball,sports,バスケ,Basketball,50,basketball,#E0773C,#FFD6B2,#5A2E1A,false
-tennis,sports,テニス,Tennis,50,tennisBall,#C2E04A,#EAF7C2,#FFFFFF,false
-trophy,sports,トロフィー,Trophy,70,trophy,#F2C03C,#FFE89E,#9E6B1F,false
-eiffel,landmark,エッフェルとう,Eiffel Tower,60,eiffel,#9E7B4A,#6B5230,#3A2E1A,false
-tokyotower,japan,とうきょうタワー,Tokyo Tower,50,tokyoTower,#E0432E,#F2F2F2,#7A1F12,false
-liberty,landmark,じゆうのめがみ,Statue of Liberty,70,liberty,#5BA88C,#C7E0D6,#E0A53C,false
-pyramid,landmark,ピラミッド,Pyramid,50,pyramid,#E0B45C,#F2D89E,#C77A2E,false
-pisa,landmark,ピサのしゃとう,Tower of Pisa,60,pisa,#EDE6D6,#F7F2E8,#9E8A6B,false
-bigben,landmark,ビッグベン,Big Ben,60,bigBen,#C7A36B,#9E7B4A,#3A2E1A,false
-tajmahal,landmark,タージマハル,Taj Mahal,70,tajMahal,#F2EDE6,#D6CFC2,#9E8A6B,false
-fuji,japan,ふじさん,Mt. Fuji,50,fuji,#5B86C7,#7AB04F,#2E4A6E,false
-torii,japan,とりい,Torii Gate,50,torii,#E0432E,#F2F2F2,#7A1F12,false
-moai,landmark,モアイ,Moai,60,moai,#8C8C8C,#6B6B6B,#3A3A3A,false
-windmill,landmark,ふうしゃ,Windmill,50,windmill,#C7784A,#F2F2F2,#7A3A1F,false
-colosseum,landmark,コロッセオ,Colosseum,60,colosseum,#D6B88C,#F2E6CF,#9E7B4A,false
-greatwall,landmark,ばんりのちょうじょう,Great Wall,60,greatWall,#B5A48C,#7AB04F,#6B5A3A,false
-operahouse,landmark,オペラハウス,Opera House,60,operaHouse,#F7F7F7,#8FBFD6,#9AA6B2,false
-stonehenge,landmark,ストーンヘンジ,Stonehenge,50,stonehenge,#9E978C,#7AB04F,#6B6358,false
-christ,landmark,キリストぞう,Christ the Redeemer,70,christRedeemer,#C7CCD2,#8FBFD6,#9AA0A6,false
-sagrada,landmark,サグラダファミリア,Sagrada Familia,70,sagrada,#C7A36B,#E0C99E,#8A6B3A,false
-goldengate,landmark,きんもんきょう,Golden Gate,60,goldenGate,#E0563B,#9AB8C7,#7A2A1A,false
-towerbridge,landmark,タワーブリッジ,Tower Bridge,60,towerBridge,#9AA6B2,#F2F2F2,#4A7BA8,false
-ferriswheel,landmark,かんらんしゃ,Ferris Wheel,50,ferrisWheel,#5B86C7,#F2C03C,#3A4656,false
-kinkaku,japan,きんかくじ,Golden Pavilion,60,kinkaku,#E0B43C,#C79A3C,#7A5A1F,false
-sphinx,landmark,スフィンクス,Sphinx,60,sphinx,#E0B45C,#F2D89E,#9E6B2E,false
-angkor,landmark,アンコールワット,Angkor Wat,70,angkor,#9E8A6B,#C7B89E,#6B5A3A,false
-matterhorn,landmark,マッターホルン,Matterhorn,50,matterhorn,#7A8A9E,#F2F2F2,#4A5A6E,false
-libertybell,landmark,じゆうのかね,Liberty Bell,60,libertyBell,#B5894A,#8A6B3A,#5C3A1A,false
-whitehouse,landmark,ホワイトハウス,White House,60,whiteHouse,#F2F2F2,#DCDCDC,#9AA0A6,false
-notredame,landmark,ノートルダム,Notre-Dame,70,notreDame,#C7B89E,#A89A7E,#6B5A3A,false
-burj,landmark,ブルジュハリファ,Burj Khalifa,70,burjKhalifa,#9AB8C7,#D6EAF2,#5B7A8C,false
-arc,landmark,がいせんもん,Arc de Triomphe,60,archTriomphe,#D6C7A8,#EDE6D6,#9E8A6B,false
-skytree,japan,スカイツリー,Tokyo Skytree,60,skytree,#8FA6C7,#D6E0EB,#5B6B8C,false
-himeji,japan,ひめじじょう,Himeji Castle,70,japaneseCastle,#F2F2F2,#3A4656,#9AA0A6,false
-osaka,japan,おおさかじょう,Osaka Castle,70,japaneseCastle,#E8E4D6,#2E5A4A,#C7A33C,false
-pagoda,japan,ごじゅうのとう,Five-Story Pagoda,60,pagoda,#B5482A,#4A3A2E,#E0C04A,false
-daibutsu,japan,だいぶつ,Great Buddha,70,daibutsu,#6B8C7A,#C7B89E,#3A4A42,false
-gasshou,japan,しらかわごう,Gassho House,60,gasshou,#9E7B4A,#C7B89E,#5C4329,false
-stbasil,landmark,せいワシリイだいせいどう,St. Basil's,70,stBasil,#E8E0D0,#C7CCD6,#9E8A6B,false
-parthenon,landmark,パルテノンしんでん,Parthenon,70,parthenon,#EDE6D6,#D6CFC2,#9E8A6B,false
-machupicchu,landmark,マチュピチュ,Machu Picchu,70,machuPicchu,#4F9E5A,#C7B89E,#8AA66B,false
-mosque,landmark,モスク,Mosque,60,mosque,#E0D6C2,#F2EAD6,#C7A33C,false
-montsaintmichel,landmark,モンサンミッシェル,Mont-St-Michel,70,montStMichel,#C7B89E,#E0D6C2,#9AA6B2,false
-capitol,landmark,こっかいぎじどう,Capitol,60,capitol,#F2F2F2,#DCDCDC,#9AA0A6,false
-petra,landmark,ペトラ,Petra,70,petra,#D69A6B,#E0B894,#8A5A3A,false
-ginkaku,japan,ぎんかくじ,Silver Pavilion,60,kinkaku,#9AA0A6,#7A8089,#4A4F56,false
-nagoya,japan,なごやじょう,Nagoya Castle,70,japaneseCastle,#E8E4D6,#3A4656,#C7A33C,false
-itsukushima,japan,いつくしまじんじゃ,Itsukushima,60,torii,#E0432E,#8FBFD6,#7A1F12,false
-kiyomizu,japan,きよみずでら,Kiyomizu-dera,60,kiyomizu,#E0C9A6,#9E5A3A,#8A6B4A,false
-tokyostation,japan,とうきょうえき,Tokyo Station,60,tokyoStation,#A0522D,#7A8C8A,#E0D6C2,false
-todaiji,japan,とうだいじ,Todai-ji,70,templeHall,#9E5A3A,#5A6B5A,#5C3A1A,false
-duomo,landmark,ドゥオモ,Duomo,70,duomo,#EDE6D6,#C7B89E,#C2552E,false
-neuschwanstein,landmark,ノイシュバンシュタイン,Neuschwanstein,70,euroCastle,#F2F2F2,#C7D6E0,#5B7A9E,false
-mayan,landmark,マヤピラミッド,Mayan Pyramid,60,mayanPyramid,#A89A7E,#C7B89E,#6B5A3A,false
-gateway,landmark,インドもん,Gateway of India,60,archTriomphe,#C7A36B,#E0C99E,#8A6B3A,false
-harukas,japan,あべのハルカス,Abeno Harukas,60,skyscraper,#9AB8C7,#C7DCE8,#5B7A8C,false
-goryokaku,japan,ごりょうかく,Goryokaku,60,starFort,#5FA06B,#8AC77A,#3A6B4A,false
-okayama,japan,おかやまじょう,Okayama Castle,70,japaneseCastle,#3A3F46,#1F2329,#C7A33C,false
-tsutenkaku,japan,つうてんかく,Tsutenkaku,50,tower,#E0A53C,#FFE0A6,#C2552E,false
-guitar,instruments,ギター,Guitar,50,guitar,#C2784A,#F2D6A6,#5C3A1A,false
-piano,instruments,ピアノ,Piano,60,piano,#2B2B30,#C7A36B,#9AA0A6,false
-drum,instruments,たいこ,Drum,50,drum,#D14A2E,#F2E8D6,#7A2A1A,false
-trumpet,instruments,トランペット,Trumpet,60,trumpet,#E0B43C,#FFE89E,#9E6B1F,false
-violin,instruments,バイオリン,Violin,60,violin,#9E5A2E,#E0C99E,#3A2A1A,false
-butterfly,insect,ちょうちょ,Butterfly,50,butterfly,#E06AA8,#F2C14E,#7A2A5A,false
-beetle,insect,かぶとむし,Beetle,50,beetle,#5C3A1A,#9E7B4A,#2A1A0A,false
-ladybug,insect,てんとうむし,Ladybug,40,ladybug,#E0322E,#3A2A2A,#1A1212,false
-bee,insect,はち,Bee,50,bee,#F2C03C,#3A3026,#2A2018,false
-ant,insect,あり,Ant,40,ant,#7A4329,#9E5A3A,#3A2018,false
-trex,dinosaur,ティラノサウルス,T-Rex,60,trex,#5FA06B,#8AC77A,#3A6B4A,false
-triceratops,dinosaur,トリケラトプス,Triceratops,60,triceratops,#7AA0C7,#C7DCE8,#3A5A7A,false
-stegosaurus,dinosaur,ステゴサウルス,Stegosaurus,60,stegosaurus,#9E7BC7,#C7A6E0,#5A3A7A,false
-brachiosaurus,dinosaur,ブラキオサウルス,Brachiosaurus,60,brachiosaurus,#5FA0A0,#8AC7C7,#3A6B6B,false
-pteranodon,dinosaur,プテラノドン,Pteranodon,60,pteranodon,#E0883C,#F2C14E,#9E5A1F,false
-astronaut,space,うちゅうひこうし,Astronaut,60,astronaut,#F2F2F2,#5B86C7,#3A4656,false
-ufo,space,ユーフォー,UFO,50,ufo,#8FA0B2,#9AE0C7,#3A4656,false
-saturn,space,どせい,Saturn,60,saturn,#E0B43C,#FFE89E,#C79A3C,false
-moon,space,つき,Moon,40,moon,#E0E0E8,#C7C7D0,#9AA0A6,false
-alien,space,うちゅうじん,Alien,50,alien,#7AC77A,#5FA06B,#2A4A2A,false
-spacerocket,space,ロケット,Rocket,50,rocket,#C74CB8,#FAE6FF,#F58C1A,false
-velociraptor,dinosaur,ヴェロキラプトル,Velociraptor,60,velociraptor,#C77A3C,#E0A86B,#5C3A1A,false
-ankylosaurus,dinosaur,アンキロサウルス,Ankylosaurus,60,ankylosaurus,#7A8C5A,#A6B87A,#4A5A3A,false
-spinosaurus,dinosaur,スピノサウルス,Spinosaurus,70,spinosaurus,#5A7AA0,#C77A4A,#2A4A6A,false
-parasaurolophus,dinosaur,パラサウロロフス,Parasaurolophus,60,parasaurolophus,#5FA0A0,#C77A4A,#3A6B6B,false
-plesiosaurus,dinosaur,くびながりゅう,Plesiosaurus,60,plesiosaurus,#5B86C7,#C7E0FF,#2E4A6E,false
-dinoegg,dinosaur,きょうりゅうのたまご,Dino Egg,40,dinoEgg,#F2E8D6,#9E7B4A,#C77A4A,false
-alpaca,animal,アルパカ,Alpaca,40,imageAsset,#E7D6BE,#FBF3E6,#9A7B57,false
-hippo,animal,かば,Hippo,40,imageAsset,#B58BC0,#E8D6F0,#6E4C7D,false
-hedgehog,animal,はりねずみ,Hedgehog,40,imageAsset,#B98A5E,#F3E2CB,#5E4630,false
-sloth,animal,なまけもの,Sloth,40,imageAsset,#B8A98C,#EDE5D3,#6B5B45,false
-chick,animal,ひよこ,Chick,40,imageAsset,#F7D65A,#FFF0B8,#E59A2E,false
-tanuki,animal,たぬき,Tanuki,40,imageAsset,#9B7B5A,#EDE0CE,#4A3A2A,false
-seal,sea,あざらし,Seal,40,imageAsset,#AFC3D6,#EAF2F8,#4C6275,false
-pufferfish,sea,ふぐ,Pufferfish,40,imageAsset,#A9CF8E,#EAF6DF,#5E7A45,false
-apple,food,りんご,Apple,40,imageAsset,#E0524B,#F6B7B0,#4E7A35,false
-watermelon,food,すいか,Watermelon,40,imageAsset,#5DAE5B,#E25C6A,#2E6B3A,false
-pudding,food,プリン,Pudding,40,imageAsset,#F2C766,#FBE8B8,#8A5A2B,false
+id,category,ja_name,en_name,price,style,primary_hex,secondary_hex,accent_hex,default_unlocked,tags
+bear,starter,くま,Bear,0,bear,#DE8C38,#F7C470,#7D4C29,true,swift;animal;mammal;pet;starter;land;forest
+cat,starter,ねこ,Cat,0,cat,#94A3C7,#EBDEC2,#525775,true,swift;animal;mammal;pet;starter;land
+dog,starter,いぬ,Dog,0,dog,#C2874C,#FAC77A,#704729,true,swift;animal;mammal;pet;starter;land
+rabbit,animal,うさぎ,Rabbit,0,rabbit,#F2CCE6,#FFF0FA,#BF619E,true,swift;animal;mammal;land;pet
+panda,animal,パンダ,Panda,0,panda,#2B303B,#F5F5EB,#599E5C,true,swift;animal;mammal;land;bear
+penguin,animal,ペンギン,Penguin,0,penguin,#2E4F9E,#F0F7FF,#F59E1F,true,swift;animal;bird;polar;swimmer
+lion,animal,ライオン,Lion,50,lion,#F0871F,#FFC74C,#944214,false,swift;animal;mammal;land;bigcat;savanna
+fox,animal,きつね,Fox,0,fox,#EB6E1F,#FFE0B2,#6E2E14,true,swift;animal;mammal;land;forest
+koala,animal,コアラ,Koala,40,koala,#8F9CA8,#E0E6EB,#383D47,false,swift;animal;mammal;land;marsupial
+hamster,animal,ハムスター,Hamster,40,bear,#DBA361,#FFDB9E,#80471F,false,swift;animal;mammal;land;pet;rodent
+sheep,animal,ひつじ,Sheep,50,sheep,#F5F5E6,#B8C2D1,#616675,false,swift;animal;mammal;land;farm
+elephant,animal,ぞう,Elephant,50,elephant,#8CA1BD,#D1E0F5,#3D4F70,false,swift;animal;mammal;land;savanna;big
+giraffe,animal,キリン,Giraffe,50,giraffe,#F0AD38,#FFDB70,#914F14,false,swift;animal;mammal;land;savanna
+owl,animal,ふくろう,Owl,0,owl,#99612E,#F2C77A,#472B1A,true,swift;animal;bird;forest;night
+turtle,animal,かめ,Turtle,50,turtle,#38944C,#B8DB6B,#1F5C2E,false,swift;animal;reptile;water;land
+whale,animal,くじら,Whale,60,whale,#387ACC,#C7EBFF,#1F4285,false,swift;animal;mammal;sea;marine;big
+frog,animal,かえる,Frog,40,panda,#268F42,#C2F094,#145224,false,swift;animal;amphibian;water;land
+tiger,animal,トラ,Tiger,60,lion,#F5801A,#FFC247,#332114,false,swift;animal;mammal;land;bigcat;jungle
+squirrel,animal,リス,Squirrel,50,cat,#A86129,#F0AD5C,#572E14,false,swift;animal;mammal;land;forest;rodent
+deer,animal,しか,Deer,60,rabbit,#AB6B33,#F5C27A,#5C331A,false,swift;animal;mammal;land;forest
+car,vehicle,くるま,Car,40,car,#2E75DB,#A8DBFF,#142E5C,false,swift;vehicle;land;road
+train,vehicle,でんしゃ,Train,50,train,#339E61,#D1F5BD,#1A5233,false,swift;vehicle;land;rail
+rocket,vehicle,ロケット,Rocket,60,rocket,#C74CB8,#FAE6FF,#F58C1A,false,swift;vehicle;air;space
+plane,vehicle,ひこうき,Plane,60,plane,#479EE6,#DBF5FF,#2457B2,false,swift;vehicle;air;sky
+bus,vehicle,バス,Bus,50,bus,#F5B21F,#FFEB8A,#945C0F,false,swift;vehicle;land;road;public
+truck,vehicle,トラック,Truck,50,car,#3885B8,#B8E6FF,#1A405C,false,swift;vehicle;land;road;work
+ship,vehicle,ふね,Ship,60,ship,#336BC7,#D6F0FF,#D1572E,false,swift;vehicle;water;sea
+helicopter,vehicle,ヘリコプター,Helicopter,60,helicopter,#D64747,#FFD1BD,#7A1F1F,false,swift;vehicle;air;sky
+bicycle,vehicle,じてんしゃ,Bicycle,50,bicycle,#8557D1,#EBDBFF,#47298A,false,swift;vehicle;land;road;human-powered
+tractor,vehicle,トラクター,Tractor,60,tractor,#389E47,#E0F5A8,#1F5229,false,swift;vehicle;land;work;farm
+balloon,vehicle,ききゅう,Balloon,60,balloon,#D152A8,#FFD6F0,#70335C,false,swift;vehicle;air;sky
+submarine,vehicle,せんすいかん,Submarine,70,ship,#E09E14,#FFE666,#85570D,false,swift;vehicle;water;sea
+firetruck,vehicle,しょうぼうしゃ,Fire Truck,70,bus,#DB291F,#FFC7B2,#7A0F0A,false,swift;vehicle;land;road;emergency;work
+scooter,vehicle,スクーター,Scooter,60,bicycle,#2E9EB2,#CCF5FF,#145766,false,swift;vehicle;land;road
+monkey,animal,さる,Monkey,50,monkey,#9E6B3C,#F2D2A6,#5C3A1A,false,swift;animal;mammal;land;jungle
+pig,animal,ぶた,Pig,40,pig,#F2A6BC,#FFD6E0,#C46B85,false,swift;animal;mammal;land;farm
+kid_haru,people,ハル,Haru,40,personShort,#F2C9A6,#6EC1E4,#1F1B17,false,swift;people;human;kid;hair-short
+kid_sora,people,ソラ,Sora,40,personLong,#D89B6C,#F2A6C2,#3B2A1A,false,swift;people;human;kid;hair-long
+kid_niko,people,ニコ,Niko,50,personCurly,#6B4226,#F5D04C,#15110D,false,swift;people;human;kid;hair-curly
+kid_mei,people,メイ,Mei,50,personBun,#C68A5E,#8FD17A,#20160F,false,swift;people;human;kid;hair-bun
+kid_leo,people,レオ,Leo,40,personBuzz,#F7D7B5,#E0563B,#6B4423,false,swift;people;human;kid;hair-buzz
+kid_aya,people,アヤ,Aya,50,personPonytail,#E0A878,#B98CE0,#1A1622,false,swift;people;human;kid;hair-ponytail
+kid_ken,people,ケン,Ken,50,personShort,#5C3A21,#4CA66B,#120E0A,false,swift;people;human;kid;hair-short
+kid_luna,people,ルナ,Luna,50,personLong,#FCE0C2,#E06AA8,#E0B85C,false,swift;people;human;kid;hair-long
+kid_jin,people,ジン,Jin,50,personBuzz,#B57A50,#3A6EA5,#14100C,false,swift;people;human;kid;hair-buzz
+kid_mio,people,ミオ,Mio,60,personCurly,#D49A6A,#F2C14E,#B5482A,false,swift;people;human;kid;hair-curly
+kid_nao,people,ナオ,Nao,60,personBun,#F2CBA8,#66C2C2,#9AA0A6,false,swift;people;human;kid;hair-bun
+kid_riku,people,リク,Riku,60,personPonytail,#66422A,#E08A3C,#E06AA8,false,swift;people;human;kid;hair-ponytail
+kid_yui,people,ユイ,Yui,40,personTwintails,#F7D7B5,#F2A6C2,#1A1410,false,swift;people;human;kid;hair-twintails
+kid_rin,people,リン,Rin,50,personTwintails,#D89B6C,#66C2C2,#4A2F1A,false,swift;people;human;kid;hair-twintails
+kid_emma,people,エマ,Emma,50,personBob,#FCE0C2,#F2C14E,#E0B85C,false,swift;people;human;kid;hair-bob
+kid_hana,people,ハナ,Hana,40,personBob,#C68A5E,#E0563B,#15110D,false,swift;people;human;kid;hair-bob
+kid_max,people,マックス,Max,60,personAfro,#8A5A38,#E0773C,#1A1410,false,swift;people;human;kid;hair-afro
+kid_zoe,people,ゾーイ,Zoe,60,personAfro,#A56A3E,#3A9E9E,#2A1B10,false,swift;people;human;kid;hair-afro
+kid_taku,people,タク,Taku,40,personSpiky,#F2C9A6,#3A6EA5,#15110D,false,swift;people;human;kid;hair-spiky
+kid_kai,people,カイ,Kai,50,personSpiky,#D89B6C,#4CA66B,#4A2F1A,false,swift;people;human;kid;hair-spiky
+kid_sara,people,サラ,Sara,60,personBraids,#8A5A38,#8B5CC7,#1A1410,false,swift;people;human;kid;hair-braids
+kid_noa,people,ノア,Noa,50,personBraids,#C68A5E,#E06AA8,#2A1B10,false,swift;people;human;kid;hair-braids
+kid_lily,people,リリー,Lily,50,personWavy,#FCE0C2,#B98CE0,#8B3A2A,false,swift;people;human;kid;hair-wavy
+kid_yuna,people,ユナ,Yuna,50,personWavy,#E0A878,#F08A6C,#4A2F1A,false,swift;people;human;kid;hair-wavy
+kid_ren,people,レン,Ren,50,personShort,#D89B6C,#2A4A7A,#3A6EA5,false,swift;people;human;kid;hair-short
+kid_aoi,people,アオイ,Aoi,50,personLong,#F2C9A6,#66C2C2,#8B5CC7,false,swift;people;human;kid;hair-long
+kid_sho,people,ショウ,Sho,40,personBuzz,#8A5A38,#F2C14E,#1A1410,false,swift;people;human;kid;hair-buzz
+kid_momo,people,モモ,Momo,50,personPonytail,#FCE0C2,#F2A6C2,#E06AA8,false,swift;people;human;kid;hair-ponytail
+kid_gen,people,ゲン,Gen,50,personCurly,#D89B6C,#4CA66B,#C0392B,false,swift;people;human;kid;hair-curly
+kid_eri,people,エリ,Eri,60,personBun,#F7D7B5,#3A9E9E,#B8BCC2,false,swift;people;human;kid;hair-bun
+robot,fantasy,ロボット,Robot,60,robot,#8C98A8,#D6E0EB,#E0563B,false,swift;fantasy;scifi;mechanical
+ghost,fantasy,おばけ,Ghost,50,ghost,#EDEDF5,#C9C9E0,#4A4A66,false,swift;fantasy;spooky;spirit
+star,fantasy,おほしさま,Star,50,star,#F5C842,#FFE89E,#E0942E,false,swift;fantasy;celestial;cute
+unicorn,fantasy,ユニコーン,Unicorn,70,unicorn,#F4DCEF,#C9A6E0,#F2A6C2,false,swift;fantasy;magic;mythical
+dragon,fantasy,ドラゴン,Dragon,70,dragon,#4CA66B,#B8E69E,#E0563B,false,swift;fantasy;magic;mythical;creature
+police,vehicle,パトカー,Police Car,50,car,#2B3340,#EDEFF2,#3A6EA5,false,swift;vehicle;land;road;emergency
+ambulance,vehicle,きゅうきゅうしゃ,Ambulance,60,bus,#F2F4F7,#FFD6D1,#DB291F,false,swift;vehicle;land;road;emergency
+excavator,vehicle,ショベルカー,Excavator,60,excavator,#F2B01F,#FFE08A,#3A4453,false,swift;vehicle;land;work;construction
+crane,vehicle,クレーンしゃ,Crane Truck,70,crane,#E0883C,#FFE0B2,#3A4453,false,swift;vehicle;land;work;construction
+dumptruck,vehicle,ダンプカー,Dump Truck,60,dumpTruck,#E0A53C,#FFE0A6,#3A4453,false,swift;vehicle;land;work;construction
+mixer,vehicle,ミキサーしゃ,Mixer Truck,60,dumpTruck,#5B86C7,#CFE0F5,#2E3A4A,false,swift;vehicle;land;work;construction
+garbage,vehicle,ごみしゅうしゅうしゃ,Garbage Truck,60,dumpTruck,#4FA06B,#CDEBD6,#2E3A2E,false,swift;vehicle;land;work;city
+house,building,おうち,House,40,house,#E0563B,#FFE7C2,#7A4A2E,false,swift;building;architecture;town;home
+school,building,がっこう,School,50,school,#E0A53C,#FFEFC2,#9E5A2E,false,swift;building;architecture;town;education
+shop,building,おみせ,Shop,50,house,#4FA06B,#E8F5D6,#2E5A3A,false,swift;building;architecture;town;store
+castle,building,おしろ,Castle,70,castle,#9AA6C2,#EDEFF7,#C7472E,false,swift;building;architecture;town;fortress;medieval
+tower,building,タワー,Tower,60,tower,#E0883C,#FFE0B2,#5B86C7,false,swift;building;architecture;town;tall
+lipstick,cosme,くちべに,Lipstick,50,lipstick,#C24A8A,#3A3340,#E0563B,false,swift;cosme;fashion;beauty;girly
+perfume,cosme,こうすい,Perfume,60,perfume,#E0A6C2,#F2E0EB,#C24A8A,false,swift;cosme;fashion;beauty;girly
+compact,cosme,コンパクト,Compact,50,compact,#D17AA6,#F7E0EE,#C24A8A,false,swift;cosme;fashion;beauty;girly
+nailpolish,cosme,マニキュア,Nail Polish,50,nailPolish,#E0563B,#3A3340,#F2A6BC,false,swift;cosme;fashion;beauty;girly
+octopus,sea,たこ,Octopus,50,octopus,#E0563B,#FFC2B2,#7A2A1A,false,swift;sea;marine;animal;invertebrate
+crab,sea,かに,Crab,50,crab,#E0432E,#FFB8A6,#7A1F12,false,swift;sea;marine;animal;crustacean
+fish,sea,さかな,Fish,40,fish,#3A9ED1,#BDEBFF,#1F5A7A,false,swift;sea;marine;animal;fish
+dolphin,sea,いるか,Dolphin,60,dolphin,#5B8FC7,#DCEBFF,#2E4A6E,false,swift;sea;marine;animal;mammal;swimmer
+shark,sea,さめ,Shark,60,shark,#8FA0B2,#E0E8F0,#3A4656,false,swift;sea;marine;animal;fish;predator
+jellyfish,sea,くらげ,Jellyfish,60,jellyfish,#D17AC2,#F2D6F0,#7A3A6E,false,swift;sea;marine;animal;invertebrate
+starfish,sea,ひとで,Starfish,50,starfish,#F2994A,#FFD6A6,#9E5A1F,false,swift;sea;marine;animal;invertebrate
+strawberry,food,いちご,Strawberry,40,strawberry,#E0322E,#4FA06B,#7A1212,false,swift;food;fruit;sweet
+cake,food,ケーキ,Cake,50,cake,#F2A6C2,#FFE8D6,#D14A4A,false,swift;food;sweet;dessert
+icecream,food,アイス,Ice Cream,50,iceCream,#F2B6D6,#E0A53C,#C24A8A,false,swift;food;sweet;dessert;cold
+donut,food,ドーナツ,Donut,50,donut,#C2784A,#F7B0C2,#E0432E,false,swift;food;sweet;dessert
+riceball,food,おにぎり,Rice Ball,40,riceBall,#F7F4EC,#3A3F46,#E0883C,false,swift;food;savory;japanese;meal
+sushi,food,すし,Sushi,60,sushi,#E0653C,#F7F2E8,#D14A2E,false,swift;food;savory;japanese;meal
+burger,food,ハンバーガー,Hamburger,60,hamburger,#E0A53C,#7AB04F,#9E5A2E,false,swift;food;savory;fastfood;meal
+soccer,sports,サッカー,Soccer Ball,40,soccerBall,#EDEFF2,#EDEFF2,#2B3340,false,swift;sports;ball;team
+baseball,sports,やきゅう,Baseball,50,baseball,#F2B01F,#F7F4EC,#DB291F,false,swift;sports;ball;team
+basketball,sports,バスケ,Basketball,50,basketball,#E0773C,#FFD6B2,#5A2E1A,false,swift;sports;ball;team
+tennis,sports,テニス,Tennis,50,tennisBall,#C2E04A,#EAF7C2,#FFFFFF,false,swift;sports;ball;racket
+trophy,sports,トロフィー,Trophy,70,trophy,#F2C03C,#FFE89E,#9E6B1F,false,swift;sports;award;achievement
+eiffel,landmark,エッフェルとう,Eiffel Tower,60,eiffel,#9E7B4A,#6B5230,#3A2E1A,false,swift;landmark;world;architecture;travel;france;europe
+tokyotower,japan,とうきょうタワー,Tokyo Tower,50,tokyoTower,#E0432E,#F2F2F2,#7A1F12,false,swift;japan;asia;landmark;travel;tokyo;tower
+liberty,landmark,じゆうのめがみ,Statue of Liberty,70,liberty,#5BA88C,#C7E0D6,#E0A53C,false,swift;landmark;world;architecture;travel;usa;america
+pyramid,landmark,ピラミッド,Pyramid,50,pyramid,#E0B45C,#F2D89E,#C77A2E,false,swift;landmark;world;architecture;travel;egypt;africa;ancient
+pisa,landmark,ピサのしゃとう,Tower of Pisa,60,pisa,#EDE6D6,#F7F2E8,#9E8A6B,false,swift;landmark;world;architecture;travel;italy;europe
+bigben,landmark,ビッグベン,Big Ben,60,bigBen,#C7A36B,#9E7B4A,#3A2E1A,false,swift;landmark;world;architecture;travel;uk;europe
+tajmahal,landmark,タージマハル,Taj Mahal,70,tajMahal,#F2EDE6,#D6CFC2,#9E8A6B,false,swift;landmark;world;architecture;travel;india;asia
+fuji,japan,ふじさん,Mt. Fuji,50,fuji,#5B86C7,#7AB04F,#2E4A6E,false,swift;japan;asia;landmark;travel;mountain;nature
+torii,japan,とりい,Torii Gate,50,torii,#E0432E,#F2F2F2,#7A1F12,false,swift;japan;asia;landmark;travel;shrine
+moai,landmark,モアイ,Moai,60,moai,#8C8C8C,#6B6B6B,#3A3A3A,false,swift;landmark;world;architecture;travel;chile;ancient
+windmill,landmark,ふうしゃ,Windmill,50,windmill,#C7784A,#F2F2F2,#7A3A1F,false,swift;landmark;world;architecture;travel;netherlands;europe
+colosseum,landmark,コロッセオ,Colosseum,60,colosseum,#D6B88C,#F2E6CF,#9E7B4A,false,swift;landmark;world;architecture;travel;italy;europe;ancient
+greatwall,landmark,ばんりのちょうじょう,Great Wall,60,greatWall,#B5A48C,#7AB04F,#6B5A3A,false,swift;landmark;world;architecture;travel;china;asia;ancient
+operahouse,landmark,オペラハウス,Opera House,60,operaHouse,#F7F7F7,#8FBFD6,#9AA6B2,false,swift;landmark;world;architecture;travel;australia;oceania
+stonehenge,landmark,ストーンヘンジ,Stonehenge,50,stonehenge,#9E978C,#7AB04F,#6B6358,false,swift;landmark;world;architecture;travel;uk;europe;ancient
+christ,landmark,キリストぞう,Christ the Redeemer,70,christRedeemer,#C7CCD2,#8FBFD6,#9AA0A6,false,swift;landmark;world;architecture;travel;brazil;america
+sagrada,landmark,サグラダファミリア,Sagrada Familia,70,sagrada,#C7A36B,#E0C99E,#8A6B3A,false,swift;landmark;world;architecture;travel;spain;europe;cathedral
+goldengate,landmark,きんもんきょう,Golden Gate,60,goldenGate,#E0563B,#9AB8C7,#7A2A1A,false,swift;landmark;world;architecture;travel;usa;america;bridge
+towerbridge,landmark,タワーブリッジ,Tower Bridge,60,towerBridge,#9AA6B2,#F2F2F2,#4A7BA8,false,swift;landmark;world;architecture;travel;uk;europe;bridge
+ferriswheel,landmark,かんらんしゃ,Ferris Wheel,50,ferrisWheel,#5B86C7,#F2C03C,#3A4656,false,swift;landmark;world;architecture;travel;amusement;ride;fun
+kinkaku,japan,きんかくじ,Golden Pavilion,60,kinkaku,#E0B43C,#C79A3C,#7A5A1F,false,swift;japan;asia;landmark;travel;temple;kyoto
+sphinx,landmark,スフィンクス,Sphinx,60,sphinx,#E0B45C,#F2D89E,#9E6B2E,false,swift;landmark;world;architecture;travel;egypt;africa;ancient
+angkor,landmark,アンコールワット,Angkor Wat,70,angkor,#9E8A6B,#C7B89E,#6B5A3A,false,swift;landmark;world;architecture;travel;cambodia;asia;ancient;temple
+matterhorn,landmark,マッターホルン,Matterhorn,50,matterhorn,#7A8A9E,#F2F2F2,#4A5A6E,false,swift;landmark;world;architecture;travel;switzerland;europe;mountain;nature
+libertybell,landmark,じゆうのかね,Liberty Bell,60,libertyBell,#B5894A,#8A6B3A,#5C3A1A,false,swift;landmark;world;architecture;travel;usa;america
+whitehouse,landmark,ホワイトハウス,White House,60,whiteHouse,#F2F2F2,#DCDCDC,#9AA0A6,false,swift;landmark;world;architecture;travel;usa;america;government
+notredame,landmark,ノートルダム,Notre-Dame,70,notreDame,#C7B89E,#A89A7E,#6B5A3A,false,swift;landmark;world;architecture;travel;france;europe;cathedral
+burj,landmark,ブルジュハリファ,Burj Khalifa,70,burjKhalifa,#9AB8C7,#D6EAF2,#5B7A8C,false,swift;landmark;world;architecture;travel;uae;asia;skyscraper
+arc,landmark,がいせんもん,Arc de Triomphe,60,archTriomphe,#D6C7A8,#EDE6D6,#9E8A6B,false,swift;landmark;world;architecture;travel;france;europe
+skytree,japan,スカイツリー,Tokyo Skytree,60,skytree,#8FA6C7,#D6E0EB,#5B6B8C,false,swift;japan;asia;landmark;travel;tokyo;tower
+himeji,japan,ひめじじょう,Himeji Castle,70,japaneseCastle,#F2F2F2,#3A4656,#9AA0A6,false,swift;japan;asia;landmark;travel;castle
+osaka,japan,おおさかじょう,Osaka Castle,70,japaneseCastle,#E8E4D6,#2E5A4A,#C7A33C,false,swift;japan;asia;landmark;travel;castle;osaka
+pagoda,japan,ごじゅうのとう,Five-Story Pagoda,60,pagoda,#B5482A,#4A3A2E,#E0C04A,false,swift;japan;asia;landmark;travel;temple
+daibutsu,japan,だいぶつ,Great Buddha,70,daibutsu,#6B8C7A,#C7B89E,#3A4A42,false,swift;japan;asia;landmark;travel;temple;buddha
+gasshou,japan,しらかわごう,Gassho House,60,gasshou,#9E7B4A,#C7B89E,#5C4329,false,swift;japan;asia;landmark;travel;house;village
+stbasil,landmark,せいワシリイだいせいどう,St. Basil's,70,stBasil,#E8E0D0,#C7CCD6,#9E8A6B,false,swift;landmark;world;architecture;travel;russia;europe;cathedral
+parthenon,landmark,パルテノンしんでん,Parthenon,70,parthenon,#EDE6D6,#D6CFC2,#9E8A6B,false,swift;landmark;world;architecture;travel;greece;europe;ancient;temple
+machupicchu,landmark,マチュピチュ,Machu Picchu,70,machuPicchu,#4F9E5A,#C7B89E,#8AA66B,false,swift;landmark;world;architecture;travel;peru;america;ancient
+mosque,landmark,モスク,Mosque,60,mosque,#E0D6C2,#F2EAD6,#C7A33C,false,swift;landmark;world;architecture;travel;religion
+montsaintmichel,landmark,モンサンミッシェル,Mont-St-Michel,70,montStMichel,#C7B89E,#E0D6C2,#9AA6B2,false,swift;landmark;world;architecture;travel;france;europe
+capitol,landmark,こっかいぎじどう,Capitol,60,capitol,#F2F2F2,#DCDCDC,#9AA0A6,false,swift;landmark;world;architecture;travel;usa;america;government
+petra,landmark,ペトラ,Petra,70,petra,#D69A6B,#E0B894,#8A5A3A,false,swift;landmark;world;architecture;travel;jordan;asia;ancient
+ginkaku,japan,ぎんかくじ,Silver Pavilion,60,kinkaku,#9AA0A6,#7A8089,#4A4F56,false,swift;japan;asia;landmark;travel;temple;kyoto
+nagoya,japan,なごやじょう,Nagoya Castle,70,japaneseCastle,#E8E4D6,#3A4656,#C7A33C,false,swift;japan;asia;landmark;travel;castle
+itsukushima,japan,いつくしまじんじゃ,Itsukushima,60,torii,#E0432E,#8FBFD6,#7A1F12,false,swift;japan;asia;landmark;travel;shrine
+kiyomizu,japan,きよみずでら,Kiyomizu-dera,60,kiyomizu,#E0C9A6,#9E5A3A,#8A6B4A,false,swift;japan;asia;landmark;travel;temple;kyoto
+tokyostation,japan,とうきょうえき,Tokyo Station,60,tokyoStation,#A0522D,#7A8C8A,#E0D6C2,false,swift;japan;asia;landmark;travel;tokyo;station
+todaiji,japan,とうだいじ,Todai-ji,70,templeHall,#9E5A3A,#5A6B5A,#5C3A1A,false,swift;japan;asia;landmark;travel;temple
+duomo,landmark,ドゥオモ,Duomo,70,duomo,#EDE6D6,#C7B89E,#C2552E,false,swift;landmark;world;architecture;travel;italy;europe;cathedral
+neuschwanstein,landmark,ノイシュバンシュタイン,Neuschwanstein,70,euroCastle,#F2F2F2,#C7D6E0,#5B7A9E,false,swift;landmark;world;architecture;travel;germany;europe;castle
+mayan,landmark,マヤピラミッド,Mayan Pyramid,60,mayanPyramid,#A89A7E,#C7B89E,#6B5A3A,false,swift;landmark;world;architecture;travel;mexico;america;ancient;pyramid
+gateway,landmark,インドもん,Gateway of India,60,archTriomphe,#C7A36B,#E0C99E,#8A6B3A,false,swift;landmark;world;architecture;travel;india;asia
+harukas,japan,あべのハルカス,Abeno Harukas,60,skyscraper,#9AB8C7,#C7DCE8,#5B7A8C,false,swift;japan;asia;landmark;travel;osaka;skyscraper
+goryokaku,japan,ごりょうかく,Goryokaku,60,starFort,#5FA06B,#8AC77A,#3A6B4A,false,swift;japan;asia;landmark;travel;fort
+okayama,japan,おかやまじょう,Okayama Castle,70,japaneseCastle,#3A3F46,#1F2329,#C7A33C,false,swift;japan;asia;landmark;travel;castle
+tsutenkaku,japan,つうてんかく,Tsutenkaku,50,tower,#E0A53C,#FFE0A6,#C2552E,false,swift;japan;asia;landmark;travel;osaka;tower
+guitar,instruments,ギター,Guitar,50,guitar,#C2784A,#F2D6A6,#5C3A1A,false,swift;music;instrument;string
+piano,instruments,ピアノ,Piano,60,piano,#2B2B30,#C7A36B,#9AA0A6,false,swift;music;instrument;keyboard
+drum,instruments,たいこ,Drum,50,drum,#D14A2E,#F2E8D6,#7A2A1A,false,swift;music;instrument;percussion
+trumpet,instruments,トランペット,Trumpet,60,trumpet,#E0B43C,#FFE89E,#9E6B1F,false,swift;music;instrument;brass
+violin,instruments,バイオリン,Violin,60,violin,#9E5A2E,#E0C99E,#3A2A1A,false,swift;music;instrument;string
+butterfly,insect,ちょうちょ,Butterfly,50,butterfly,#E06AA8,#F2C14E,#7A2A5A,false,swift;insect;bug;animal;small;flying
+beetle,insect,かぶとむし,Beetle,50,beetle,#5C3A1A,#9E7B4A,#2A1A0A,false,swift;insect;bug;animal;small
+ladybug,insect,てんとうむし,Ladybug,40,ladybug,#E0322E,#3A2A2A,#1A1212,false,swift;insect;bug;animal;small;flying
+bee,insect,はち,Bee,50,bee,#F2C03C,#3A3026,#2A2018,false,swift;insect;bug;animal;small;flying
+ant,insect,あり,Ant,40,ant,#7A4329,#9E5A3A,#3A2018,false,swift;insect;bug;animal;small
+trex,dinosaur,ティラノサウルス,T-Rex,60,trex,#5FA06B,#8AC77A,#3A6B4A,false,swift;dinosaur;prehistoric;animal;predator;land
+triceratops,dinosaur,トリケラトプス,Triceratops,60,triceratops,#7AA0C7,#C7DCE8,#3A5A7A,false,swift;dinosaur;prehistoric;animal;herbivore;land
+stegosaurus,dinosaur,ステゴサウルス,Stegosaurus,60,stegosaurus,#9E7BC7,#C7A6E0,#5A3A7A,false,swift;dinosaur;prehistoric;animal;herbivore;land
+brachiosaurus,dinosaur,ブラキオサウルス,Brachiosaurus,60,brachiosaurus,#5FA0A0,#8AC7C7,#3A6B6B,false,swift;dinosaur;prehistoric;animal;herbivore;land;big
+pteranodon,dinosaur,プテラノドン,Pteranodon,60,pteranodon,#E0883C,#F2C14E,#9E5A1F,false,swift;dinosaur;prehistoric;animal;flying;air
+astronaut,space,うちゅうひこうし,Astronaut,60,astronaut,#F2F2F2,#5B86C7,#3A4656,false,swift;space;cosmos;scifi;human;explorer
+ufo,space,ユーフォー,UFO,50,ufo,#8FA0B2,#9AE0C7,#3A4656,false,swift;space;cosmos;scifi;alien;spaceship
+saturn,space,どせい,Saturn,60,saturn,#E0B43C,#FFE89E,#C79A3C,false,swift;space;cosmos;scifi;planet;celestial
+moon,space,つき,Moon,40,moon,#E0E0E8,#C7C7D0,#9AA0A6,false,swift;space;cosmos;scifi;celestial
+alien,space,うちゅうじん,Alien,50,alien,#7AC77A,#5FA06B,#2A4A2A,false,swift;space;cosmos;scifi;creature
+spacerocket,space,ロケット,Rocket,50,rocket,#C74CB8,#FAE6FF,#F58C1A,false,swift;space;cosmos;scifi;rocket
+velociraptor,dinosaur,ヴェロキラプトル,Velociraptor,60,velociraptor,#C77A3C,#E0A86B,#5C3A1A,false,swift;dinosaur;prehistoric;animal;predator;land
+ankylosaurus,dinosaur,アンキロサウルス,Ankylosaurus,60,ankylosaurus,#7A8C5A,#A6B87A,#4A5A3A,false,swift;dinosaur;prehistoric;animal;herbivore;land;armored
+spinosaurus,dinosaur,スピノサウルス,Spinosaurus,70,spinosaurus,#5A7AA0,#C77A4A,#2A4A6A,false,swift;dinosaur;prehistoric;animal;predator;water
+parasaurolophus,dinosaur,パラサウロロフス,Parasaurolophus,60,parasaurolophus,#5FA0A0,#C77A4A,#3A6B6B,false,swift;dinosaur;prehistoric;animal;herbivore;land
+plesiosaurus,dinosaur,くびながりゅう,Plesiosaurus,60,plesiosaurus,#5B86C7,#C7E0FF,#2E4A6E,false,swift;dinosaur;prehistoric;animal;marine;sea
+dinoegg,dinosaur,きょうりゅうのたまご,Dino Egg,40,dinoEgg,#F2E8D6,#9E7B4A,#C77A4A,false,swift;dinosaur;prehistoric;animal;egg;baby
+alpaca,animal,アルパカ,Alpaca,40,imageAsset,#E7D6BE,#FBF3E6,#9A7B57,false,webp;animal;mammal;land;fluffy;farm
+hippo,animal,かば,Hippo,40,imageAsset,#B58BC0,#E8D6F0,#6E4C7D,false,webp;animal;mammal;land;water;africa
+hedgehog,animal,はりねずみ,Hedgehog,40,imageAsset,#B98A5E,#F3E2CB,#5E4630,false,webp;animal;mammal;land;spiny
+sloth,animal,なまけもの,Sloth,40,imageAsset,#B8A98C,#EDE5D3,#6B5B45,false,webp;animal;mammal;land;jungle;slow
+chick,animal,ひよこ,Chick,40,imageAsset,#F7D65A,#FFF0B8,#E59A2E,false,webp;animal;bird;farm;baby
+tanuki,animal,たぬき,Tanuki,40,imageAsset,#9B7B5A,#EDE0CE,#4A3A2A,false,webp;animal;mammal;land;japan;forest
+seal,sea,あざらし,Seal,40,imageAsset,#AFC3D6,#EAF2F8,#4C6275,false,webp;sea;marine;animal;mammal
+pufferfish,sea,ふぐ,Pufferfish,40,imageAsset,#A9CF8E,#EAF6DF,#5E7A45,false,webp;sea;marine;animal;fish
+apple,food,りんご,Apple,40,imageAsset,#E0524B,#F6B7B0,#4E7A35,false,webp;food;fruit;sweet
+watermelon,food,すいか,Watermelon,40,imageAsset,#5DAE5B,#E25C6A,#2E6B3A,false,webp;food;fruit;sweet;summer
+pudding,food,プリン,Pudding,40,imageAsset,#F2C766,#FBE8B8,#8A5A2B,false,webp;food;sweet;dessert
