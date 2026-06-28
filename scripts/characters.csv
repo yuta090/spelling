@@ -171,3 +171,13 @@ parasaurolophus,dinosaur,パラサウロロフス,Parasaurolophus,60,parasaurolo
 plesiosaurus,dinosaur,くびながりゅう,Plesiosaurus,60,plesiosaurus,#5B86C7,#C7E0FF,#2E4A6E,false
 dinoegg,dinosaur,きょうりゅうのたまご,Dino Egg,40,dinoEgg,#F2E8D6,#9E7B4A,#C77A4A,false
 alpaca,animal,アルパカ,Alpaca,40,imageAsset,#E7D6BE,#FBF3E6,#9A7B57,false
+hippo,animal,かば,Hippo,40,imageAsset,#B58BC0,#E8D6F0,#6E4C7D,false
+hedgehog,animal,はりねずみ,Hedgehog,40,imageAsset,#B98A5E,#F3E2CB,#5E4630,false
+sloth,animal,なまけもの,Sloth,40,imageAsset,#B8A98C,#EDE5D3,#6B5B45,false
+chick,animal,ひよこ,Chick,40,imageAsset,#F7D65A,#FFF0B8,#E59A2E,false
+tanuki,animal,たぬき,Tanuki,40,imageAsset,#9B7B5A,#EDE0CE,#4A3A2A,false
+seal,sea,あざらし,Seal,40,imageAsset,#AFC3D6,#EAF2F8,#4C6275,false
+pufferfish,sea,ふぐ,Pufferfish,40,imageAsset,#A9CF8E,#EAF6DF,#5E7A45,false
+apple,food,りんご,Apple,40,imageAsset,#E0524B,#F6B7B0,#4E7A35,false
+watermelon,food,すいか,Watermelon,40,imageAsset,#5DAE5B,#E25C6A,#2E6B3A,false
+pudding,food,プリン,Pudding,40,imageAsset,#F2C766,#FBE8B8,#8A5A2B,false

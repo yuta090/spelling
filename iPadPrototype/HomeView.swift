@@ -4217,6 +4217,116 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.9059, green: 0.8392, blue: 0.7451),
             secondary: Color(red: 0.9843, green: 0.9529, blue: 0.9020),
             accent: Color(red: 0.6039, green: 0.4824, blue: 0.3412)
+        ),
+        HomeRewardCharacter(
+            id: "hippo",
+            category: .animal,
+            japaneseName: "かば",
+            englishName: "Hippo",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7098, green: 0.5451, blue: 0.7529),
+            secondary: Color(red: 0.9098, green: 0.8392, blue: 0.9412),
+            accent: Color(red: 0.4314, green: 0.2980, blue: 0.4902)
+        ),
+        HomeRewardCharacter(
+            id: "hedgehog",
+            category: .animal,
+            japaneseName: "はりねずみ",
+            englishName: "Hedgehog",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7255, green: 0.5412, blue: 0.3686),
+            secondary: Color(red: 0.9529, green: 0.8863, blue: 0.7961),
+            accent: Color(red: 0.3686, green: 0.2745, blue: 0.1882)
+        ),
+        HomeRewardCharacter(
+            id: "sloth",
+            category: .animal,
+            japaneseName: "なまけもの",
+            englishName: "Sloth",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7216, green: 0.6627, blue: 0.5490),
+            secondary: Color(red: 0.9294, green: 0.8980, blue: 0.8275),
+            accent: Color(red: 0.4196, green: 0.3569, blue: 0.2706)
+        ),
+        HomeRewardCharacter(
+            id: "chick",
+            category: .animal,
+            japaneseName: "ひよこ",
+            englishName: "Chick",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9686, green: 0.8392, blue: 0.3529),
+            secondary: Color(red: 1.0000, green: 0.9412, blue: 0.7216),
+            accent: Color(red: 0.8980, green: 0.6039, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "tanuki",
+            category: .animal,
+            japaneseName: "たぬき",
+            englishName: "Tanuki",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.6078, green: 0.4824, blue: 0.3529),
+            secondary: Color(red: 0.9294, green: 0.8784, blue: 0.8078),
+            accent: Color(red: 0.2902, green: 0.2275, blue: 0.1647)
+        ),
+        HomeRewardCharacter(
+            id: "seal",
+            category: .sea,
+            japaneseName: "あざらし",
+            englishName: "Seal",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.6863, green: 0.7647, blue: 0.8392),
+            secondary: Color(red: 0.9176, green: 0.9490, blue: 0.9725),
+            accent: Color(red: 0.2980, green: 0.3843, blue: 0.4588)
+        ),
+        HomeRewardCharacter(
+            id: "pufferfish",
+            category: .sea,
+            japaneseName: "ふぐ",
+            englishName: "Pufferfish",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.6627, green: 0.8118, blue: 0.5569),
+            secondary: Color(red: 0.9176, green: 0.9647, blue: 0.8745),
+            accent: Color(red: 0.3686, green: 0.4784, blue: 0.2706)
+        ),
+        HomeRewardCharacter(
+            id: "apple",
+            category: .food,
+            japaneseName: "りんご",
+            englishName: "Apple",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.3216, blue: 0.2941),
+            secondary: Color(red: 0.9647, green: 0.7176, blue: 0.6902),
+            accent: Color(red: 0.3059, green: 0.4784, blue: 0.2078)
+        ),
+        HomeRewardCharacter(
+            id: "watermelon",
+            category: .food,
+            japaneseName: "すいか",
+            englishName: "Watermelon",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.3647, green: 0.6824, blue: 0.3569),
+            secondary: Color(red: 0.8863, green: 0.3608, blue: 0.4157),
+            accent: Color(red: 0.1804, green: 0.4196, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "pudding",
+            category: .food,
+            japaneseName: "プリン",
+            englishName: "Pudding",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.7804, blue: 0.4000),
+            secondary: Color(red: 0.9843, green: 0.9098, blue: 0.7216),
+            accent: Color(red: 0.5412, green: 0.3529, blue: 0.1686)
         )
     ]
     // CATALOG-GENERATED-END
