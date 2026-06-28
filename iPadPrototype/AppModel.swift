@@ -209,6 +209,12 @@ final class AppModel: ObservableObject {
         didSet { saveHomeReviewWordIDs() }
     }
 
+    /// アプリ前面滞在時間の日別バケット（"yyyy-MM-dd" → 秒）。保護者「ようす」タブの利用時間表示用。
+    /// 純粋操作は `SpellingSyncCore.UsageLog`。古い日は記録時にプルーンして保存量を抑える。
+    @Published var usageLog: [String: Int] {
+        didSet { persistenceStore.save(usageLog, key: usageLogKey) }
+    }
+
     /// 文づくり（文法クイズ）の復習キュー。間違えた文を「1度正解で即消す」のではなく、
     /// 今後のラウンドに少数（+1〜2問）ずつ追加問題として混ぜ、数回の正解で段階的に卒業させる。
     /// 純粋ロジックは `SpellingSyncCore.ReviewQueue`。`id` は `SentenceItem.id`。
@@ -298,6 +304,7 @@ final class AppModel: ObservableObject {
     private let selectedBackgroundIDKey = "spellingTrainer.selectedBackgroundID"
     private let unlockedBackgroundIDsKey = "spellingTrainer.unlockedBackgroundIDs"
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
+    private let usageLogKey = "spellingTrainer.usageLog"
     private let grammarReviewStatesKey = "spellingTrainer.grammarReviewStates"
     private let grammarReviewStepKey = "spellingTrainer.grammarReviewStep"
     private let spellingReviewStatesKey = "spellingTrainer.spellingReviewStates"
@@ -352,6 +359,7 @@ final class AppModel: ObservableObject {
         let initialUnlockedCharacterIDs = (persistenceStore.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
         unlockedCharacterIDs = initialUnlockedCharacterIDs
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
+        usageLog = persistenceStore.load([String: Int].self, key: usageLogKey) ?? [:]
         grammarReviewStates = persistenceStore.load([ReviewItemState].self, key: grammarReviewStatesKey) ?? []
         grammarReviewStep = max(persistenceStore.load(Int.self, key: grammarReviewStepKey) ?? 0, 0)
         spellingReviewStates = persistenceStore.load([ReviewItemState].self, key: spellingReviewStatesKey) ?? []
@@ -713,13 +721,20 @@ final class AppModel: ObservableObject {
     func learningReport(days: Int, now: Date = Date(), calendar: Calendar = .current) -> LearningReport {
         let to = now
         let from = calendar.date(byAdding: .day, value: -(max(days, 1) - 1), to: calendar.startOfDay(for: now)) ?? calendar.startOfDay(for: now)
+        return LearningReportBuilder.build(events: allLearningEvents(), from: from, to: to, calendar: calendar)
+    }
+
+    /// テスト(attempts)＋練習(practiceSamples)を学習イベントへ正規化したもの。
+    /// テストはクリア可否つき、練習は「取り組み(=未クリア)」として扱う（learningReport と同じ意味論）。
+    private func allLearningEvents() -> [LearningEvent] {
         var events: [LearningEvent] = attempts.map {
             LearningEvent(word: normalize($0.word), date: $0.date, cleared: isCleared($0))
         }
         events += practiceSamples.map {
             LearningEvent(word: normalize($0.word), date: $0.date, cleared: false)
         }
-        return LearningReportBuilder.build(events: events, from: from, to: to, calendar: calendar)
+        // 空テキスト（空白のみ等）は除外。totalLearnedWordCount と数え方を揃え、マスター率が 1 を超えないようにする。
+        return events.filter { !$0.word.isEmpty }
     }
 
     var todaysAttempts: [SpellingAttempt] {
@@ -1473,6 +1488,121 @@ final class AppModel: ObservableObject {
             grammarReviewCount: grammarReviewActiveCount,
             pendingGradingCount: pendingGradingCount
         )
+    }
+
+    // MARK: - 利用時間（保護者「ようす」タブ）
+
+    /// 1区切りで積む滞在秒の上限（時計の異常や長時間放置で巨大化しないよう抑える）。
+    private let maxUsageChunkSeconds: TimeInterval = 6 * 60 * 60
+
+    /// いま前面に居る間の起点。背面化で確定（`endUsageSession`）。表示では未確定ぶんも足す。
+    private(set) var usageSessionStart: Date?
+
+    /// 前面化したので利用時間の計測を開始する（起点を記録するだけ）。
+    /// 冪等：すでに計測中（起点あり）なら上書きしない＝起動直後の `.task` と `.active` 変化が
+    /// 重なっても、先に立った起点ぶんの経過を落とさない。
+    func beginUsageSession(now: Date = Date()) {
+        guard usageSessionStart == nil else { return }
+        usageSessionStart = now
+    }
+
+    /// 前面を離れたので、起点〜現在の滞在を利用時間へ確定して起点をクリアする。
+    func endUsageSession(now: Date = Date(), calendar: Calendar = .current) {
+        guard let start = usageSessionStart else { return }
+        usageSessionStart = nil
+        recordUsageInterval(start: start, end: now, calendar: calendar)
+    }
+
+    /// 滞在区間 `[start, end]` を暦日ごとに分割して利用時間へ加算する。
+    /// 日付またぎを正しく振り分け、上限でクランプ。古い日はプルーンして保存量を抑える。
+    /// 区間分割は `SpellingSyncCore.UsageInterval`、バケット操作は `UsageLog`。
+    func recordUsageInterval(start: Date, end: Date, calendar: Calendar = .current) {
+        guard end > start else { return }
+        let clampedEnd = min(end, start.addingTimeInterval(maxUsageChunkSeconds))
+        var log = usageLog
+        for segment in UsageInterval.split(start: start, end: clampedEnd, calendar: calendar) {
+            log = UsageLog.add(log, dayKey: usageDayKey(segment.dayStart, calendar: calendar), seconds: segment.seconds)
+        }
+        let keep = Set(recentDayKeys(now: end, calendar: calendar, days: 35))
+        usageLog = UsageLog.pruned(log, keeping: keep)
+    }
+
+    /// 確定ぶん（`usageLog`）に、いま前面に居る未確定ぶん（起点〜now）を足した表示用ログ。永続はしない。
+    private func liveUsageLog(now: Date, calendar: Calendar) -> [String: Int] {
+        guard let start = usageSessionStart, now > start else { return usageLog }
+        let clampedEnd = min(now, start.addingTimeInterval(maxUsageChunkSeconds))
+        var log = usageLog
+        for segment in UsageInterval.split(start: start, end: clampedEnd, calendar: calendar) {
+            log = UsageLog.add(log, dayKey: usageDayKey(segment.dayStart, calendar: calendar), seconds: segment.seconds)
+        }
+        return log
+    }
+
+    /// 保護者「ようす」タブのひと目サマリーを合成する。学習イベントは1回だけ組み立てて使い回す。
+    func overviewStats(now: Date = Date(), calendar: Calendar = .current) -> OverviewStats {
+        let events = allLearningEvents()
+        func report(days: Int) -> LearningReport {
+            let from = calendar.date(byAdding: .day, value: -(max(days, 1) - 1), to: calendar.startOfDay(for: now)) ?? calendar.startOfDay(for: now)
+            return LearningReportBuilder.build(events: events, from: from, to: now, calendar: calendar)
+        }
+        let weekly = report(days: 7)
+        let monthly = report(days: 30)
+        let recent = report(days: 14)
+        let allTime = report(days: 3650)
+        let weekStarts = currentWeekDayStarts(now: now, calendar: calendar)
+        let weekKeys = weekStarts.map { usageDayKey($0, calendar: calendar) }
+        let liveLog = liveUsageLog(now: now, calendar: calendar)
+        return OverviewStats(
+            childName: childName,
+            grade: selectedGrade,
+            avatarCharacterID: selectedCharacterID,
+            streakDays: monthly.currentStreakDays,
+            weeklyCount: weekly.totalEvents,
+            totalWords: totalLearnedWordCount,
+            masteredWords: allTime.learnedWords,
+            accuracy: recent.accuracy,
+            accuracyBand: AccuracyBand.classify(accuracy: recent.accuracy, totalEvents: recent.totalEvents),
+            usageTodaySeconds: UsageLog.seconds(liveLog, on: usageDayKey(now, calendar: calendar)),
+            usageWeekSeconds: UsageLog.total(liveLog, days: weekKeys),
+            usageWeekSeries: UsageLog.series(liveLog, days: weekKeys),
+            weeklyActivity: DailyActivity.counts(events: events, dayStarts: weekStarts, calendar: calendar),
+            spellingReviewCount: spellingReviewActiveCount,
+            grammarReviewCount: grammarReviewActiveCount,
+            pendingGradingCount: pendingGradingCount
+        )
+    }
+
+    /// 今いる週の月曜〜日曜の各暦頭（7件・月始まり）。
+    private func currentWeekDayStarts(now: Date, calendar: Calendar) -> [Date] {
+        let today = calendar.startOfDay(for: now)
+        // weekday: 1=日…7=土。月曜を先頭にするため、月曜からの経過日数を求める。
+        let weekday = calendar.component(.weekday, from: today)
+        let daysSinceMonday = (weekday + 5) % 7
+        let monday = calendar.date(byAdding: .day, value: -daysSinceMonday, to: today) ?? today
+        return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: monday) }
+    }
+
+    /// 末日(=今日)から遡って `days` 日ぶんの日キー。プルーンの保持集合に使う。
+    private func recentDayKeys(now: Date, calendar: Calendar, days: Int) -> [String] {
+        let today = calendar.startOfDay(for: now)
+        return (0..<max(days, 1)).compactMap { offset in
+            calendar.date(byAdding: .day, value: -offset, to: today).map { usageDayKey($0, calendar: calendar) }
+        }
+    }
+
+    private static let usageDayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
+    /// 安定した日キー（"yyyy-MM-dd"）。暦のタイムゾーンに合わせる。@MainActor 上で直列化されるため共有可。
+    private func usageDayKey(_ date: Date, calendar: Calendar) -> String {
+        let formatter = Self.usageDayFormatter
+        formatter.calendar = calendar
+        formatter.timeZone = calendar.timeZone
+        return formatter.string(from: date)
     }
 
     /// まちがい復習（スペル）の明細：復習中の語を「定着の進み」順（box 昇順＝苦手が上）に。
