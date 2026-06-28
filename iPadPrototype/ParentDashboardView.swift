@@ -6449,6 +6449,18 @@ private struct TestSettingsPanel: View {
 
                 Divider()
                 Button {
+                    model.awardPracticeCoins(1000)
+                } label: {
+                    HStack {
+                        Image(systemName: "dollarsign.circle.fill")
+                        Text(language.text(japanese: "コインを1000枚追加", english: "Add 1000 coins"))
+                            .font(.subheadline.weight(.bold))
+                    }
+                }
+                .tint(ParentPalette.primary)
+
+                Divider()
+                Button {
                     showingAvatarDressUp = true
                 } label: {
                     HStack {
