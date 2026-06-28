@@ -9312,7 +9312,21 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "treehouse", japaneseName: "ツリーハウス", englishName: "Treehouse", price: 200, imageName: "bg_treehouse"),
         HomeBackgroundTheme(id: "hotairballoons", japaneseName: "ききゅうのそら", englishName: "Hot Air Balloons", price: 200, imageName: "bg_hotairballoons"),
         HomeBackgroundTheme(id: "bamboo", japaneseName: "たけやぶ", englishName: "Bamboo Grove", price: 180, imageName: "bg_bamboo"),
-        HomeBackgroundTheme(id: "ricefield", japaneseName: "いなかのたんぼ", englishName: "Countryside Rice Field", price: 180, imageName: "bg_ricefield")
+        HomeBackgroundTheme(id: "ricefield", japaneseName: "いなかのたんぼ", englishName: "Countryside Rice Field", price: 180, imageName: "bg_ricefield"),
+        HomeBackgroundTheme(id: "icepalace", japaneseName: "こおりのきゅうでん", englishName: "Ice Palace", price: 240, imageName: "bg_icepalace"),
+        HomeBackgroundTheme(id: "desertpalace", japaneseName: "まほうのさばく", englishName: "Desert Palace", price: 240, imageName: "bg_desertpalace"),
+        HomeBackgroundTheme(id: "seakingdom", japaneseName: "うみのおうこく", englishName: "Sea Kingdom", price: 240, imageName: "bg_seakingdom"),
+        HomeBackgroundTheme(id: "lionrock", japaneseName: "サンライズのいわ", englishName: "Sunrise Rock", price: 240, imageName: "bg_lionrock"),
+        HomeBackgroundTheme(id: "toyroom", japaneseName: "おもちゃのへや", englishName: "Toy Room", price: 200, imageName: "bg_toyroom"),
+        HomeBackgroundTheme(id: "tropicalisland", japaneseName: "みなみのしま", englishName: "Tropical Island", price: 220, imageName: "bg_tropicalisland"),
+        HomeBackgroundTheme(id: "ballroom", japaneseName: "まほうのぶとうかい", englishName: "Magic Ballroom", price: 240, imageName: "bg_ballroom"),
+        HomeBackgroundTheme(id: "junglevines", japaneseName: "みどりのジャングル", englishName: "Green Jungle", price: 220, imageName: "bg_junglevines"),
+        HomeBackgroundTheme(id: "lanternnight", japaneseName: "そらとぶランタン", englishName: "Lantern Night", price: 240, imageName: "bg_lanternnight"),
+        HomeBackgroundTheme(id: "library", japaneseName: "まほうのとしょかん", englishName: "Magic Library", price: 220, imageName: "bg_library"),
+        HomeBackgroundTheme(id: "fairytalevillage", japaneseName: "おとぎのむら", englishName: "Fairytale Village", price: 220, imageName: "bg_fairytalevillage"),
+        HomeBackgroundTheme(id: "skyship", japaneseName: "そらとぶふね", englishName: "Flying Ship", price: 240, imageName: "bg_skyship"),
+        HomeBackgroundTheme(id: "wonderland", japaneseName: "ふしぎのにわ", englishName: "Wonderland Garden", price: 220, imageName: "bg_wonderland"),
+        HomeBackgroundTheme(id: "flowertower", japaneseName: "はなのとう", englishName: "Flower Tower", price: 220, imageName: "bg_flowertower")
     ]
     // BG-CATALOG-GENERATED-END
 }
