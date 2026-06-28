@@ -80,6 +80,10 @@ private struct RootView: View {
             // 個別パズル（並べ替え/穴埋め/混合/本物テンプレ/単語リスニング/リスニング穴埋め）の
             // 試遊導線は「ことばパズル」統一メニューに集約したため撤去。各 DebugLauncher 定義は
             // 各 View ファイルに残置（必要なら個別に開けるが、ホームのボタンは出さない）。
+            // 着せ替えアバターのプレビュー導線（製品UIには出さない）。
+            .overlay(alignment: .leading) {
+                AvatarDressUpDebugLauncher()
+            }
         #endif
     }
 }
