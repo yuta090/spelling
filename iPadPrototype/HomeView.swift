@@ -2289,6 +2289,9 @@ enum HomeRewardCharacterStyle {
     case parasaurolophus
     case plesiosaurus
     case dinoEgg
+    /// 画像ベースの「なかま」。SwiftUI 描画ではなく Assets の WebP(Data Set) を表示する。
+    /// 画像は character.id から `nakama_<id>` という NSDataAsset 名で引く。
+    case imageAsset
 }
 
 struct HomeRewardCharacter: Identifiable {
@@ -4203,6 +4206,17 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.9490, green: 0.9098, blue: 0.8392),
             secondary: Color(red: 0.6196, green: 0.4824, blue: 0.2902),
             accent: Color(red: 0.7804, green: 0.4784, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "alpaca",
+            category: .animal,
+            japaneseName: "アルパカ",
+            englishName: "Alpaca",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9059, green: 0.8392, blue: 0.7451),
+            secondary: Color(red: 0.9843, green: 0.9529, blue: 0.9020),
+            accent: Color(red: 0.6039, green: 0.4824, blue: 0.3412)
         )
     ]
     // CATALOG-GENERATED-END
@@ -5021,9 +5035,44 @@ struct RewardCharacterAvatar: View {
                 PlesiosaurusCharacterFace(character: character)
             case .dinoEgg:
                 DinoEggCharacterView(character: character)
+            case .imageAsset:
+                NakamaImageView(character: character)
             }
         }
         .padding(4)
+    }
+}
+
+/// 画像ベースの「なかま」を表示する。Assets.xcassets の Data Set `nakama_<id>`(WebP) を
+/// NSDataAsset で読み、正方形枠に **aspect-fit＋中央** で収める(縦長キャラもはみ出さない)。
+/// 画像が見つからない/壊れている時はフォールバックの絵文字を出す。
+@MainActor
+private struct NakamaImageView: View {
+    var character: HomeRewardCharacter
+
+    /// デコード済み画像を id ごとにキャッシュ（多数表示時の毎回デコードを避ける）。
+    private static let cache = NSCache<NSString, UIImage>()
+
+    private var uiImage: UIImage? {
+        let key = "nakama_\(character.id)" as NSString
+        if let cached = Self.cache.object(forKey: key) { return cached }
+        guard let data = NSDataAsset(name: key as String)?.data,
+              let img = UIImage(data: data) else { return nil }
+        Self.cache.setObject(img, forKey: key)
+        return img
+    }
+
+    var body: some View {
+        if let img = uiImage {
+            Image(uiImage: img)
+                .resizable()
+                .interpolation(.high)
+                .scaledToFit()            // 縦長でも枠内に収める(scaledToFill にしない)
+                .padding(6)
+        } else {
+            Text("🐾")
+                .font(.system(size: 44))
+        }
     }
 }
 
