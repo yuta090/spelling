@@ -2179,6 +2179,12 @@ enum HomeRewardCharacterStyle {
     case personBun
     case personBuzz
     case personPonytail
+    case personTwintails
+    case personBob
+    case personAfro
+    case personSpiky
+    case personBraids
+    case personWavy
     case robot
     case ghost
     case star
@@ -2853,6 +2859,204 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.4000, green: 0.2588, blue: 0.1647),
             secondary: Color(red: 0.8784, green: 0.5412, blue: 0.2353),
             accent: Color(red: 0.8784, green: 0.4157, blue: 0.6588)
+        ),
+        HomeRewardCharacter(
+            id: "kid_yui",
+            category: .people,
+            japaneseName: "ユイ",
+            englishName: "Yui",
+            price: 40,
+            style: .personTwintails,
+            primary: Color(red: 0.9686, green: 0.8431, blue: 0.7098),
+            secondary: Color(red: 0.9490, green: 0.6510, blue: 0.7608),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_rin",
+            category: .people,
+            japaneseName: "リン",
+            englishName: "Rin",
+            price: 50,
+            style: .personTwintails,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.4000, green: 0.7608, blue: 0.7608),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "kid_emma",
+            category: .people,
+            japaneseName: "エマ",
+            englishName: "Emma",
+            price: 50,
+            style: .personBob,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.8784, green: 0.7216, blue: 0.3608)
+        ),
+        HomeRewardCharacter(
+            id: "kid_hana",
+            category: .people,
+            japaneseName: "ハナ",
+            englishName: "Hana",
+            price: 40,
+            style: .personBob,
+            primary: Color(red: 0.7765, green: 0.5412, blue: 0.3686),
+            secondary: Color(red: 0.8784, green: 0.3373, blue: 0.2314),
+            accent: Color(red: 0.0824, green: 0.0667, blue: 0.0510)
+        ),
+        HomeRewardCharacter(
+            id: "kid_max",
+            category: .people,
+            japaneseName: "マックス",
+            englishName: "Max",
+            price: 60,
+            style: .personAfro,
+            primary: Color(red: 0.5412, green: 0.3529, blue: 0.2196),
+            secondary: Color(red: 0.8784, green: 0.4667, blue: 0.2353),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_zoe",
+            category: .people,
+            japaneseName: "ゾーイ",
+            englishName: "Zoe",
+            price: 60,
+            style: .personAfro,
+            primary: Color(red: 0.6471, green: 0.4157, blue: 0.2431),
+            secondary: Color(red: 0.2275, green: 0.6196, blue: 0.6196),
+            accent: Color(red: 0.1647, green: 0.1059, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_taku",
+            category: .people,
+            japaneseName: "タク",
+            englishName: "Taku",
+            price: 40,
+            style: .personSpiky,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.2275, green: 0.4314, blue: 0.6471),
+            accent: Color(red: 0.0824, green: 0.0667, blue: 0.0510)
+        ),
+        HomeRewardCharacter(
+            id: "kid_kai",
+            category: .people,
+            japaneseName: "カイ",
+            englishName: "Kai",
+            price: 50,
+            style: .personSpiky,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.2980, green: 0.6510, blue: 0.4196),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "kid_sara",
+            category: .people,
+            japaneseName: "サラ",
+            englishName: "Sara",
+            price: 60,
+            style: .personBraids,
+            primary: Color(red: 0.5412, green: 0.3529, blue: 0.2196),
+            secondary: Color(red: 0.5451, green: 0.3608, blue: 0.7804),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_noa",
+            category: .people,
+            japaneseName: "ノア",
+            englishName: "Noa",
+            price: 50,
+            style: .personBraids,
+            primary: Color(red: 0.7765, green: 0.5412, blue: 0.3686),
+            secondary: Color(red: 0.8784, green: 0.4157, blue: 0.6588),
+            accent: Color(red: 0.1647, green: 0.1059, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_lily",
+            category: .people,
+            japaneseName: "リリー",
+            englishName: "Lily",
+            price: 50,
+            style: .personWavy,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.7255, green: 0.5490, blue: 0.8784),
+            accent: Color(red: 0.5451, green: 0.2275, blue: 0.1647)
+        ),
+        HomeRewardCharacter(
+            id: "kid_yuna",
+            category: .people,
+            japaneseName: "ユナ",
+            englishName: "Yuna",
+            price: 50,
+            style: .personWavy,
+            primary: Color(red: 0.8784, green: 0.6588, blue: 0.4706),
+            secondary: Color(red: 0.9412, green: 0.5412, blue: 0.4235),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "kid_ren",
+            category: .people,
+            japaneseName: "レン",
+            englishName: "Ren",
+            price: 50,
+            style: .personShort,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.1647, green: 0.2902, blue: 0.4784),
+            accent: Color(red: 0.2275, green: 0.4314, blue: 0.6471)
+        ),
+        HomeRewardCharacter(
+            id: "kid_aoi",
+            category: .people,
+            japaneseName: "アオイ",
+            englishName: "Aoi",
+            price: 50,
+            style: .personLong,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.4000, green: 0.7608, blue: 0.7608),
+            accent: Color(red: 0.5451, green: 0.3608, blue: 0.7804)
+        ),
+        HomeRewardCharacter(
+            id: "kid_sho",
+            category: .people,
+            japaneseName: "ショウ",
+            englishName: "Sho",
+            price: 40,
+            style: .personBuzz,
+            primary: Color(red: 0.5412, green: 0.3529, blue: 0.2196),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_momo",
+            category: .people,
+            japaneseName: "モモ",
+            englishName: "Momo",
+            price: 50,
+            style: .personPonytail,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.9490, green: 0.6510, blue: 0.7608),
+            accent: Color(red: 0.8784, green: 0.4157, blue: 0.6588)
+        ),
+        HomeRewardCharacter(
+            id: "kid_gen",
+            category: .people,
+            japaneseName: "ゲン",
+            englishName: "Gen",
+            price: 50,
+            style: .personCurly,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.2980, green: 0.6510, blue: 0.4196),
+            accent: Color(red: 0.7529, green: 0.2235, blue: 0.1686)
+        ),
+        HomeRewardCharacter(
+            id: "kid_eri",
+            category: .people,
+            japaneseName: "エリ",
+            englishName: "Eri",
+            price: 60,
+            style: .personBun,
+            primary: Color(red: 0.9686, green: 0.8431, blue: 0.7098),
+            secondary: Color(red: 0.2275, green: 0.6196, blue: 0.6196),
+            accent: Color(red: 0.7216, green: 0.7373, blue: 0.7608)
         ),
         HomeRewardCharacter(
             id: "robot",
@@ -4925,6 +5129,18 @@ struct RewardCharacterAvatar: View {
                 PersonCharacterFace(character: character, hair: .buzz)
             case .personPonytail:
                 PersonCharacterFace(character: character, hair: .ponytail)
+            case .personTwintails:
+                PersonCharacterFace(character: character, hair: .twintails)
+            case .personBob:
+                PersonCharacterFace(character: character, hair: .bob)
+            case .personAfro:
+                PersonCharacterFace(character: character, hair: .afro)
+            case .personSpiky:
+                PersonCharacterFace(character: character, hair: .spiky)
+            case .personBraids:
+                PersonCharacterFace(character: character, hair: .braids)
+            case .personWavy:
+                PersonCharacterFace(character: character, hair: .wavy)
             case .robot:
                 RobotCharacterFace(character: character)
             case .ghost:
@@ -5647,6 +5863,12 @@ private enum PersonHair {
     case bun
     case buzz
     case ponytail
+    case twintails
+    case bob
+    case afro
+    case spiky
+    case braids
+    case wavy
 }
 
 private struct PersonCharacterFace: View {
@@ -5688,6 +5910,24 @@ private struct PersonCharacterFace: View {
             Capsule().fill(character.accent).frame(width: 20, height: 48).rotationEffect(.degrees(18)).offset(x: 35, y: 8)
         case .bun:
             Circle().fill(character.accent).frame(width: 26, height: 26).offset(y: -34)
+        case .twintails:
+            Capsule().fill(character.accent).frame(width: 18, height: 46).rotationEffect(.degrees(-22)).offset(x: -34, y: 10)
+            Capsule().fill(character.accent).frame(width: 18, height: 46).rotationEffect(.degrees(22)).offset(x: 34, y: 10)
+        case .bob:
+            RoundedRectangle(cornerRadius: 22).fill(character.accent).frame(width: 76, height: 70).offset(y: 2)
+        case .afro:
+            Circle().fill(character.accent).frame(width: 86, height: 82).offset(y: -4)
+        case .braids:
+            ForEach(0..<3) { index in
+                Circle().fill(character.accent).frame(width: 16, height: 16).offset(x: -33, y: CGFloat(index) * 13 + 6)
+            }
+            ForEach(0..<3) { index in
+                Circle().fill(character.accent).frame(width: 16, height: 16).offset(x: 33, y: CGFloat(index) * 13 + 6)
+            }
+        case .wavy:
+            RoundedRectangle(cornerRadius: 30).fill(character.accent).frame(width: 72, height: 84).offset(y: 10)
+            Circle().fill(character.accent).frame(width: 24, height: 24).offset(x: -29, y: 44)
+            Circle().fill(character.accent).frame(width: 24, height: 24).offset(x: 29, y: 44)
         default:
             EmptyView()
         }
@@ -5708,7 +5948,16 @@ private struct PersonCharacterFace: View {
                     .rotationEffect(.degrees(Double(index) * 28 - 70))
             }
             Circle().fill(character.accent).frame(width: 24, height: 24).offset(y: -32)
-        case .long, .ponytail, .bun:
+        case .spiky:
+            // 髪の土台キャップ → そこからトゲを生やす（坊主に浮かないよう接続）
+            Circle().fill(character.accent).frame(width: 66, height: 62).offset(y: -12)
+                .mask(Rectangle().frame(width: 70, height: 28).offset(y: -22))
+            ForEach(0..<5) { index in
+                Triangle().fill(character.accent).frame(width: 16, height: 22)
+                    .offset(x: CGFloat(index - 2) * 14, y: -34)
+            }
+        default:
+            // long, ponytail, bun, twintails, bob, afro, braids, wavy: 共通の前髪
             Circle().fill(character.accent).frame(width: 64, height: 58).offset(y: -12)
                 .mask(Rectangle().frame(width: 70, height: 30).offset(y: -20))
         }
