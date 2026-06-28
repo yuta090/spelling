@@ -30,14 +30,9 @@ public enum PersonalizedExample {
         let target = word.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !target.isEmpty else { return nil }
 
-        // 照合は contentLemmas との完全一致（小文字化）。練習語は基本形が大半なので
-        // 「apple」「book」「run」等はそのまま当たる。屈折形（apples / went / studies）は
-        // v1 では当てない＝該当なしとして静的例文にフォールバックする（誤マッチより安全側）。
-        // 屈折形まで当てたくなったら、ここに決定論的な正規化/別名層をテスト付きで足す。
-        // 名前が入り得る（スロットあり）かつ対象語を教えるテンプレだけを候補に。
+        // 名前が入り得る（スロットあり）かつ対象語を扱うテンプレだけを候補に。
         let matches = templates.filter { template in
-            !template.slots.isEmpty
-                && template.contentLemmas.contains { $0.lowercased() == target }
+            !template.slots.isEmpty && teaches(template, word: target)
         }
         guard !matches.isEmpty else { return nil }
 
@@ -58,4 +53,30 @@ public enum PersonalizedExample {
         }
         return nil
     }
+
+    // MARK: - 対象語の照合（決定論・純粋）
+
+    /// テンプレが練習語 `word`（小文字化済み）を扱うか。
+    /// (a) 教える基本語 `contentLemmas` に一致、または
+    /// (b) 例文中に**実際に現れる英単語**（`enTokens` の literal の表層形）に一致、なら真。
+    ///
+    /// 「その文に実在する綴り」だけを当てるのがミソ。apple は (a)、apples / likes は (b) で当たり、
+    /// 一方 "seed" は "see" の文に存在しないので当たらない＝形態素を機械生成しないため
+    /// 実在語どうしの誤マッチ（see→seed, good→goods 等）が原理的に起きない。
+    static func teaches(_ template: PersonSentenceTemplate, word: String) -> Bool {
+        if template.contentLemmas.contains(where: { $0.lowercased() == word }) { return true }
+        for token in template.enTokens {
+            guard case let .literal(text) = token else { continue }   // 人物（名前/代名詞）は対象外
+            for piece in text.split(whereSeparator: { $0 == " " }) where surfaceWord(String(piece)) == word {
+                return true
+            }
+        }
+        return false
+    }
+
+    /// 英語トークンの表層形を比較用に正規化：小文字化し、前後の句読点/空白を除く。
+    private static func surfaceWord(_ token: String) -> String {
+        token.lowercased().trimmingCharacters(in: trimSet)
+    }
+    private static let trimSet = CharacterSet(charactersIn: " ,.!?;:'\"")
 }
