@@ -42,27 +42,27 @@
   },
 
   "base_landmarks": {
-    "_doc": "base_female.png から実測した基準座標(origin top-left, canvas 1024x1536)。パーツ生成・配置・QAの基準にする。",
-    "skull_top_y": 69,
-    "eyes_center_y": 405,
-    "eyebrow_y": 360,
-    "foot_center_x": { "left": 438, "right": 577 },
-    "foot_width_px": 92,
-    "sole_y": 1459,
-    "ankle_top_y": 1259
+    "_doc": "base_female.png から実測した基準座標(origin top-left, canvas 1024x1536)。パーツ生成・配置・QAの基準にする。2026-06-28 新ベース再生成にあわせて測り直し。",
+    "skull_top_y": 34,
+    "eyes_center_y": 388,
+    "eyebrow_y": 295,
+    "foot_center_x": { "left": 434, "right": 584 },
+    "foot_width_px": 94,
+    "sole_y": 1489,
+    "ankle_top_y": 1350
   },
 
   "hair_rules": {
     "_doc": "髪パーツ生成の必須ルール(2026-06-28確定)。前髪が顔に乗る/低すぎる問題への対策。",
-    "crown_on_skull": "髪の頭頂は skull_top_y(≈69) に乗せる。頭頂に地肌の隙間を作らない。",
-    "bangs_above_eyes": "前髪は eyebrow_y(≈360) より上で止め、両目を完全に見せる。中央の顔/目エリア(x360-660, y360-560)はマゼンタのまま=髪を描かない。横の細い毛束で顔の外縁を縁取るのは可。",
+    "crown_on_skull": "髪の頭頂は skull_top_y(≈34) に乗せる。頭頂に地肌の隙間を作らない。",
+    "bangs_above_eyes": "前髪は eyebrow_y(≈295) より上で止め、両目を完全に見せる。中央の顔/目エリア(x360-660, y300-540)はマゼンタのまま=髪を描かない。横の細い毛束で顔の外縁を縁取るのは可。",
     "note": "rect一律マスクで切ると不自然な水平切れになるので、生成プロンプトで前髪長を短く指示→中央顔エリアのマゼンタ確認、で担保する。"
   },
 
   "shoe_rules": {
     "_doc": "靴パーツの整列ルール。結合1レイヤーでも左右独立に足へスナップする。",
-    "align": "靴ペアをマゼンタの隙間でL/R分割→各靴の中心を foot_center_x(L438/R577)へ平行移動、ソールを sole_y(1459)へ。_shoe_align.py 参照。",
-    "fit": "靴幅は foot_width(≈92)より少し広く、collarは ankle_top_y(≈1300前後)まで上げて足首の隙間を消す。"
+    "align": "靴ペアをマゼンタの隙間でL/R分割→各靴の中心を foot_center_x(L434/R584)へ平行移動、ソールを sole_y(1489)へ。_shoe_align.py 参照。",
+    "fit": "靴幅は foot_width(≈94)より少し広く、collarは ankle_top_y(≈1350前後)まで上げて足首の隙間を消す。"
   },
 
   "tech": {
@@ -79,11 +79,14 @@
     ],
     "chroma_key": "avatar_lib.chroma_key_defringe: 背景=純マゼンタ(pure_mag, dist<=bg_seed_threshold=40)+有界ハロー(pure_magをhalo_px=3膨張 AND near_mag(dist<=dist_threshold=120))。near_magの無制限フラッドはしない=露出ピンク前景も本体維持(外周~halo_pxのみ削れる)。enclosed純マゼンタ隙間は除去。erode_px=2でアルファ収縮、decontaminateは背景隣接ring(ring_px=3)のみ。テスト=test_avatar_lib.py(2026-06-28 codex APPROVE)。",
     "foreground_color_rule": "前景アートは純マゼンタ近傍(#FF00FF から距離 bg_seed_threshold=40 以内)の色を使わない。通常のピンク(#FF69B4等)はOK。#FF00FFは背景専用。",
-    "app_layer_export": "アプリ(SwiftUI LayeredAvatarView)へ渡す各レイヤー資産は **フルキャンバス(canvas=1024x1536)の透過PNG**で書き出す(位置はピクセルに焼き込み済み)。manifest.jsonの offset/scale はアプリ側では **中心基準の微調整ナッジ(既定 offset=0 / scale=1.0)** であって bbox由来のtop-left配置ではない。crop_with_offset で作る切り抜き+offsetは python 内部合成用。**アプリ出力としてcropped PNGは使わない**(LayeredAvatarViewが二重シフトするため)。"
+    "app_layer_export": "アプリ(SwiftUI LayeredAvatarView)へ渡す各レイヤー資産は **フルキャンバス(canvas=1024x1536)の透過PNG**で書き出す(位置はピクセルに焼き込み済み)。manifest.jsonの offset/scale はアプリ側では **中心基準の微調整ナッジ(既定 offset=0 / scale=1.0)** であって bbox由来のtop-left配置ではない。crop_with_offset で作る切り抜き+offsetは python 内部合成用。**アプリ出力としてcropped PNGは使わない**(LayeredAvatarViewが二重シフトするため)。manifest の各 layer は offset/scale を **省略可**(Core の AvatarLayer が decodeIfPresent で 0/0/1 を補う・テスト済)。",
+    "ship_residue_gate": "同梱(Resources/avatars/)に出す前に、全PNGを機械スキャンして **マゼンタ/紫の残り=0** を必ず確認する(目視だけに頼らない)。判定: 不透明画素のうち magenta=(R>180&G<90&B>180) を0、purple=(R>110&B>130&G<R-40&G<B-40) を~0(<0.05%)。base body の白背景は『境界連結の near-white(>244)をフラッド除去→1px erode』で透過化(内側の白=目のハイライト等は保持)。2026-06-28 v1 で全7枚クリア。",
+    "base_white_removal": "base は白背景生成→ ndimage.label で境界連結の near-white(全ch>244)だけを背景として alpha=0、MinFilter(3)で1px収縮(白フチ除去)。前景内部の白(目ハイライト/靴/淡色服)は保持される。"
   },
 
   "v1_pilot": {
     "_doc": "最初に縦1本通す最小ゴール。これが通れば着せ替え成立を実証。",
+    "status": "DONE 2026-06-28: base_female + hair x2(short_brown/twin_tails) + top x2(red_tee/blue_hoodie) + bottom x1(blue_shorts) + shoes x1(white_sneakers) を生成→透過抽出(残り0)→manifest.json→iPadPrototype/Resources/avatars/ にフォルダ参照で同梱。アプリビルド成功・全PNG残りゲートクリア。既知の軽微: 青ショーツがグレー下着より少し細く腰外側にグレーが僅かに覗く(次バージョンで幅広げ or 下着をより控えめに)。",
     "base": "female",
     "face": "neutral (baseに内包)",
     "parts": { "hair": 2, "top": 2, "bottom": 1, "shoes": 1 },

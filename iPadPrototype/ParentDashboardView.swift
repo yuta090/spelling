@@ -6250,6 +6250,9 @@ private struct TestSettingsPanel: View {
     @EnvironmentObject private var session: SyncSession
     @State private var showingAccount = false
     @State private var showingOnboardingResetConfirm = false
+    #if DEBUG
+    @State private var showingAvatarDressUp = false   // 開発用: 着せ替えアバターQAプレビュー
+    #endif
     var language: AppLanguage
 
     var body: some View {
@@ -6444,9 +6447,21 @@ private struct TestSettingsPanel: View {
                 Divider()
                 BenchExportRow()
 
+                Divider()
+                Button {
+                    showingAvatarDressUp = true
+                } label: {
+                    HStack {
+                        Image(systemName: "tshirt.fill")
+                        Text(language.text(japanese: "着せ替えアバター（プレビュー）", english: "Dress-up avatar (preview)"))
+                            .font(.subheadline.weight(.bold))
+                    }
+                }
+                .tint(ParentPalette.primary)
+
                 Text(language.text(
-                    japanese: "開発ビルドのみ表示。課金ゲートと新規導入上限の動作確認、AI-OCRベンチ用の書き出し（手書きPNG＋親判定ラベル）。効果は DEBUG ビルドのみ。",
-                    english: "Dev build only. Content gate / daily-limit testing, plus AI-OCR bench export (handwriting PNG + parent-decision labels)."
+                    japanese: "開発ビルドのみ表示。課金ゲートと新規導入上限の動作確認、AI-OCRベンチ用の書き出し（手書きPNG＋親判定ラベル）、着せ替えアバターの合成プレビュー。効果は DEBUG ビルドのみ。",
+                    english: "Dev build only. Content gate / daily-limit testing, AI-OCR bench export (handwriting PNG + parent-decision labels), and dress-up avatar composition preview."
                 ))
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -6477,6 +6492,20 @@ private struct TestSettingsPanel: View {
             .buttonStyle(.borderedProminent)
             .tapFeedback()
         }
+        #if DEBUG
+        .sheet(isPresented: $showingAvatarDressUp) {
+            NavigationStack {
+                AvatarDressUpView()
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button(language.text(japanese: "とじる", english: "Close")) {
+                                showingAvatarDressUp = false
+                            }
+                        }
+                    }
+            }
+        }
+        #endif
     }
 }
 
