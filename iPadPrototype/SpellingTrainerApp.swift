@@ -71,6 +71,10 @@ private struct RootView: View {
             .overlay(alignment: .bottomTrailing) {
                 WordOrderingDebugLauncher()
             }
+            // 文づくり（穴埋め選択）の試遊導線（製品UIには出さない）。
+            .overlay(alignment: .bottom) {
+                ClozeChoiceDebugLauncher()
+            }
         #endif
     }
 }
