@@ -209,6 +209,19 @@ final class AppModel: ObservableObject {
         didSet { saveHomeReviewWordIDs() }
     }
 
+    /// 文づくり（文法クイズ）の復習キュー。間違えた文を「1度正解で即消す」のではなく、
+    /// 今後のラウンドに少数（+1〜2問）ずつ追加問題として混ぜ、数回の正解で段階的に卒業させる。
+    /// 純粋ロジックは `SpellingSyncCore.ReviewQueue`。`id` は `SentenceItem.id`。
+    /// スペル側の復習（attempt 由来の導出型）とは別キューで独立管理する（活動ごとに分離）。
+    @Published var grammarReviewStates: [ReviewItemState] {
+        didSet { saveGrammarReviewStates() }
+    }
+
+    /// 文法クイズの単調増加ステップ番号（再出題間隔の「刻み」）。1ラウンド完了ごとに +1。
+    @Published var grammarReviewStep: Int {
+        didSet { saveGrammarReviewStep() }
+    }
+
     /// 初回オンボーディング完了フラグ。false の間だけ初回フローを出す。
     @Published var hasCompletedOnboarding: Bool {
         didSet { persistenceStore.save(hasCompletedOnboarding, key: hasCompletedOnboardingKey) }
@@ -260,6 +273,8 @@ final class AppModel: ObservableObject {
     private let selectedBackgroundIDKey = "spellingTrainer.selectedBackgroundID"
     private let unlockedBackgroundIDsKey = "spellingTrainer.unlockedBackgroundIDs"
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
+    private let grammarReviewStatesKey = "spellingTrainer.grammarReviewStates"
+    private let grammarReviewStepKey = "spellingTrainer.grammarReviewStep"
     private let hasCompletedOnboardingKey = "spellingTrainer.hasCompletedOnboarding"
     private let hasShownHomeCharacterHintKey = "spellingTrainer.hasShownHomeCharacterHint"
     private let childNameKey = "spellingTrainer.childName"
@@ -308,6 +323,8 @@ final class AppModel: ObservableObject {
         let initialUnlockedCharacterIDs = (persistenceStore.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
         unlockedCharacterIDs = initialUnlockedCharacterIDs
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
+        grammarReviewStates = persistenceStore.load([ReviewItemState].self, key: grammarReviewStatesKey) ?? []
+        grammarReviewStep = max(persistenceStore.load(Int.self, key: grammarReviewStepKey) ?? 0, 0)
         hasCompletedOnboarding = persistenceStore.load(Bool.self, key: hasCompletedOnboardingKey) ?? false
         hasShownHomeCharacterHint = persistenceStore.load(Bool.self, key: hasShownHomeCharacterHintKey) ?? false
         childName = persistenceStore.load(String.self, key: childNameKey) ?? ""
@@ -1288,6 +1305,33 @@ final class AppModel: ObservableObject {
 
     private func saveHomeReviewWordIDs() {
         persistenceStore.save(homeReviewWordIDs, key: homeReviewWordIDsKey)
+    }
+
+    private func saveGrammarReviewStates() {
+        persistenceStore.save(grammarReviewStates, key: grammarReviewStatesKey)
+    }
+
+    private func saveGrammarReviewStep() {
+        persistenceStore.save(grammarReviewStep, key: grammarReviewStepKey)
+    }
+
+    // MARK: - 文法クイズの復習（ReviewQueue 配線）
+
+    /// 1ラウンドの出題順を組む。`base`（通常出題の文ID・順序維持）に、この `grammarReviewStep` で
+    /// due な復習文を「追加問題」として最大 `cap` 件足して返す。`cap` が「+1〜2問」。
+    func composeGrammarRound(base: [UUID], cap: Int = 2) -> [UUID] {
+        ReviewQueue.composeRound(base: base, states: grammarReviewStates, currentStep: grammarReviewStep, cap: cap)
+    }
+
+    /// 文1問の正誤を復習キューに反映する。誤=box1で登録/リセット、正=box+1（数回で卒業）。
+    func recordGrammarResult(itemID: UUID, correct: Bool) {
+        grammarReviewStates = ReviewQueue.apply(grammarReviewStates, itemID: itemID, correct: correct, step: grammarReviewStep)
+    }
+
+    /// 1ラウンド完了。卒業済みを掃除してステップを進める（次ラウンドの再出題間隔の基準）。
+    func advanceGrammarRound() {
+        grammarReviewStates = ReviewQueue.pruneMastered(grammarReviewStates, currentStep: grammarReviewStep)
+        grammarReviewStep += 1
     }
 
     private func ensureSelectedWordStepStillExists() {
