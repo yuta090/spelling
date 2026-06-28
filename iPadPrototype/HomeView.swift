@@ -4205,6 +4205,8 @@ private struct CharacterPickerSheet: View {
     var language: AppLanguage
 
     @State private var tab: RewardPickerTab = .buddy
+    // 下にスクロールしてインラインのタブが画面外へ出たら、モーダル上部に固定タブを出す。
+    @State private var showStickyTab = false
 
     private let columns = [
         GridItem(.adaptive(minimum: 96, maximum: 122), spacing: 8)
@@ -4230,6 +4232,15 @@ private struct CharacterPickerSheet: View {
         case .background:
             return language.text(japanese: "コインをつかって、はいけいをかえられます。", english: "Spend coins to change the background.")
         }
+    }
+
+    // なかま/はいけい 切り替え。インラインと固定バーの両方で使い回す。
+    private var tabPicker: some View {
+        Picker("", selection: $tab) {
+            Text(language.text(japanese: "なかま", english: "Buddies")).tag(RewardPickerTab.buddy)
+            Text(language.text(japanese: "はいけい", english: "Backgrounds")).tag(RewardPickerTab.background)
+        }
+        .pickerStyle(.segmented)
     }
 
     var body: some View {
@@ -4265,11 +4276,16 @@ private struct CharacterPickerSheet: View {
                                 HomeCoinBadge(coins: model.rewardCoins, language: language)
                             }
 
-                            Picker("", selection: $tab) {
-                                Text(language.text(japanese: "なかま", english: "Buddies")).tag(RewardPickerTab.buddy)
-                                Text(language.text(japanese: "はいけい", english: "Backgrounds")).tag(RewardPickerTab.background)
-                            }
-                            .pickerStyle(.segmented)
+                            tabPicker
+                                // インラインタブの下端位置を測り、上に抜けたら固定バーへ切り替える。
+                                .background(
+                                    GeometryReader { proxy in
+                                        Color.clear.preference(
+                                            key: StickyTabOffsetKey.self,
+                                            value: proxy.frame(in: .named("rewardPickerScroll")).maxY
+                                        )
+                                    }
+                                )
 
                             switch tab {
                             case .buddy:
@@ -4322,6 +4338,30 @@ private struct CharacterPickerSheet: View {
                     }
                     .scrollIndicators(.visible)
                     .scrollBounceBasedOnSizeCompat()
+                    .coordinateSpace(name: "rewardPickerScroll")
+                    .onPreferenceChange(StickyTabOffsetKey.self) { maxY in
+                        // インラインタブの下端がスクロール領域の上端より上に抜けたら固定表示。
+                        let shouldShow = maxY < 6
+                        if shouldShow != showStickyTab {
+                            withAnimation(.easeInOut(duration: 0.18)) {
+                                showStickyTab = shouldShow
+                            }
+                        }
+                    }
+                }
+                .overlay(alignment: .top) {
+                    if showStickyTab {
+                        VStack(spacing: 0) {
+                            tabPicker
+                                .frame(maxWidth: contentWidth)
+                                .padding(.horizontal, 28)
+                                .padding(.vertical, 10)
+                            Divider()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .background(.regularMaterial)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
                 .clipped()
@@ -4337,6 +4377,14 @@ private struct CharacterPickerSheet: View {
                 }
             }
         }
+    }
+}
+
+/// インラインのタブバーの下端位置（スクロール座標系）を親へ伝えるためのキー。
+private struct StickyTabOffsetKey: PreferenceKey {
+    static let defaultValue: CGFloat = .greatestFiniteMagnitude
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = min(value, nextValue())
     }
 }
 
