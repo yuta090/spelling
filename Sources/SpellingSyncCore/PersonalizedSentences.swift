@@ -158,7 +158,7 @@ public enum PersonReferenceForm: String, Codable, Sendable {
     case vocativeName          // 呼びかけ（本人専用想定）。Yuki（"," 等は suffix で）
 }
 
-public enum SentenceCategory: String, Codable, Sendable {
+public enum SentenceCategory: String, Codable, Sendable, CaseIterable {
     case school     // 学校での会話
     case play       // あそび・さそい
     case greeting   // あいさつ

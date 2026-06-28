@@ -50,4 +50,15 @@ public enum PersonalizedSessionBuilder {
             return SentencePersonalizer.resolve(template, cast: cast, seed: itemSeed)
         }
     }
+
+    /// テンプレ集をカテゴリ別に数える。親UIの「カテゴリ選択」で
+    /// 空カテゴリを隠す／件数バッジを出すために使う（純粋・決定論）。
+    /// テンプレが1件も無いカテゴリはキーに現れない（合計＝テンプレ総数）。
+    public static func categoryCounts(templates: [PersonSentenceTemplate]) -> [SentenceCategory: Int] {
+        var counts: [SentenceCategory: Int] = [:]
+        for template in templates {
+            counts[template.category, default: 0] += 1
+        }
+        return counts
+    }
 }
