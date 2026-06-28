@@ -255,6 +255,13 @@ public enum SentencePersonalizer {
             }
         }
 
+        // 文頭は大文字に。名前は元々大文字だが、代名詞（her/his/she/he 等）は素のままだと
+        // "her bag is bigger" のように小文字で始まってしまう。先頭1文字だけ大文字化する
+        // （タイル順＝解答にも反映させたいので en だけでなく tokens を直接書き換える）。
+        if let first = tokens.first, let head = first.first, head.isLowercase {
+            tokens[0] = head.uppercased() + first.dropFirst()
+        }
+
         let en = tokens.joined(separator: " ")
         let id = deterministicID(template: template, assigned: assigned, seed: seed)
 
