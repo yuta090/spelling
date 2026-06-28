@@ -222,6 +222,24 @@ final class AppModel: ObservableObject {
         didSet { saveGrammarReviewStep() }
     }
 
+    /// スペルテストの復習キュー（`id` は `SpellingWord.id`）。間違えた語を「1回正解で即消す」のではなく、
+    /// 今後のテストに少数（最大2語）ずつ追加問題として混ぜ、数回の正解で段階的に卒業させる。
+    /// 親向けの「見直しが必要な単語」表示（attempt 由来の導出型 = `unresolvedReviewWords`/`reviewWords`/
+    /// `homeReviewWordIDs`）はこれとは別物として残す（子の練習スケジューリング専用）。純粋ロジックは `ReviewQueue`。
+    @Published var spellingReviewStates: [ReviewItemState] {
+        didSet { saveSpellingReviewStates() }
+    }
+
+    /// スペルテストの単調増加ステップ番号（再出題間隔の「刻み」）。1テストセッション完了ごとに +1。
+    @Published var spellingReviewStep: Int {
+        didSet { saveSpellingReviewStep() }
+    }
+
+    /// 既存の未クリア語を復習キューへ一度だけ移行（シード）したか。
+    @Published var spellingReviewSeeded: Bool {
+        didSet { persistenceStore.save(spellingReviewSeeded, key: spellingReviewSeededKey) }
+    }
+
     /// 初回オンボーディング完了フラグ。false の間だけ初回フローを出す。
     @Published var hasCompletedOnboarding: Bool {
         didSet { persistenceStore.save(hasCompletedOnboarding, key: hasCompletedOnboardingKey) }
@@ -282,6 +300,9 @@ final class AppModel: ObservableObject {
     private let homeReviewWordIDsKey = "spellingTrainer.homeReviewWordIDs"
     private let grammarReviewStatesKey = "spellingTrainer.grammarReviewStates"
     private let grammarReviewStepKey = "spellingTrainer.grammarReviewStep"
+    private let spellingReviewStatesKey = "spellingTrainer.spellingReviewStates"
+    private let spellingReviewStepKey = "spellingTrainer.spellingReviewStep"
+    private let spellingReviewSeededKey = "spellingTrainer.spellingReviewSeeded"
     private let hasCompletedOnboardingKey = "spellingTrainer.hasCompletedOnboarding"
     private let hasShownHomeCharacterHintKey = "spellingTrainer.hasShownHomeCharacterHint"
     private let childNameKey = "spellingTrainer.childName"
@@ -333,6 +354,9 @@ final class AppModel: ObservableObject {
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []
         grammarReviewStates = persistenceStore.load([ReviewItemState].self, key: grammarReviewStatesKey) ?? []
         grammarReviewStep = max(persistenceStore.load(Int.self, key: grammarReviewStepKey) ?? 0, 0)
+        spellingReviewStates = persistenceStore.load([ReviewItemState].self, key: spellingReviewStatesKey) ?? []
+        spellingReviewStep = max(persistenceStore.load(Int.self, key: spellingReviewStepKey) ?? 0, 0)
+        spellingReviewSeeded = persistenceStore.load(Bool.self, key: spellingReviewSeededKey) ?? false
         hasCompletedOnboarding = persistenceStore.load(Bool.self, key: hasCompletedOnboardingKey) ?? false
         hasShownHomeCharacterHint = persistenceStore.load(Bool.self, key: hasShownHomeCharacterHintKey) ?? false
         childName = persistenceStore.load(String.self, key: childNameKey) ?? ""
@@ -350,6 +374,8 @@ final class AppModel: ObservableObject {
         }
         #endif
         ensureSelectedWordStepStillExists()
+        // 既存の未クリア語を復習キューへ一度だけ取り込む（描画経路では行わない＝init で実施）。
+        seedSpellingReviewIfNeeded()
     }
 
     var wordSteps: [WordStep] {
@@ -501,12 +527,32 @@ final class AppModel: ObservableObject {
         uniqueWords(step.words + carryOverReviewWords(for: step))
     }
 
-    func carryOverReviewWords(for step: WordStep) -> [SpellingWord] {
-        // こども専用ステップは前のステップの復習を引き継がない（親の単語と混ざらないように）。
-        guard !step.isChildStep, let previousStep = previousWordStep(before: step) else {
-            return []
+    /// テストに「追加問題」として混ぜる復習語（最大2語）。間違えた語を `ReviewQueue` が box/ステップで
+    /// 管理し、due なものだけを少数注入する（1回正解では消えず、数回の正解で卒業）。語は他ステップ由来でもよい
+    /// （＝「今後 別のステップでも」自然に再出題）。`testWords`/ホームの「ふくしゅうN」表示の両方がこれを使う。
+    /// こども専用ステップは従来どおり対象外（親の単語と混ざらないように）。
+    func carryOverReviewWords(for step: WordStep, cap: Int = 2) -> [SpellingWord] {
+        guard !step.isChildStep else { return [] }
+        let baseIDs = step.words.map(\.id)
+        let baseSet = Set(baseIDs)
+        let byID = Dictionary(words.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        // 注入候補は「生存かつ親由来」の語に限定（削除済みIDが cap を浪費するのと、子由来語の混入を防ぐ）。
+        let eligible = spellingReviewStates.filter { state in
+            guard let word = byID[state.id] else { return false }
+            return !isChildWord(word)
         }
-        return unresolvedReviewWords(for: previousStep)
+        let injectedIDs = ReviewQueue
+            .composeRound(base: baseIDs, states: eligible, currentStep: spellingReviewStep, cap: cap)
+            .filter { !baseSet.contains($0) }   // base を除いた「追加で混ざる復習語」だけ
+        return injectedIDs.compactMap { byID[$0] }
+    }
+
+    /// その語がこども由来か（親の単語と混ざらないよう復習対象から外す判定に使う）。
+    /// 同期で取り込んだ子の語は `stepID` が落ちて `source == .child` だけが残るため、両方を見る。
+    private func isChildWord(_ word: SpellingWord) -> Bool {
+        if word.source == .child { return true }
+        guard let stepID = word.stepID else { return false }
+        return Self.isChildStepID(stepID)
     }
 
     func unresolvedReviewWords(for step: WordStep) -> [SpellingWord] {
@@ -537,18 +583,6 @@ final class AppModel: ObservableObject {
         schoolTestResults
             .filter { schoolTestResult($0, belongsTo: step) }
             .sorted { $0.date > $1.date }
-    }
-
-    private func previousWordStep(before step: WordStep) -> WordStep? {
-        let steps = wordSteps
-        guard let index = steps.firstIndex(where: { $0.id == step.id }), index > 0 else {
-            return nil
-        }
-        // こども専用ステップはスキップして直前の親ステップを探す。
-        for previousIndex in stride(from: index - 1, through: 0, by: -1) where !steps[previousIndex].isChildStep {
-            return steps[previousIndex]
-        }
-        return nil
     }
 
     private func latestSchoolMissDatesByWord(for step: WordStep) -> [String: Date] {
@@ -1341,6 +1375,58 @@ final class AppModel: ObservableObject {
     func advanceGrammarRound() {
         grammarReviewStates = ReviewQueue.pruneMastered(grammarReviewStates, currentStep: grammarReviewStep)
         grammarReviewStep += 1
+    }
+
+    // MARK: - スペルテストの復習（ReviewQueue 配線）
+
+    private func saveSpellingReviewStates() {
+        persistenceStore.save(spellingReviewStates, key: spellingReviewStatesKey)
+    }
+
+    private func saveSpellingReviewStep() {
+        persistenceStore.save(spellingReviewStep, key: spellingReviewStepKey)
+    }
+
+    /// 既存の「見直しが必要な単語」（attempt 由来の導出型）を、初回だけ復習キューへ box1 で取り込む。
+    /// 以後は `ReviewQueue` が注入を担う。cap で守られるので一度に流れ込んでも出題は最大2語/回。
+    /// **init から呼ぶ**（描画経路では呼ばない）。init 中は didSet が発火しないため永続化も明示的に行う。
+    private func seedSpellingReviewIfNeeded() {
+        guard !spellingReviewSeeded else { return }
+        spellingReviewSeeded = true
+        let existingIDs = Set(spellingReviewStates.map(\.id))
+        // box1（間隔1）で「1つ前のステップに出した」扱い → 次のテストから due になる。
+        let seedLastSeen = spellingReviewStep - ReviewQueue.stepInterval(box: SRSScheduler.minBox)
+        let seeded = reviewWords
+            .filter { !existingIDs.contains($0.id) && !isChildWord($0) }
+            .map { ReviewItemState(id: $0.id, box: SRSScheduler.minBox, lastSeenStep: seedLastSeen, addedAtStep: spellingReviewStep) }
+        if !seeded.isEmpty {
+            spellingReviewStates += seeded
+        }
+        // init 中の呼び出しでは didSet が走らないため、シード結果とフラグを明示保存する。
+        saveSpellingReviewStates()
+        persistenceStore.save(spellingReviewSeeded, key: spellingReviewSeededKey)
+    }
+
+    /// 1テストセッションの結果を復習キューに反映する（セッション完了時に1回だけ呼ぶ）。
+    /// 語ごとに最新の自動判定で評価：`.autoCorrect`=正（box+1、数回で卒業）／それ以外=誤（box1で登録/リセット）。
+    /// 反映後にステップを +1（次テストの再出題間隔の基準）。`apply` は「正×未登録=no-op」なので一発正解の新語は積まれない。
+    /// `sessionWords` は実際に出題した語。text→id はこの集合で解決する（同綴り別ステップでも正しい語を更新する）。
+    /// こども専用ステップ由来の語は積まない（親の単語と混ざらないように）。
+    func recordSpellingTestResults(_ sessionAttempts: [SpellingAttempt], words sessionWords: [SpellingWord]) {
+        // 語（正規化テキスト）ごとに最新の attempt を採用（同語が複数回出ても1ステップ1回反映）。
+        var latestByText: [String: SpellingAttempt] = [:]
+        for attempt in sessionAttempts.sorted(by: { $0.date < $1.date }) {
+            latestByText[normalize(attempt.word)] = attempt
+        }
+        let wordByText = Dictionary(sessionWords.map { (normalize($0.text), $0) }, uniquingKeysWith: { first, _ in first })
+        for (text, attempt) in latestByText {
+            guard let word = wordByText[text], !isChildWord(word) else { continue }
+            spellingReviewStates = ReviewQueue.apply(
+                spellingReviewStates, itemID: word.id, correct: attempt.decision == .autoCorrect, step: spellingReviewStep
+            )
+        }
+        spellingReviewStates = ReviewQueue.pruneMastered(spellingReviewStates, currentStep: spellingReviewStep)
+        spellingReviewStep += 1
     }
 
     private func ensureSelectedWordStepStillExists() {
