@@ -2151,6 +2151,11 @@ private struct PracticeWordCelebrationOverlay: View {
         ZStack {
             SparkleBurst(seed: seed, variant: style.burstVariant)
 
+            // 獲得したコインが大量に噴き出して降りそそぐ演出（カードより少し上から湧く）。
+            PracticeCoinFountain(reward: coinReward)
+                .offset(y: -28)
+                .zIndex(6)
+
             VStack(spacing: 12) {
                 ZStack {
                     Circle()
@@ -2251,6 +2256,87 @@ private struct PracticeCoinView: View {
                 .foregroundStyle(.white)
                 .shadow(color: .orange.opacity(0.32), radius: 3, x: 0, y: 2)
         }
+    }
+}
+
+/// コイン獲得時に**たくさんの金貨**が噴き上がって降りそそぐ演出。
+/// 報酬が多いほど枚数を増やす。`reduceMotion` のときは出さない。
+private struct PracticeCoinFountain: View {
+    var reward: Int
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    // phase 0=発射前 / 1=噴き上がった頂点 / 2=落下しきった。
+    @State private var phase = 0
+
+    // 28〜80枚に収める（報酬量に応じて段階的に増やす）。
+    private var count: Int {
+        min(max(reward / 2 + 24, 28), 80)
+    }
+
+    // index から決定的な疑似乱数（0..<1）。salt を変えて別の値を取り出す。
+    private func rnd(_ index: Int, _ salt: Int) -> Double {
+        let v = (index &* 1103515245 &+ salt &* 12345 &+ 1013904223) & 0x7fffffff
+        return Double(v % 1000) / 1000.0
+    }
+
+    var body: some View {
+        if reduceMotion {
+            EmptyView()
+        } else {
+            ZStack {
+                ForEach(0..<count, id: \.self) { i in
+                    let spread = (rnd(i, 1) - 0.5) * 2.0       // -1..1（横方向）
+                    let peakX = spread * 150.0                  // 頂点での横位置（控えめに開く）
+                    let peakY = -(120.0 + rnd(i, 2) * 210.0)    // 噴き上がる高さ（上は負）
+                    let fallX = spread * 280.0                  // 落下時にさらに外へ
+                    let fallY = 320.0 + rnd(i, 3) * 260.0       // 画面下へ落下
+                    let size = 16.0 + rnd(i, 4) * 22.0          // 16〜38pt
+                    let spin = (rnd(i, 5) < 0.5 ? -1.0 : 1.0) * (540.0 + rnd(i, 6) * 720.0)
+
+                    // phase に応じて 発射前→頂点→落下 の3地点を補間する。
+                    let x = phase == 0 ? 0 : (phase == 1 ? peakX : fallX)
+                    let y = phase == 0 ? 0 : (phase == 1 ? peakY : fallY)
+                    let scale = phase == 0 ? 0.5 : (phase == 1 ? 1.0 : 0.82)
+                    let rot = phase == 0 ? 0 : (phase == 1 ? spin * 0.45 : spin)
+                    let opacity = phase == 0 ? 0.0 : (phase == 1 ? 1.0 : 0.0)
+
+                    GoldCoin(diameter: size)
+                        .rotationEffect(.degrees(rot))
+                        .offset(x: x, y: y)
+                        .scaleEffect(scale)
+                        .opacity(opacity)
+                }
+            }
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+            .onAppear {
+                // 噴き上がり（速め）→ 落下（ゆっくり）の2段階。合計 ~0.95s で表示ウィンドウ内に収める。
+                withAnimation(.easeOut(duration: 0.30)) { phase = 1 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.26) {
+                    withAnimation(.easeIn(duration: 0.66)) { phase = 2 }
+                }
+            }
+        }
+    }
+}
+
+/// 噴水で使う、ツヤのある小さな金貨。
+private struct GoldCoin: View {
+    var diameter: CGFloat
+
+    var body: some View {
+        ZStack {
+            Circle().fill(RadialGradient(
+                colors: [Color(red: 1.0, green: 0.96, blue: 0.66),
+                         Color(red: 1.0, green: 0.80, blue: 0.26),
+                         Color(red: 0.93, green: 0.58, blue: 0.08)],
+                center: .init(x: 0.36, y: 0.30), startRadius: 1, endRadius: diameter))
+            Circle().stroke(Color(red: 0.78, green: 0.46, blue: 0.05), lineWidth: max(diameter * 0.08, 1.2))
+            Image(systemName: "star.fill")
+                .font(.system(size: diameter * 0.46, weight: .heavy))
+                .foregroundStyle(Color(red: 1.0, green: 0.98, blue: 0.82))
+        }
+        .frame(width: diameter, height: diameter)
+        .shadow(color: Color(red: 0.7, green: 0.4, blue: 0.05).opacity(0.35), radius: 2, y: 1)
     }
 }
 
