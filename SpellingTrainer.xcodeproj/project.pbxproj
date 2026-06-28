@@ -34,6 +34,7 @@
 		FACE0000000000000000CE01 /* WordOrderingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE02 /* WordOrderingView.swift */; };
 		FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE04 /* ClozeChoiceView.swift */; };
 		FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE06 /* MixedSessionView.swift */; };
+		FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000AE02 /* AnswerExplanationCard.swift */; };
 		FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0E /* WordSyncCoordinator.swift */; };
 		FACE0000000000000000CF0F /* SpellingSyncCore in Frameworks */ = {isa = PBXBuildFile; productRef = FACE0000000000000000CF10 /* SpellingSyncCore */; };
 		FACE0000000000000000CF13 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF14 /* OnboardingView.swift */; };
@@ -82,6 +83,7 @@
 		FACE0000000000000000CE02 /* WordOrderingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOrderingView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE04 /* ClozeChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClozeChoiceView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE06 /* MixedSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixedSessionView.swift; sourceTree = "<group>"; };
+		FACE0000000000000000AE02 /* AnswerExplanationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerExplanationCard.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF0E /* WordSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSyncCoordinator.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF14 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF16 /* ParentGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentGateView.swift; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 				FACE0000000000000000CE02 /* WordOrderingView.swift */,
 				FACE0000000000000000CE04 /* ClozeChoiceView.swift */,
 				FACE0000000000000000CE06 /* MixedSessionView.swift */,
+				FACE0000000000000000AE02 /* AnswerExplanationCard.swift */,
 				FACE0000000000000000CF0E /* WordSyncCoordinator.swift */,
 				FACE0000000000000000CF14 /* OnboardingView.swift */,
 				FACE0000000000000000CF16 /* ParentGateView.swift */,
@@ -305,6 +308,7 @@
 				FACE0000000000000000CE01 /* WordOrderingView.swift in Sources */,
 				FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */,
 				FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */,
+				FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */,
 				FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */,
 				FACE0000000000000000CF13 /* OnboardingView.swift in Sources */,
 				FACE0000000000000000CF15 /* ParentGateView.swift in Sources */,
