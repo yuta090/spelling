@@ -36,6 +36,17 @@ public struct AvatarLayer: Codable, Equatable, Sendable {
         self.offsetY = offsetY
         self.scale = scale
     }
+
+    // offset/scale は「中心基準の微調整ナッジ」で、同梱 manifest では省略できる契約。
+    // 省略時は 0/0/1 になるよう、明示デコードで既定値を補う（synth デコードだと keyNotFound になる）。
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        file = try c.decode(String.self, forKey: .file)
+        z = try c.decode(String.self, forKey: .z)
+        offsetX = try c.decodeIfPresent(Double.self, forKey: .offsetX) ?? 0
+        offsetY = try c.decodeIfPresent(Double.self, forKey: .offsetY) ?? 0
+        scale = try c.decodeIfPresent(Double.self, forKey: .scale) ?? 1
+    }
 }
 
 /// 着替え 1 候補。1 パーツが複数レイヤーを持てる（例: 髪は back_hair + front_hair）。

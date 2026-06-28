@@ -1,0 +1,25 @@
+{
+  "_doc": "着せ替えアバター v1_pilot 同梱マニフェスト。各 file は Resources/avatars/ 内のフルキャンバス(1024x1536)透過PNG。位置はピクセルに焼き込み済み(scripts/avatars/ で生成)。offset/scale は中心基準の微調整ナッジ(既定0/1.0)。単一ソースは scripts/avatars/spec.json。",
+  "canvas": [1024, 1536],
+  "zOrder": ["back_hair", "base_body", "bottom", "shoes", "top", "outer", "face", "front_hair", "accessory"],
+  "bases": [
+    { "id": "female", "labelJa": "おんなのこ", "file": "base_female.png" }
+  ],
+  "parts": [
+    { "id": "hair_short_brown", "slot": "hair", "labelJa": "ショート", "base": "*",
+      "layers": [ { "file": "hair_short_brown.png", "z": "front_hair" } ] },
+    { "id": "hair_twin_tails", "slot": "hair", "labelJa": "ツインテール", "base": "*",
+      "layers": [ { "file": "hair_twin_tails.png", "z": "front_hair" } ] },
+
+    { "id": "top_red_tee", "slot": "top", "labelJa": "あかT", "base": "*",
+      "layers": [ { "file": "top_red_tee.png", "z": "top" } ] },
+    { "id": "top_blue_hoodie", "slot": "top", "labelJa": "あおパーカー", "base": "*",
+      "layers": [ { "file": "top_blue_hoodie.png", "z": "top" } ] },
+
+    { "id": "bottom_blue_shorts", "slot": "bottom", "labelJa": "あおパンツ", "base": "*",
+      "layers": [ { "file": "bottom_blue_shorts.png", "z": "bottom" } ] },
+
+    { "id": "shoes_white_sneakers", "slot": "shoes", "labelJa": "しろくつ", "base": "*",
+      "layers": [ { "file": "shoes_white_sneakers.png", "z": "shoes" } ] }
+  ]
+}

@@ -154,4 +154,49 @@ final class AvatarDressUpTests: XCTestCase {
         XCTAssertNil(sel.parts[.face])
         XCTAssertNil(sel.parts[.accessory])
     }
+
+    // MARK: - manifest 省略デコード（offset/scale は任意ナッジ・既定 0/0/1）
+
+    func testLayerDecodesWithDefaultsWhenOffsetScaleOmitted() throws {
+        // 同梱 manifest はナッジ既定値を省略して書ける契約。省略しても decode は通り 0/0/1 になる。
+        let json = #"{ "file": "hair.png", "z": "front_hair" }"#.data(using: .utf8)!
+        let layer = try JSONDecoder().decode(AvatarLayer.self, from: json)
+        XCTAssertEqual(layer.file, "hair.png")
+        XCTAssertEqual(layer.z, "front_hair")
+        XCTAssertEqual(layer.offsetX, 0)
+        XCTAssertEqual(layer.offsetY, 0)
+        XCTAssertEqual(layer.scale, 1)
+    }
+
+    func testLayerDecodesExplicitOffsetScaleWhenPresent() throws {
+        let json = #"{ "file": "a.png", "z": "top", "offsetX": 5, "offsetY": -3, "scale": 1.04 }"#.data(using: .utf8)!
+        let layer = try JSONDecoder().decode(AvatarLayer.self, from: json)
+        XCTAssertEqual(layer.offsetX, 5)
+        XCTAssertEqual(layer.offsetY, -3)
+        XCTAssertEqual(layer.scale, 1.04, accuracy: 1e-9)
+    }
+
+    func testManifestDecodesWithOmittedNudgesAndComposes() throws {
+        // 実同梱に近い形（offset/scale 省略）を decode → compose まで通ることを保証。
+        let json = #"""
+        {
+          "canvas": [1024, 1536],
+          "zOrder": ["base_body", "bottom", "shoes", "top", "front_hair"],
+          "bases": [ { "id": "female", "labelJa": "おんなのこ", "file": "base_female.png" } ],
+          "parts": [
+            { "id": "hair_short_brown", "slot": "hair", "labelJa": "ショート", "base": "*",
+              "layers": [ { "file": "hair_short_brown.png", "z": "front_hair" } ] },
+            { "id": "top_red_tee", "slot": "top", "labelJa": "あかT", "base": "*",
+              "layers": [ { "file": "top_red_tee.png", "z": "top" } ] }
+          ]
+        }
+        """#.data(using: .utf8)!
+        let m = try JSONDecoder().decode(AvatarManifest.self, from: json)
+        let sel = AvatarComposer.defaultSelection(manifest: m, baseID: "female")
+        let layers = AvatarComposer.compose(manifest: m, selection: sel)
+        // base_body が最初、front_hair が最後（z 昇順）。
+        XCTAssertEqual(layers.first?.file, "base_female.png")
+        XCTAssertEqual(layers.last?.file, "hair_short_brown.png")
+        XCTAssertTrue(layers.allSatisfy { $0.scale == 1 && $0.offsetX == 0 && $0.offsetY == 0 })
+    }
 }
