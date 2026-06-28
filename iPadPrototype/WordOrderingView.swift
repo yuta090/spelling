@@ -448,12 +448,8 @@ private enum WordOrderingHaptics {
 struct WordOrderingDebugLauncher: View {
     @EnvironmentObject private var model: AppModel
     @State private var isPresented = false
-    /// 開くたびに更新して、パーソナライズ例文の並び/友達選択を変える（決定論シードの種）。
-    @State private var sessionSeed: UInt64 = 1
-
     var body: some View {
         Button {
-            sessionSeed = sessionSeed &+ 0x9E37_79B9_7F4A_7C15
             isPresented = true
         } label: {
             Image(systemName: "arrow.left.arrow.right.square.fill")
@@ -466,34 +462,9 @@ struct WordOrderingDebugLauncher: View {
         .padding(.bottom, 12)
         .accessibilityLabel("文づくり試遊")
         .sheet(isPresented: $isPresented) {
-            // 同梱テンプレ＋登録済み Cast から1セッション分を解決して出題。
-            // Cast 未登録/テンプレ無しはフォールバック（＝既定サンプル）に縮退する。
-            let items = personalizedSession()
-            if items.isEmpty {
-                WordOrderingDemoView(onEnrollReviewWord: { model.enrollReviewWord($0) })
-            } else {
-                WordOrderingDemoView(items: items,
-                                     hiddenReviewWords: castNameTokens(),
-                                     onEnrollReviewWord: { model.enrollReviewWord($0) })
-            }
+            // サンプル文の試遊（名前なし）。本物テンプレ＋Cast の再生は RealContentSession 側。
+            WordOrderingDemoView(onEnrollReviewWord: { model.enrollReviewWord($0) })
         }
-    }
-
-    /// 同梱テンプレ→Cast 解決済み `SentenceItem` 列。テンプレが無ければ空（既定サンプルへ縮退）。
-    private func personalizedSession() -> [SentenceItem] {
-        let templates = PersonTemplateStore.loadBundled()
-        guard !templates.isEmpty else { return [] }
-        return PersonalizedSessionBuilder.build(
-            templates: templates,
-            cast: model.cast,
-            count: 8,
-            seed: sessionSeed
-        )
-    }
-
-    /// 例文に出る登場人物の名前（ローマ字）。復習チップから除外して同期流出を防ぐ。
-    private func castNameTokens() -> Set<String> {
-        Set(model.cast.people.map(\.romaji).filter { !$0.isEmpty })
     }
 }
 #endif
