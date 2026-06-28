@@ -4880,6 +4880,226 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.8784, green: 0.5333, blue: 0.2353),
             secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
             accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "vox_robo",
+            category: .fantasy,
+            japaneseName: "ボクセルロボ",
+            englishName: "Voxel Robo",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.2471, green: 0.7216, blue: 0.6902),
+            secondary: Color(red: 1.0000, green: 1.0000, blue: 1.0000),
+            accent: Color(red: 0.9490, green: 0.7529, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "vox_neko",
+            category: .animal,
+            japaneseName: "キューブネコ",
+            englishName: "Cube Cat",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.5333, blue: 0.2353),
+            secondary: Color(red: 1.0000, green: 0.8784, blue: 0.6980),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "vox_knight",
+            category: .fantasy,
+            japaneseName: "ブロックきし",
+            englishName: "Block Knight",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.6039, green: 0.6510, blue: 0.7608),
+            secondary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            accent: Color(red: 0.7804, green: 0.8000, blue: 0.8235)
+        ),
+        HomeRewardCharacter(
+            id: "vox_dragon",
+            category: .fantasy,
+            japaneseName: "ブロックりゅう",
+            englishName: "Block Dragon",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.3725, green: 0.6275, blue: 0.4196),
+            secondary: Color(red: 0.9490, green: 0.8235, blue: 0.2980),
+            accent: Color(red: 0.2275, green: 0.4196, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "vox_inu",
+            category: .animal,
+            japaneseName: "ボクセルいぬ",
+            englishName: "Voxel Dog",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.7608, green: 0.5294, blue: 0.2980),
+            secondary: Color(red: 0.9804, green: 0.8784, blue: 0.7608),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "vox_panda",
+            category: .animal,
+            japaneseName: "ボクセルパンダ",
+            englishName: "Voxel Panda",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.1686, green: 0.1882, blue: 0.2314),
+            secondary: Color(red: 0.9608, green: 0.9608, blue: 0.9216),
+            accent: Color(red: 0.3490, green: 0.6196, blue: 0.3608)
+        ),
+        HomeRewardCharacter(
+            id: "vox_usagi",
+            category: .animal,
+            japaneseName: "ボクセルうさぎ",
+            englishName: "Voxel Rabbit",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.9176, blue: 0.9412),
+            secondary: Color(red: 1.0000, green: 0.9412, blue: 0.9804),
+            accent: Color(red: 0.8784, green: 0.6510, blue: 0.7608)
+        ),
+        HomeRewardCharacter(
+            id: "vox_penguin",
+            category: .animal,
+            japaneseName: "ボクセルペンギン",
+            englishName: "Voxel Penguin",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.1804, green: 0.2275, blue: 0.3373),
+            secondary: Color(red: 0.9412, green: 0.9686, blue: 1.0000),
+            accent: Color(red: 0.9608, green: 0.6196, blue: 0.1216)
+        ),
+        HomeRewardCharacter(
+            id: "vox_kitsune",
+            category: .animal,
+            japaneseName: "ボクセルきつね",
+            englishName: "Voxel Fox",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9216, green: 0.4314, blue: 0.1216),
+            secondary: Color(red: 1.0000, green: 0.8784, blue: 0.6980),
+            accent: Color(red: 0.4314, green: 0.1804, blue: 0.0784)
+        ),
+        HomeRewardCharacter(
+            id: "vox_kuma",
+            category: .animal,
+            japaneseName: "ボクセルくま",
+            englishName: "Voxel Bear",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.5412, green: 0.3529, blue: 0.2196),
+            secondary: Color(red: 0.7804, green: 0.6392, blue: 0.4196),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "vox_car",
+            category: .vehicle,
+            japaneseName: "ボクセルカー",
+            englishName: "Voxel Car",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.2627, blue: 0.1804),
+            secondary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            accent: Color(red: 0.1686, green: 0.2000, blue: 0.2510)
+        ),
+        HomeRewardCharacter(
+            id: "vox_train",
+            category: .vehicle,
+            japaneseName: "ボクセルきかんしゃ",
+            englishName: "Voxel Train",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.1804, green: 0.4784, blue: 0.2275),
+            secondary: Color(red: 0.1686, green: 0.1686, blue: 0.1882),
+            accent: Color(red: 0.8196, green: 0.2902, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "vox_rocket",
+            category: .vehicle,
+            japaneseName: "ボクセルロケット",
+            englishName: "Voxel Rocket",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            secondary: Color(red: 0.8784, green: 0.2627, blue: 0.1804),
+            accent: Color(red: 0.3569, green: 0.5255, blue: 0.7804)
+        ),
+        HomeRewardCharacter(
+            id: "vox_ship",
+            category: .vehicle,
+            japaneseName: "ボクセルふね",
+            englishName: "Voxel Ship",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.2275, green: 0.4196, blue: 0.7804),
+            secondary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            accent: Color(red: 0.8784, green: 0.6471, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "vox_wizard",
+            category: .fantasy,
+            japaneseName: "ボクセルまほうつかい",
+            englishName: "Voxel Wizard",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.4784, green: 0.2902, blue: 0.6902),
+            secondary: Color(red: 0.8784, green: 0.6471, blue: 0.2353),
+            accent: Color(red: 0.9490, green: 0.8784, blue: 0.7608)
+        ),
+        HomeRewardCharacter(
+            id: "vox_ninja",
+            category: .fantasy,
+            japaneseName: "ボクセルにんじゃ",
+            englishName: "Voxel Ninja",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.1647, green: 0.2275, blue: 0.3608),
+            secondary: Color(red: 0.1020, green: 0.1333, blue: 0.2196),
+            accent: Color(red: 0.8784, green: 0.7882, blue: 0.6510)
+        ),
+        HomeRewardCharacter(
+            id: "vox_astro",
+            category: .space,
+            japaneseName: "ボクセルうちゅうひこうし",
+            englishName: "Voxel Astronaut",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            secondary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            accent: Color(red: 0.2275, green: 0.2745, blue: 0.3373)
+        ),
+        HomeRewardCharacter(
+            id: "vox_ghost",
+            category: .fantasy,
+            japaneseName: "ボクセルおばけ",
+            englishName: "Voxel Ghost",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9294, green: 0.9294, blue: 0.9608),
+            secondary: Color(red: 0.7882, green: 0.7882, blue: 0.8784),
+            accent: Color(red: 0.8784, green: 0.6471, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "vox_apple",
+            category: .food,
+            japaneseName: "ボクセルりんご",
+            englishName: "Voxel Apple",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.1961, blue: 0.1804),
+            secondary: Color(red: 0.3098, green: 0.6275, blue: 0.4196),
+            accent: Color(red: 0.4784, green: 0.0706, blue: 0.0706)
+        ),
+        HomeRewardCharacter(
+            id: "vox_cake",
+            category: .food,
+            japaneseName: "ボクセルケーキ",
+            englishName: "Voxel Cake",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9686, green: 0.9490, blue: 0.9098),
+            secondary: Color(red: 0.8784, green: 0.1961, blue: 0.1804),
+            accent: Color(red: 0.9490, green: 0.6510, blue: 0.7608)
         )
     ]
     // CATALOG-GENERATED-END
