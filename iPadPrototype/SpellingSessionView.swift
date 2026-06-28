@@ -151,18 +151,11 @@ struct SpellingSessionView: View {
         }
     }
 
-    /// このラウンドで日本語訳・例文ヒントを表示するか。
-    /// 復習(review)には専用の `ReviewHintPanel` があり、設定も「れんしゅう」配下なので練習限定にする。
+    /// 日本語訳・例文ヒントを表示するか。
+    /// 練習(practice)では、ラウンドやレイアウトに関わらず常に単語の下に表示する。
+    /// 復習(review)には専用の `ReviewHintPanel` があるため練習限定。
     private var showsPracticeHint: Bool {
-        guard mode == .practice else { return false }
-        switch model.settings.practiceHintTiming {
-        case .never:
-            return false
-        case .everyRound:
-            return true
-        case .lastRound:
-            return isLastPracticeRepeat
-        }
+        mode == .practice
     }
 
     private var isPracticeRepeatAdvanceButton: Bool {
@@ -405,7 +398,19 @@ struct SpellingSessionView: View {
                     }
 
                     if usesCompactPracticeGrid {
-                        compactPracticeHeader
+                        VStack(spacing: 8) {
+                            compactPracticeHeader
+                            // 2列レイアウトでも各単語の下に例文ヒントを出す（どのレイアウトでも表示）。
+                            if showsPracticeHint {
+                                HStack(alignment: .top, spacing: 12) {
+                                    ForEach(compactPracticeWords, id: \.id) { word in
+                                        ExampleHintView(word: word.text, language: language, cast: model.cast)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                }
+                                .frame(maxWidth: 1120)
+                            }
+                        }
                     } else {
                         wordHeader
                     }
@@ -554,8 +559,7 @@ struct SpellingSessionView: View {
         } else {
             VStack(spacing: 8) {
                 practiceWordHeader
-                // 練習・復習では日本語訳・例文をヒント表示（テストは答えが見えてしまうので出さない）。
-                // 表示タイミングは設定（既定は最後のラウンドのみ）に従う。
+                // 練習では日本語訳・例文を単語の下に常に表示（テストは答えが見えてしまうので出さない）。
                 if showsPracticeHint {
                     ExampleHintView(word: currentWord.text, language: language, cast: model.cast)
                 }
