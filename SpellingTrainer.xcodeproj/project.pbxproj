@@ -32,6 +32,7 @@
 		FACE0000000000000000CF09 /* SyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0A /* SyncSession.swift */; };
 		FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0C /* SyncDebugView.swift */; };
 		FACE0000000000000000CE01 /* WordOrderingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE02 /* WordOrderingView.swift */; };
+		FACE0000000000000000DD01 /* AvatarDressUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000DD02 /* AvatarDressUpView.swift */; };
 		FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE04 /* ClozeChoiceView.swift */; };
 		FACE0000000000000000CE0B /* WordListeningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0C /* WordListeningView.swift */; };
 		FACE0000000000000000CE0D /* ListeningClozeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0E /* ListeningClozeView.swift */; };
@@ -90,6 +91,7 @@
 		FACE0000000000000000CF0A /* SyncSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSession.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF0C /* SyncDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncDebugView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE02 /* WordOrderingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOrderingView.swift; sourceTree = "<group>"; };
+		FACE0000000000000000DD02 /* AvatarDressUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDressUpView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE04 /* ClozeChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClozeChoiceView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0C /* WordListeningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListeningView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0E /* ListeningClozeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningClozeView.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				FACE0000000000000000CF0A /* SyncSession.swift */,
 				FACE0000000000000000CF0C /* SyncDebugView.swift */,
 				FACE0000000000000000CE02 /* WordOrderingView.swift */,
+				FACE0000000000000000DD02 /* AvatarDressUpView.swift */,
 				FACE0000000000000000CE04 /* ClozeChoiceView.swift */,
 				FACE0000000000000000CE0C /* WordListeningView.swift */,
 				FACE0000000000000000CE0E /* ListeningClozeView.swift */,
@@ -336,6 +339,7 @@
 				FACE0000000000000000CF09 /* SyncSession.swift in Sources */,
 				FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */,
 				FACE0000000000000000CE01 /* WordOrderingView.swift in Sources */,
+				FACE0000000000000000DD01 /* AvatarDressUpView.swift in Sources */,
 				FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */,
 				FACE0000000000000000CE0B /* WordListeningView.swift in Sources */,
 				FACE0000000000000000CE0D /* ListeningClozeView.swift in Sources */,
