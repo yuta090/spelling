@@ -1,5 +1,6 @@
 import PencilKit
 import SwiftUI
+import SpellingSyncCore
 
 struct SpellingSessionView: View {
     @EnvironmentObject private var model: AppModel
@@ -556,7 +557,7 @@ struct SpellingSessionView: View {
                 // 練習・復習では日本語訳・例文をヒント表示（テストは答えが見えてしまうので出さない）。
                 // 表示タイミングは設定（既定は最後のラウンドのみ）に従う。
                 if showsPracticeHint {
-                    ExampleHintView(word: currentWord.text, language: language)
+                    ExampleHintView(word: currentWord.text, language: language, cast: model.cast)
                 }
             }
         }
@@ -2825,6 +2826,8 @@ private struct PracticeButtonTapEffectOverlay: View {
 private struct ExampleHintView: View {
     var word: String
     var language: AppLanguage
+    /// 例文を名前入りに差し替えるための登場人物（親が登録した Cast）。未登録なら従来の静的例文。
+    var cast: Cast
 
     // WordBank（同梱SQLite）参照は単語ごとに一度だけ行い保持する。
     // ※ @State + onAppear を空の Group に付けると onAppear が発火せずヒントが出ない。
@@ -2876,8 +2879,25 @@ private struct ExampleHintView: View {
                 )
             }
         }
-        .onValueChange(of: word, initial: true) { _ in
-            meaning = WordBank.shared.japanese(for: word)
+        // 語が変わったとき＋Cast を編集したとき（親が練習中になかま登録を変えた等）に
+        // 再読込し、表示が古いままにならないようにする。
+        .onValueChange(of: word, initial: true) { _ in loadHint() }
+        .onValueChange(of: cast) { _ in loadHint() }
+    }
+
+    private func loadHint() {
+        meaning = WordBank.shared.japanese(for: word)
+        // Cast に名前があり、その語を教える承認テンプレがあれば名前入り例文に差し替える。
+        // 名前が入らない/該当なしのときは従来どおり同梱の静的例文にフォールバック。
+        // seed は固定（同じ語では安定して同じ人が出る）。名前は表示のみで復習語には登録しない。
+        if let personalized = PersonalizedExample.sentence(
+            for: word,
+            templates: RealContentTemplates.cachedTemplates,
+            cast: cast,
+            seed: 20_260_628
+        ) {
+            example = WordExample(en: personalized.en, ja: personalized.ja)
+        } else {
             example = WordBank.shared.examples(for: word, limit: 1).first
         }
     }
