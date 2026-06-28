@@ -78,7 +78,8 @@
       "3) フォールバック: 合成焼き込み(A方式・真レイヤーは諦め)"
     ],
     "chroma_key": "avatar_lib.chroma_key_defringe: 背景=純マゼンタ(pure_mag, dist<=bg_seed_threshold=40)+有界ハロー(pure_magをhalo_px=3膨張 AND near_mag(dist<=dist_threshold=120))。near_magの無制限フラッドはしない=露出ピンク前景も本体維持(外周~halo_pxのみ削れる)。enclosed純マゼンタ隙間は除去。erode_px=2でアルファ収縮、decontaminateは背景隣接ring(ring_px=3)のみ。テスト=test_avatar_lib.py(2026-06-28 codex APPROVE)。",
-    "foreground_color_rule": "前景アートは純マゼンタ近傍(#FF00FF から距離 bg_seed_threshold=40 以内)の色を使わない。通常のピンク(#FF69B4等)はOK。#FF00FFは背景専用。"
+    "foreground_color_rule": "前景アートは純マゼンタ近傍(#FF00FF から距離 bg_seed_threshold=40 以内)の色を使わない。通常のピンク(#FF69B4等)はOK。#FF00FFは背景専用。",
+    "app_layer_export": "アプリ(SwiftUI LayeredAvatarView)へ渡す各レイヤー資産は **フルキャンバス(canvas=1024x1536)の透過PNG**で書き出す(位置はピクセルに焼き込み済み)。manifest.jsonの offset/scale はアプリ側では **中心基準の微調整ナッジ(既定 offset=0 / scale=1.0)** であって bbox由来のtop-left配置ではない。crop_with_offset で作る切り抜き+offsetは python 内部合成用。**アプリ出力としてcropped PNGは使わない**(LayeredAvatarViewが二重シフトするため)。"
   },
 
   "v1_pilot": {
