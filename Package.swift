@@ -16,6 +16,11 @@ let package = Package(
         // curated 素（person_templates）＋ wordbank → 学年タグ付け検証 → 同梱 sentence_bank.json。
         // 設計: docs/sentence-builder-design-2026-06-27.md §3
         .executable(name: "sentence-bank-build", targets: ["SentenceBankBuild"]),
+        // Tanaka 例文抽出ツール（開発時のみ）。
+        // wordbank.examples（Tanaka 英日）から子ども向け短文を機械抽出し、TanakaExtractor →
+        // SentenceBankBuilder で検査して sentence_bank.json に決定論で追記マージ。
+        // 設計: .claude/skills/kotoba-sentence-add/SKILL.md 手順B / B2
+        .executable(name: "tanaka-extract-build", targets: ["TanakaExtractBuild"]),
         // マルチデバイス同期の純粋ロジック（競合解決・論理削除・スコープ）。
         // iPad/iPhone アプリ本体から取り込む「狭いストア境界」の土台。
         // 設計: docs/multi-user-cloudkit-sync-design.md
@@ -25,6 +30,7 @@ let package = Package(
         .executableTarget(name: "SpellingOCRLab"),
         .executableTarget(name: "ConfusablesBuild", dependencies: ["SpellingSyncCore"]),
         .executableTarget(name: "SentenceBankBuild", dependencies: ["SpellingSyncCore"]),
+        .executableTarget(name: "TanakaExtractBuild", dependencies: ["SpellingSyncCore"]),
         .target(name: "SpellingSyncCore"),
         .testTarget(
             name: "SpellingSyncCoreTests",
