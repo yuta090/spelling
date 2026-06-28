@@ -114,4 +114,86 @@ final class SupabaseService {
             .execute()
         return response.count ?? 0
     }
+
+    // MARK: - ペアリング（子iPad ⇄ 親世帯）
+
+    enum PairingError: Error { case noResult }
+
+    /// 発行された6桁コード（平文はこの1回だけ受け取れる）。
+    struct PairingCode: Decodable, Sendable {
+        let code: String
+        /// RFC3339 文字列（表示用。必要なら呼び出し側で解釈）。
+        let expiresAt: String
+
+        enum CodingKeys: String, CodingKey {
+            case code
+            case expiresAt = "expires_at"
+        }
+    }
+
+    /// 親：子iPadをつなぐための6桁コードを発行する（15分・単回）。
+    /// サーバ側 `create_pairing_code` RPC（SECURITY DEFINER）が世帯メンバーであることを検証する。
+    /// - Parameters:
+    ///   - householdID: 対象世帯
+    ///   - profileID: 紐づける子プロファイル（任意。省略時は世帯のみにスコープ）
+    func issuePairingCode(householdID: UUID, profileID: UUID? = nil) async throws -> PairingCode {
+        struct Params: Encodable {
+            let p_household_id: String
+            let p_profile_id: String?
+        }
+        let rows: [PairingCode] = try await client
+            .rpc("create_pairing_code", params: Params(
+                p_household_id: householdID.uuidString,
+                p_profile_id: profileID?.uuidString))
+            .execute()
+            .value
+        guard let first = rows.first else { throw PairingError.noResult }
+        return first
+    }
+
+    /// 消費結果のステータス（サーバ `consume_pairing_code` の status 列）。
+    enum PairingConsumeStatus: String, Decodable, Sendable {
+        case ok
+        case invalidOrExpired = "invalid_or_expired"
+        case rateLimited = "rate_limited"
+        case alreadyPaired = "already_paired"
+    }
+
+    struct PairingConsumeResult: Sendable {
+        let status: PairingConsumeStatus
+        let householdID: UUID?
+        let profileID: UUID?
+    }
+
+    /// 子端末：6桁コードを消費して世帯に紐づく。
+    /// 事前に `signInChildAnonymouslyIfNeeded()` で匿名サインインしておくこと
+    /// （サーバ側は匿名セッション以外の消費を拒否する）。
+    func consumePairingCode(_ code: String, devicePublicID: String? = nil) async throws -> PairingConsumeResult {
+        struct Params: Encodable {
+            let p_code: String
+            let p_device_public_id: String?
+        }
+        struct Row: Decodable {
+            let status: PairingConsumeStatus
+            let householdId: UUID?
+            let profileId: UUID?
+
+            enum CodingKeys: String, CodingKey {
+                case status
+                case householdId = "household_id"
+                case profileId = "profile_id"
+            }
+        }
+        let rows: [Row] = try await client
+            .rpc("consume_pairing_code", params: Params(
+                p_code: code,
+                p_device_public_id: devicePublicID))
+            .execute()
+            .value
+        guard let row = rows.first else { throw PairingError.noResult }
+        return PairingConsumeResult(
+            status: row.status,
+            householdID: row.householdId,
+            profileID: row.profileId)
+    }
 }
