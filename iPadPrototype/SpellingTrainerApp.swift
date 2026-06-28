@@ -83,6 +83,10 @@ private struct RootView: View {
             .overlay(alignment: .trailing) {
                 RealContentSessionDebugLauncher()
             }
+            // 単語リスニング（音を聞いて綴りを選ぶ）の試遊導線（製品UIには出さない）。
+            .overlay(alignment: .topTrailing) {
+                WordListeningDebugLauncher()
+            }
         #endif
     }
 }
