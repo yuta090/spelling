@@ -77,30 +77,9 @@ private struct RootView: View {
             .overlay(alignment: .bottomLeading) {
                 SyncDebugLauncher()
             }
-            // 文づくり（並べ替え）の試遊導線（製品UIには出さない）。
-            .overlay(alignment: .bottomTrailing) {
-                WordOrderingDebugLauncher()
-            }
-            // 文づくり（穴埋め選択）の試遊導線（製品UIには出さない）。
-            .overlay(alignment: .bottom) {
-                ClozeChoiceDebugLauncher()
-            }
-            // 混合セッション（並べ替え×穴埋めを混ぜる）の試遊導線（製品UIには出さない）。
-            .overlay(alignment: .bottomLeading) {
-                MixedSessionDebugLauncher()
-            }
-            // 本物テンプレ（名前入り）を実ループで再生する試遊導線（製品UIには出さない）。
-            .overlay(alignment: .trailing) {
-                RealContentSessionDebugLauncher()
-            }
-            // 単語リスニング（音を聞いて綴りを選ぶ）の試遊導線（製品UIには出さない）。
-            .overlay(alignment: .topTrailing) {
-                WordListeningDebugLauncher()
-            }
-            // リスニング穴埋め（設問は無音→回答後に音）の試遊導線（製品UIには出さない）。
-            .overlay(alignment: .topLeading) {
-                ListeningClozeDebugLauncher()
-            }
+            // 個別パズル（並べ替え/穴埋め/混合/本物テンプレ/単語リスニング/リスニング穴埋め）の
+            // 試遊導線は「ことばパズル」統一メニューに集約したため撤去。各 DebugLauncher 定義は
+            // 各 View ファイルに残置（必要なら個別に開けるが、ホームのボタンは出さない）。
         #endif
     }
 }
