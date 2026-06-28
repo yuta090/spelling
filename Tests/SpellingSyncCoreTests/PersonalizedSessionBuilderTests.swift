@@ -132,4 +132,30 @@ final class PersonalizedSessionBuilderTests: XCTestCase {
             XCTAssertFalse(item.contentLemmas.contains("Ken"))
         }
     }
+
+    // MARK: 7. カテゴリ別件数（親UIの選択肢：空カテゴリを隠す／件数表示用）
+
+    func testCategoryCounts() {
+        let counts = PersonalizedSessionBuilder.categoryCounts(templates: pool)
+        XCTAssertEqual(counts[.school], 2)
+        XCTAssertEqual(counts[.play], 1)
+        XCTAssertEqual(counts[.greeting], 2)
+        // テンプレが無いカテゴリはキーに現れない（nil）。
+        XCTAssertNil(counts[.home])
+        XCTAssertNil(counts[.daily])
+        XCTAssertNil(counts[.other])
+        // 合計はプール数に一致。
+        XCTAssertEqual(counts.values.reduce(0, +), pool.count)
+    }
+
+    func testCategoryCountsEmpty() {
+        XCTAssertTrue(PersonalizedSessionBuilder.categoryCounts(templates: []).isEmpty)
+    }
+
+    // MARK: 8. SentenceCategory は CaseIterable（親UIの選択肢列挙に使う）
+
+    func testCategoryIsCaseIterable() {
+        let all = Set(SentenceCategory.allCases)
+        XCTAssertTrue(all.isSuperset(of: [.school, .play, .greeting, .home, .daily, .other]))
+    }
 }

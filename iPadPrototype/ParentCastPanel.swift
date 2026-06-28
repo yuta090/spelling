@@ -25,6 +25,9 @@ struct ParentCastPanel: View {
     var language: AppLanguage
 
     @State private var editing: CastDraft?
+    /// 例文プレビューの選択カテゴリ（nil=ぜんぶ）と決定論シード（「べつのをみる」で更新）。
+    @State private var previewCategory: SentenceCategory?
+    @State private var previewSeed: UInt64 = 0x5E_7A_C0_DE
 
     private var child: CastPerson? { model.cast.people.first { $0.role == .child } }
     private var friends: [CastPerson] { model.cast.people.filter { $0.role == .friend } }
@@ -70,6 +73,9 @@ struct ParentCastPanel: View {
                     editing = CastDraft(role: .friend)
                 }
             }
+
+            // 例文セットのプレビュー（親側ツール・子フローには出さない）
+            previewSection
         }
         .sheet(item: $editing) { draft in
             CastPersonEditorSheet(language: language, draft: draft)
@@ -96,6 +102,134 @@ struct ParentCastPanel: View {
         .padding(14)
         .background(CastPalette.primarySoft)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
+    // MARK: 例文セットのプレビュー
+
+    /// 同梱の承認済みテンプレ（静的・一度だけ読み込み）。
+    private var templates: [PersonSentenceTemplate] { RealContentTemplates.cachedTemplates }
+
+    /// テンプレが1件以上あるカテゴリのみ（allCases 順で安定）。
+    private var availableCategories: [SentenceCategory] {
+        let counts = PersonalizedSessionBuilder.categoryCounts(templates: templates)
+        return SentenceCategory.allCases.filter { (counts[$0] ?? 0) > 0 }
+    }
+
+    /// 選択カテゴリ＋シードで解決した例文セット（名前差し込み済み）。
+    private var previewItems: [SentenceItem] {
+        PersonalizedSessionBuilder.build(
+            templates: templates,
+            cast: model.cast,
+            category: previewCategory,
+            count: 6,
+            seed: previewSeed
+        )
+    }
+
+    private var hasActiveCast: Bool {
+        model.cast.people.contains { $0.isActive && !$0.romaji.isEmpty }
+    }
+
+    @ViewBuilder
+    private var previewSection: some View {
+        castSection(
+            title: language.text(japanese: "例文セットをみる", english: "Preview lines"),
+            systemImage: "text.bubble.fill"
+        ) {
+            Text(language.text(
+                japanese: "カテゴリをえらぶと、登録したなかまの名前が入った例文セットを確認できます。",
+                english: "Pick a category to preview a set of example lines with your cast’s names."
+            ))
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+
+            categoryChips
+
+            if !hasActiveCast {
+                Label(language.text(japanese: "なかまを登録すると名前が入ります。",
+                                    english: "Register cast members to see their names."),
+                      systemImage: "info.circle")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            let items = previewItems
+            if items.isEmpty {
+                Text(language.text(japanese: "このカテゴリの例文はまだありません。",
+                                   english: "No lines in this category yet."))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(items) { sentenceRow($0) }
+                }
+                Button {
+                    previewSeed = UInt64.random(in: UInt64.min...UInt64.max)
+                } label: {
+                    Label(language.text(japanese: "べつのをみる", english: "Show another"),
+                          systemImage: "arrow.triangle.2.circlepath")
+                        .font(.headline.weight(.bold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 11)
+                }
+                .buttonStyle(.bordered)
+                .tint(CastPalette.primary)
+                .tapFeedback()
+            }
+        }
+    }
+
+    private var categoryChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                categoryChip(title: language.text(japanese: "ぜんぶ", english: "All"),
+                             isSelected: previewCategory == nil) { previewCategory = nil }
+                ForEach(availableCategories, id: \.self) { category in
+                    categoryChip(title: categoryLabel(category),
+                                 isSelected: previewCategory == category) { previewCategory = category }
+                }
+            }
+            .padding(.vertical, 2)
+        }
+    }
+
+    private func categoryChip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline.weight(.bold))
+                .padding(.horizontal, 14).padding(.vertical, 8)
+                .background(isSelected ? CastPalette.primary : CastPalette.primarySoft)
+                .foregroundStyle(isSelected ? Color.white : CastPalette.primary)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+    }
+
+    private func sentenceRow(_ item: SentenceItem) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(item.en)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(CastPalette.ink)
+            Text(item.ja)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(CastPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func categoryLabel(_ category: SentenceCategory) -> String {
+        switch category {
+        case .school:   return language.text(japanese: "学校", english: "School")
+        case .play:     return language.text(japanese: "あそび", english: "Play")
+        case .greeting: return language.text(japanese: "あいさつ", english: "Greeting")
+        case .home:     return language.text(japanese: "おうち", english: "Home")
+        case .daily:    return language.text(japanese: "せいかつ", english: "Daily")
+        case .other:    return language.text(japanese: "そのほか", english: "Other")
+        }
     }
 
     @ViewBuilder
