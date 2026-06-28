@@ -1,0 +1,4 @@
+# Generated avatar PNGs and any local secrets — not checked in.
+out/
+.env
+__pycache__/
