@@ -8724,7 +8724,27 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "voxelmesa", japaneseName: "ボクセルのあかいわ", englishName: "Voxel Mesa", price: 215, imageName: "bg_voxelmesa"),
         HomeBackgroundTheme(id: "voxelglacier", japaneseName: "ボクセルのひょうが", englishName: "Voxel Glacier", price: 215, imageName: "bg_voxelglacier"),
         HomeBackgroundTheme(id: "voxelmushroom", japaneseName: "ボクセルのキノコもり", englishName: "Voxel Mushroom Forest", price: 220, imageName: "bg_voxelmushroom"),
-        HomeBackgroundTheme(id: "voxelstorm", japaneseName: "ボクセルのあらし", englishName: "Voxel Storm Cliffs", price: 220, imageName: "bg_voxelstorm")
+        HomeBackgroundTheme(id: "voxelstorm", japaneseName: "ボクセルのあらし", englishName: "Voxel Storm Cliffs", price: 220, imageName: "bg_voxelstorm"),
+        HomeBackgroundTheme(id: "dinovalley", japaneseName: "きょうりゅうのたに", englishName: "Dinosaur Valley", price: 200, imageName: "bg_dinovalley"),
+        HomeBackgroundTheme(id: "tanabata", japaneseName: "たなばた", englishName: "Tanabata Festival", price: 180, imageName: "bg_tanabata"),
+        HomeBackgroundTheme(id: "koinobori", japaneseName: "こどものひ", englishName: "Children's Day", price: 180, imageName: "bg_koinobori"),
+        HomeBackgroundTheme(id: "hinamatsuri", japaneseName: "ひなまつり", englishName: "Hinamatsuri", price: 180, imageName: "bg_hinamatsuri"),
+        HomeBackgroundTheme(id: "construction", japaneseName: "こうじげんば", englishName: "Construction Site", price: 200, imageName: "bg_construction"),
+        HomeBackgroundTheme(id: "harbor", japaneseName: "みなと", englishName: "Harbor", price: 200, imageName: "bg_harbor"),
+        HomeBackgroundTheme(id: "deepsea", japaneseName: "しんかい", englishName: "Deep Sea", price: 200, imageName: "bg_deepsea"),
+        HomeBackgroundTheme(id: "coralreef", japaneseName: "さんごしょう", englishName: "Coral Reef", price: 200, imageName: "bg_coralreef"),
+        HomeBackgroundTheme(id: "dragonpeak", japaneseName: "ドラゴンのやま", englishName: "Dragon Peak", price: 220, imageName: "bg_dragonpeak"),
+        HomeBackgroundTheme(id: "cloudcastle", japaneseName: "くものおしろ", englishName: "Cloud Castle", price: 220, imageName: "bg_cloudcastle"),
+        HomeBackgroundTheme(id: "pyramids", japaneseName: "ピラミッド", englishName: "Pyramids of Egypt", price: 240, imageName: "bg_pyramids"),
+        HomeBackgroundTheme(id: "greatwall", japaneseName: "ばんりのちょうじょう", englishName: "Great Wall", price: 240, imageName: "bg_greatwall"),
+        HomeBackgroundTheme(id: "aurora", japaneseName: "オーロラ", englishName: "Aurora", price: 240, imageName: "bg_aurora"),
+        HomeBackgroundTheme(id: "moonbase", japaneseName: "つきのきち", englishName: "Moon Base", price: 260, imageName: "bg_moonbase"),
+        HomeBackgroundTheme(id: "savanna", japaneseName: "サバンナ", englishName: "Savanna", price: 240, imageName: "bg_savanna"),
+        HomeBackgroundTheme(id: "nightsakura", japaneseName: "よざくら", englishName: "Night Sakura", price: 240, imageName: "bg_nightsakura"),
+        HomeBackgroundTheme(id: "voxelcity", japaneseName: "ボクセルシティ", englishName: "Voxel City", price: 200, imageName: "bg_voxelcity"),
+        HomeBackgroundTheme(id: "voxelfarm", japaneseName: "ボクセルぼくじょう", englishName: "Voxel Farm", price: 200, imageName: "bg_voxelfarm"),
+        HomeBackgroundTheme(id: "voxelcastle", japaneseName: "ボクセルキャッスル", englishName: "Voxel Castle", price: 200, imageName: "bg_voxelcastle"),
+        HomeBackgroundTheme(id: "voxelautumn", japaneseName: "ボクセルこうよう", englishName: "Voxel Autumn", price: 200, imageName: "bg_voxelautumn")
     ]
     // BG-CATALOG-GENERATED-END
 }
