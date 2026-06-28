@@ -5062,13 +5062,18 @@ private struct NakamaImageView: View {
         return img
     }
 
+    /// 既存の SwiftUI 描画キャラ(BearCharacterFace 等)は約100ptの固定サイズで描かれ、
+    /// avatar 枠(例 58pt)を超えてカードいっぱいに見える。画像なかまも同じ見た目にするため、
+    /// 枠に縮める scaledToFit ではなく **固定サイズで描いて他キャラとサイズを揃える**。
+    private static let renderSize: CGFloat = 96
+
     var body: some View {
         if let img = uiImage {
             Image(uiImage: img)
                 .resizable()
                 .interpolation(.high)
-                .scaledToFit()            // 縦長でも枠内に収める(scaledToFill にしない)
-                .padding(6)
+                .scaledToFit()            // 縦長でもアスペクト維持(scaledToFill にしない=はみ出さない)
+                .frame(width: Self.renderSize, height: Self.renderSize)
         } else {
             Text("🐾")
                 .font(.system(size: 44))
