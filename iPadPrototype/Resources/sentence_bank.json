@@ -1,0 +1,556 @@
+[
+  {
+    "contentLemmas" : [
+      "like",
+      "apples"
+    ],
+    "en" : "She likes apples",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "DFF69D5D-61F2-5BD0-98DB-617478AD1E9B",
+    "ja" : "かのじょは りんごが すき",
+    "tokens" : [
+      "She",
+      "likes",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "friend"
+    ],
+    "en" : "She is my friend",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "A0FEFD9B-3EDB-531B-BDED-FBEFDCC7D76B",
+    "ja" : "かのじょは わたしの ともだち",
+    "tokens" : [
+      "She",
+      "is",
+      "my",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "run",
+      "fast"
+    ],
+    "en" : "He can run fast",
+    "gradeBand" : 2,
+    "grammar" : "canModal",
+    "id" : "C8F28CF9-6533-50C8-99E4-581139CF7D39",
+    "ja" : "かれは はやく はしれる",
+    "tokens" : [
+      "He",
+      "can",
+      "run",
+      "fast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "book"
+    ],
+    "en" : "He is reading a book",
+    "gradeBand" : 1,
+    "grammar" : "presentContinuous",
+    "id" : "63009D49-36B9-5F79-81F4-028F448DA7CD",
+    "ja" : "かれは 本を よんでいる",
+    "tokens" : [
+      "He",
+      "is",
+      "reading",
+      "a",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "soccer",
+      "friend"
+    ],
+    "en" : "I played soccer with my friend",
+    "gradeBand" : 1,
+    "grammar" : "pastSimple",
+    "id" : "18A4874F-059A-5CA2-8F37-DF62F46EA173",
+    "ja" : "わたしは ともだちと サッカーを したよ",
+    "tokens" : [
+      "I",
+      "played",
+      "soccer",
+      "with",
+      "my",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bag",
+      "big"
+    ],
+    "en" : "Her bag is bigger",
+    "gradeBand" : 3,
+    "grammar" : "comparativeEr",
+    "id" : "57A16AE8-E94F-5AAB-91B5-64FFA5514BE3",
+    "ja" : "かのじょの かばんは もっと 大きい",
+    "tokens" : [
+      "Her",
+      "bag",
+      "is",
+      "bigger"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "good",
+      "morning"
+    ],
+    "en" : "Good morning",
+    "gradeBand" : 1,
+    "id" : "F5599723-C654-554F-A1FA-268E903EC172",
+    "ja" : "おはよう",
+    "tokens" : [
+      "Good",
+      "morning"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "today"
+    ],
+    "en" : "Let's play today",
+    "gradeBand" : 1,
+    "grammar" : "imperative",
+    "id" : "6D666ABB-9E59-557E-B7A4-3AA695AFC41F",
+    "ja" : "きょう あそぼう",
+    "tokens" : [
+      "Let's",
+      "play",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "look"
+    ],
+    "en" : "Look at this",
+    "gradeBand" : 1,
+    "grammar" : "imperative",
+    "id" : "8098DCA7-BFE6-5948-88AB-CE6617A5C505",
+    "ja" : "これを見て",
+    "tokens" : [
+      "Look",
+      "at",
+      "this"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "clean",
+      "room"
+    ],
+    "en" : "Clean your room",
+    "gradeBand" : 2,
+    "grammar" : "imperative",
+    "id" : "C1FC2C56-BC32-5CA2-8BBA-2BEC64143A89",
+    "ja" : "へやを かたづけて",
+    "tokens" : [
+      "Clean",
+      "your",
+      "room"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ready"
+    ],
+    "en" : "Are you ready",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "C102FC10-B202-5DA4-9F62-FF1DC08CD578",
+    "ja" : "じゅんびは できた？",
+    "tokens" : [
+      "Are",
+      "you",
+      "ready"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play"
+    ],
+    "en" : "They are playing",
+    "gradeBand" : 1,
+    "grammar" : "presentContinuous",
+    "id" : "EA7DF010-32A6-5BF0-B6C3-8E3C79F72669",
+    "ja" : "ふたりは あそんでいる",
+    "tokens" : [
+      "They",
+      "are",
+      "playing"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "walk",
+      "school"
+    ],
+    "en" : "They are walking to school",
+    "gradeBand" : 1,
+    "grammar" : "presentContinuous",
+    "id" : "3207EC3E-4794-57E0-900B-24EDDD7E4041",
+    "ja" : "ふたりは がっこうへ あるいている",
+    "tokens" : [
+      "They",
+      "are",
+      "walking",
+      "to",
+      "school"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sing",
+      "song"
+    ],
+    "en" : "They are singing a song",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "CEAB2586-BE79-5182-BC7C-40EAE0F52E95",
+    "ja" : "ふたりは うたを うたっている",
+    "tokens" : [
+      "They",
+      "are",
+      "singing",
+      "a",
+      "song"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "taller"
+    ],
+    "en" : "He is taller than her",
+    "gradeBand" : 2,
+    "grammar" : "comparativeEr",
+    "id" : "411E511C-195F-53A3-9C85-EC2CBD98F7DD",
+    "ja" : "かれは かのじょより せが たかい",
+    "tokens" : [
+      "He",
+      "is",
+      "taller",
+      "than",
+      "her"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "math"
+    ],
+    "en" : "She likes math",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "F36D0353-C1C4-5854-8984-6CC43A91F6E8",
+    "ja" : "かのじょは さんすうが すき",
+    "tokens" : [
+      "She",
+      "likes",
+      "math"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "red",
+      "pencil"
+    ],
+    "en" : "He has a red pencil",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "19C49F4E-632D-54E5-9B4E-D40451092846",
+    "ja" : "かれは あかい えんぴつを もっている",
+    "tokens" : [
+      "He",
+      "has",
+      "a",
+      "red",
+      "pencil"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "study",
+      "hard",
+      "every",
+      "day"
+    ],
+    "en" : "She studies hard every day",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "F01AAD37-4472-5E24-9FC1-EB07B24378C7",
+    "ja" : "かのじょは 毎日 がんばって べんきょうする",
+    "tokens" : [
+      "She",
+      "studies",
+      "hard",
+      "every",
+      "day"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "kind"
+    ],
+    "en" : "She is very kind",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "F0378FE0-A1C6-5772-BB93-5282C39EDF5C",
+    "ja" : "かのじょは とても やさしい",
+    "tokens" : [
+      "She",
+      "is",
+      "very",
+      "kind"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "library"
+    ],
+    "en" : "He went to the library",
+    "gradeBand" : 3,
+    "grammar" : "pastSimple",
+    "id" : "23386354-CDEA-5324-9DD6-AA92A2AD9D8C",
+    "ja" : "かれは としょかんへ 行った",
+    "tokens" : [
+      "He",
+      "went",
+      "to",
+      "the",
+      "library"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "tomorrow"
+    ],
+    "en" : "Can you play tomorrow",
+    "gradeBand" : 2,
+    "grammar" : "canModal",
+    "id" : "308C3069-8D2A-5B8B-9EEA-F6834E3FDECA",
+    "ja" : "あした あそべる？",
+    "tokens" : [
+      "Can",
+      "you",
+      "play",
+      "tomorrow"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ride",
+      "bike"
+    ],
+    "en" : "Let's ride bikes",
+    "gradeBand" : 4,
+    "grammar" : "imperative",
+    "id" : "BDB3B088-FEF7-5A20-8012-40DB295C1CB3",
+    "ja" : "じてんしゃに のろう",
+    "tokens" : [
+      "Let's",
+      "ride",
+      "bikes"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "swim",
+      "well"
+    ],
+    "en" : "She can swim well",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "FF8B38C4-2564-5EDE-95E6-CACF9CDF4C76",
+    "ja" : "かのじょは じょうずに およげる",
+    "tokens" : [
+      "She",
+      "can",
+      "swim",
+      "well"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "tag",
+      "friend"
+    ],
+    "en" : "I played tag with my friend",
+    "gradeBand" : 1,
+    "grammar" : "pastSimple",
+    "id" : "1F3A68D9-B550-539F-96FE-4F8831E0FE4D",
+    "ja" : "わたしは ともだちと おにごっこを した",
+    "tokens" : [
+      "I",
+      "played",
+      "tag",
+      "with",
+      "my",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "ball"
+    ],
+    "en" : "She wants this ball",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "5E1F0478-B326-52EF-946B-06A3F0D49060",
+    "ja" : "かのじょは この ボールが ほしい",
+    "tokens" : [
+      "She",
+      "wants",
+      "this",
+      "ball"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "tomorrow"
+    ],
+    "en" : "See you tomorrow",
+    "gradeBand" : 2,
+    "id" : "EC6A52ED-6A67-5C72-AB9E-61956939B8DB",
+    "ja" : "また あしたね",
+    "tokens" : [
+      "See",
+      "you",
+      "tomorrow"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "happy",
+      "birthday"
+    ],
+    "en" : "Happy birthday",
+    "gradeBand" : 2,
+    "id" : "36DF60A9-58A5-5D52-A522-14315FE32BDE",
+    "ja" : "お誕生日 おめでとう！",
+    "tokens" : [
+      "Happy",
+      "birthday"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "nice",
+      "meet"
+    ],
+    "en" : "Nice to meet you",
+    "gradeBand" : 1,
+    "id" : "7D67F72B-009C-5238-B4EA-EB05833D1354",
+    "ja" : "はじめまして",
+    "tokens" : [
+      "Nice",
+      "to",
+      "meet",
+      "you"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "cute"
+    ],
+    "en" : "Her cat is cute",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "DE9C6F2E-69D6-5B9A-A5B3-10F76CEC3459",
+    "ja" : "かのじょの ねこは かわいい",
+    "tokens" : [
+      "Her",
+      "cat",
+      "is",
+      "cute"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "live",
+      "near",
+      "house"
+    ],
+    "en" : "He lives near my house",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "1A9E3533-33F9-59BF-929A-72301317DE77",
+    "ja" : "かれは わたしの 家の 近所に すんでいる",
+    "tokens" : [
+      "He",
+      "lives",
+      "near",
+      "my",
+      "house"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fast"
+    ],
+    "en" : "He is faster than me",
+    "gradeBand" : 2,
+    "grammar" : "comparativeEr",
+    "id" : "2B438E3E-50D6-5995-B343-D078AEEBF710",
+    "ja" : "かれは わたしより はやい",
+    "tokens" : [
+      "He",
+      "is",
+      "faster",
+      "than",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "visited",
+      "house"
+    ],
+    "en" : "I visited her house",
+    "gradeBand" : 2,
+    "grammar" : "pastSimple",
+    "id" : "E73282D7-DE44-5556-B0F3-867201F74D47",
+    "ja" : "わたしは かのじょの 家を たずねた",
+    "tokens" : [
+      "I",
+      "visited",
+      "her",
+      "house"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "music"
+    ],
+    "en" : "He likes music",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "EBB77B91-1C07-5850-9D45-87CDE947F1A3",
+    "ja" : "かれは おんがくが すき",
+    "tokens" : [
+      "He",
+      "likes",
+      "music"
+    ]
+  }
+]

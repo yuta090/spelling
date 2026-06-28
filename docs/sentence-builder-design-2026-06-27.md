@@ -126,7 +126,7 @@ sentence_bank(id, en, ja, tokens_json, content_lemmas_json, grade_band, source)
 1. **(着手) 並べ替えコア**：`SentenceItem` / `ExerciseFormat`（型のみ全形式）/ 並べ替えジェネレータ＆決定的グレーダ を TDD（RED→GREEN）。出題範囲ハードフィルタも同時に。
 2. SessionComposer（自動ミックスの骨組み・並べ替え単独でも難度制御）。
 3. 未習語 enroll ロジック（SRS box1 登録）。
-4. 文バンク前処理パイプライン（curated 取込 + Tanaka 抽出 + 学年タグ）→ `sentence_bank` 生成。
+4. ✅ 文バンク前処理パイプライン（curated 取込 + 学年タグ）→ 同梱 `sentence_bank.json` 生成。Core `SimpleLemmatizer`/`SentenceBankBuilder`（TDD）＋ CLI `sentence-bank-build`。壁は §3.1 の通り**見える内容語すべて**で判定（著者 lemma に依存しない）。Tanaka 自動抽出は次サブ手（量を足す・grammar=nil 可）。
 5. アプリ UI（並べ替え画面・タイル・マーカー）。
 6. 産出形式（穴埋め手書き・英作文）を AI 採点に接続。
 
