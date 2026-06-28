@@ -9296,7 +9296,23 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "voxelfarm", japaneseName: "ボクセルぼくじょう", englishName: "Voxel Farm", price: 200, imageName: "bg_voxelfarm"),
         HomeBackgroundTheme(id: "voxelcastle", japaneseName: "ボクセルキャッスル", englishName: "Voxel Castle", price: 200, imageName: "bg_voxelcastle"),
         HomeBackgroundTheme(id: "voxelautumn", japaneseName: "ボクセルこうよう", englishName: "Voxel Autumn", price: 200, imageName: "bg_voxelautumn"),
-        HomeBackgroundTheme(id: "ghosthouse", japaneseName: "おばけやしき", englishName: "Ghost House", price: 200, imageName: "bg_ghosthouse")
+        HomeBackgroundTheme(id: "ghosthouse", japaneseName: "おばけやしき", englishName: "Ghost House", price: 200, imageName: "bg_ghosthouse"),
+        HomeBackgroundTheme(id: "beetleforest", japaneseName: "カブトムシのもり", englishName: "Beetle Forest", price: 180, imageName: "bg_beetleforest"),
+        HomeBackgroundTheme(id: "butterflygarden", japaneseName: "ちょうのにわ", englishName: "Butterfly Garden", price: 180, imageName: "bg_butterflygarden"),
+        HomeBackgroundTheme(id: "fireflynight", japaneseName: "ほたるのよる", englishName: "Firefly Night", price: 200, imageName: "bg_fireflynight"),
+        HomeBackgroundTheme(id: "dragonflypond", japaneseName: "とんぼのいけ", englishName: "Dragonfly Pond", price: 180, imageName: "bg_dragonflypond"),
+        HomeBackgroundTheme(id: "rainyhydrangea", japaneseName: "あめとあじさい", englishName: "Rainy Hydrangea", price: 180, imageName: "bg_rainyhydrangea"),
+        HomeBackgroundTheme(id: "tsukimi", japaneseName: "おつきみ", englishName: "Moon Viewing", price: 200, imageName: "bg_tsukimi"),
+        HomeBackgroundTheme(id: "setsubun", japaneseName: "せつぶん", englishName: "Setsubun", price: 180, imageName: "bg_setsubun"),
+        HomeBackgroundTheme(id: "newyear", japaneseName: "おしょうがつ", englishName: "New Year", price: 200, imageName: "bg_newyear"),
+        HomeBackgroundTheme(id: "easter", japaneseName: "イースター", englishName: "Easter", price: 180, imageName: "bg_easter"),
+        HomeBackgroundTheme(id: "fairyforest", japaneseName: "ようせいのもり", englishName: "Fairy Forest", price: 220, imageName: "bg_fairyforest"),
+        HomeBackgroundTheme(id: "crystalcave", japaneseName: "クリスタルのどうくつ", englishName: "Crystal Cave", price: 220, imageName: "bg_crystalcave"),
+        HomeBackgroundTheme(id: "piratecove", japaneseName: "かいぞくのいりえ", englishName: "Pirate Cove", price: 200, imageName: "bg_piratecove"),
+        HomeBackgroundTheme(id: "treehouse", japaneseName: "ツリーハウス", englishName: "Treehouse", price: 200, imageName: "bg_treehouse"),
+        HomeBackgroundTheme(id: "hotairballoons", japaneseName: "ききゅうのそら", englishName: "Hot Air Balloons", price: 200, imageName: "bg_hotairballoons"),
+        HomeBackgroundTheme(id: "bamboo", japaneseName: "たけやぶ", englishName: "Bamboo Grove", price: 180, imageName: "bg_bamboo"),
+        HomeBackgroundTheme(id: "ricefield", japaneseName: "いなかのたんぼ", englishName: "Countryside Rice Field", price: 180, imageName: "bg_ricefield")
     ]
     // BG-CATALOG-GENERATED-END
 }
