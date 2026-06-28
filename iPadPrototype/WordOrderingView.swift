@@ -253,24 +253,6 @@ struct WordOrderingDemoView: View {
         .tapFeedback(bounce: true)
     }
 
-    /// 不正解時の文法解説カード。`GrammarPoint` の事前作成された固定文（トンマナ安全）。
-    private func explanationCard(_ point: GrammarPoint) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Label(point.titleJa, systemImage: "lightbulb.fill")
-                .font(.system(size: 15, weight: .bold, design: .rounded))
-                .foregroundStyle(WO.accent)
-            Text(point.explanationJa)
-                .font(.system(size: 16, weight: .medium, design: .rounded))
-                .foregroundStyle(WO.ink)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(RoundedRectangle(cornerRadius: 14).fill(WO.hintFill))
-        .overlay(RoundedRectangle(cornerRadius: 14).stroke(WO.tileStroke, lineWidth: 1.5))
-        .transition(.scale(scale: 0.96).combined(with: .opacity))
-    }
-
     private enum TileRole { case tray, placed }
 
     private func tileButton(_ tile: OrderingTile, role: TileRole) -> some View {
@@ -318,9 +300,15 @@ struct WordOrderingDemoView: View {
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
                             .foregroundStyle(.secondary)
                     }
-                    // 不正解のときは、その文の文法の「ヒント」を出す（事前作成の固定文）。
-                    if let grammar = item?.grammar {
-                        explanationCard(grammar)
+                    // 不正解のときは「せいかいの文＋意味＋（あれば）文法解説」を1枚で見せる。
+                    // 置いた（間違った）タイルはそのまま残し、その下に正解を出す。
+                    // grammar が nil でも正解文・意味は出す（従来は正解文を見せていなかった欠落の修正）。
+                    if let item {
+                        AnswerExplanationCard(
+                            explanation: SentenceFeedback.make(
+                                item: item, submitted: placed.map(\.text), grade: grade
+                            )
+                        )
                     }
                 }
                 // 回答後に「しらない ことば」を選んで復習へ積む（並べ替えのタップとは衝突しない）。

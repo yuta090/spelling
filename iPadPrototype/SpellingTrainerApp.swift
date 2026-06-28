@@ -71,6 +71,14 @@ private struct RootView: View {
             .overlay(alignment: .bottomTrailing) {
                 WordOrderingDebugLauncher()
             }
+            // 文づくり（穴埋め選択）の試遊導線（製品UIには出さない）。
+            .overlay(alignment: .bottom) {
+                ClozeChoiceDebugLauncher()
+            }
+            // 混合セッション（並べ替え×穴埋めを混ぜる）の試遊導線（製品UIには出さない）。
+            .overlay(alignment: .bottomLeading) {
+                MixedSessionDebugLauncher()
+            }
         #endif
     }
 }

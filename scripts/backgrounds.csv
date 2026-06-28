@@ -1,34 +1,34 @@
 id,category,ja_name,en_name,price,default_unlocked,render,image,art_prompt
 meadow,nature,ひるのまち,Meadow,0,true,procedural,,
 sunset,season,ゆうやけ,Sunset,0,true,procedural,,
-night,season,よぞら,Starry Night,8,false,procedural,,
-beach,sea,うみべ,Beach,12,false,procedural,,
-snow,season,ゆきやま,Snowland,12,false,procedural,,
-space,fantasy,うちゅう,Outer Space,16,false,procedural,,
+night,season,よぞら,Starry Night,80,false,procedural,,
+beach,sea,うみべ,Beach,120,false,procedural,,
+snow,season,ゆきやま,Snowland,120,false,procedural,,
+space,fantasy,うちゅう,Outer Space,160,false,procedural,,
 forest,nature,もり,Forest,0,true,image,bg_forest.png,Friendly green forest with rounded trees soft sunbeams a small path and gentle bushes calm and cozy
-flowerfield,nature,おはなばたけ,Flower Field,10,false,image,bg_flowerfield.png,Wide field full of colorful round flowers tulips and daisies under a clear blue sky soft pastel palette
+flowerfield,nature,おはなばたけ,Flower Field,100,false,image,bg_flowerfield.png,Wide field full of colorful round flowers tulips and daisies under a clear blue sky soft pastel palette
 park,city,こうえん,Park,0,true,image,bg_park.png,Cheerful neighborhood park with green lawn a few trees a bench and a winding path bright friendly daytime
-town,city,まち,Town,10,false,image,bg_town.png,Cute small town street with simple rounded houses shops and trees clear blue sky tidy and friendly
+town,city,まち,Town,100,false,image,bg_town.png,Cute small town street with simple rounded houses shops and trees clear blue sky tidy and friendly
 sakura,season,さくら,Cherry Blossoms,0,true,image,bg_sakura.png,Soft pink cherry blossom trees in full bloom with falling petals gentle spring sky calm and dreamy
-autumn,season,こうよう,Autumn Leaves,12,false,image,bg_autumn.png,Cozy autumn scene with red orange and yellow round trees falling leaves warm afternoon light
-underwater,sea,うみのなか,Under the Sea,14,false,image,bg_underwater.png,Soft underwater scene with friendly fish coral seaweed and bubbles gentle blue water rays of light
+autumn,season,こうよう,Autumn Leaves,120,false,image,bg_autumn.png,Cozy autumn scene with red orange and yellow round trees falling leaves warm afternoon light
+underwater,sea,うみのなか,Under the Sea,140,false,image,bg_underwater.png,Soft underwater scene with friendly fish coral seaweed and bubbles gentle blue water rays of light
 rainbow,fantasy,にじ,Rainbow,0,true,image,bg_rainbow.png,Bright cheerful sky with a big soft rainbow fluffy white clouds and gentle sunlight playful and happy
 candyland,fantasy,おかしのくに,Candy Land,0,true,image,bg_candyland.png,Whimsical candy world with lollipop trees gumdrop hills and pastel candy clouds sweet and playful
-castle,fantasy,おしろ,Castle,16,false,image,bg_castle.png,Storybook fairytale castle on a green hill with soft towers flags and a clear blue sky gentle and magical
-farm,nature,ぼくじょう,Farm,10,false,image,bg_farm.png,Cheerful farm with a red barn rolling green hills a fence round haystacks and soft clouds
-aquarium,sea,すいぞくかん,Aquarium,12,false,image,bg_aquarium.png,Cozy aquarium tank with friendly fish a ray coral and bubbles soft blue water
-amusement,fantasy,ゆうえんち,Amusement Park,14,false,image,bg_amusement.png,Playful amusement park with a ferris wheel striped tent balloons and bunting bright happy sky
-boutique,fashion,ブティック,Boutique,20,false,image,bg_boutique.png,"Sleek high-end fashion boutique interior, racks, spotlights, marble floor"
-sneakers,fashion,スニーカーショップ,Sneaker Shop,18,false,image,bg_sneakers.png,"Stylish sneaker store, illuminated shelves, streetwear, neon accents"
-carshowroom,vehicle,カーショールーム,Car Showroom,28,false,image,bg_carshowroom.png,"Luxury car showroom, glass walls, sports car, glossy floor, night skyline"
-racetrack,vehicle,サーキット,Race Track,22,false,image,bg_racetrack.png,"Motorsport pit lane, race car, garages, tire stacks, bright daytime"
-concert,music,コンサート,Concert,24,false,image,bg_concert.png,"Concert stage from the audience, stage lights, screens, crowd silhouettes"
-studio,music,スタジオ,Studio,20,false,image,bg_studio.png,"Recording studio, mixing console, mic, warm lighting, acoustic panels"
-stadium,sports,スタジアム,Stadium,24,false,image,bg_stadium.png,"Soccer stadium from the stands, green pitch, floodlights, crowd"
-gamingroom,tech,ゲーミングルーム,Gaming Room,22,false,image,bg_gamingroom.png,"Streamer gaming room at night, RGB lighting, monitors, sleek futuristic"
-shibuya,city,しぶや,Shibuya,26,false,image,bg_shibuya.png,"Shibuya scramble at night, neon billboards, wet plaza reflections, cinematic"
-paris,city,パリ,Paris,24,false,image,bg_paris.png,"Paris boulevard with the Eiffel Tower, warm evening light, iconic"
-newyork,city,ニューヨーク,New York,26,false,image,bg_newyork.png,"NYC skyline with the Statue of Liberty, golden hour, grand"
-london,city,ロンドン,London,24,false,image,bg_london.png,"London with Big Ben and a red double-decker bus, iconic"
-basketball,sports,バスケアリーナ,Basketball Arena,22,false,image,bg_basketball.png,"Indoor basketball arena courtside, hoop, bright lights, crowd"
-airport,travel,くうこうラウンジ,Airport Lounge,22,false,image,bg_airport.png,"Sleek airport lounge, windows over the tarmac, planes, warm light"
+castle,fantasy,おしろ,Castle,160,false,image,bg_castle.png,Storybook fairytale castle on a green hill with soft towers flags and a clear blue sky gentle and magical
+farm,nature,ぼくじょう,Farm,100,false,image,bg_farm.png,Cheerful farm with a red barn rolling green hills a fence round haystacks and soft clouds
+aquarium,sea,すいぞくかん,Aquarium,120,false,image,bg_aquarium.png,Cozy aquarium tank with friendly fish a ray coral and bubbles soft blue water
+amusement,fantasy,ゆうえんち,Amusement Park,140,false,image,bg_amusement.png,Playful amusement park with a ferris wheel striped tent balloons and bunting bright happy sky
+boutique,fashion,ブティック,Boutique,200,false,image,bg_boutique.png,"Sleek high-end fashion boutique interior, racks, spotlights, marble floor"
+sneakers,fashion,スニーカーショップ,Sneaker Shop,180,false,image,bg_sneakers.png,"Stylish sneaker store, illuminated shelves, streetwear, neon accents"
+carshowroom,vehicle,カーショールーム,Car Showroom,280,false,image,bg_carshowroom.png,"Luxury car showroom, glass walls, sports car, glossy floor, night skyline"
+racetrack,vehicle,サーキット,Race Track,220,false,image,bg_racetrack.png,"Motorsport pit lane, race car, garages, tire stacks, bright daytime"
+concert,music,コンサート,Concert,240,false,image,bg_concert.png,"Concert stage from the audience, stage lights, screens, crowd silhouettes"
+studio,music,スタジオ,Studio,200,false,image,bg_studio.png,"Recording studio, mixing console, mic, warm lighting, acoustic panels"
+stadium,sports,スタジアム,Stadium,240,false,image,bg_stadium.png,"Soccer stadium from the stands, green pitch, floodlights, crowd"
+gamingroom,tech,ゲーミングルーム,Gaming Room,220,false,image,bg_gamingroom.png,"Streamer gaming room at night, RGB lighting, monitors, sleek futuristic"
+shibuya,city,しぶや,Shibuya,260,false,image,bg_shibuya.png,"Shibuya scramble at night, neon billboards, wet plaza reflections, cinematic"
+paris,city,パリ,Paris,240,false,image,bg_paris.png,"Paris boulevard with the Eiffel Tower, warm evening light, iconic"
+newyork,city,ニューヨーク,New York,260,false,image,bg_newyork.png,"NYC skyline with the Statue of Liberty, golden hour, grand"
+london,city,ロンドン,London,240,false,image,bg_london.png,"London with Big Ben and a red double-decker bus, iconic"
+basketball,sports,バスケアリーナ,Basketball Arena,220,false,image,bg_basketball.png,"Indoor basketball arena courtside, hoop, bright lights, crowd"
+airport,travel,くうこうラウンジ,Airport Lounge,220,false,image,bg_airport.png,"Sleek airport lounge, windows over the tarmac, planes, warm light"
