@@ -4306,6 +4306,8 @@ private struct ParentNewStepSheet: View {
                         japanese: "読み取りに失敗しました。もう一度撮り直してください。",
                         english: "Scanning failed. Please retake the photo."
                     )
+                    // 運用テレメトリ: OCR失敗（内容は送らず、どの導線で失敗したかのみ）。
+                    TelemetryCoordinator.shared.record(.ocrFailed, payload: ["op": .string("word_import_scan")])
                 }
             }
         }
@@ -4698,6 +4700,8 @@ private struct ParentWordListPanel: View {
                         japanese: "読み取りに失敗しました。もう一度撮り直してください。",
                         english: "Scanning failed. Please retake the photo."
                     )
+                    // 運用テレメトリ: OCR失敗（内容は送らず、どの導線で失敗したかのみ）。
+                    TelemetryCoordinator.shared.record(.ocrFailed, payload: ["op": .string("word_import_scan")])
                 }
             }
         }
@@ -5680,6 +5684,8 @@ private struct ParentLegacyWordListPanel: View {
                         japanese: "読み取りに失敗しました。もう一度撮り直してください。",
                         english: "Scanning failed. Please retake the photo."
                     )
+                    // 運用テレメトリ: OCR失敗（内容は送らず、どの導線で失敗したかのみ）。
+                    TelemetryCoordinator.shared.record(.ocrFailed, payload: ["op": .string("word_import_scan")])
                 }
             }
         }
