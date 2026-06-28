@@ -4340,6 +4340,17 @@ private struct CharacterPickerSheet: View {
     }
 }
 
+private extension View {
+    /// 名前ラベルに白い縁取り(ハロー)を重ねる。濃い背景画像の上や、
+    /// キャラ/サムネイルの色が文字色(濃紺)と同系色のときでも名前が読めるようにする。
+    func legibleLabelHalo() -> some View {
+        self
+            .shadow(color: .white.opacity(0.95), radius: 1.2)
+            .shadow(color: .white.opacity(0.95), radius: 1.2)
+            .shadow(color: .white.opacity(0.8), radius: 2.5)
+    }
+}
+
 private struct CharacterPickerCard: View {
     var character: HomeRewardCharacter
     var isSelected: Bool
@@ -4366,13 +4377,16 @@ private struct CharacterPickerCard: View {
         VStack(spacing: 6) {
             RewardCharacterAvatar(character: character)
                 .frame(width: 58, height: 58)
-                .opacity(canUnlock ? 1 : 0.46)
+                // 未購入(未所有)はキャラ本体だけ少し薄くして「まだ持っていない」を伝える。
+                // 文字には掛けない。
+                .opacity(isUnlocked ? 1 : 0.5)
 
             Text(character.name(language: language))
                 .font(.subheadline.weight(.heavy))
                 .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
                 .lineLimit(1)
                 .minimumScaleFactor(0.56)
+                .legibleLabelHalo()
 
             statePill
         }
@@ -4471,7 +4485,8 @@ private struct BackgroundPickerCard: View {
         VStack(spacing: 8) {
             HomeBackgroundThumbnail(theme: theme)
                 .frame(height: 84)
-                .opacity(canUnlock ? 1 : 0.5)
+                // 未購入(未所有)はサムネイルだけ少し薄くする。文字には掛けない。
+                .opacity(isUnlocked ? 1 : 0.5)
                 .overlay(alignment: .topTrailing) {
                     if isSelected {
                         Image(systemName: "checkmark.circle.fill")
@@ -4493,6 +4508,7 @@ private struct BackgroundPickerCard: View {
                 .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
                 .lineLimit(1)
                 .minimumScaleFactor(0.56)
+                .legibleLabelHalo()
 
             statePill
         }
