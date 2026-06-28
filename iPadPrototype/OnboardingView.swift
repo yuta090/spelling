@@ -14,8 +14,8 @@ struct OnboardingView: View {
         case welcome, grade, lookAndFeel, coinGift
     }
 
-    /// 初回プレゼントするコイン数（なかま4〜6・はいけい8〜のので、最初の解放を体験できる量）。
-    private let coinGift = 12
+    /// 初回プレゼントするコイン数（なかま40〜60・はいけい80〜のので、最初の解放を体験できる量）。
+    private let coinGift = 120
 
     @State private var step: Step = .welcome
     @State private var pickedGrade: GradeLevel?
