@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import SpellingSyncCore
 
 /// 単語を誰が登録したか。既存データは親登録として読み込まれる。
 enum WordSource: String, Codable, Equatable, Sendable {
@@ -118,6 +119,44 @@ struct ReviewWordDetail: Identifiable, Equatable, Sendable {
     var box: Int
     /// 直近の解答が正解だったか（box が上がっている＝直近◯）。box1 は直近×（または新規）。
     var lastAnsweredCorrect: Bool
+}
+
+/// 保護者「ようす」タブ（総合ステータス）のひと目サマリー。
+/// 既存集計（連続日数・正答率・まちがい復習・採点待ち）＋新規の利用時間を1つにまとめた表示用スナップショット。
+struct OverviewStats: Equatable, Sendable {
+    var childName: String
+    var grade: String
+    /// 子が選んでいるキャラID（アバター表示用）。
+    var avatarCharacterID: String
+    var streakDays: Int
+    var weeklyCount: Int
+    /// これまで触れた単語数（累計）。
+    var totalWords: Int
+    /// これまで一度でもクリアできた単語数（マスター）。
+    var masteredWords: Int
+    /// 直近の正答率（0...1）。
+    var accuracy: Double
+    /// 直近正答率の調子（色分け用）。
+    var accuracyBand: AccuracyBand
+    /// 今日のアプリ利用秒数。
+    var usageTodaySeconds: Int
+    /// 今週（月〜日）のアプリ利用秒数合計。
+    var usageWeekSeconds: Int
+    /// 今週（月→日）の日別利用秒数。スパークライン用。
+    var usageWeekSeries: [Int]
+    /// 今週（月→日）の日別取り組み数。曜日バー用。
+    var weeklyActivity: [Int]
+    var spellingReviewCount: Int
+    var grammarReviewCount: Int
+    var pendingGradingCount: Int
+
+    /// まちがい復習が1件でもあるか（明細への導線を出すか）。
+    var hasReview: Bool { spellingReviewCount > 0 || grammarReviewCount > 0 }
+    /// マスター率（マスター/累計、0...1）。進捗バー用。
+    var masteryRatio: Double { totalWords > 0 ? Double(masteredWords) / Double(totalWords) : 0 }
+    /// 学習の記録が1つでもあるか。false（初回・データ0）なら歓迎の空状態を出す。
+    /// 利用時間だけ（アプリを開いただけ）は活動とみなさない＝学習が始まるまで歓迎表示。
+    var hasActivity: Bool { totalWords > 0 || weeklyCount > 0 || masteredWords > 0 || hasReview }
 }
 
 struct SchoolTestResult: Identifiable, Equatable, Codable, Sendable {

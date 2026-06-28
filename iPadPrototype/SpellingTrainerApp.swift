@@ -44,6 +44,9 @@ private struct RootView: View {
             }
         }
             .task {
+                // 起動直後は scenePhase の .active 変化が来ないので、待ち処理より先に計測を開始する。
+                // beginUsageSession は冪等なので .active 変化と重なっても起点を落とさない。
+                model.beginUsageSession()
                 // StoreKit を開始（商品ロード・取引監視・権利再検証）。起動時に権利を上書きするので、
                 // キャッシュやデバッグ値が残っていても実際の購入状態に揃う。
                 model.startStoreKit()
@@ -57,7 +60,14 @@ private struct RootView: View {
                 await model.syncNow()
             }
             .onChange(of: scenePhase) { phase in
-                if phase == .active { Task { await model.syncNow() } }
+                if phase == .active {
+                    // 前面化：利用時間の計測を開始（保護者「ようす」タブ）。
+                    model.beginUsageSession()
+                    Task { await model.syncNow() }
+                } else {
+                    // 前面を離れた（inactive/background）：滞在ぶんを利用時間へ確定。
+                    model.endUsageSession()
+                }
             }
             .onChange(of: session.activeHouseholdID) { _ in
                 Task { await model.syncNow() }

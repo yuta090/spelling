@@ -23,7 +23,7 @@ private enum ParentPalette {
 struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedSection: ParentSection = UITestSupport.isActive ? .words : .grading
+    @State private var selectedSection: ParentSection = UITestSupport.isActive ? .words : .overview
     @State private var showingReviewDetail = false
 
     private var language: AppLanguage {
@@ -37,16 +37,12 @@ struct ParentDashboardView: View {
 
                 VStack(spacing: 18) {
                     header
-                    let board = model.parentScoreboard()
                     // 採点待ちがある時だけ最上段にCTA（やることがある時だけ前に出す）。
-                    if board.pendingGradingCount > 0 {
-                        ParentGradingCTABanner(count: board.pendingGradingCount, language: language) {
+                    // スコアボードは「ようす」タブに畳んだ（先頭タブ＝ホーム）。
+                    if model.pendingGradingCount > 0 {
+                        ParentGradingCTABanner(count: model.pendingGradingCount, language: language) {
                             selectedSection = .grading
                         }
-                    }
-                    // スコアボードは常に土台。まちがい復習サマリーはタップで明細へ。
-                    ParentScoreboardCard(board: board, language: language) {
-                        if board.hasReview { showingReviewDetail = true }
                     }
                     ParentSectionSwitcher(selectedSection: $selectedSection, language: language)
                     if selectedSection == .words || selectedSection == .records {
@@ -85,6 +81,12 @@ struct ParentDashboardView: View {
     @ViewBuilder
     private func selectedPanel(width: CGFloat) -> some View {
         switch selectedSection {
+        case .overview:
+            ParentOverviewPanel(
+                language: language,
+                onTapReview: { showingReviewDetail = true },
+                onRegisterWords: { selectedSection = .words }
+            )
         case .grading:
             ParentGradingPanel(language: language)
         case .words:
@@ -182,83 +184,517 @@ private struct ParentGradingCTABanner: View {
     }
 }
 
-// MARK: - スコアボード（常時表示の土台カード）
+// MARK: - 「ようす」タブ（総合ステータス／先頭タブ＝ホーム）
 
-private struct ParentScoreboardCard: View {
-    var board: ParentScoreboard
+/// 子の状態をひと目で見せる総合ステータス。スコアボード（連続日数・今週・まちがい復習）を畳み込み、
+/// 覚えた単語・正答率・利用時間・今週のがんばりを加えた管理ビュー。集計は `AppModel.overviewStats()`。
+private struct ParentOverviewPanel: View {
+    @EnvironmentObject private var model: AppModel
     var language: AppLanguage
     var onTapReview: () -> Void
+    var onRegisterWords: () -> Void
 
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
-                stat(value: "\(board.streakDays)",
-                     unit: language.text(japanese: "日れんぞく", english: "day streak"),
-                     icon: "flame.fill", tint: ParentPalette.warning)
-                Divider().frame(height: 34)
-                stat(value: "\(board.weeklyCount)",
-                     unit: language.text(japanese: "問／今週", english: "this week"),
-                     icon: "checkmark.seal.fill", tint: ParentPalette.success)
+        let stats = model.overviewStats()
+        if stats.hasActivity {
+            populated(stats: stats)
+        } else {
+            // 初回・データ0：数字を並べず歓迎＋最初の一手（単語登録）へ誘導。
+            OverviewEmptyState(stats: stats, language: language, onRegisterWords: onRegisterWords)
+        }
+    }
+
+    @ViewBuilder
+    private func populated(stats: OverviewStats) -> some View {
+        VStack(spacing: 14) {
+            OverviewHeroStrip(stats: stats, language: language)
+
+            // 3カード：覚えた単語 / 正答率 / 利用時間。狭い時は縦積み。
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 14) {
+                    OverviewWordsCard(stats: stats, language: language)
+                    OverviewAccuracyCard(stats: stats, language: language)
+                    OverviewUsageCard(stats: stats, language: language)
+                }
+                VStack(spacing: 14) {
+                    OverviewWordsCard(stats: stats, language: language)
+                    OverviewAccuracyCard(stats: stats, language: language)
+                    OverviewUsageCard(stats: stats, language: language)
+                }
             }
 
-            // まちがい復習サマリー（タップで明細）。0件なら控えめに「なし」。
-            Button(action: onTapReview) {
-                HStack(spacing: 10) {
-                    Image(systemName: "arrow.triangle.2.circlepath")
+            // 2カード：今週のがんばり / まちがい復習。
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: 14) {
+                    OverviewWeeklyActivityCard(stats: stats, language: language)
+                    OverviewReviewCard(stats: stats, language: language, onTap: onTapReview)
+                }
+                VStack(spacing: 14) {
+                    OverviewWeeklyActivityCard(stats: stats, language: language)
+                    OverviewReviewCard(stats: stats, language: language, onTap: onTapReview)
+                }
+            }
+        }
+        .frame(maxWidth: 900, alignment: .top)
+    }
+}
+
+// MARK: 空状態（初回・データ0の歓迎）
+
+/// 学習記録がまだ無いときの歓迎ビュー。0の羅列を出さず、これから何がたまるかを予告し、
+/// 最初の一手（単語登録）へ誘導する。データが入り始めたら通常カードへ自動で切り替わる。
+private struct OverviewEmptyState: View {
+    var stats: OverviewStats
+    var language: AppLanguage
+    var onRegisterWords: () -> Void
+
+    var body: some View {
+        VStack(spacing: 22) {
+            RewardCharacterAvatar(character: HomeRewardCharacter.character(id: stats.avatarCharacterID))
+                .frame(width: 110, height: 110)
+
+            VStack(spacing: 10) {
+                Text(language.text(japanese: "ここに『ようす』が たまります", english: "Your child's overview will appear here"))
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .foregroundStyle(ParentPalette.ink)
+                    .multilineTextAlignment(.center)
+                Text(language.text(
+                    japanese: "おうちのかたへ。お子さんが れんしゅうや テストを はじめると、\nここに 連続日数・覚えた単語・正答率・利用時間 が 出ます。",
+                    english: "Once your child starts practicing and taking tests,\ntheir streak, words learned, accuracy, and time will show up here."
+                ))
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(ParentPalette.neutral)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+
+            // これから出る指標の予告（薄いゴーストチップ）。
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 10) { ghostChips }
+                VStack(spacing: 10) {
+                    HStack(spacing: 10) {
+                        OverviewGhostChip(systemImage: "flame.fill", label: language.text(japanese: "連続日数", english: "Streak"))
+                        OverviewGhostChip(systemImage: "book.fill", label: language.text(japanese: "覚えた単語", english: "Words"))
+                    }
+                    HStack(spacing: 10) {
+                        OverviewGhostChip(systemImage: "target", label: language.text(japanese: "正答率", english: "Accuracy"))
+                        OverviewGhostChip(systemImage: "clock.fill", label: language.text(japanese: "利用時間", english: "Time"))
+                    }
+                }
+            }
+
+            Button(action: onRegisterWords) {
+                VStack(spacing: 2) {
+                    Label(language.text(japanese: "単語を登録する", english: "Register words"), systemImage: "book.closed.fill")
+                        .font(.headline.weight(.bold))
+                    Text(language.text(japanese: "まずは ことばを えらぶ", english: "Start by choosing words"))
+                        .font(.caption.weight(.semibold))
+                        .opacity(0.85)
+                }
+                .foregroundStyle(.white)
+                .padding(.vertical, 14)
+                .padding(.horizontal, 28)
+                .background(ParentPalette.primary)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .buttonStyle(.plain)
+            .tapFeedback()
+        }
+        .padding(32)
+        .frame(maxWidth: 720)
+        .background(ParentPalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+        )
+        // カード自体は最大720幅。外枠を広げて中央寄せにする（白カードが横いっぱいに伸びないように）。
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private var ghostChips: some View {
+        OverviewGhostChip(systemImage: "flame.fill", label: language.text(japanese: "連続日数", english: "Streak"))
+        OverviewGhostChip(systemImage: "book.fill", label: language.text(japanese: "覚えた単語", english: "Words"))
+        OverviewGhostChip(systemImage: "target", label: language.text(japanese: "正答率", english: "Accuracy"))
+        OverviewGhostChip(systemImage: "clock.fill", label: language.text(japanese: "利用時間", english: "Time"))
+    }
+}
+
+/// 「これから出る指標」の薄い予告チップ（プレースホルダ。実値ではなく「—」）。
+private struct OverviewGhostChip: View {
+    var systemImage: String
+    var label: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: systemImage)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(ParentPalette.primary.opacity(0.7))
+            Text(label)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(ParentPalette.ink.opacity(0.55))
+            Text("—")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(ParentPalette.neutral.opacity(0.6))
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 14)
+        .frame(maxWidth: .infinity)
+        .background(ParentPalette.primarySoft.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
+        )
+    }
+}
+
+/// カード共通の白い角丸＋うっすら枠。
+private struct OverviewCard<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        content
+            .padding(16)
+            .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
+            .background(ParentPalette.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+            )
+    }
+}
+
+/// アイコンチップ（薄緑の丸背景＋SF Symbol）。カード見出しに使う。
+private struct OverviewIconChip: View {
+    var systemImage: String
+    var tint: Color = ParentPalette.primary
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.headline.weight(.bold))
+            .foregroundStyle(tint)
+            .frame(width: 34, height: 34)
+            .background(tint.opacity(0.12))
+            .clipShape(RoundedRectangle(cornerRadius: 9))
+    }
+}
+
+// MARK: ヒーロー帯（アバター＋名前＋連続日数）
+
+private struct OverviewHeroStrip: View {
+    var stats: OverviewStats
+    var language: AppLanguage
+
+    private var title: String {
+        let name = stats.childName.trimmingCharacters(in: .whitespaces)
+        if name.isEmpty { return language.text(japanese: "がんばりの ようす", english: "Overview") }
+        return language.text(japanese: "\(name)の ようす", english: "\(name)'s overview")
+    }
+
+    var body: some View {
+        HStack(spacing: 16) {
+            RewardCharacterAvatar(character: HomeRewardCharacter.character(id: stats.avatarCharacterID))
+                .frame(width: 76, height: 76)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 24, weight: .heavy, design: .rounded))
+                    .foregroundStyle(ParentPalette.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                if !stats.grade.trimmingCharacters(in: .whitespaces).isEmpty {
+                    Text(stats.grade)
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(ParentPalette.primary)
-                    Text(language.text(japanese: "まちがい復習", english: "Review"))
+                        .foregroundStyle(ParentPalette.neutral)
+                }
+            }
+
+            Spacer(minLength: 12)
+
+            VStack(alignment: .trailing, spacing: 6) {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Image(systemName: "flame.fill")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(ParentPalette.warning)
+                    Text("\(stats.streakDays)")
+                        .font(.system(size: 40, weight: .heavy, design: .rounded))
+                        .foregroundStyle(ParentPalette.ink)
+                    Text(language.text(japanese: "日れんぞく", english: "day streak"))
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(ParentPalette.neutral)
+                }
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(ParentPalette.success)
+                    Text(language.text(japanese: "今週 \(stats.weeklyCount)問", english: "\(stats.weeklyCount) this week"))
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(ParentPalette.ink)
-                    Spacer(minLength: 8)
-                    if board.hasReview {
-                        Text(language.text(
-                            japanese: "スペル\(board.spellingReviewCount)・文\(board.grammarReviewCount)",
-                            english: "Spell \(board.spellingReviewCount) · Sent \(board.grammarReviewCount)"
-                        ))
+                }
+            }
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity)
+        .background(ParentPalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+        )
+    }
+}
+
+// MARK: 覚えた単語
+
+private struct OverviewWordsCard: View {
+    var stats: OverviewStats
+    var language: AppLanguage
+
+    var body: some View {
+        OverviewCard {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 10) {
+                    OverviewIconChip(systemImage: "book.fill")
+                    Text(language.text(japanese: "覚えた単語", english: "Words learned"))
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(ParentPalette.ink)
+                }
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text("\(stats.totalWords)")
+                        .font(.system(size: 32, weight: .heavy, design: .rounded))
+                        .foregroundStyle(ParentPalette.ink)
+                    Text(language.text(japanese: "語", english: "words"))
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(ParentPalette.primary)
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(ParentPalette.neutral)
+                        .foregroundStyle(ParentPalette.neutral)
+                }
+                Text(language.text(japanese: "マスター \(stats.masteredWords)語", english: "\(stats.masteredWords) mastered"))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ParentPalette.neutral)
+                ProgressBar(ratio: stats.masteryRatio, tint: ParentPalette.success)
+            }
+        }
+    }
+}
+
+/// 角丸の進捗バー（0...1）。
+private struct ProgressBar: View {
+    var ratio: Double
+    var tint: Color
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule().fill(ParentPalette.neutral.opacity(0.16))
+                Capsule().fill(tint)
+                    .frame(width: max(0, min(1, ratio)) * proxy.size.width)
+            }
+        }
+        .frame(height: 10)
+    }
+}
+
+// MARK: 正答率
+
+private struct OverviewAccuracyCard: View {
+    var stats: OverviewStats
+    var language: AppLanguage
+
+    private var tint: Color {
+        switch stats.accuracyBand {
+        case .good: return ParentPalette.success
+        case .watch: return ParentPalette.warning
+        case .ok, .none: return ParentPalette.ink
+        }
+    }
+
+    private var moodText: String {
+        switch stats.accuracyBand {
+        case .good: return language.text(japanese: "最近 ↑好調", english: "Recently strong")
+        case .ok: return language.text(japanese: "最近 ふつう", english: "Recently steady")
+        case .watch: return language.text(japanese: "最近 ようすみ", english: "Needs support")
+        case .none: return language.text(japanese: "データがたまると出ます", english: "Builds with data")
+        }
+    }
+
+    var body: some View {
+        OverviewCard {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 10) {
+                    OverviewIconChip(systemImage: "target")
+                    Text(language.text(japanese: "正答率", english: "Accuracy"))
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(ParentPalette.ink)
+                }
+                if stats.accuracyBand == .none {
+                    Text(language.text(japanese: "—", english: "—"))
+                        .font(.system(size: 32, weight: .heavy, design: .rounded))
+                        .foregroundStyle(ParentPalette.neutral)
+                } else {
+                    Text("\(Int((stats.accuracy * 100).rounded()))%")
+                        .font(.system(size: 32, weight: .heavy, design: .rounded))
+                        .foregroundStyle(tint)
+                }
+                Text(moodText)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ParentPalette.neutral)
+            }
+        }
+    }
+}
+
+// MARK: 利用時間
+
+private struct OverviewUsageCard: View {
+    var stats: OverviewStats
+    var language: AppLanguage
+
+    var body: some View {
+        OverviewCard {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 10) {
+                    OverviewIconChip(systemImage: "clock.fill")
+                    Text(language.text(japanese: "利用時間", english: "Time used"))
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(ParentPalette.ink)
+                }
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(language.text(japanese: "今日", english: "Today"))
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(ParentPalette.neutral)
+                    Text(durationText(stats.usageTodaySeconds))
+                        .font(.system(size: 26, weight: .heavy, design: .rounded))
+                        .foregroundStyle(ParentPalette.ink)
+                }
+                Text(language.text(
+                    japanese: "今週 \(durationText(stats.usageWeekSeconds))",
+                    english: "This week \(durationText(stats.usageWeekSeconds))"
+                ))
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(ParentPalette.neutral)
+                Sparkline(values: stats.usageWeekSeries, tint: ParentPalette.success)
+            }
+        }
+    }
+
+    /// 秒→「Xぶん」/「X時間Yぶん」。0は「0ぶん」。
+    private func durationText(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        if minutes < 60 {
+            return language.text(japanese: "\(minutes)ぶん", english: "\(minutes)m")
+        }
+        let h = minutes / 60
+        let m = minutes % 60
+        return language.text(japanese: "\(h)時間\(m)ぶん", english: "\(h)h \(m)m")
+    }
+}
+
+/// ミニ棒グラフ（利用時間の日別）。最大値で正規化。
+private struct Sparkline: View {
+    var values: [Int]
+    var tint: Color
+
+    var body: some View {
+        let maxValue = max(values.max() ?? 0, 1)
+        HStack(alignment: .bottom, spacing: 4) {
+            ForEach(Array(values.enumerated()), id: \.offset) { _, value in
+                Capsule()
+                    .fill(value > 0 ? tint.opacity(0.85) : ParentPalette.neutral.opacity(0.18))
+                    .frame(height: max(4, CGFloat(value) / CGFloat(maxValue) * 28))
+            }
+        }
+        .frame(height: 28)
+    }
+}
+
+// MARK: 今週のがんばり（曜日バー）
+
+private struct OverviewWeeklyActivityCard: View {
+    var stats: OverviewStats
+    var language: AppLanguage
+
+    private var labels: [String] {
+        language.text(japanese: "月火水木金土日", english: "MTWTFSS").map { String($0) }
+    }
+
+    var body: some View {
+        OverviewCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(language.text(japanese: "今週のがんばり", english: "This week"))
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(ParentPalette.ink)
+                let maxValue = max(stats.weeklyActivity.max() ?? 0, 1)
+                HStack(alignment: .bottom, spacing: 8) {
+                    ForEach(Array(stats.weeklyActivity.enumerated()), id: \.offset) { index, value in
+                        VStack(spacing: 6) {
+                            Capsule()
+                                .fill(value > 0 ? ParentPalette.primary.opacity(0.85) : ParentPalette.neutral.opacity(0.18))
+                                .frame(height: max(6, CGFloat(value) / CGFloat(maxValue) * 64))
+                            Text(index < labels.count ? labels[index] : "")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(ParentPalette.neutral)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                }
+                .frame(height: 84)
+            }
+        }
+    }
+}
+
+// MARK: まちがい復習（→明細へ）
+
+private struct OverviewReviewCard: View {
+    var stats: OverviewStats
+    var language: AppLanguage
+    var onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            OverviewCard {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 10) {
+                        OverviewIconChip(systemImage: "arrow.triangle.2.circlepath")
+                        Text(language.text(japanese: "まちがい復習", english: "Review"))
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(ParentPalette.ink)
+                    }
+                    if stats.hasReview {
+                        Text(language.text(
+                            japanese: "スペル \(stats.spellingReviewCount) ・ 文 \(stats.grammarReviewCount)",
+                            english: "Spell \(stats.spellingReviewCount) · Sent \(stats.grammarReviewCount)"
+                        ))
+                        .font(.system(size: 22, weight: .heavy, design: .rounded))
+                        .foregroundStyle(ParentPalette.ink)
+                        Text(language.text(
+                            japanese: "まちがえた問題を、これからのテスト・パズルに少しずつ混ぜます。",
+                            english: "Missed items are mixed back into future tests and puzzles."
+                        ))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ParentPalette.neutral)
+                        HStack {
+                            Spacer()
+                            Text(language.text(japanese: "くわしく", english: "Details"))
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(ParentPalette.primary)
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(ParentPalette.primary)
+                        }
                     } else {
-                        Text(language.text(japanese: "なし", english: "None"))
+                        Text(language.text(japanese: "いまは ありません", english: "Nothing right now"))
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(ParentPalette.neutral)
                     }
                 }
-                .padding(.top, 10)
-                .overlay(alignment: .top) {
-                    Rectangle().fill(ParentPalette.neutral.opacity(0.12)).frame(height: 1)
-                }
-            }
-            .buttonStyle(.plain)
-            .tapFeedback()
-            .disabled(!board.hasReview)
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(ParentPalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
-        )
-    }
-
-    private func stat(value: String, unit: String, icon: String, tint: Color) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon).font(.title3.weight(.bold)).foregroundStyle(tint)
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(value)
-                    .font(.system(size: 26, weight: .heavy, design: .rounded))
-                    .foregroundStyle(ParentPalette.ink)
-                Text(unit)
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(ParentPalette.neutral)
             }
         }
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .disabled(!stats.hasReview)
     }
 }
 
@@ -370,6 +806,7 @@ private struct ParentReviewDetailSheet: View {
 }
 
 private enum ParentSection: String, CaseIterable, Identifiable {
+    case overview
     case grading
     case words
     case records
@@ -380,6 +817,8 @@ private enum ParentSection: String, CaseIterable, Identifiable {
 
     func title(language: AppLanguage) -> String {
         switch self {
+        case .overview:
+            return language.text(japanese: "ようす", english: "Overview")
         case .grading:
             return language.text(japanese: "採点", english: "Grade")
         case .words:
@@ -395,6 +834,8 @@ private enum ParentSection: String, CaseIterable, Identifiable {
 
     func subtitle(language: AppLanguage) -> String {
         switch self {
+        case .overview:
+            return language.text(japanese: "ぜんたい", english: "At a glance")
         case .grading:
             return language.text(japanese: "大きく見てOK", english: "Review clearly")
         case .words:
@@ -410,6 +851,8 @@ private enum ParentSection: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
+        case .overview:
+            return "sparkles"
         case .grading:
             return "checkmark.seal.fill"
         case .words:
