@@ -19,6 +19,7 @@ private enum WO {
     static let correct = Color(red: 0.30, green: 0.62, blue: 0.28)
     static let retry = Color(red: 0.84, green: 0.36, blue: 0.08)
     static let bg = Color(red: 1.0, green: 0.99, blue: 0.95)
+    static let hintFill = Color(red: 1.0, green: 0.98, blue: 0.90)
 }
 
 // MARK: - サンプル文（仮データ。後で sentence_bank に差し替え）
@@ -46,15 +47,35 @@ private enum WordOrderingSamples {
 struct WordOrderingDemoView: View {
     @Environment(\.dismiss) private var dismiss
 
+    /// このラウンドの1問（出題文＋それが復習注入された文か）。`isReview` はラウンド開始時に確定
+    /// （以後の採点でモデルが変化してもバッジが揺れない＝round 内で安定）。
+    private struct RoundEntry: Equatable {
+        let item: SentenceItem
+        let isReview: Bool
+    }
+
+    /// ID→文を解決するためのプール（base＋復習対象を含む、解決可能な全文）。
     private let items: [SentenceItem]
+    /// このラウンドの通常出題（base）。`items` の部分集合でよい。既定は `items` 全体。
+    private let baseItems: [SentenceItem]
     /// 「しらない ことば」を選んだときに復習へ積むコールバック（AppModel に依存させないため）。
     private let onEnrollReviewWord: (String) -> Void
     /// 復習チップに出してはいけない語（＝登場人物の名前）。英字のみ小文字化したキーで保持。
     /// 未成年実名を綴り練習・復習（→同期）に侵入させないためのガード。デフォルト空＝従来どおり。
     private let hiddenNameKeys: Set<String>
+    /// 1ラウンドの出題順を組むコールバック（base のID列→出題順のID列）。
+    /// AppModel が `ReviewQueue.composeRound` を呼び、間違えた文を追加問題として混ぜる。既定は素通し。
+    private let composeRound: ([UUID]) -> [UUID]
+    /// 文1問の初回正誤を復習キューに反映するコールバック（item.id, correct）。既定は noop。
+    private let onGrade: (UUID, Bool) -> Void
+    /// 1ラウンド完了の通知（ステップを進める）。既定は noop。
+    private let onRoundComplete: () -> Void
+
     @StateObject private var speech = SpeechPlayer()
     /// タイルがトレイ↔解答欄を「飛んで」移動するための共有ネームスペース。
     @Namespace private var tileNS
+    /// このラウンドの出題列（base＋復習注入を合成し、ラウンド開始時にスナップショットしたもの）。
+    @State private var sequence: [RoundEntry] = []
     @State private var index = 0
     @State private var reshuffle = 0
 
@@ -65,15 +86,25 @@ struct WordOrderingDemoView: View {
     @State private var grade: OrderingGrade?
     /// この問題で「しらない」と選んだ語（復習に積んだ＝マーカー表示）。
     @State private var markedUnknown: Set<String> = []
+    /// このラウンドで既に採点済みの文ID（1文＝1回だけ復習キューへ反映＝初回正誤で評価）。
+    @State private var gradedThisRound: Set<UUID> = []
 
     init(
         items: [SentenceItem] = WordOrderingSamples.make(),
+        baseItems: [SentenceItem]? = nil,
         hiddenReviewWords: Set<String> = [],
-        onEnrollReviewWord: @escaping (String) -> Void = { _ in }
+        onEnrollReviewWord: @escaping (String) -> Void = { _ in },
+        composeRound: @escaping ([UUID]) -> [UUID] = { $0 },
+        onGrade: @escaping (UUID, Bool) -> Void = { _, _ in },
+        onRoundComplete: @escaping () -> Void = {}
     ) {
         self.items = items
+        self.baseItems = baseItems ?? items
         self.onEnrollReviewWord = onEnrollReviewWord
         self.hiddenNameKeys = Set(hiddenReviewWords.map(Self.nameKey))
+        self.composeRound = composeRound
+        self.onGrade = onGrade
+        self.onRoundComplete = onRoundComplete
     }
 
     /// 復習除外比較用キー：英字のみ・小文字（"Yuta," も "yuki" も名前一致するように）。
@@ -90,10 +121,16 @@ struct WordOrderingDemoView: View {
         return false
     }
 
-    private var item: SentenceItem { items[index] }
+    /// 現在の1問（未構築/範囲外/空入力では nil）。本体は nil の間「じゅんびちゅう」を出す。
+    private var currentEntry: RoundEntry? {
+        sequence.indices.contains(index) ? sequence[index] : nil
+    }
+
+    private var item: SentenceItem? { currentEntry?.item }
 
     private var exercise: WordOrderingExercise? {
-        WordOrderingGenerator.make(from: item, seed: seed)
+        guard let item else { return nil }
+        return WordOrderingGenerator.make(from: item, seed: seed)
     }
 
     private var seed: UInt64 {
@@ -104,24 +141,17 @@ struct WordOrderingDemoView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 22) {
-                prompt
-                VStack(spacing: 10) {
-                    answerRow
-                    // 完成させた文の真下に「きいてみる」。読むのは“子が並べた文”なので答えは漏れない。
-                    if isComplete {
-                        listenButton
-                            .transition(.scale.combined(with: .opacity))
-                    }
+            Group {
+                if currentEntry != nil {
+                    playingContent
+                } else {
+                    // 出題が無い（空入力 / 構築前）。クラッシュさせず軽い待ち表示。
+                    Text("じゅんびちゅう…")
+                        .font(.system(size: 18, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isComplete)
-                trayRow
-                Spacer(minLength: 0)
-                feedbackAndActions
             }
-            .padding(20)
-            .frame(maxWidth: 640)
-            .frame(maxWidth: .infinity)
             .background(WO.bg.ignoresSafeArea())
             .navigationTitle("ぶんづくり")
             .navigationBarTitleDisplayMode(.inline)
@@ -130,18 +160,53 @@ struct WordOrderingDemoView: View {
                     Button("とじる") { dismiss() }
                 }
             }
-            .onAppear(perform: load)
+            .onAppear {
+                if sequence.isEmpty { buildRound() }
+                load()
+            }
         }
+    }
+
+    private var playingContent: some View {
+        VStack(spacing: 22) {
+            prompt
+            VStack(spacing: 10) {
+                answerRow
+                // 完成させた文の真下に「きいてみる」。読むのは“子が並べた文”なので答えは漏れない。
+                if isComplete {
+                    listenButton
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isComplete)
+            trayRow
+            Spacer(minLength: 0)
+            feedbackAndActions
+        }
+        .padding(20)
+        .frame(maxWidth: 640)
+        .frame(maxWidth: .infinity)
     }
 
     // MARK: 部品
 
     private var prompt: some View {
         VStack(spacing: 6) {
+            if currentEntry?.isReview == true {
+                // 復習として再出題された文。子に圧をかけない軽いマーク（評価語は使わない）。
+                // 表示可否はラウンド開始時のスナップショット（currentEntry.isReview）なので採点で揺れない。
+                Label("もういちど", systemImage: "arrow.triangle.2.circlepath")
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundStyle(WO.accent)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 5)
+                    .background(Capsule().fill(WO.hintFill))
+                    .overlay(Capsule().stroke(WO.tileStroke, lineWidth: 1.5))
+            }
             Text("にほんごを みて、ただしい じゅんに ならべよう")
                 .font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
-            Text(item.ja)
+            Text(item?.ja ?? "")
                 .font(.system(size: 28, weight: .bold, design: .rounded))
                 .foregroundStyle(WO.ink)
                 .multilineTextAlignment(.center)
@@ -257,11 +322,13 @@ struct WordOrderingDemoView: View {
                     // 不正解のときは「せいかいの文＋意味＋（あれば）文法解説」を1枚で見せる。
                     // 置いた（間違った）タイルはそのまま残し、その下に正解を出す。
                     // grammar が nil でも正解文・意味は出す（従来は正解文を見せていなかった欠落の修正）。
-                    AnswerExplanationCard(
-                        explanation: SentenceFeedback.make(
-                            item: item, submitted: placed.map(\.text), grade: grade
+                    if let item {
+                        AnswerExplanationCard(
+                            explanation: SentenceFeedback.make(
+                                item: item, submitted: placed.map(\.text), grade: grade
+                            )
                         )
-                    )
+                    }
                 }
                 // 回答後に「しらない ことば」を選んで復習へ積む（並べ替えのタップとは衝突しない）。
                 unknownWordChooser
@@ -327,7 +394,7 @@ struct WordOrderingDemoView: View {
     private var sentenceWords: [String] {
         var seen = Set<String>()
         var out: [String] = []
-        for token in item.tokens {
+        for token in item?.tokens ?? [] {
             if isHiddenName(token) { continue }
             let key = token.lowercased()
             if seen.insert(key).inserted {
@@ -361,6 +428,23 @@ struct WordOrderingDemoView: View {
         }
     }
 
+    /// 1ラウンドの出題列を組む。base（このラウンドの通常出題）のID列を `composeRound` に渡し、
+    /// 返ったID順を **プール `items`** で文に解決して `RoundEntry` 化する。
+    /// `isReview` は「base に無い＝復習として注入された文」をラウンド開始時に確定（以後揺れない）。
+    /// プールに無いIDは解決できず落ちる（呼び出し側は復習対象を解決できる `items` を渡す契約）。
+    private func buildRound() {
+        let pool = Dictionary(items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let baseSet = Set(baseItems.map(\.id))
+        let ordered = composeRound(baseItems.map(\.id)).compactMap { id -> RoundEntry? in
+            guard let sentence = pool[id] else { return nil }
+            return RoundEntry(item: sentence, isReview: !baseSet.contains(id))
+        }
+        // 解決できる出題が無ければ base をそのまま（安全網）。それも空なら空ラウンド（本体は待ち表示）。
+        sequence = ordered.isEmpty ? baseItems.map { RoundEntry(item: $0, isReview: false) } : ordered
+        index = 0
+        gradedThisRound = []
+    }
+
     private func load() {
         guard let ex = exercise else { return }
         placed = []
@@ -369,8 +453,13 @@ struct WordOrderingDemoView: View {
     }
 
     private func check() {
-        guard let ex = exercise else { return }
-        grade = WordOrderingGrader.grade(submitted: placed.map(\.text), answer: ex.answer)
+        guard let item, let ex = exercise else { return }
+        let result = WordOrderingGrader.grade(submitted: placed.map(\.text), answer: ex.answer)
+        grade = result
+        // 1文＝1回だけ復習キューへ反映（初回の正誤で評価。retry の再採点では二重反映しない）。
+        if gradedThisRound.insert(item.id).inserted {
+            onGrade(item.id, result.isCorrect)
+        }
     }
 
     private func retry() {
@@ -384,9 +473,15 @@ struct WordOrderingDemoView: View {
     }
 
     private func next() {
-        index = (index + 1) % items.count
-        reshuffle = 0
         markedUnknown = []   // 次の文へ。マーカーはリセット（retry では保持）。
+        reshuffle = 0
+        if index + 1 >= sequence.count {
+            // ラウンド完了 → ステップを進め、新しいラウンドを組み直す（復習の再注入）。
+            onRoundComplete()
+            buildRound()
+        } else {
+            index += 1
+        }
         load()
     }
 }
@@ -462,8 +557,15 @@ struct WordOrderingDebugLauncher: View {
         .padding(.bottom, 12)
         .accessibilityLabel("文づくり試遊")
         .sheet(isPresented: $isPresented) {
-            // サンプル文の試遊（名前なし）。本物テンプレ＋Cast の再生は RealContentSession 側。
-            WordOrderingDemoView(onEnrollReviewWord: { model.enrollReviewWord($0) })
+            // サンプル文の試遊。「しらない ことば」を子の復習へ積む（既存語彙にあれば無視）＋
+            // 間違えた文を ReviewQueue で今後のラウンドに追加問題として混ぜる。
+            // 本物テンプレ＋Cast の再生は RealContentSession 側。
+            WordOrderingDemoView(
+                onEnrollReviewWord: { model.enrollReviewWord($0) },
+                composeRound: { model.composeGrammarRound(base: $0) },
+                onGrade: { model.recordGrammarResult(itemID: $0, correct: $1) },
+                onRoundComplete: { model.advanceGrammarRound() }
+            )
         }
     }
 }
