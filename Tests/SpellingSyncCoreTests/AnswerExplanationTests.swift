@@ -56,4 +56,34 @@ final class AnswerExplanationTests: XCTestCase {
         XCTAssertEqual(result.correctText, "Hello world.")
         XCTAssertEqual(result.meaningJa, "こんにちは世界。")
     }
+
+    func testSingleTokenSentence() {
+        let item = SentenceItem(
+            en: "Run.",
+            ja: "走れ。",
+            tokens: ["Run."],
+            gradeBand: 1,
+            grammar: .imperative
+        )
+        let grade = OrderingGrade(isCorrect: true, correctPositions: 1, total: 1)
+        let result = SentenceFeedback.make(item: item, submitted: ["Run."], grade: grade)
+
+        XCTAssertEqual(result.wasCorrect, true)
+        XCTAssertEqual(result.correctText, "Run.")
+        XCTAssertNil(result.detail)
+    }
+
+    func testEmptyTokensGivesNilCorrectText() {
+        let item = SentenceItem(
+            en: "",
+            ja: "",
+            tokens: [],
+            gradeBand: 1,
+            grammar: nil
+        )
+        let grade = OrderingGrade(isCorrect: false, correctPositions: 0, total: 0)
+        let result = SentenceFeedback.make(item: item, submitted: [], grade: grade)
+
+        XCTAssertNil(result.correctText)
+    }
 }

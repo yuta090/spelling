@@ -27,10 +27,12 @@ public struct AnswerExplanation: Equatable, Sendable {
 
 public enum SentenceFeedback {
     public static func make(item: SentenceItem, submitted: [String], grade: OrderingGrade) -> AnswerExplanation {
-        AnswerExplanation(
+        // tokens 空のときは空行を出さないよう correctText を nil にする（カードの空行回避）。
+        let joined = item.tokens.joined(separator: " ")
+        return AnswerExplanation(
             wasCorrect: grade.isCorrect,
             headline: item.grammar?.titleJa,
-            correctText: item.tokens.joined(separator: " "),
+            correctText: joined.isEmpty ? nil : joined,
             meaningJa: item.ja,
             detail: grade.isCorrect ? nil : item.grammar?.explanationJa,
             chips: []

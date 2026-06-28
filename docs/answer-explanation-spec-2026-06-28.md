@@ -60,7 +60,7 @@ public enum SentenceFeedback {
 ```
 ルール（型は実コードに一致：`SentenceItem.tokens/ja/grammar`、`OrderingGrade.isCorrect`、`GrammarPoint.titleJa/explanationJa`）：
 - `wasCorrect = grade.isCorrect`
-- `correctText = item.tokens.joined(separator: " ")`（タイル列＝子が並べた対象と一致させる。`item.en` ではなく tokens）
+- `correctText = item.tokens.joined(separator: " ")`（タイル列＝子が並べた対象と一致させる。`item.en` ではなく tokens）。**tokens 空なら nil**（カードの空行回避）。
 - `meaningJa = item.ja`
 - `headline = item.grammar?.titleJa`（**`grammar` は nil 可** → headline/detail も nil でよい＝文法タグ無しの文）
 - `detail = grade.isCorrect ? nil : item.grammar?.explanationJa`（既存の手書き固定解説を再利用。生成しない）
