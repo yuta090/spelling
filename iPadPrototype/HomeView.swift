@@ -4914,10 +4914,15 @@ private struct CharacterPickerSheet: View {
                 .overlay(alignment: .top) {
                     if showStickyTab {
                         VStack(spacing: 0) {
-                            tabPicker
-                                .frame(maxWidth: contentWidth)
-                                .padding(.horizontal, 28)
-                                .padding(.vertical, 10)
+                            // インラインヘッダーが流れて消えても、固定バーでコイン残高を見せ続ける。
+                            // インラインと同じく右側に置いて位置を揃える。
+                            HStack(spacing: 10) {
+                                tabPicker
+                                HomeCoinBadge(coins: model.rewardCoins, language: language)
+                            }
+                            .frame(maxWidth: contentWidth)
+                            .padding(.horizontal, 28)
+                            .padding(.vertical, 10)
                             Divider()
                         }
                         .frame(maxWidth: .infinity)
