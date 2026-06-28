@@ -51,13 +51,18 @@ public struct Cast: Equatable, Codable, Sendable {
 public struct CastPerson: Identifiable, Equatable, Codable, Sendable {
     public var id: UUID
     public var role: CastRole          // .child は1人、.friend は複数OK
-    public var gender: PersonGender     // 友達スロットの he/she 用に必須
+    public var gender: PersonGender     // 友達は必須(he/she)。本人は不要→.unspecified
     public var displayNameJa: String    // "ゆうた"（親の一覧表示用）
     public var romaji: String           // "Yuta"（英文に出す綴り。英1トークン）
+    public var avatarCharacterID: String? // 既存キャラ図鑑(HomeRewardCharacter)の id。nil=既定
     public var isActive: Bool           // 一時的に登場させない切替
 }
 public enum CastRole: String, Codable, Sendable { case child, friend }
 public enum PersonGender: String, Codable, Sendable { case boy, girl, unspecified }
+```
+**性別（決定）**：友達のみ性別必須。**本人(.child)は性別不要**＝呼びかけ専用で代名詞一致が起きない（`.unspecified` で登録／登録UIでも聞かない）。将来「友達が本人を3人称で噂する」文を入れる時だけ本人性別が要る（v1スコープ外・フィールドは温存）。
+**アバター（決定）**：cast のアバターは**アプリ既存のキャラ図鑑 `HomeRewardCharacter`（"bear"/"cat"…、`scripts/characters.csv` 生成・unlocked管理あり）から選ぶ**。純粋層は `avatarCharacterID`（不透明 id）だけ持ち、アプリ層が既存のキャラピッカー＋`RewardCharacterAvatar` で描画。新しい見た目を増やさず、子が普段使う自分のキャラを再利用する。
+```swift
 
 // MARK: 文のもと（スロット付き・承認済みを同梱）
 public struct PersonSentenceTemplate: Equatable, Codable, Sendable {
@@ -135,7 +140,7 @@ public enum SentencePersonalizer {
 
 ## 6. 保存・登録・統合
 - **保存**：`Cast` は **ローカル JSON（`AppPersistenceStore`）**。Supabase 同期は v1 では**しない**（未成年実名のため）。
-- **登録UI**：親ゲートの奥。名前(かな)＋ローマ字＋性別＋役。既存の見た目言語（角丸カード・一覧）を再利用。子の画面・ホームには出さない。
+- **登録UI**：親ゲートの奥。入力＝**名前(かな)＋ローマ字＋役＋アバター**、友達のみ**性別**（本人は性別を聞かない）。アバターは既存キャラ図鑑 `HomeRewardCharacter` のピッカー（unlocked のみ）を再利用し `avatarCharacterID` を保存。既存の見た目言語（角丸カード・一覧・`RewardCharacterAvatar`）を再利用。子の画面・ホームには出さない。
 - **テンプレ同梱**：`wordbank.sqlite` に**静的 `sentence_templates` テーブル**を追加（ソースは JSON/CSV→ビルド時生成）。アプリは `approved=1` のみロード。
 - **既存統合**：`resolve` 済み `SentenceItem` を渡すだけ。`WordOrderingGenerator`/`WordOrderingGrader`/`SentenceFeedback`/`AnswerExplanationCard` は**無改修**。
 - **語彙系から名前を排除**：`contentLemmas` に名前を入れない。「しらない ことば」チップは `item.tokens` ではなく **`contentLemmas`（=語彙トークン）由来**に切替（パーソナライズ有効時）。

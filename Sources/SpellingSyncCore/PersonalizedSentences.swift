@@ -27,9 +27,14 @@ public enum PersonGender: String, Codable, Sendable {
 public struct CastPerson: Identifiable, Equatable, Codable, Sendable {
     public var id: UUID
     public var role: CastRole
+    /// 友達は必須（he/she・his/her の代名詞一致／性別指定スロット用）。
+    /// 本人は呼びかけ専用で代名詞一致が起きないため不要 → `.unspecified` でよい。
     public var gender: PersonGender
     public var displayNameJa: String   // "ゆうた"（親一覧・日本語文用）
     public var romaji: String          // "Yuta"（英文に出す綴り。英1トークン）
+    /// アバター＝アプリの既存キャラ図鑑(HomeRewardCharacter)の id（"bear" 等）。
+    /// 純粋層は不透明な id だけ持ち、描画はアプリ層が解決する。nil は既定キャラ。
+    public var avatarCharacterID: String?
     public var isActive: Bool
 
     public init(
@@ -38,6 +43,7 @@ public struct CastPerson: Identifiable, Equatable, Codable, Sendable {
         gender: PersonGender,
         displayNameJa: String,
         romaji: String,
+        avatarCharacterID: String? = nil,
         isActive: Bool = true
     ) {
         self.id = id
@@ -45,6 +51,7 @@ public struct CastPerson: Identifiable, Equatable, Codable, Sendable {
         self.gender = gender
         self.displayNameJa = displayNameJa
         self.romaji = romaji
+        self.avatarCharacterID = avatarCharacterID
         self.isActive = isActive
     }
 }
