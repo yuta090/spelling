@@ -5588,9 +5588,22 @@ private struct HomeLearnedWordMilestone: View {
                 .font(.system(size: 30, weight: .heavy, design: .rounded))
                 .foregroundStyle(Color(red: 0.20, green: 0.58, blue: 0.24))
         }
-        .frame(maxWidth: .infinity, alignment: .center)
         .lineLimit(1)
         .minimumScaleFactor(0.68)
+        // 背景の絵の上でも読めるよう、文字はクッキリ塗りのまま
+        // 後ろに白い角丸プレートを敷く（縁取りより濁らない）。
+        .padding(.horizontal, 26)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 26, style: .continuous)
+                .fill(Color.white.opacity(0.9))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 26, style: .continuous)
+                        .stroke(Color.white.opacity(0.95), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 4)
+        )
+        .frame(maxWidth: .infinity, alignment: .center)
         .accessibilityLabel(language.text(japanese: "これまで学習した単語 \(count)個", english: "\(count) learned words"))
     }
 }
