@@ -34,6 +34,7 @@
 		FACE0000000000000000CE01 /* WordOrderingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE02 /* WordOrderingView.swift */; };
 		FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE04 /* ClozeChoiceView.swift */; };
 		FACE0000000000000000CE0B /* WordListeningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0C /* WordListeningView.swift */; };
+		FACE0000000000000000CE0D /* ListeningClozeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0E /* ListeningClozeView.swift */; };
 		FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE06 /* MixedSessionView.swift */; };
 		FACE0000000000000000CE07 /* RealContentSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE08 /* RealContentSession.swift */; };
 		FACE0000000000000000CE09 /* person_templates.authoring.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0A /* person_templates.authoring.json */; };
@@ -87,6 +88,7 @@
 		FACE0000000000000000CE02 /* WordOrderingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordOrderingView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE04 /* ClozeChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClozeChoiceView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0C /* WordListeningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListeningView.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CE0E /* ListeningClozeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningClozeView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE06 /* MixedSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixedSessionView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE08 /* RealContentSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealContentSession.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0A /* person_templates.authoring.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/person_templates.authoring.json; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				FACE0000000000000000CE02 /* WordOrderingView.swift */,
 				FACE0000000000000000CE04 /* ClozeChoiceView.swift */,
 				FACE0000000000000000CE0C /* WordListeningView.swift */,
+				FACE0000000000000000CE0E /* ListeningClozeView.swift */,
 				FACE0000000000000000CE06 /* MixedSessionView.swift */,
 				FACE0000000000000000CE08 /* RealContentSession.swift */,
 				FACE0000000000000000AE02 /* AnswerExplanationCard.swift */,
@@ -321,6 +324,7 @@
 				FACE0000000000000000CE01 /* WordOrderingView.swift in Sources */,
 				FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */,
 				FACE0000000000000000CE0B /* WordListeningView.swift in Sources */,
+				FACE0000000000000000CE0D /* ListeningClozeView.swift in Sources */,
 				FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */,
 				FACE0000000000000000CE07 /* RealContentSession.swift in Sources */,
 				FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */,
