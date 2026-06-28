@@ -95,9 +95,14 @@ struct RealContentSessionView: View {
             .padding(32)
         } else {
             // 名前は復習チップから除外（未成年実名を綴り練習→単語同期で端末外へ出さない）。
+            // 間違えた文は ReviewQueue（grammar キュー）に記録し、今後のラウンド/セッションで
+            // 「もういちど」マーク付きで繰り返し出題＝数回正解で卒業（練習側には出さない方針）。
             WordOrderingDemoView(items: session.items,
                                  hiddenReviewWords: session.hidden,
-                                 onEnrollReviewWord: { model.enrollReviewWord($0) })
+                                 onEnrollReviewWord: { model.enrollReviewWord($0) },
+                                 composeRound: { model.composeGrammarRound(base: $0) },
+                                 onGrade: { model.recordGrammarResult(itemID: $0, correct: $1) },
+                                 onRoundComplete: { model.advanceGrammarRound() })
         }
     }
 }
