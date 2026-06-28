@@ -24,6 +24,7 @@ struct ParentDashboardView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedSection: ParentSection = UITestSupport.isActive ? .words : .grading
+    @State private var showingReviewDetail = false
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -36,6 +37,17 @@ struct ParentDashboardView: View {
 
                 VStack(spacing: 18) {
                     header
+                    let board = model.parentScoreboard()
+                    // 採点待ちがある時だけ最上段にCTA（やることがある時だけ前に出す）。
+                    if board.pendingGradingCount > 0 {
+                        ParentGradingCTABanner(count: board.pendingGradingCount, language: language) {
+                            selectedSection = .grading
+                        }
+                    }
+                    // スコアボードは常に土台。まちがい復習サマリーはタップで明細へ。
+                    ParentScoreboardCard(board: board, language: language) {
+                        if board.hasReview { showingReviewDetail = true }
+                    }
                     ParentSectionSwitcher(selectedSection: $selectedSection, language: language)
                     if selectedSection == .words || selectedSection == .records {
                         ParentCurrentStepCard(language: language)
@@ -63,6 +75,10 @@ struct ParentDashboardView: View {
                 .padding(22)
             }
             .toolbar(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showingReviewDetail) {
+                ParentReviewDetailSheet(language: language)
+                    .environmentObject(model)
+            }
         }
     }
 
@@ -123,6 +139,233 @@ struct ParentDashboardView: View {
                     .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
             )
         }
+    }
+}
+
+// MARK: - 採点待ちCTA（採点待ち>0の時だけ最上段に出す）
+
+private struct ParentGradingCTABanner: View {
+    var count: Int
+    var language: AppLanguage
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: "exclamationmark.circle.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(ParentPalette.warning)
+                Text(language.text(japanese: "採点待ち \(count)件", english: "\(count) to grade"))
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(ParentPalette.ink)
+                Spacer(minLength: 8)
+                Text(language.text(japanese: "見る", english: "Review"))
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(ParentPalette.warning)
+                Image(systemName: "chevron.right")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(ParentPalette.warning)
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity)
+            .background(ParentPalette.warningSoft)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(ParentPalette.warning.opacity(0.35), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .accessibilityLabel(language.text(japanese: "採点待ち \(count)件。採点を開く。", english: "\(count) items to grade. Open grading."))
+    }
+}
+
+// MARK: - スコアボード（常時表示の土台カード）
+
+private struct ParentScoreboardCard: View {
+    var board: ParentScoreboard
+    var language: AppLanguage
+    var onTapReview: () -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                stat(value: "\(board.streakDays)",
+                     unit: language.text(japanese: "日れんぞく", english: "day streak"),
+                     icon: "flame.fill", tint: ParentPalette.warning)
+                Divider().frame(height: 34)
+                stat(value: "\(board.weeklyCount)",
+                     unit: language.text(japanese: "問／今週", english: "this week"),
+                     icon: "checkmark.seal.fill", tint: ParentPalette.success)
+            }
+
+            // まちがい復習サマリー（タップで明細）。0件なら控えめに「なし」。
+            Button(action: onTapReview) {
+                HStack(spacing: 10) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(ParentPalette.primary)
+                    Text(language.text(japanese: "まちがい復習", english: "Review"))
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(ParentPalette.ink)
+                    Spacer(minLength: 8)
+                    if board.hasReview {
+                        Text(language.text(
+                            japanese: "スペル\(board.spellingReviewCount)・文\(board.grammarReviewCount)",
+                            english: "Spell \(board.spellingReviewCount) · Sent \(board.grammarReviewCount)"
+                        ))
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(ParentPalette.primary)
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(ParentPalette.neutral)
+                    } else {
+                        Text(language.text(japanese: "なし", english: "None"))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(ParentPalette.neutral)
+                    }
+                }
+                .padding(.top, 10)
+                .overlay(alignment: .top) {
+                    Rectangle().fill(ParentPalette.neutral.opacity(0.12)).frame(height: 1)
+                }
+            }
+            .buttonStyle(.plain)
+            .tapFeedback()
+            .disabled(!board.hasReview)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity)
+        .background(ParentPalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+        )
+    }
+
+    private func stat(value: String, unit: String, icon: String, tint: Color) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon).font(.title3.weight(.bold)).foregroundStyle(tint)
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(value)
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .foregroundStyle(ParentPalette.ink)
+                Text(unit)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(ParentPalette.neutral)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - まちがい復習の明細（スコアボードのタップ先）
+
+private struct ParentReviewDetailSheet: View {
+    @EnvironmentObject private var model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    var language: AppLanguage
+
+    var body: some View {
+        NavigationStack {
+            let spelling = model.spellingReviewDetails()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(language.text(
+                        japanese: "まちがえた問題を、これからのテスト・パズルに少しずつ混ぜて出します。何回か正解すると卒業します。",
+                        english: "Missed items are mixed back into future tests and puzzles a little at a time. They graduate after a few correct answers."
+                    ))
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                    // スペル：語ごとに状態＋直近の正誤を見せる。
+                    sectionHeader(language.text(japanese: "スペル", english: "Spelling"), count: spelling.count)
+                    if spelling.isEmpty {
+                        emptyRow
+                    } else {
+                        ForEach(spelling) { detail in
+                            reviewRow(text: detail.text, box: detail.box, lastCorrect: detail.lastAnsweredCorrect)
+                        }
+                    }
+
+                    // ことばパズル：文は端末に保存していないため件数サマリーのみ（明細は今後）。
+                    sectionHeader(language.text(japanese: "ことばパズル", english: "Word Puzzle"), count: model.grammarReviewActiveCount)
+                    Text(language.text(
+                        japanese: "にがてな文 \(model.grammarReviewActiveCount)（文の一覧は今後のアップデートで表示します）",
+                        english: "\(model.grammarReviewActiveCount) sentences in review (sentence list coming soon)"
+                    ))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ParentPalette.neutral)
+                    .padding(.vertical, 4)
+                }
+                .padding(20)
+            }
+            .background(ParentPalette.surfaceTint.ignoresSafeArea())
+            .navigationTitle(language.text(japanese: "まちがい復習", english: "Review"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(language.text(japanese: "閉じる", english: "Close")) { dismiss() }
+                }
+            }
+        }
+    }
+
+    private func sectionHeader(_ title: String, count: Int) -> some View {
+        HStack {
+            Text(title).font(.headline.weight(.bold)).foregroundStyle(ParentPalette.ink)
+            Spacer()
+            Text("\(count)").font(.headline.weight(.bold)).foregroundStyle(ParentPalette.primary)
+        }
+        .padding(.top, 6)
+    }
+
+    private var emptyRow: some View {
+        Text(language.text(japanese: "いまは ありません", english: "Nothing right now"))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(ParentPalette.neutral)
+            .padding(.vertical, 4)
+    }
+
+    /// box から「定着の進み」を子に見せない言葉で表す（親向け管理表示）。
+    private func statusLabel(box: Int) -> (text: String, tint: Color) {
+        switch box {
+        case ...1: return (language.text(japanese: "にがて", english: "Tough"), ParentPalette.danger)
+        case 2, 3: return (language.text(japanese: "れんしゅう中", english: "Practicing"), ParentPalette.warning)
+        default: return (language.text(japanese: "もうすぐ", english: "Almost"), ParentPalette.success)
+        }
+    }
+
+    private func reviewRow(text: String, box: Int, lastCorrect: Bool) -> some View {
+        let status = statusLabel(box: box)
+        return HStack(spacing: 12) {
+            Text(text)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(ParentPalette.ink)
+            Spacer(minLength: 8)
+            // 直近の正誤（◯＝直近答えられた / ×＝直近まちがえた）。
+            Label(
+                lastCorrect ? language.text(japanese: "直近◯", english: "Last ✓")
+                            : language.text(japanese: "直近×", english: "Last ✗"),
+                systemImage: lastCorrect ? "checkmark.circle.fill" : "xmark.circle.fill"
+            )
+            .font(.caption.weight(.bold))
+            .foregroundStyle(lastCorrect ? ParentPalette.success : ParentPalette.danger)
+            Text(status.text)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(status.tint)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 8)
+                .background(status.tint.opacity(0.12))
+                .clipShape(Capsule())
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(ParentPalette.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
