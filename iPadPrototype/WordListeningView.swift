@@ -26,27 +26,14 @@ private enum WL {
     }
 }
 
-// MARK: - サンプル（仮データ。後で wordbank ＋ confusables_sound バンドルに差し替え）
+// MARK: - サンプル（出題語のみ。おとりは同梱 confusables_sound.build.csv から供給）
 
 private enum WordListeningSamples {
-    /// 承認済み confusables（scripts/confusables_sound_draft.csv の一部）を埋め込み、
-    /// 実データ経路（ConfusablesSound.parse → distractors）で組み立てる。
-    static let confusablesCSV = """
-    word,sounds_like,approved,source
-    right,light|night|white,1,ai
-    rice,nice|race|lice,1,ai
-    berry,very|cherry|bury,1,ai
-    base,case|face|vase,1,ai
-    sea,see|tea|she,1,ai
-    back,bag|pack|sack,1,ai
-    bath,path|bat|math,1,ai
-    """
-
-    /// 出題する単語（このデモで読み上げる語）。
+    /// 出題する単語（このデモで読み上げる語）。おとりは `ConfusablesBundle` が供給。
     static let words = ["right", "rice", "berry", "base", "sea", "back", "bath"]
 
     static func entries() -> [ConfusableEntry] {
-        ConfusablesSound.parse(csv: confusablesCSV)
+        ConfusablesBundle.entries
     }
 }
 

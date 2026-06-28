@@ -35,9 +35,11 @@
 		FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE04 /* ClozeChoiceView.swift */; };
 		FACE0000000000000000CE0B /* WordListeningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0C /* WordListeningView.swift */; };
 		FACE0000000000000000CE0D /* ListeningClozeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0E /* ListeningClozeView.swift */; };
+		FACE0000000000000000CE0F /* ConfusablesBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE10 /* ConfusablesBundle.swift */; };
 		FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE06 /* MixedSessionView.swift */; };
 		FACE0000000000000000CE07 /* RealContentSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE08 /* RealContentSession.swift */; };
 		FACE0000000000000000CE09 /* person_templates.authoring.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE0A /* person_templates.authoring.json */; };
+		FACE0000000000000000CE11 /* confusables_sound.build.csv in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE12 /* confusables_sound.build.csv */; };
 		FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000AE02 /* AnswerExplanationCard.swift */; };
 		FACE0000000000000000CA03 /* ParentCastPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CA04 /* ParentCastPanel.swift */; };
 		FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0E /* WordSyncCoordinator.swift */; };
@@ -89,9 +91,11 @@
 		FACE0000000000000000CE04 /* ClozeChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClozeChoiceView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0C /* WordListeningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListeningView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0E /* ListeningClozeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningClozeView.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CE10 /* ConfusablesBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfusablesBundle.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE06 /* MixedSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixedSessionView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE08 /* RealContentSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealContentSession.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE0A /* person_templates.authoring.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/person_templates.authoring.json; sourceTree = "<group>"; };
+		FACE0000000000000000CE12 /* confusables_sound.build.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = Resources/confusables_sound.build.csv; sourceTree = "<group>"; };
 		FACE0000000000000000AE02 /* AnswerExplanationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerExplanationCard.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CA04 /* ParentCastPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentCastPanel.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF0E /* WordSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSyncCoordinator.swift; sourceTree = "<group>"; };
@@ -147,6 +151,7 @@
 				0A10020E2D00000100000001 /* Assets.xcassets */,
 				0A1002AA2D00000100000001 /* wordbank.sqlite */,
 				FACE0000000000000000CE0A /* person_templates.authoring.json */,
+				FACE0000000000000000CE12 /* confusables_sound.build.csv */,
 				0A1002032D00000100000001 /* GuidedWritingCanvas.swift */,
 				0A1002042D00000100000001 /* PencilCanvasView.swift */,
 				0A1002052D00000100000001 /* SpeechPlayer.swift */,
@@ -162,6 +167,7 @@
 				FACE0000000000000000CE04 /* ClozeChoiceView.swift */,
 				FACE0000000000000000CE0C /* WordListeningView.swift */,
 				FACE0000000000000000CE0E /* ListeningClozeView.swift */,
+				FACE0000000000000000CE10 /* ConfusablesBundle.swift */,
 				FACE0000000000000000CE06 /* MixedSessionView.swift */,
 				FACE0000000000000000CE08 /* RealContentSession.swift */,
 				FACE0000000000000000AE02 /* AnswerExplanationCard.swift */,
@@ -296,6 +302,7 @@
 				0A10010E2D00000100000001 /* Assets.xcassets in Resources */,
 				0A1001AA2D00000100000001 /* wordbank.sqlite in Resources */,
 				FACE0000000000000000CE09 /* person_templates.authoring.json in Resources */,
+				FACE0000000000000000CE11 /* confusables_sound.build.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +332,7 @@
 				FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */,
 				FACE0000000000000000CE0B /* WordListeningView.swift in Sources */,
 				FACE0000000000000000CE0D /* ListeningClozeView.swift in Sources */,
+				FACE0000000000000000CE0F /* ConfusablesBundle.swift in Sources */,
 				FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */,
 				FACE0000000000000000CE07 /* RealContentSession.swift in Sources */,
 				FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */,
