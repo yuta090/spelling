@@ -50,10 +50,12 @@ boat,vote|coat|goat,0,ai
 - `rice,rices,0,ai` … 不自然/非実在の活用。
 - `cat,Katherine,0,ai` … 固有名詞・難語。
 
-## 5. ビルド検証チェックリスト（companion スクリプト＝別途・未実装）
-- 各 `sounds_like` が **wordbank に存在**／**band 内**／**`word` と異なる**／**重複なし**／**個数2〜4**。
-- 機械では「実在・band・重複」を弾く。**音の近さは承認者（人）が判断** → 通った行を `approved=1`。
-- `approved=1` のみ同梱（`confusables_sound.build.json` 等）。
+## 5. ビルド検証（✅ 実装済 `confusables-build` ＋ Core `ConfusablesValidator`）
+- 実行: `swift run confusables-build [--target-band N] [--write]`（原本CSV＋wordbank → 検証 → 同梱 `iPadPrototype/Resources/confusables_sound.build.csv`）。
+- **ハード規則（違反は却下・書き出さない）**＝データだけで判定: 承認済み・`word`と別・重複なし・個数2〜4・正規化(小文字/トリム)・CSV安全(`,|`改行タブ禁止)・見出し語の二重登録なし。
+- **wordbank 実在/band は警告のみ（自動削除しない）**（ユーザー決定 2026-06-28）。この wordbank の `gloss` には gray/math 等の実在語欠落があり、機械削除は良い手承認データを壊すため。警告を見て人が「辞書に足す」or「ペアを直す」を判断。
+  - band は `level`（2,816語）にある語だけ判定可。未収録の易しい語は「band不明」警告にとどめる。
+- `approved=1` のみ同梱。**音の近さは承認者（人）が最終判断**（機械は実在/band/重複/形式のみ）。
 
 ## 6. 使われ方（生成器との関係）
 - **単語リスニング**：`word` の音を再生 → 候補＝`word`＋`sounds_like` から N 個（決定論シャッフル）。

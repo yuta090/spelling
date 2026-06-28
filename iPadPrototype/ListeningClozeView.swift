@@ -36,18 +36,9 @@ private struct ListeningClozeSample {
 }
 
 private enum ListeningClozeSamples {
-    /// 承認済み confusables（音が近い語）。空所語はここに登録された語にする。
-    static let confusablesCSV = """
-    word,sounds_like,approved,source
-    sea,see|tea|she,1,ai
-    rice,nice|race|lice,1,ai
-    right,light|night|white,1,ai
-    bath,path|bat|math,1,ai
-    back,bag|pack|sack,1,ai
-    """
-
+    /// おとりは同梱 confusables_sound.build.csv から供給（空所語は登録済みの語にする）。
     static func entries() -> [ConfusableEntry] {
-        ConfusablesSound.parse(csv: confusablesCSV)
+        ConfusablesBundle.entries
     }
 
     static func make() -> [ListeningClozeSample] {
