@@ -118,7 +118,7 @@ struct ParentCastPanel: View {
         Button {
             editing = CastDraft(person: person)
         } label: {
-            HStack(spacing: 12) {
+            HStack(spacing: 18) {
                 CastAvatarBadge(characterID: person.avatarCharacterID, size: 46)
 
                 VStack(alignment: .leading, spacing: 2) {
