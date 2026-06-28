@@ -469,6 +469,7 @@ private struct PuzzleStepView: View {
                     .font(.system(size: 15, weight: .semibold, design: .rounded))
                     .foregroundStyle(.secondary)
             }
+            if let hint = grammarHint { grammarHintBlock(hint) }   // なぜ違うか（文法のミニ解説）
             if canListenBack {
                 PuzzleListenButton(title: format == .wordListening ? "もういちど きく" : "きいてみる") {
                     listenBack()
@@ -479,6 +480,36 @@ private struct PuzzleStepView: View {
                 if isCorrect { onAdvance() } else { setup() }   // もういちど＝同ステップを組み直す
             }
         }
+    }
+
+    /// 不正解のとき「なぜ違うか」を文の文法タグから出す（cloze/ぶんづくり）。
+    /// 文法タグの無い文や単語リスニングは nil（無理に説明を作らない＝事前作成の固定文だけ使う）。
+    private var grammarHint: (title: String, detail: String)? {
+        guard !isCorrect else { return nil }
+        switch format {
+        case .wordOrdering, .clozeChoice, .listeningCloze:
+            guard let g = sentence?.item.grammar else { return nil }
+            return (g.titleJa, g.explanationJa)
+        case .wordListening, .clozeHandwriting, .composition:
+            return nil
+        }
+    }
+
+    /// 「なぜ？」のミニ解説カード（不正解時）。やさしいトーン・ことばパズルの見た目言語で。
+    private func grammarHintBlock(_ hint: (title: String, detail: String)) -> some View {
+        VStack(spacing: 4) {
+            Text("なぜ？　\(hint.title)")
+                .font(.system(size: 14, weight: .heavy, design: .rounded))
+                .foregroundStyle(PuzzleTheme.accent)
+            Text(hint.detail)
+                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                .foregroundStyle(PuzzleTheme.ink.opacity(0.8))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 14).padding(.vertical, 10)
+        .background(RoundedRectangle(cornerRadius: 14).fill(PuzzleTheme.accent.opacity(0.10)))
     }
 
     /// 選択系のみ「えらんだの／せいかい」を出す（並べ替えは語の集合なので出さない）。
@@ -521,6 +552,12 @@ private struct PuzzleStepView: View {
         // 単語リスニングは出題時に1回読み上げる（音あり時）。
         if format == .wordListening, soundOn {
             speech.speak(word, language: "en-US")
+        }
+        // きいてあなうめは「きいて」答える形式なので、出題時に英文を読み上げる（音あり時）。
+        // おとりは音が近い語＝聞いただけでは綴りを選べないので、文の意味と合わせて選ばせる
+        // （答えの語が読まれても綴りは割れない）。音オフのときは文を読んで遊べる＝やわらかい運用を維持。
+        if format == .listeningCloze, soundOn, let ex = clozeExercise {
+            speech.speak(ex.displayTokens.joined(separator: " "), language: "en-US")
         }
     }
 }
