@@ -14,28 +14,28 @@ final class CoinRewardsTests: XCTestCase {
         cal.date(from: DateComponents(year: y, month: m, day: d, hour: 12))!
     }
 
-    // MARK: - 満点ボーナス（単語数で 5〜10）
+    // MARK: - 満点ボーナス（単語数で 50〜100）
 
-    func testPerfectBonusClampsBetween5And10() {
-        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 1), 5)
-        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 4), 5)
-        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 5), 5)
-        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 7), 7)
-        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 10), 10)
-        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 20), 10)
-        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 0), 5)
+    func testPerfectBonusClampsBetween50And100() {
+        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 1), 50)
+        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 4), 50)
+        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 5), 50)
+        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 7), 70)
+        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 10), 100)
+        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 20), 100)
+        XCTAssertEqual(CoinRewards.perfectTestBonus(wordCount: 0), 50)
     }
 
     // MARK: - 連続ログインのコイン表
 
     func testLoginCoinsTableAndLoop() {
-        // 表: [2,2,3,3,4,5,7]
-        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 1), 2)
-        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 2), 2)
-        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 5), 4)
-        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 7), 7)
-        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 8), 2)   // 8日目=1周して2
-        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 14), 7)
+        // 表: [20,20,30,30,40,50,70]
+        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 1), 20)
+        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 2), 20)
+        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 5), 40)
+        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 7), 70)
+        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 8), 20)   // 8日目=1周して20
+        XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 14), 70)
         XCTAssertEqual(CoinRewards.loginCoins(forStreakDay: 0), 0)
     }
 
@@ -43,17 +43,17 @@ final class CoinRewardsTests: XCTestCase {
 
     func testFirstLoginGivesStreak1() {
         let out = CoinRewards.dailyLogin(lastLogin: nil, today: day(2026, 6, 27), currentStreak: 0, calendar: cal)
-        XCTAssertEqual(out, CoinRewards.LoginOutcome(streak: 1, coins: 2))
+        XCTAssertEqual(out, CoinRewards.LoginOutcome(streak: 1, coins: 20))
     }
 
     func testConsecutiveDayIncrementsStreak() {
         let out = CoinRewards.dailyLogin(lastLogin: day(2026, 6, 26), today: day(2026, 6, 27), currentStreak: 3, calendar: cal)
-        XCTAssertEqual(out, CoinRewards.LoginOutcome(streak: 4, coins: 3))  // 4日目=3
+        XCTAssertEqual(out, CoinRewards.LoginOutcome(streak: 4, coins: 30))  // 4日目=30
     }
 
     func testGapResetsStreakToOne() {
         let out = CoinRewards.dailyLogin(lastLogin: day(2026, 6, 24), today: day(2026, 6, 27), currentStreak: 5, calendar: cal)
-        XCTAssertEqual(out, CoinRewards.LoginOutcome(streak: 1, coins: 2))
+        XCTAssertEqual(out, CoinRewards.LoginOutcome(streak: 1, coins: 20))
     }
 
     func testSameDayReturnsNil() {
@@ -62,9 +62,9 @@ final class CoinRewardsTests: XCTestCase {
     }
 
     func testStreakLoopsCoinsAfterSeven() {
-        // 7日連続のあと8日目も連続なら streak 8 → 2コイン
+        // 7日連続のあと8日目も連続なら streak 8 → 20コイン
         let out = CoinRewards.dailyLogin(lastLogin: day(2026, 6, 26), today: day(2026, 6, 27), currentStreak: 7, calendar: cal)
-        XCTAssertEqual(out, CoinRewards.LoginOutcome(streak: 8, coins: 2))
+        XCTAssertEqual(out, CoinRewards.LoginOutcome(streak: 8, coins: 20))
     }
 
     // MARK: - 満点デイリー上限
