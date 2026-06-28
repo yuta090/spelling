@@ -134,4 +134,11 @@ public enum ReviewQueue {
     public static func pruneMastered(_ states: [ReviewItemState], currentStep: Int) -> [ReviewItemState] {
         states.filter { !isMastered($0, currentStep: currentStep) }
     }
+
+    /// 復習中（＝まだ卒業していない）項目の件数。親レポートの「まちがい復習 N」に使う。
+    public static func activeCount(_ states: [ReviewItemState], currentStep: Int) -> Int {
+        states.reduce(into: 0) { acc, state in
+            if !isMastered(state, currentStep: currentStep) { acc += 1 }
+        }
+    }
 }

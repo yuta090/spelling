@@ -213,6 +213,23 @@ final class ReviewQueueComposeRoundTests: XCTestCase {
     }
 }
 
+// MARK: - activeCount（復習中＝未卒業の件数。親レポート用）
+
+final class ReviewQueueActiveCountTests: XCTestCase {
+    func testCountsOnlyNonMastered() {
+        let states = [
+            ReviewItemState(id: idA, box: 1, lastSeenStep: 9, addedAtStep: 9),   // 現役
+            ReviewItemState(id: idB, box: 3, lastSeenStep: 8, addedAtStep: 0),   // 現役
+            ReviewItemState(id: idC, box: 5, lastSeenStep: 0, addedAtStep: 0)    // 卒業（box5・間隔超過）
+        ]
+        XCTAssertEqual(ReviewQueue.activeCount(states, currentStep: 10), 2)
+    }
+
+    func testEmptyIsZero() {
+        XCTAssertEqual(ReviewQueue.activeCount([], currentStep: 5), 0)
+    }
+}
+
 // MARK: - pruneMastered（任意の掃除）
 
 final class ReviewQueuePruneTests: XCTestCase {

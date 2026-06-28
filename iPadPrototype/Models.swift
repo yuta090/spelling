@@ -98,6 +98,28 @@ struct TodayStepProgress: Equatable, Sendable {
     }
 }
 
+/// 親ダッシュボードのスコアボード集計（常時表示の土台カード用）。
+struct ParentScoreboard: Equatable, Sendable {
+    var streakDays: Int
+    var weeklyCount: Int
+    var spellingReviewCount: Int
+    var grammarReviewCount: Int
+    var pendingGradingCount: Int
+
+    /// まちがい復習が1件でもあるか（サマリーのタップ導線を出すか）。
+    var hasReview: Bool { spellingReviewCount > 0 || grammarReviewCount > 0 }
+}
+
+/// まちがい復習（スペル）の明細1件。親レポートのドリルダウン用。
+struct ReviewWordDetail: Identifiable, Equatable, Sendable {
+    var id: UUID
+    var text: String
+    /// 1〜5。小さいほど苦手（box1＝直近でまちがえた／登録直後）。
+    var box: Int
+    /// 直近の解答が正解だったか（box が上がっている＝直近◯）。box1 は直近×（または新規）。
+    var lastAnsweredCorrect: Bool
+}
+
 struct SchoolTestResult: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var date = Date()

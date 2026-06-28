@@ -1429,6 +1429,70 @@ final class AppModel: ObservableObject {
         spellingReviewStep += 1
     }
 
+    // MARK: - 親レポート（スコアボード・採点待ち・まちがい復習の明細）
+
+    /// 採点待ち件数：自動正解で確定していない（=親の確認が要る）テスト答案のうち、まだ未採点のもの。
+    /// 自動正解は確認不要なので数えない（CTA を「やることがある時だけ」出すため）。
+    var pendingGradingCount: Int {
+        attempts.reduce(into: 0) { acc, attempt in
+            if attempt.parentReviewDecision == .unreviewed && attempt.decision != .autoCorrect {
+                acc += 1
+            }
+        }
+    }
+
+    /// 復習中（未卒業）かつ「いま明細に出せる」スペル語の (状態, 語)。
+    /// カウントと明細を必ず一致させる（削除済み語・子由来・卒業済みは除外＝注入の eligible と同条件）。
+    private func eligibleSpellingReview() -> [(state: ReviewItemState, word: SpellingWord)] {
+        let byID = Dictionary(words.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        return spellingReviewStates.compactMap { state in
+            guard let word = byID[state.id], !isChildWord(word),
+                  !ReviewQueue.isMastered(state, currentStep: spellingReviewStep) else { return nil }
+            return (state, word)
+        }
+    }
+
+    /// 復習中（未卒業・明細に出せる）のスペル語数（「まちがい復習 スペルN」）。明細件数と一致する。
+    var spellingReviewActiveCount: Int {
+        eligibleSpellingReview().count
+    }
+
+    /// 復習中（未卒業）のことばパズル文数（「まちがい復習 文N」）。
+    var grammarReviewActiveCount: Int {
+        ReviewQueue.activeCount(grammarReviewStates, currentStep: grammarReviewStep)
+    }
+
+    /// 親ダッシュボードのスコアボード集計（連続学習日数・直近7日の取り組み数・まちがい復習件数・採点待ち）。
+    func parentScoreboard(now: Date = Date(), calendar: Calendar = .current) -> ParentScoreboard {
+        let weekly = learningReport(days: 7, now: now, calendar: calendar)
+        let monthly = learningReport(days: 30, now: now, calendar: calendar)
+        return ParentScoreboard(
+            streakDays: monthly.currentStreakDays,
+            weeklyCount: weekly.totalEvents,
+            spellingReviewCount: spellingReviewActiveCount,
+            grammarReviewCount: grammarReviewActiveCount,
+            pendingGradingCount: pendingGradingCount
+        )
+    }
+
+    /// まちがい復習（スペル）の明細：復習中の語を「定着の進み」順（box 昇順＝苦手が上）に。
+    /// `lastAnsweredCorrect` は box>=2（=直近の解答が正解で箱が上がっている）から導出。件数は `spellingReviewActiveCount` と一致。
+    func spellingReviewDetails(now: Date = Date()) -> [ReviewWordDetail] {
+        eligibleSpellingReview()
+            .map { pair in
+                ReviewWordDetail(
+                    id: pair.state.id,
+                    text: pair.word.text,
+                    box: pair.state.box,
+                    lastAnsweredCorrect: pair.state.box >= SRSScheduler.minBox + 1
+                )
+            }
+            .sorted { lhs, rhs in
+                if lhs.box != rhs.box { return lhs.box < rhs.box }
+                return lhs.text < rhs.text
+            }
+    }
+
     private func ensureSelectedWordStepStillExists() {
         let steps = wordSteps
         guard !steps.isEmpty else {
