@@ -1480,6 +1480,10 @@ struct SpellingSessionView: View {
 
         isChecking = false
         shouldShowTestResultsAfterGrading = false
+        // テスト完了：間違えた語を復習キューへ反映（1回正解で消さず、今後のテストに少数ずつ追加問題として戻す）。
+        if mode == .test, !sessionAttempts.isEmpty {
+            model.recordSpellingTestResults(sessionAttempts, words: sessionWords)
+        }
         // テスト満点なら、1日1回のボーナスコインを付与（途中で単語を足していても完了問題数で計算）。
         if mode == .test,
            !sessionAttempts.isEmpty,
