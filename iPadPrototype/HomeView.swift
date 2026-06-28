@@ -9295,7 +9295,8 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "voxelcity", japaneseName: "ボクセルシティ", englishName: "Voxel City", price: 200, imageName: "bg_voxelcity"),
         HomeBackgroundTheme(id: "voxelfarm", japaneseName: "ボクセルぼくじょう", englishName: "Voxel Farm", price: 200, imageName: "bg_voxelfarm"),
         HomeBackgroundTheme(id: "voxelcastle", japaneseName: "ボクセルキャッスル", englishName: "Voxel Castle", price: 200, imageName: "bg_voxelcastle"),
-        HomeBackgroundTheme(id: "voxelautumn", japaneseName: "ボクセルこうよう", englishName: "Voxel Autumn", price: 200, imageName: "bg_voxelautumn")
+        HomeBackgroundTheme(id: "voxelautumn", japaneseName: "ボクセルこうよう", englishName: "Voxel Autumn", price: 200, imageName: "bg_voxelautumn"),
+        HomeBackgroundTheme(id: "ghosthouse", japaneseName: "おばけやしき", englishName: "Ghost House", price: 200, imageName: "bg_ghosthouse")
     ]
     // BG-CATALOG-GENERATED-END
 }
