@@ -6406,18 +6406,13 @@ private struct TestSettingsPanel: View {
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Picker(language.text(japanese: "ヒント表示", english: "Hint timing"), selection: $model.settings.practiceHintTiming) {
-                    ForEach(PracticeHintTiming.allCases) { timing in
-                        Text(timing.label(language: language)).tag(timing)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel(language.text(japanese: "練習中のヒント表示タイミング", english: "Practice hint timing"))
-
-                Text(model.settings.practiceHintTiming.description(language: language))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                Text(language.text(
+                    japanese: "練習中は、単語の下にいつも日本語訳と例文を表示します。",
+                    english: "During practice the meaning and example always appear below the word."
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
                 Text(language.text(
                     japanese: "最後のラウンドでは、なぞるお手本の文字がゆっくり消えて、自分で書く練習になります。",

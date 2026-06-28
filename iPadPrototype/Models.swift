@@ -525,8 +525,6 @@ struct TestSettings: Equatable, Codable, Sendable {
     var importAttachJapanese: Bool = true
     /// 日本語訳に漢字（ふりがな付き）を使うか。false ならひらがな・カタカナのみ。
     var importUseKanji: Bool = false
-    /// 練習中に日本語訳・例文ヒントを出すタイミング。
-    var practiceHintTiming: PracticeHintTiming = .lastRound
 
     enum CodingKeys: String, CodingKey {
         case appLanguage
@@ -541,7 +539,6 @@ struct TestSettings: Equatable, Codable, Sendable {
         case lowConfidence
         case importAttachJapanese
         case importUseKanji
-        case practiceHintTiming
     }
 
     init() {}
@@ -560,50 +557,6 @@ struct TestSettings: Equatable, Codable, Sendable {
         lowConfidence = try container.decodeIfPresent(Float.self, forKey: .lowConfidence) ?? 0.35
         importAttachJapanese = try container.decodeIfPresent(Bool.self, forKey: .importAttachJapanese) ?? true
         importUseKanji = try container.decodeIfPresent(Bool.self, forKey: .importUseKanji) ?? false
-        practiceHintTiming = try container.decodeIfPresent(PracticeHintTiming.self, forKey: .practiceHintTiming) ?? .lastRound
-    }
-}
-
-/// 練習中の日本語訳・例文ヒントを表示するタイミング。
-enum PracticeHintTiming: String, CaseIterable, Identifiable, Codable, Sendable {
-    /// 最後のラウンド（なぞり文字が消える回）だけ表示。
-    case lastRound
-    /// 毎ラウンド表示。
-    case everyRound
-    /// 表示しない。
-    case never
-
-    var id: String { rawValue }
-
-    func label(language: AppLanguage) -> String {
-        switch self {
-        case .lastRound:
-            return language.text(japanese: "最後だけ", english: "Last only")
-        case .everyRound:
-            return language.text(japanese: "毎回", english: "Every time")
-        case .never:
-            return language.text(japanese: "出さない", english: "Off")
-        }
-    }
-
-    func description(language: AppLanguage) -> String {
-        switch self {
-        case .lastRound:
-            return language.text(
-                japanese: "最後のラウンド（お手本がうすくなる回）だけ、日本語訳と例文を表示します。",
-                english: "Shows the meaning and example only on the final round, when the model letters fade out."
-            )
-        case .everyRound:
-            return language.text(
-                japanese: "すべてのラウンドで日本語訳と例文を表示します。",
-                english: "Shows the meaning and example on every round."
-            )
-        case .never:
-            return language.text(
-                japanese: "練習中は日本語訳・例文を表示しません。",
-                english: "Never shows the meaning or example during practice."
-            )
-        }
     }
 }
 
