@@ -87,6 +87,10 @@ private struct RootView: View {
             .overlay(alignment: .topTrailing) {
                 WordListeningDebugLauncher()
             }
+            // リスニング穴埋め（設問は無音→回答後に音）の試遊導線（製品UIには出さない）。
+            .overlay(alignment: .topLeading) {
+                ListeningClozeDebugLauncher()
+            }
         #endif
     }
 }
