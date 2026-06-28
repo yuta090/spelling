@@ -57,6 +57,8 @@ VALID_STYLES = {
     "butterfly", "beetle", "ladybug", "bee", "ant",
     "trex", "triceratops", "stegosaurus", "brachiosaurus", "pteranodon",
     "astronaut", "ufo", "saturn", "moon", "alien",
+    "alienBlob", "alienTriclops", "alienSquid", "alienWorm", "alienMushroom",
+    "alienBugeye", "alienCrystal", "alienHover",
     "velociraptor", "ankylosaurus", "spinosaurus", "parasaurolophus",
     "plesiosaurus", "dinoEgg",
     # 画像ベースの「なかま」共通スタイル。画像は id から nakama_<id>(WebP DataSet) で引く。

@@ -2289,6 +2289,14 @@ enum HomeRewardCharacterStyle {
     case saturn
     case moon
     case alien
+    case alienBlob
+    case alienTriclops
+    case alienSquid
+    case alienWorm
+    case alienMushroom
+    case alienBugeye
+    case alienCrystal
+    case alienHover
     case velociraptor
     case ankylosaurus
     case spinosaurus
@@ -4751,6 +4759,127 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.9686, green: 0.8627, blue: 0.7608),
             secondary: Color(red: 0.2275, green: 0.4196, blue: 0.2902),
             accent: Color(red: 0.7843, green: 0.3529, blue: 0.1647)
+        ),
+        HomeRewardCharacter(
+            id: "alien_blob",
+            category: .space,
+            japaneseName: "ブロブ",
+            englishName: "Blob",
+            price: 50,
+            style: .alienBlob,
+            primary: Color(red: 0.4196, green: 0.7961, blue: 0.4667),
+            secondary: Color(red: 0.7490, green: 0.9412, blue: 0.6510),
+            accent: Color(red: 0.1804, green: 0.3529, blue: 0.5490)
+        ),
+        HomeRewardCharacter(
+            id: "alien_mitsume",
+            category: .space,
+            japaneseName: "ミツメ",
+            englishName: "Mitsume",
+            price: 50,
+            style: .alienTriclops,
+            primary: Color(red: 0.7255, green: 0.5490, blue: 0.8784),
+            secondary: Color(red: 0.4784, green: 0.3529, blue: 0.6902),
+            accent: Color(red: 0.1020, green: 0.1020, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "alien_ikar",
+            category: .space,
+            japaneseName: "イカル",
+            englishName: "Ikar",
+            price: 50,
+            style: .alienSquid,
+            primary: Color(red: 0.3569, green: 0.7843, blue: 0.8392),
+            secondary: Color(red: 0.7804, green: 0.4784, blue: 0.8392),
+            accent: Color(red: 0.1373, green: 0.1922, blue: 0.3098)
+        ),
+        HomeRewardCharacter(
+            id: "alien_nyoro",
+            category: .space,
+            japaneseName: "ニョロ",
+            englishName: "Nyoro",
+            price: 50,
+            style: .alienWorm,
+            primary: Color(red: 0.4784, green: 0.7804, blue: 0.4784),
+            secondary: Color(red: 0.7608, green: 0.9412, blue: 0.6510),
+            accent: Color(red: 0.1804, green: 0.3529, blue: 0.5490)
+        ),
+        HomeRewardCharacter(
+            id: "alien_kino",
+            category: .space,
+            japaneseName: "キノ",
+            englishName: "Kino",
+            price: 50,
+            style: .alienMushroom,
+            primary: Color(red: 0.8784, green: 0.3373, blue: 0.2314),
+            secondary: Color(red: 0.9490, green: 0.8706, blue: 0.7608),
+            accent: Color(red: 1.0000, green: 0.9490, blue: 0.8784)
+        ),
+        HomeRewardCharacter(
+            id: "alien_medama",
+            category: .space,
+            japaneseName: "メダマ",
+            englishName: "Medama",
+            price: 50,
+            style: .alienBugeye,
+            primary: Color(red: 0.4196, green: 0.7961, blue: 0.6902),
+            secondary: Color(red: 0.2902, green: 0.6196, blue: 0.5255),
+            accent: Color(red: 0.8784, green: 0.6471, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "alien_kirari",
+            category: .space,
+            japaneseName: "キラリ",
+            englishName: "Kirari",
+            price: 50,
+            style: .alienCrystal,
+            primary: Color(red: 0.5490, green: 0.6196, blue: 0.8784),
+            secondary: Color(red: 0.7804, green: 0.8235, blue: 0.9686),
+            accent: Color(red: 0.9490, green: 0.8235, blue: 0.2980)
+        ),
+        HomeRewardCharacter(
+            id: "alien_hova",
+            category: .space,
+            japaneseName: "ホバ",
+            englishName: "Hova",
+            price: 50,
+            style: .alienHover,
+            primary: Color(red: 0.6039, green: 0.6510, blue: 0.6980),
+            secondary: Color(red: 0.5608, green: 0.8392, blue: 0.8784),
+            accent: Color(red: 0.3569, green: 0.8784, blue: 0.7804)
+        ),
+        HomeRewardCharacter(
+            id: "et_nova",
+            category: .space,
+            japaneseName: "ノヴァ",
+            englishName: "Nova",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.7255, green: 0.5490, blue: 0.8784),
+            secondary: Color(red: 0.7804, green: 0.7804, blue: 0.8392),
+            accent: Color(red: 0.1373, green: 0.1922, blue: 0.3098)
+        ),
+        HomeRewardCharacter(
+            id: "et_zorp",
+            category: .space,
+            japaneseName: "ゾープ",
+            englishName: "Zorp",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.5451, green: 0.8392, blue: 0.2902),
+            secondary: Color(red: 0.7804, green: 0.9412, blue: 0.6275),
+            accent: Color(red: 0.1804, green: 0.3529, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "et_korr",
+            category: .space,
+            japaneseName: "コール",
+            englishName: "Korr",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.5333, blue: 0.2353),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
         )
     ]
     // CATALOG-GENERATED-END
@@ -5574,6 +5703,22 @@ struct RewardCharacterAvatar: View {
                 MoonCharacterFace(character: character)
             case .alien:
                 AlienCharacterFace(character: character)
+            case .alienBlob:
+                AlienBlobCharacterFace(character: character)
+            case .alienTriclops:
+                AlienTriclopsCharacterFace(character: character)
+            case .alienSquid:
+                AlienSquidCharacterFace(character: character)
+            case .alienWorm:
+                AlienWormCharacterFace(character: character)
+            case .alienMushroom:
+                AlienMushroomCharacterFace(character: character)
+            case .alienBugeye:
+                AlienBugeyeCharacterFace(character: character)
+            case .alienCrystal:
+                AlienCrystalCharacterFace(character: character)
+            case .alienHover:
+                AlienHoverCharacterFace(character: character)
             case .velociraptor:
                 VelociraptorCharacterFace(character: character)
             case .ankylosaurus:
@@ -8209,6 +8354,174 @@ private struct AlienCharacterFace: View {
             Ellipse().fill(character.accent).frame(width: 18, height: 24).rotationEffect(.degrees(20)).offset(x: -13, y: -6)
             Ellipse().fill(character.accent).frame(width: 18, height: 24).rotationEffect(.degrees(-20)).offset(x: 13, y: -6)
             SmileArc().stroke(character.accent, style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 16, height: 7).offset(y: 14)
+        }
+    }
+}
+
+// MARK: - Aliens (batch 2: モードS 宇宙人)
+
+private struct AlienBlobCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 14, height: 12).offset(x: -16, y: 40)
+            Capsule().fill(character.primary).frame(width: 14, height: 12).offset(x: 16, y: 40)
+            Capsule().fill(character.primary).frame(width: 4, height: 16).offset(y: -38)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(y: -46)
+            Ellipse().fill(character.primary).frame(width: 80, height: 74).offset(y: 4)
+            Ellipse().fill(character.secondary).frame(width: 46, height: 40).offset(y: 22)
+            Circle().fill(.white).frame(width: 44, height: 44).offset(y: -4)
+            Circle().fill(character.accent).frame(width: 24, height: 24).offset(y: -3)
+            Circle().fill(.black).frame(width: 12, height: 12).offset(y: -3)
+            Circle().fill(.white).frame(width: 5, height: 5).offset(x: 5, y: -7)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                .frame(width: 18, height: 8).offset(y: 24)
+        }
+    }
+}
+
+private struct AlienTriclopsCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 10, height: 26).rotationEffect(.degrees(22)).offset(x: -32, y: 20)
+            Capsule().fill(character.primary).frame(width: 10, height: 26).rotationEffect(.degrees(-22)).offset(x: 32, y: 20)
+            Capsule().fill(character.secondary).frame(width: 46, height: 42).offset(y: 32)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).rotationEffect(.degrees(18)).offset(x: -12, y: -38)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).rotationEffect(.degrees(-18)).offset(x: 12, y: -38)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: -15, y: -44)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: 15, y: -44)
+            Circle().fill(character.primary).frame(width: 68, height: 60).offset(y: -6)
+            ForEach(-1...1, id: \.self) { i in
+                Circle().fill(.white).frame(width: 17, height: 19).offset(x: CGFloat(i) * 19, y: -8)
+                Circle().fill(.black).frame(width: 8, height: 8).offset(x: CGFloat(i) * 19, y: -6)
+            }
+            SmileArc().stroke(.black.opacity(0.55), style: StrokeStyle(lineWidth: 2.2, lineCap: .round))
+                .frame(width: 16, height: 7).offset(y: 12)
+        }
+    }
+}
+
+private struct AlienSquidCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            ForEach(0..<5, id: \.self) { i in
+                Capsule().fill(i % 2 == 0 ? character.primary : character.secondary)
+                    .frame(width: 9, height: 30)
+                    .rotationEffect(.degrees(Double(i - 2) * 9))
+                    .offset(x: CGFloat(i - 2) * 14, y: 34)
+            }
+            Ellipse().fill(character.primary).frame(width: 84, height: 70).offset(y: -6)
+            Ellipse().fill(character.secondary).frame(width: 84, height: 26).offset(y: 16)
+                .mask(Ellipse().frame(width: 84, height: 70).offset(y: -6))
+            Circle().fill(.white).frame(width: 20, height: 22).offset(x: -15, y: -8)
+            Circle().fill(.white).frame(width: 20, height: 22).offset(x: 15, y: -8)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: -14, y: -6)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: 16, y: -6)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2.3, lineCap: .round))
+                .frame(width: 18, height: 8).offset(y: 8)
+        }
+    }
+}
+
+private struct AlienWormCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 30, height: 30).offset(x: 14, y: 40)
+            Circle().fill(character.secondary).frame(width: 11, height: 11).offset(x: 14, y: 40)
+            Circle().fill(character.primary).frame(width: 36, height: 36).offset(x: -8, y: 26)
+            Circle().fill(character.secondary).frame(width: 13, height: 13).offset(x: -8, y: 26)
+            Circle().fill(character.primary).frame(width: 40, height: 40).offset(x: 10, y: 8)
+            Circle().fill(character.secondary).frame(width: 14, height: 14).offset(x: 10, y: 8)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).rotationEffect(.degrees(20)).offset(x: -8, y: -30)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).rotationEffect(.degrees(-20)).offset(x: 8, y: -30)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: -11, y: -36)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: 11, y: -36)
+            Circle().fill(character.primary).frame(width: 50, height: 48).offset(x: -8, y: -14)
+            Circle().fill(.white).frame(width: 13, height: 14).offset(x: -16, y: -16)
+            Circle().fill(.white).frame(width: 13, height: 14).offset(x: 0, y: -16)
+            Circle().fill(.black).frame(width: 6, height: 6).offset(x: -16, y: -15)
+            Circle().fill(.black).frame(width: 6, height: 6).offset(x: 0, y: -15)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 13, height: 6).offset(x: -8, y: -3)
+        }
+    }
+}
+
+private struct AlienMushroomCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.secondary).frame(width: 46, height: 54).offset(y: 24)
+            Ellipse().fill(character.primary).frame(width: 92, height: 60).offset(y: -18)
+            Circle().fill(character.accent).frame(width: 14, height: 14).offset(x: -24, y: -22)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: 6, y: -30)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: 26, y: -16)
+            Circle().fill(.white).frame(width: 15, height: 16).offset(x: -11, y: 18)
+            Circle().fill(.white).frame(width: 15, height: 16).offset(x: 11, y: 18)
+            Circle().fill(.black).frame(width: 7, height: 7).offset(x: -11, y: 19)
+            Circle().fill(.black).frame(width: 7, height: 7).offset(x: 11, y: 19)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 14, height: 6).offset(y: 32)
+        }
+    }
+}
+
+private struct AlienBugeyeCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 9, height: 24).rotationEffect(.degrees(24)).offset(x: -28, y: 20)
+            Capsule().fill(character.primary).frame(width: 9, height: 24).rotationEffect(.degrees(-24)).offset(x: 28, y: 20)
+            Capsule().fill(character.secondary).frame(width: 46, height: 44).offset(y: 30)
+            Circle().fill(character.primary).frame(width: 48, height: 44).offset(y: -2)
+            Capsule().fill(character.primary).frame(width: 6, height: 22).offset(x: -14, y: -28)
+            Capsule().fill(character.primary).frame(width: 6, height: 22).offset(x: 14, y: -28)
+            Circle().fill(.white).frame(width: 26, height: 26).offset(x: -14, y: -40)
+            Circle().fill(.white).frame(width: 26, height: 26).offset(x: 14, y: -40)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: -12, y: -39)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: 16, y: -39)
+            Circle().fill(.black).frame(width: 6, height: 6).offset(x: -12, y: -39)
+            Circle().fill(.black).frame(width: 6, height: 6).offset(x: 16, y: -39)
+            SmileArc().stroke(.black.opacity(0.55), style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 16, height: 7).offset(y: 6)
+        }
+    }
+}
+
+private struct AlienCrystalCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10).fill(character.secondary).frame(width: 26, height: 26).rotationEffect(.degrees(45)).offset(x: -34, y: 28)
+            RoundedRectangle(cornerRadius: 10).fill(character.secondary).frame(width: 22, height: 22).rotationEffect(.degrees(45)).offset(x: 34, y: 30)
+            RoundedRectangle(cornerRadius: 16).fill(character.primary).frame(width: 74, height: 74).rotationEffect(.degrees(45)).offset(y: -2)
+            Capsule().fill(character.secondary.opacity(0.6)).frame(width: 3, height: 30).rotationEffect(.degrees(45)).offset(x: -10, y: -2)
+            Capsule().fill(character.secondary.opacity(0.6)).frame(width: 3, height: 30).rotationEffect(.degrees(-45)).offset(x: 10, y: -2)
+            Circle().fill(.white).frame(width: 14, height: 15).offset(x: -11, y: -4)
+            Circle().fill(.white).frame(width: 14, height: 15).offset(x: 11, y: -4)
+            Circle().fill(.black).frame(width: 7, height: 7).offset(x: -11, y: -3)
+            Circle().fill(.black).frame(width: 7, height: 7).offset(x: 11, y: -3)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 14, height: 6).offset(y: 12)
+            Circle().fill(character.accent).frame(width: 8, height: 8).offset(x: 22, y: -26)
+        }
+    }
+}
+
+private struct AlienHoverCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.secondary.opacity(0.5)).frame(width: 54, height: 16).offset(y: 42)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).offset(y: -42)
+            Circle().fill(character.accent).frame(width: 11, height: 11).offset(y: -50)
+            Circle().fill(character.primary).frame(width: 74, height: 70).offset(y: -2)
+            Ellipse().fill(character.secondary).frame(width: 70, height: 18).offset(y: 24)
+                .mask(Circle().frame(width: 74, height: 70).offset(y: -2))
+            Capsule().fill(.black.opacity(0.82)).frame(width: 58, height: 24).offset(y: -4)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: -12, y: -4)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: 12, y: -4)
+            Circle().fill(.white).frame(width: 4, height: 4).offset(x: -14, y: -6)
+            Circle().fill(.white).frame(width: 4, height: 4).offset(x: 10, y: -6)
         }
     }
 }
