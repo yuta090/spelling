@@ -42,6 +42,12 @@ public struct SentenceItem: Equatable, Sendable, Codable, Identifiable {
     public var gradeBand: Int
     public var contentLemmas: [String]
     public var grammar: GrammarPoint?
+    /// 安定ID（教材＝authoring 由来）。英文を直して表層 `id`(UUIDv5) が変わっても切れない履歴の鍵。
+    /// 任意（既存同梱物には無い → nil）。`Codable` は optional を encodeIfPresent するため nil は出力から省かれる。
+    public var sourceID: String?
+    /// ジャンル（useful/humor/story）。プールの絞り込み（humor トグル）に使う。
+    /// 任意（既存同梱物には無い → nil＝useful 相当に扱う）。nil は出力から省かれる。
+    public var genre: Genre?
 
     public init(
         id: UUID = UUID(),
@@ -50,7 +56,9 @@ public struct SentenceItem: Equatable, Sendable, Codable, Identifiable {
         tokens: [String],
         gradeBand: Int,
         contentLemmas: [String] = [],
-        grammar: GrammarPoint? = nil
+        grammar: GrammarPoint? = nil,
+        sourceID: String? = nil,
+        genre: Genre? = nil
     ) {
         self.id = id
         self.en = en
@@ -59,6 +67,8 @@ public struct SentenceItem: Equatable, Sendable, Codable, Identifiable {
         self.gradeBand = gradeBand
         self.contentLemmas = contentLemmas
         self.grammar = grammar
+        self.sourceID = sourceID
+        self.genre = genre
     }
 
     /// 並べ替え問題として成立するか（少なくとも2種類の異なるトークンが要る）。
