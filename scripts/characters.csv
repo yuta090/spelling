@@ -219,3 +219,14 @@ ya_layla,people,ライラ,Layla,40,imageAsset,#C29A6B,#2E8C8C,#3A281A,false,webp
 ya_taro,people,タロウ,Taro,40,imageAsset,#E8C0A0,#D14A2E,#1A1410,false,webp;people;human;teen;eastasian;male;hair-buzz;black
 ya_sakura,people,サクラ,Sakura,40,imageAsset,#F2C9A6,#F7F2E8,#1A1410,false,webp;people;human;teen;eastasian;female;hair-odango;black;dyed-blue;trend
 ya_leon,people,レオン,Leon,40,imageAsset,#F7DCC2,#3A6B4A,#C85A2A,false,webp;people;human;teen;white;male;hair-curly;red;ginger
+alien_blob,space,ブロブ,Blob,50,alienBlob,#6BCB77,#BFF0A6,#2E5A8C,false,swift;space;cosmos;scifi;alien;creature
+alien_mitsume,space,ミツメ,Mitsume,50,alienTriclops,#B98CE0,#7A5AB0,#1A1A2E,false,swift;space;cosmos;scifi;alien;humanoid
+alien_ikar,space,イカル,Ikar,50,alienSquid,#5BC8D6,#C77AD6,#23314F,false,swift;space;cosmos;scifi;alien;creature
+alien_nyoro,space,ニョロ,Nyoro,50,alienWorm,#7AC77A,#C2F0A6,#2E5A8C,false,swift;space;cosmos;scifi;alien;creature
+alien_kino,space,キノ,Kino,50,alienMushroom,#E0563B,#F2DEC2,#FFF2E0,false,swift;space;cosmos;scifi;alien;creature
+alien_medama,space,メダマ,Medama,50,alienBugeye,#6BCBB0,#4A9E86,#E0A53C,false,swift;space;cosmos;scifi;alien;humanoid
+alien_kirari,space,キラリ,Kirari,50,alienCrystal,#8C9EE0,#C7D2F7,#F2D24C,false,swift;space;cosmos;scifi;alien;creature
+alien_hova,space,ホバ,Hova,50,alienHover,#9AA6B2,#8FD6E0,#5BE0C7,false,swift;space;cosmos;scifi;alien;creature
+et_nova,space,ノヴァ,Nova,50,imageAsset,#B98CE0,#C7C7D6,#23314F,false,webp;space;cosmos;scifi;alien;humanoid
+et_zorp,space,ゾープ,Zorp,50,imageAsset,#8BD64A,#C7F0A0,#2E5A2E,false,webp;space;cosmos;scifi;alien;creature
+et_korr,space,コール,Korr,50,imageAsset,#E0883C,#F2C14E,#5C3A1A,false,webp;space;cosmos;scifi;alien;creature
