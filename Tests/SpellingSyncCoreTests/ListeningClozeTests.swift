@@ -34,6 +34,17 @@ final class ListeningClozeTests: XCTestCase {
         XCTAssertEqual(ex?.prompt, "うみが みえる")
     }
 
+    /// 正解が大文字始まり（文頭の "Sea" 等）なら、おとりも大文字始まりに揃える。
+    /// 小文字おとりの中に大文字の正解が混じると見た目で答えが分かってしまうため。
+    func testCapitalizedAnswerCapitalizesDistractors() {
+        let ex = ListeningClozeGenerator.make(
+            from: item("Sea is blue", "うみは あおい"),
+            confusables: entries, blankIndex: 0, optionCount: 4, seed: 5)
+        XCTAssertEqual(ex?.answer, "Sea")
+        // すべて大文字始まり＝大文字が手がかりにならない。
+        XCTAssertEqual(ex.map { Set($0.options) }, ["Sea", "See", "Tea", "She"])
+    }
+
     /// 空所を省略したら、音の近いおとりを持つトークンを自動で選ぶ
     /// （最長＝内容語が優先だが、おとりを持たない語は飛ばす）。
     func testMakeAutoSelectsBlankThatHasConfusables() {
