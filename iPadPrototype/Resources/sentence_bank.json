@@ -851,5 +851,551 @@
       "you",
       "today"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "hello",
+      "sora"
+    ],
+    "en" : "Hello I am Sora",
+    "gradeBand" : 5,
+    "grammar" : "beVerb",
+    "id" : "F333AAAD-6027-5506-8DD9-DEF9BF027FB7",
+    "ja" : "こんにちは わたしは ソラです",
+    "sourceID" : "a-greeting-1",
+    "tokens" : [
+      "Hello",
+      "I",
+      "am",
+      "Sora"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "good",
+      "night"
+    ],
+    "en" : "Sora good night",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "172D0875-2E42-5415-BAB0-61358E1DBC5E",
+    "ja" : "ソラ おやすみなさい",
+    "sourceID" : "a-greeting-2",
+    "tokens" : [
+      "Sora",
+      "good",
+      "night"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "tomorrow",
+      "mei"
+    ],
+    "en" : "See you tomorrow Mei",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "F62D93DF-E0A3-5DA6-8568-A787B793D7FB",
+    "ja" : "また あしたね メイ",
+    "sourceID" : "a-greeting-3",
+    "tokens" : [
+      "See",
+      "you",
+      "tomorrow",
+      "Mei"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hello",
+      "good",
+      "friend"
+    ],
+    "en" : "Hello my good friend",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "AA8B1235-13F5-574D-AFE8-99BDAD522EA3",
+    "ja" : "こんにちは わたしの おともだち",
+    "sourceID" : "a-greeting-4",
+    "tokens" : [
+      "Hello",
+      "my",
+      "good",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "good",
+      "evening"
+    ],
+    "en" : "Good evening to you",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "2D01F963-0746-5631-86E1-41E56F6CF856",
+    "ja" : "こんばんは",
+    "sourceID" : "a-greeting-5",
+    "tokens" : [
+      "Good",
+      "evening",
+      "to",
+      "you"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "happy"
+    ],
+    "en" : "I am very happy",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "4E923215-EEC7-5B78-AF1D-57B374B787CA",
+    "ja" : "わたしは とても うれしい",
+    "sourceID" : "a-feeling-1",
+    "tokens" : [
+      "I",
+      "am",
+      "very",
+      "happy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "sleepy",
+      "today"
+    ],
+    "en" : "Mei is sleepy today",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "410DB77C-C7A9-562A-8FE3-E74DAB39A090",
+    "ja" : "メイは きょう ねむい",
+    "sourceID" : "a-feeling-2",
+    "tokens" : [
+      "Mei",
+      "is",
+      "sleepy",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "happy"
+    ],
+    "en" : "The cat is happy",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "DDB46B2E-BB43-5405-BBF7-D921BDB4AB38",
+    "ja" : "ねこは うれしい",
+    "sourceID" : "a-feeling-3",
+    "tokens" : [
+      "The",
+      "cat",
+      "is",
+      "happy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "small"
+    ],
+    "en" : "The rabbit is small",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "22F46F07-7453-5147-BBC9-CC7980CBF635",
+    "ja" : "うさぎは ちいさい",
+    "sourceID" : "a-feeling-4",
+    "tokens" : [
+      "The",
+      "rabbit",
+      "is",
+      "small"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "look",
+      "happy"
+    ],
+    "en" : "You look very happy",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "C5A5B11D-0A2F-5A6F-AE69-E299F1C153EB",
+    "ja" : "あなたは とても うれしそう",
+    "sourceID" : "a-feeling-5",
+    "tokens" : [
+      "You",
+      "look",
+      "very",
+      "happy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "big",
+      "dog"
+    ],
+    "en" : "I like big dogs",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "7EE492BB-1E99-50C6-9FF9-E9066D264375",
+    "ja" : "わたしは おおきい いぬが すき",
+    "sourceID" : "a-likewant-1",
+    "tokens" : [
+      "I",
+      "like",
+      "big",
+      "dogs"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "clean",
+      "water"
+    ],
+    "en" : "I want clean water",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "C0727431-A15C-5B06-8A3B-52C978DC00F0",
+    "ja" : "わたしは きれいな みずが ほしい",
+    "sourceID" : "a-likewant-2",
+    "tokens" : [
+      "I",
+      "want",
+      "clean",
+      "water"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "want",
+      "apple"
+    ],
+    "en" : "Sora wants an apple",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "AE48BA80-D765-5C0B-B98A-598C186BD7D9",
+    "ja" : "ソラは りんごが ほしい",
+    "sourceID" : "a-likewant-3",
+    "tokens" : [
+      "Sora",
+      "wants",
+      "an",
+      "apple"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "like",
+      "seed"
+    ],
+    "en" : "The bird likes seeds",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "1E71E90C-460A-5A5E-9E77-71D0021B4D59",
+    "ja" : "とりは たねが すき",
+    "sourceID" : "a-likewant-4",
+    "tokens" : [
+      "The",
+      "bird",
+      "likes",
+      "seeds"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "big",
+      "car"
+    ],
+    "en" : "I like big cars",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "9907FE35-C79C-5B3B-9F32-E4C308C3A0F1",
+    "ja" : "わたしは おおきい くるまが すき",
+    "sourceID" : "a-likewant-5",
+    "tokens" : [
+      "I",
+      "like",
+      "big",
+      "cars"
+    ]
+  },
+  {
+    "contentLemmas" : [
+
+    ],
+    "en" : "Yes I can",
+    "gradeBand" : 1,
+    "grammar" : "canModal",
+    "id" : "6F92514B-68BE-5F3C-AA3C-2A4AA58B0347",
+    "ja" : "はい できます",
+    "sourceID" : "a-reply-1",
+    "tokens" : [
+      "Yes",
+      "I",
+      "can"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "thank",
+      "sora"
+    ],
+    "en" : "No thank you Sora",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "74187CF4-9319-5E09-93AB-9F8C8883CDE1",
+    "ja" : "いいえ ありがとう ソラ",
+    "sourceID" : "a-reply-2",
+    "tokens" : [
+      "No",
+      "thank",
+      "you",
+      "Sora"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like"
+    ],
+    "en" : "Yes I like it",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "9284D283-1A12-5C42-830D-AC61F69A73A7",
+    "ja" : "はい すきです",
+    "sourceID" : "a-reply-3",
+    "tokens" : [
+      "Yes",
+      "I",
+      "like",
+      "it"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ok",
+      "see",
+      "now"
+    ],
+    "en" : "OK I see now",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "ADEBBBC5-71C2-5C13-A52A-D688B87E3B6F",
+    "ja" : "わかりました",
+    "sourceID" : "a-reply-4",
+    "tokens" : [
+      "OK",
+      "I",
+      "see",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sure",
+      "ready"
+    ],
+    "en" : "Sure I am ready",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "500AD88D-6946-52C8-AB0C-2360A0D445F6",
+    "ja" : "もちろんです じゅんびできたよ",
+    "sourceID" : "a-reply-5",
+    "tokens" : [
+      "Sure",
+      "I",
+      "am",
+      "ready"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "thank",
+      "much"
+    ],
+    "en" : "Thank you very much",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "E5553B41-76B5-50B1-8616-FC52DFE40A0F",
+    "ja" : "どうも ありがとう",
+    "sourceID" : "a-thanks-1",
+    "tokens" : [
+      "Thank",
+      "you",
+      "very",
+      "much"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sorry"
+    ],
+    "en" : "I am very sorry",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "600DD02C-7BA2-5B08-B4C8-1F976D6C110B",
+    "ja" : "ほんとうに ごめんなさい",
+    "sourceID" : "a-thanks-2",
+    "tokens" : [
+      "I",
+      "am",
+      "very",
+      "sorry"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "welcome"
+    ],
+    "en" : "You are very welcome",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "9A900104-D502-54AB-8C8E-F9137D71C226",
+    "ja" : "どういたしまして",
+    "sourceID" : "a-thanks-3",
+    "tokens" : [
+      "You",
+      "are",
+      "very",
+      "welcome"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "thank",
+      "dear",
+      "mei"
+    ],
+    "en" : "Thank you dear Mei",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "1ECAA77D-37EF-5ADB-BCF1-CA799A410903",
+    "ja" : "ありがとう メイ",
+    "sourceID" : "a-thanks-4",
+    "tokens" : [
+      "Thank",
+      "you",
+      "dear",
+      "Mei"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sorry",
+      "late"
+    ],
+    "en" : "Sorry I am late",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "A200A537-79FE-5AE4-AB64-DFE77EE4C24E",
+    "ja" : "ごめんなさい おくれました",
+    "sourceID" : "a-thanks-5",
+    "tokens" : [
+      "Sorry",
+      "I",
+      "am",
+      "late"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "help",
+      "now"
+    ],
+    "en" : "Please help me now",
+    "gradeBand" : 1,
+    "grammar" : "imperative",
+    "id" : "33BBA18F-6873-5BC8-ABB7-11DF88DDDADF",
+    "ja" : "いま たすけて ください",
+    "sourceID" : "a-help-1",
+    "tokens" : [
+      "Please",
+      "help",
+      "me",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "help",
+      "small",
+      "turtle"
+    ],
+    "en" : "Help the small turtle",
+    "gradeBand" : 1,
+    "grammar" : "imperative",
+    "id" : "D51B3E8D-41A2-5934-B033-165DD6895583",
+    "ja" : "ちいさい かめを たすけて",
+    "sourceID" : "a-help-2",
+    "tokens" : [
+      "Help",
+      "the",
+      "small",
+      "turtle"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "help"
+    ],
+    "en" : "I can help you",
+    "gradeBand" : 1,
+    "grammar" : "canModal",
+    "id" : "14FA544A-F000-5AFC-9180-43984AB7ACBC",
+    "ja" : "わたしは あなたを たすけられる",
+    "sourceID" : "a-help-3",
+    "tokens" : [
+      "I",
+      "can",
+      "help",
+      "you"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "help",
+      "red",
+      "fox"
+    ],
+    "en" : "Help the red fox",
+    "gradeBand" : 2,
+    "grammar" : "imperative",
+    "id" : "26A2D361-01E9-5BB6-B65C-5C2AA3B2C54C",
+    "ja" : "あかい きつねを たすけて",
+    "sourceID" : "a-help-4",
+    "tokens" : [
+      "Help",
+      "the",
+      "red",
+      "fox"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "help",
+      "sora"
+    ],
+    "en" : "Mei can help Sora",
+    "gradeBand" : 1,
+    "grammar" : "canModal",
+    "id" : "AC9354D7-4EDE-5970-BF42-6CB1FF3BCC14",
+    "ja" : "メイは ソラを たすけられる",
+    "sourceID" : "a-help-5",
+    "tokens" : [
+      "Mei",
+      "can",
+      "help",
+      "Sora"
+    ]
   }
 ]
