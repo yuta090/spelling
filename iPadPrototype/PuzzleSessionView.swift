@@ -521,24 +521,31 @@ private struct PuzzleStepView: View {
         }
     }
 
-    /// 答え合わせ後に英語を聞き返せる形式か（音ありのとき）。
+    /// 答え合わせ後に英語を聞き返せるか（音ありのとき）。
+    /// こたえあわせ後は、どの形式でも正しい英語を聞けるようにする（ぶんづくりも含む）。
+    /// 読み上げる中身を用意できる形式だけ true（中身が無いと押しても無音になるため）。
     private var canListenBack: Bool {
         guard soundOn else { return false }
+        return listenBackText != nil
+    }
+
+    /// こたえあわせ後に読み上げる英語（形式ごとに正しい英文／語）。
+    private var listenBackText: String? {
         switch format {
-        case .clozeChoice, .listeningCloze, .wordListening: return true
-        case .wordOrdering, .clozeHandwriting, .composition: return false
+        case .wordOrdering:
+            return orderingExercise.map { $0.answer.joined(separator: " ") }
+        case .clozeChoice, .listeningCloze:
+            return clozeExercise.map { $0.displayTokens.joined(separator: " ") }
+        case .wordListening:
+            return listeningExercise.map { _ in word }
+        case .clozeHandwriting, .composition:
+            return nil
         }
     }
 
     private func listenBack() {
-        switch format {
-        case .wordListening:
-            speech.speak(word, language: "en-US")
-        case .clozeChoice, .listeningCloze:
-            if let ex = clozeExercise { speech.speak(ex.displayTokens.joined(separator: " "), language: "en-US") }
-        default:
-            break
-        }
+        guard let text = listenBackText else { return }
+        speech.speak(text, language: "en-US")
     }
 
     private func setup() {
