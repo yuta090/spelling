@@ -12,19 +12,6 @@ import SpellingSyncCore
 
 // MARK: - 配色（穴埋め・並べ替え画面と同系の温かいパレット）
 
-private enum WL {
-    static let ink = Color(red: 0.45, green: 0.28, blue: 0.08)
-    static let tileFill = Color(red: 1.0, green: 0.97, blue: 0.86)
-    static let tileStroke = Color(red: 0.95, green: 0.73, blue: 0.34)
-    static let accent = Color(red: 0.96, green: 0.62, blue: 0.10)
-    static let correct = Color(red: 0.30, green: 0.62, blue: 0.28)
-    static let retry = Color(red: 0.84, green: 0.36, blue: 0.08)
-    static let bg = Color(red: 1.0, green: 0.99, blue: 0.95)
-
-    static func haptic() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-    }
-}
 
 // MARK: - サンプル（出題語のみ。おとりは同梱 confusables_sound.build.csv から供給）
 
@@ -89,7 +76,7 @@ struct WordListeningDemoView: View {
             .padding(20)
             .frame(maxWidth: 640)
             .frame(maxWidth: .infinity)
-            .background(WL.bg.ignoresSafeArea())
+            .background(PuzzleTheme.bg.ignoresSafeArea())
             .navigationTitle("おとを きいて えらぼう")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -107,21 +94,21 @@ struct WordListeningDemoView: View {
             Spacer(minLength: 0)
             Image(systemName: "headphones")
                 .font(.system(size: 64, weight: .bold))
-                .foregroundStyle(WL.accent)
+                .foregroundStyle(PuzzleTheme.accent)
             Text("おとを だして いい？")
                 .font(.system(size: 26, weight: .bold, design: .rounded))
-                .foregroundStyle(WL.ink)
+                .foregroundStyle(PuzzleTheme.ink)
             Text("でんしゃの なかなど、しずかな ところでは「おとなし」をえらんでね")
                 .font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 12)
             VStack(spacing: 12) {
-                bigButton("🔊 おとを だす", tint: WL.accent) {
+                PuzzlePrimaryButton(title: "🔊 おとを だす", tint: PuzzleTheme.accent) {
                     soundOn = true
                     speakWord()
                 }
-                bigButton("🔇 おとなし", tint: WL.ink.opacity(0.7)) {
+                PuzzlePrimaryButton(title: "🔇 おとなし", tint: PuzzleTheme.ink.opacity(0.7)) {
                     soundOn = false
                 }
             }
@@ -137,14 +124,14 @@ struct WordListeningDemoView: View {
                 .foregroundStyle(.secondary)
             Text("おとが だせる ところで あそぼう！")
                 .font(.system(size: 22, weight: .bold, design: .rounded))
-                .foregroundStyle(WL.ink)
+                .foregroundStyle(PuzzleTheme.ink)
                 .multilineTextAlignment(.center)
             Text("「おとを きいて えらぶ」は みみで あそぶ もんだいだよ")
                 .font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 12)
-            bigButton("やっぱり おとを だす", tint: WL.accent) {
+            PuzzlePrimaryButton(title: "やっぱり おとを だす", tint: PuzzleTheme.accent) {
                 soundOn = true
                 speakWord()
             }
@@ -179,14 +166,14 @@ struct WordListeningDemoView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             Button {
-                WL.haptic()
+                PuzzleTheme.haptic()
                 speakWord()
             } label: {
                 Image(systemName: "speaker.wave.3.fill")
                     .font(.system(size: 56, weight: .bold))
                     .foregroundStyle(.white)
                     .frame(width: 140, height: 140)
-                    .background(Circle().fill(WL.accent))
+                    .background(Circle().fill(PuzzleTheme.accent))
             }
             .buttonStyle(.plain)
             .tapFeedback(bounce: true)
@@ -203,17 +190,17 @@ struct WordListeningDemoView: View {
         VStack(spacing: 12) {
             ForEach(ex.options, id: \.self) { option in
                 Button {
-                    WL.haptic()
+                    PuzzleTheme.haptic()
                     selected = option
                     grade = WordListeningGrader.grade(selected: option, answer: ex.answer)
                 } label: {
                     Text(option)
                         .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundStyle(WL.ink)
+                        .foregroundStyle(PuzzleTheme.ink)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(RoundedRectangle(cornerRadius: 16).fill(WL.tileFill))
-                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(WL.tileStroke, lineWidth: 2))
+                        .background(RoundedRectangle(cornerRadius: 16).fill(PuzzleTheme.tileFill))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(PuzzleTheme.tileStroke, lineWidth: 2))
                 }
                 .buttonStyle(.plain)
                 .tapFeedback(bounce: true)
@@ -228,17 +215,17 @@ struct WordListeningDemoView: View {
             // 答え合わせ後は正解語を大きく見せる（耳→目の確認）。
             Text(ex.answer)
                 .font(.system(size: 34, weight: .heavy, design: .rounded))
-                .foregroundStyle(isCorrect ? WL.correct : WL.ink)
+                .foregroundStyle(isCorrect ? PuzzleTheme.correct : PuzzleTheme.ink)
 
             if isCorrect {
                 Label("やったね！ せいかい！", systemImage: "star.fill")
                     .font(.system(size: 22, weight: .heavy, design: .rounded))
-                    .foregroundStyle(WL.correct)
+                    .foregroundStyle(PuzzleTheme.correct)
             } else {
                 VStack(spacing: 4) {
                     Label("ナイス チャレンジ！", systemImage: "flame.fill")
                         .font(.system(size: 20, weight: .heavy, design: .rounded))
-                        .foregroundStyle(WL.accent)
+                        .foregroundStyle(PuzzleTheme.accent)
                     if let selected {
                         Text("えらんだの：\(selected) ／ せいかいは：\(ex.answer)")
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
@@ -248,37 +235,24 @@ struct WordListeningDemoView: View {
             }
             // もう一度聞ける。
             Button {
-                WL.haptic()
+                PuzzleTheme.haptic()
                 speakWord()
             } label: {
                 Label("もういちど きく", systemImage: "speaker.wave.2.fill")
                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(WL.accent)
+                    .foregroundStyle(PuzzleTheme.accent)
                     .padding(.horizontal, 22).padding(.vertical, 11)
-                    .background(Capsule().fill(WL.tileFill))
-                    .overlay(Capsule().stroke(WL.tileStroke, lineWidth: 2))
+                    .background(Capsule().fill(PuzzleTheme.tileFill))
+                    .overlay(Capsule().stroke(PuzzleTheme.tileStroke, lineWidth: 2))
             }
             .buttonStyle(.plain)
             .tapFeedback(bounce: true)
 
-            bigButton(isCorrect ? "つぎへ" : "もういちど",
-                      tint: isCorrect ? WL.accent : WL.retry) {
+            PuzzlePrimaryButton(title: isCorrect ? "つぎへ" : "もういちど",
+                      tint: isCorrect ? PuzzleTheme.accent : PuzzleTheme.retry) {
                 if isCorrect { next() } else { retry() }
             }
         }
-    }
-
-    private func bigButton(_ title: String, tint: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 22, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(RoundedRectangle(cornerRadius: 18).fill(tint))
-        }
-        .buttonStyle(.plain)
-        .tapFeedback(bounce: true)
     }
 
     // MARK: 動作
