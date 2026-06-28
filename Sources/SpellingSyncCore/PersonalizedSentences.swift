@@ -346,10 +346,26 @@ public enum SentencePersonalizer {
         }
     }
 
-    // MARK: 決定論ハッシュ（Date/Random/String.hashValue 非依存）
+    // MARK: 決定論ハッシュ（DeterministicHash に委譲）
 
-    /// FNV-1a(64) で文字列を畳み、SplitMix64 で1段撹拌。同入力→同出力。
-    private static func fnv1a(_ s: String) -> UInt64 {
+    /// スロット選択用ハッシュ（template.id・slot.key・seed から決定論）。
+    private static func selectionHash(templateID: String, slotKey: String, seed: UInt64) -> UInt64 {
+        DeterministicHash.mix(templateID + "\u{1f}" + slotKey, seed)
+    }
+
+    /// 解決済み文の決定論 UUID（template.id・選んだ人・seed から128bit を作る）。
+    private static func deterministicID(template: PersonSentenceTemplate, assigned: [String: CastPerson], seed: UInt64) -> UUID {
+        // 割り当てを安定文字列化（slot.key 昇順）。
+        let assignment = assigned.keys.sorted().map { "\($0)=\(assigned[$0]!.id.uuidString)" }.joined(separator: ",")
+        return DeterministicHash.uuid(template.id + "\u{1f}" + assignment + "\u{1f}" + String(seed))
+    }
+}
+
+// MARK: - 決定論ハッシュ（Date/Random/String.hashValue 非依存・再利用可能）
+
+/// FNV-1a(64) + SplitMix64。同入力→同出力。resolver とオーサリングローダで共用。
+enum DeterministicHash {
+    static func fnv1a(_ s: String) -> UInt64 {
         var hash: UInt64 = 0xcbf2_9ce4_8422_2325
         for byte in s.utf8 {
             hash ^= UInt64(byte)
@@ -358,30 +374,27 @@ public enum SentencePersonalizer {
         return hash
     }
 
-    private static func splitmix(_ x: UInt64) -> UInt64 {
+    static func splitmix(_ x: UInt64) -> UInt64 {
         var z = x &+ 0x9E37_79B9_7F4A_7C15
         z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
         z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
         return z ^ (z >> 31)
     }
 
-    /// スロット選択用ハッシュ（template.id・slot.key・seed から決定論）。
-    private static func selectionHash(templateID: String, slotKey: String, seed: UInt64) -> UInt64 {
-        splitmix(fnv1a(templateID + "\u{1f}" + slotKey) ^ seed)
+    /// 文字列＋seed → UInt64（撹拌1段）。
+    static func mix(_ key: String, _ seed: UInt64) -> UInt64 {
+        splitmix(fnv1a(key) ^ seed)
     }
 
-    /// 解決済み文の決定論 UUID（template.id・選んだ人・seed から128bit を作る）。
-    private static func deterministicID(template: PersonSentenceTemplate, assigned: [String: CastPerson], seed: UInt64) -> UUID {
-        // 割り当てを安定文字列化（slot.key 昇順）。
-        let assignment = assigned.keys.sorted().map { "\($0)=\(assigned[$0]!.id.uuidString)" }.joined(separator: ",")
-        let base = fnv1a(template.id + "\u{1f}" + assignment) ^ seed
+    /// 文字列 → 決定論 UUID（128bit を2段の SplitMix で作る）。
+    static func uuid(_ key: String) -> UUID {
+        let base = fnv1a(key)
         let hi = splitmix(base)
         let lo = splitmix(base ^ 0xD1B5_4A32_D192_ED03)
         var bytes = [UInt8](repeating: 0, count: 16)
         for i in 0..<8 { bytes[i] = UInt8(truncatingIfNeeded: hi >> (8 * (7 - i))) }
         for i in 0..<8 { bytes[8 + i] = UInt8(truncatingIfNeeded: lo >> (8 * (7 - i))) }
-        // RFC4122 風に version/variant ビットを整える（衝突回避とは無関係だが体裁）。
-        bytes[6] = (bytes[6] & 0x0F) | 0x40
+        bytes[6] = (bytes[6] & 0x0F) | 0x40   // RFC4122 風 version/variant（体裁）
         bytes[8] = (bytes[8] & 0x3F) | 0x80
         let t = (bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
                  bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15])
