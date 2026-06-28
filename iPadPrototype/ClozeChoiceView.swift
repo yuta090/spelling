@@ -9,19 +9,6 @@ import SpellingSyncCore
 
 // MARK: - 配色（並べ替え画面と同系の温かいパレット）
 
-private enum CZ {
-    static let ink = Color(red: 0.45, green: 0.28, blue: 0.08)
-    static let tileFill = Color(red: 1.0, green: 0.97, blue: 0.86)
-    static let tileStroke = Color(red: 0.95, green: 0.73, blue: 0.34)
-    static let accent = Color(red: 0.96, green: 0.62, blue: 0.10)
-    static let correct = Color(red: 0.30, green: 0.62, blue: 0.28)
-    static let retry = Color(red: 0.84, green: 0.36, blue: 0.08)
-    static let bg = Color(red: 1.0, green: 0.99, blue: 0.95)
-
-    static func haptic() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-    }
-}
 
 // MARK: - サンプル（仮データ。後で sentence_bank ＋ おとり生成に差し替え）
 
@@ -96,7 +83,7 @@ struct ClozeChoiceDemoView: View {
             .padding(20)
             .frame(maxWidth: 640)
             .frame(maxWidth: .infinity)
-            .background(CZ.bg.ignoresSafeArea())
+            .background(PuzzleTheme.bg.ignoresSafeArea())
             .navigationTitle("あなうめ")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -116,7 +103,7 @@ struct ClozeChoiceDemoView: View {
                 .foregroundStyle(.secondary)
             Text(sample.item.ja)
                 .font(.system(size: 26, weight: .bold, design: .rounded))
-                .foregroundStyle(CZ.ink)
+                .foregroundStyle(PuzzleTheme.ink)
                 .multilineTextAlignment(.center)
         }
         .padding(.top, 8)
@@ -127,7 +114,7 @@ struct ClozeChoiceDemoView: View {
         let filled = grade == nil ? nil : ex.answer
         return Text(sentenceString(ex, filled: filled))
             .font(.system(size: 28, weight: .bold, design: .rounded))
-            .foregroundStyle(CZ.ink)
+            .foregroundStyle(PuzzleTheme.ink)
             .multilineTextAlignment(.center)
             .padding(.vertical, 8)
     }
@@ -143,17 +130,17 @@ struct ClozeChoiceDemoView: View {
         VStack(spacing: 12) {
             ForEach(ex.options, id: \.self) { option in
                 Button {
-                    CZ.haptic()
+                    PuzzleTheme.haptic()
                     selected = option
                     grade = ClozeChoiceGrader.grade(selected: option, answer: ex.answer)
                 } label: {
                     Text(option)
                         .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundStyle(CZ.ink)
+                        .foregroundStyle(PuzzleTheme.ink)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(RoundedRectangle(cornerRadius: 16).fill(CZ.tileFill))
-                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(CZ.tileStroke, lineWidth: 2))
+                        .background(RoundedRectangle(cornerRadius: 16).fill(PuzzleTheme.tileFill))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(PuzzleTheme.tileStroke, lineWidth: 2))
                 }
                 .buttonStyle(.plain)
                 .tapFeedback(bounce: true)
@@ -168,12 +155,12 @@ struct ClozeChoiceDemoView: View {
             if isCorrect {
                 Label("やったね！ せいかい！", systemImage: "star.fill")
                     .font(.system(size: 22, weight: .heavy, design: .rounded))
-                    .foregroundStyle(CZ.correct)
+                    .foregroundStyle(PuzzleTheme.correct)
             } else {
                 VStack(spacing: 4) {
                     Label("ナイス チャレンジ！", systemImage: "flame.fill")
                         .font(.system(size: 20, weight: .heavy, design: .rounded))
-                        .foregroundStyle(CZ.accent)
+                        .foregroundStyle(PuzzleTheme.accent)
                     if let selected {
                         Text("えらんだの：\(selected) ／ せいかいは：\(ex.answer)")
                             .font(.system(size: 15, weight: .semibold, design: .rounded))
@@ -183,37 +170,24 @@ struct ClozeChoiceDemoView: View {
             }
             // 答え合わせ後に正しい文を聞ける。
             Button {
-                CZ.haptic()
+                PuzzleTheme.haptic()
                 speech.speak(ex.displayTokens.joined(separator: " "), language: "en-US")
             } label: {
                 Label("きいてみる", systemImage: "speaker.wave.2.fill")
                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(CZ.accent)
+                    .foregroundStyle(PuzzleTheme.accent)
                     .padding(.horizontal, 22).padding(.vertical, 11)
-                    .background(Capsule().fill(CZ.tileFill))
-                    .overlay(Capsule().stroke(CZ.tileStroke, lineWidth: 2))
+                    .background(Capsule().fill(PuzzleTheme.tileFill))
+                    .overlay(Capsule().stroke(PuzzleTheme.tileStroke, lineWidth: 2))
             }
             .buttonStyle(.plain)
             .tapFeedback(bounce: true)
 
-            bigButton(isCorrect ? "つぎへ" : "もういちど",
-                      tint: isCorrect ? CZ.accent : CZ.retry) {
+            PuzzlePrimaryButton(title: isCorrect ? "つぎへ" : "もういちど",
+                      tint: isCorrect ? PuzzleTheme.accent : PuzzleTheme.retry) {
                 if isCorrect { next() } else { retry() }
             }
         }
-    }
-
-    private func bigButton(_ title: String, tint: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 22, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(RoundedRectangle(cornerRadius: 18).fill(tint))
-        }
-        .buttonStyle(.plain)
-        .tapFeedback(bounce: true)
     }
 
     private func retry() {

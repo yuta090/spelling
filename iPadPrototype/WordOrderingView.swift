@@ -10,17 +10,6 @@ import SpellingSyncCore
 
 // MARK: - 配色（既存の温かいパレットに合わせる）
 
-private enum WO {
-    static let ink = Color(red: 0.45, green: 0.28, blue: 0.08)
-    static let tileFill = Color(red: 1.0, green: 0.97, blue: 0.86)
-    static let tileStroke = Color(red: 0.95, green: 0.73, blue: 0.34)
-    static let slotStroke = Color(red: 0.90, green: 0.82, blue: 0.66)
-    static let accent = Color(red: 0.96, green: 0.62, blue: 0.10)
-    static let correct = Color(red: 0.30, green: 0.62, blue: 0.28)
-    static let retry = Color(red: 0.84, green: 0.36, blue: 0.08)
-    static let bg = Color(red: 1.0, green: 0.99, blue: 0.95)
-    static let hintFill = Color(red: 1.0, green: 0.98, blue: 0.90)
-}
 
 // MARK: - サンプル文（仮データ。後で sentence_bank に差し替え）
 
@@ -152,7 +141,7 @@ struct WordOrderingDemoView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .background(WO.bg.ignoresSafeArea())
+            .background(PuzzleTheme.bg.ignoresSafeArea())
             .navigationTitle("ぶんづくり")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -197,18 +186,18 @@ struct WordOrderingDemoView: View {
                 // 表示可否はラウンド開始時のスナップショット（currentEntry.isReview）なので採点で揺れない。
                 Label("もういちど", systemImage: "arrow.triangle.2.circlepath")
                     .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(WO.accent)
+                    .foregroundStyle(PuzzleTheme.accent)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 5)
-                    .background(Capsule().fill(WO.hintFill))
-                    .overlay(Capsule().stroke(WO.tileStroke, lineWidth: 1.5))
+                    .background(Capsule().fill(PuzzleTheme.hintFill))
+                    .overlay(Capsule().stroke(PuzzleTheme.tileStroke, lineWidth: 1.5))
             }
             Text("にほんごを みて、ただしい じゅんに ならべよう")
                 .font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
             Text(item?.ja ?? "")
                 .font(.system(size: 28, weight: .bold, design: .rounded))
-                .foregroundStyle(WO.ink)
+                .foregroundStyle(PuzzleTheme.ink)
                 .multilineTextAlignment(.center)
         }
         .padding(.top, 8)
@@ -216,7 +205,7 @@ struct WordOrderingDemoView: View {
 
     /// 解答スロット。置いたタイルをタップで戻せる。
     private var answerRow: some View {
-        FlowLayout(spacing: 10) {
+        PuzzleFlowLayout(spacing: 10) {
             ForEach(placed) { tile in
                 tileButton(tile, role: .placed)
             }
@@ -228,7 +217,7 @@ struct WordOrderingDemoView: View {
                 .fill(Color.white.opacity(0.6))
                 .overlay(
                     RoundedRectangle(cornerRadius: 18)
-                        .stroke(WO.slotStroke, style: StrokeStyle(lineWidth: 2, dash: [7, 6]))
+                        .stroke(PuzzleTheme.slotStroke, style: StrokeStyle(lineWidth: 2, dash: [7, 6]))
                 )
         )
         .overlay(alignment: .leading) {
@@ -244,7 +233,7 @@ struct WordOrderingDemoView: View {
 
     /// バラのタイル置き場。
     private var trayRow: some View {
-        FlowLayout(spacing: 10) {
+        PuzzleFlowLayout(spacing: 10) {
             ForEach(tray) { tile in
                 tileButton(tile, role: .tray)
             }
@@ -256,17 +245,17 @@ struct WordOrderingDemoView: View {
     /// 正解文ではないので、間違っていても答えは漏れず、耳でのセルフチェックになる。
     private var listenButton: some View {
         Button {
-            WordOrderingHaptics.tap()
+            PuzzleTheme.haptic()
             let sentence = placed.map(\.text).joined(separator: " ")
             speech.speak(sentence, language: "en-US")
         } label: {
             Label("きいてみる", systemImage: "speaker.wave.2.fill")
                 .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(WO.accent)
+                .foregroundStyle(PuzzleTheme.accent)
                 .padding(.horizontal, 22)
                 .padding(.vertical, 11)
-                .background(Capsule().fill(WO.tileFill))
-                .overlay(Capsule().stroke(WO.tileStroke, lineWidth: 2))
+                .background(Capsule().fill(PuzzleTheme.tileFill))
+                .overlay(Capsule().stroke(PuzzleTheme.tileStroke, lineWidth: 2))
         }
         .buttonStyle(.plain)
         .tapFeedback(bounce: true)
@@ -277,7 +266,7 @@ struct WordOrderingDemoView: View {
     private func tileButton(_ tile: OrderingTile, role: TileRole) -> some View {
         Button {
             guard grade == nil else { return }
-            WordOrderingHaptics.tap()
+            PuzzleTheme.haptic()
             switch role {
             case .tray:
                 move(tile, from: &tray, to: &placed)
@@ -287,11 +276,11 @@ struct WordOrderingDemoView: View {
         } label: {
             Text(tile.text)
                 .font(.system(size: 26, weight: .bold, design: .rounded))
-                .foregroundStyle(WO.ink)
+                .foregroundStyle(PuzzleTheme.ink)
                 .padding(.horizontal, 18)
                 .padding(.vertical, 12)
-                .background(RoundedRectangle(cornerRadius: 14).fill(WO.tileFill))
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(WO.tileStroke, lineWidth: 2))
+                .background(RoundedRectangle(cornerRadius: 14).fill(PuzzleTheme.tileFill))
+                .overlay(RoundedRectangle(cornerRadius: 14).stroke(PuzzleTheme.tileStroke, lineWidth: 2))
         }
         .buttonStyle(.plain)
         // トレイ↔解答欄でタイルが実際に飛んで移動する（選んだ気持ちよさ）。
@@ -307,12 +296,12 @@ struct WordOrderingDemoView: View {
                 if grade.isCorrect {
                     Label("やったね！ せいかい！", systemImage: "star.fill")
                         .font(.system(size: 22, weight: .heavy, design: .rounded))
-                        .foregroundStyle(WO.correct)
+                        .foregroundStyle(PuzzleTheme.correct)
                 } else {
                     VStack(spacing: 4) {
                         Label("ナイス チャレンジ！", systemImage: "flame.fill")
                             .font(.system(size: 20, weight: .heavy, design: .rounded))
-                            .foregroundStyle(WO.accent)
+                            .foregroundStyle(PuzzleTheme.accent)
                         Text(grade.correctPositions > 0
                              ? "あと \(grade.total - grade.correctPositions)こ！ もういちど やってみよう"
                              : "だいじょうぶ、なんども やってみよう")
@@ -333,13 +322,13 @@ struct WordOrderingDemoView: View {
                 // 回答後に「しらない ことば」を選んで復習へ積む（並べ替えのタップとは衝突しない）。
                 unknownWordChooser
                 if grade.isCorrect {
-                    bigButton("つぎへ", tint: WO.accent, action: next)
+                    PuzzlePrimaryButton(title: "つぎへ", tint: PuzzleTheme.accent, action: next)
                 } else {
-                    bigButton("もういちど", tint: WO.retry, action: retry)
+                    PuzzlePrimaryButton(title: "もういちど", tint: PuzzleTheme.retry, action: retry)
                 }
             }
         } else {
-            bigButton("できた！", tint: isComplete ? WO.accent : Color.gray.opacity(0.4),
+            PuzzlePrimaryButton(title: "できた！", tint: isComplete ? PuzzleTheme.accent : Color.gray.opacity(0.4),
                       action: check)
                 .disabled(!isComplete)
         }
@@ -351,7 +340,7 @@ struct WordOrderingDemoView: View {
             Text("しらない ことばは？ タップで ふくしゅうに ついか")
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
-            FlowLayout(spacing: 8) {
+            PuzzleFlowLayout(spacing: 8) {
                 ForEach(sentenceWords, id: \.self) { unknownChip($0) }
             }
             .frame(maxWidth: .infinity, alignment: .center)
@@ -363,7 +352,7 @@ struct WordOrderingDemoView: View {
         let key = word.lowercased()
         let marked = markedUnknown.contains(key)
         return Button {
-            WordOrderingHaptics.tap()
+            PuzzleTheme.haptic()
             if marked {
                 markedUnknown.remove(key)            // マーク解除（既に積んだ復習は取り消さない）
             } else if !isHiddenName(word) {
@@ -379,11 +368,11 @@ struct WordOrderingDemoView: View {
                 Text(word)
                     .font(.system(size: 16, weight: .semibold, design: .rounded))
             }
-            .foregroundStyle(marked ? .white : WO.ink)
+            .foregroundStyle(marked ? .white : PuzzleTheme.ink)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .background(Capsule().fill(marked ? WO.accent : WO.tileFill))
-            .overlay(Capsule().stroke(WO.tileStroke, lineWidth: 1.5))
+            .background(Capsule().fill(marked ? PuzzleTheme.accent : PuzzleTheme.tileFill))
+            .overlay(Capsule().stroke(PuzzleTheme.tileStroke, lineWidth: 1.5))
         }
         .buttonStyle(.plain)
         .tapFeedback(bounce: true)
@@ -402,19 +391,6 @@ struct WordOrderingDemoView: View {
             }
         }
         return out
-    }
-
-    private func bigButton(_ title: String, tint: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 22, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(RoundedRectangle(cornerRadius: 18).fill(tint))
-        }
-        .buttonStyle(.plain)
-        .tapFeedback(bounce: true)
     }
 
     // MARK: 操作
@@ -486,55 +462,6 @@ struct WordOrderingDemoView: View {
     }
 }
 
-// MARK: - 折り返しレイアウト（iOS16+）
-
-/// タイルを左上から詰めて、横幅を超えたら折り返す素朴なフローレイアウト。
-private struct FlowLayout: Layout {
-    var spacing: CGFloat = 8
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) -> CGSize {
-        let maxWidth = proposal.width ?? .infinity
-        var x: CGFloat = 0, y: CGFloat = 0, rowHeight: CGFloat = 0, widest: CGFloat = 0
-        for sv in subviews {
-            let size = sv.sizeThatFits(.unspecified)
-            if x > 0 && x + size.width > maxWidth {
-                widest = max(widest, x - spacing)
-                x = 0
-                y += rowHeight + spacing
-                rowHeight = 0
-            }
-            x += size.width + spacing
-            rowHeight = max(rowHeight, size.height)
-        }
-        widest = max(widest, x - spacing)
-        return CGSize(width: min(widest, maxWidth), height: y + rowHeight)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) {
-        var x = bounds.minX, y = bounds.minY, rowHeight: CGFloat = 0
-        for sv in subviews {
-            let size = sv.sizeThatFits(.unspecified)
-            if x > bounds.minX && x + size.width > bounds.maxX {
-                x = bounds.minX
-                y += rowHeight + spacing
-                rowHeight = 0
-            }
-            sv.place(at: CGPoint(x: x, y: y), anchor: .topLeading, proposal: ProposedViewSize(size))
-            x += size.width + spacing
-            rowHeight = max(rowHeight, size.height)
-        }
-    }
-}
-
-// MARK: - ハプティクス
-
-/// タイル選択時の軽い触覚フィードバック（選んだ手応え）。
-private enum WordOrderingHaptics {
-    static func tap() {
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        generator.impactOccurred()
-    }
-}
 
 // MARK: - DEBUG 起動ボタン（製品UIには出さない）
 

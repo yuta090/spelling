@@ -46,10 +46,20 @@ public enum ListeningClozeGenerator {
     private static func makeAt(_ idx: Int, from item: SentenceItem,
                                confusables: [ConfusableEntry],
                                optionCount: Int, seed: UInt64) -> ClozeChoiceExercise? {
-        let distractors = ConfusablesSound.distractors(for: item.tokens[idx], in: confusables)
-        guard !distractors.isEmpty else { return nil }   // 音の近いおとりが無ければ作らない
+        let answer = item.tokens[idx]
+        let raw = ConfusablesSound.distractors(for: answer, in: confusables)
+        guard !raw.isEmpty else { return nil }   // 音の近いおとりが無ければ作らない
+        // 正解が大文字始まり（文頭等）のときはおとりも大文字始まりに揃える。
+        // でないと小文字のおとりの中で大文字の正解だけが見た目で分かってしまう（音で選ぶ意味が消える）。
+        let distractors = answer.first?.isUppercase == true ? raw.map(capitalizingFirst) : raw
         return ClozeChoiceGenerator.make(from: item, distractors: distractors,
                                          blankIndex: idx, optionCount: optionCount, seed: seed)
+    }
+
+    /// 先頭1文字だけ大文字化（残りはそのまま）。
+    private static func capitalizingFirst(_ word: String) -> String {
+        guard let first = word.first else { return word }
+        return first.uppercased() + word.dropFirst()
     }
 
     /// 音類似おとりを持つトークンの index を優先順に並べる。

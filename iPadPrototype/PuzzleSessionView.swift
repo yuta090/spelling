@@ -20,49 +20,41 @@ struct PuzzleSentenceSample {
     let distractors: [String]
 }
 
+/// 出題プールは**同梱の文バンク**（`SentenceBankBundle`）＋**音類似おとり**（`ConfusablesBundle`）から
+/// `PuzzleContentBuilder`（コア・決定論）で組み立てる。空所選びやおとり選定の判断はコアに集約し、
+/// ここは「同梱データを渡して受け取る」だけ。`seed` は固定でプール内容を安定させる
+/// （セッションの出題“順”は別シード `sessionSeed` で毎回変える）。
 enum PuzzleContent {
-    /// 文ベース形式（ぶんづくり・あなうめ）のプール。並べ替え可能で、穴埋め位置とおとりを持つ。
-    static func sentences() -> [PuzzleSentenceSample] {
-        func s(_ en: String, _ ja: String, blank: Int, _ distractors: [String], _ g: GrammarPoint) -> PuzzleSentenceSample {
-            PuzzleSentenceSample(
-                item: SentenceItem(en: en, ja: ja,
-                                   tokens: en.split(separator: " ").map(String.init),
-                                   gradeBand: 1, grammar: g),
-                blankIndex: blank,
-                distractors: distractors)
-        }
-        return [
-            s("I like apples", "わたしは りんごが すき", blank: 1, ["likes", "liked", "want"], .presentSimple),
-            s("She is happy", "かのじょは うれしい", blank: 1, ["am", "are", "be"], .beVerb),
-            s("We played soccer", "サッカーを した", blank: 1, ["play", "plays", "playing"], .pastSimple),
-            s("He can swim", "かれは およげる", blank: 1, ["is", "does", "will"], .canModal),
-            s("We go to school", "がっこうへ いく", blank: 1, ["goes", "went", "going"], .presentSimple),
-            s("This bag is bigger", "この かばんは もっと 大きい", blank: 3, ["big", "biggest", "more"], .comparativeEr)
-        ]
+    /// プール内容を安定させる固定シード（毎回ちがう“順”は PuzzleSessionView 側の sessionSeed が担う）。
+    static let poolSeed: UInt64 = 0xC0FF_EE00
+
+    /// ぶんづくり（並べ替え）のプール。並べ替え可能な文すべて（あなうめのおとり有無に依存させない）。
+    static func orderingSentences(bank: [SentenceItem] = SentenceBankBundle.items) -> [PuzzleSentenceSample] {
+        PuzzleContentBuilder.orderingItems(bank)
+            .map { PuzzleSentenceSample(item: $0, blankIndex: 0, distractors: []) }
     }
 
-    /// きいてあなうめ専用のプール。**空所語は音の近いおとりが登録済みの語**にする
-    /// （未登録だと ListeningClozeGenerator が nil を返し出題できないため）。おとりは confusables から供給。
-    static func listeningSentences() -> [PuzzleSentenceSample] {
-        func s(_ en: String, _ ja: String, blank: Int) -> PuzzleSentenceSample {
-            PuzzleSentenceSample(
-                item: SentenceItem(en: en, ja: ja,
-                                   tokens: en.split(separator: " ").map(String.init),
-                                   gradeBand: 1),
-                blankIndex: blank,
-                distractors: [])
-        }
-        return [
-            s("I can see the sea", "うみが みえる", blank: 4),
-            s("I eat rice", "ごはんを たべる", blank: 2),
-            s("Turn right here", "ここで みぎに まがる", blank: 1),
-            s("Take a bath", "おふろに はいる", blank: 2),
-            s("Go back home", "おうちに かえる", blank: 1)
-        ]
+    /// あなうめ（選択）のプール。内容語を空所に、おとりは同じか下の学年の内容語から。
+    static func sentences(bank: [SentenceItem] = SentenceBankBundle.items,
+                          seed: UInt64 = poolSeed) -> [PuzzleSentenceSample] {
+        PuzzleContentBuilder.clozeSamples(bank, seed: seed).map(map)
     }
 
-    /// 単語リスニングで読み上げる語（おとりは ConfusablesBundle が供給）。
-    static let words = ["right", "rice", "berry", "base", "sea", "back", "bath"]
+    /// きいてあなうめのプール。音類似おとりを持つ語がある文だけ（空所はコアが自動選択）。
+    static func listeningSentences(bank: [SentenceItem] = SentenceBankBundle.items,
+                                   confusables: [ConfusableEntry] = ConfusablesBundle.entries,
+                                   seed: UInt64 = poolSeed) -> [PuzzleSentenceSample] {
+        PuzzleContentBuilder.listeningSamples(bank, confusables: confusables, seed: seed).map(map)
+    }
+
+    /// 単語リスニングで読み上げる語（音類似おとりが作れる見出し語）。
+    static func words(confusables: [ConfusableEntry] = ConfusablesBundle.entries) -> [String] {
+        PuzzleContentBuilder.listeningWords(confusables)
+    }
+
+    private static func map(_ s: PuzzleContentBuilder.ClozeSample) -> PuzzleSentenceSample {
+        PuzzleSentenceSample(item: s.item, blankIndex: s.blankIndex, distractors: s.distractors)
+    }
 }
 
 // MARK: - セッション本体
@@ -71,6 +63,7 @@ struct PuzzleSessionView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var speech = SpeechPlayer()
 
+    private let orderingSentences: [PuzzleSentenceSample]
     private let sentences: [PuzzleSentenceSample]
     private let listeningSentences: [PuzzleSentenceSample]
     private let words: [String]
@@ -85,12 +78,14 @@ struct PuzzleSessionView: View {
     /// （`seed` を明示注入すればテスト/プレビューで決定論にできる）。「もういちど」で振り直す。
     @State private var sessionSeed: UInt64
 
-    init(sentences: [PuzzleSentenceSample] = PuzzleContent.sentences(),
+    init(orderingSentences: [PuzzleSentenceSample] = PuzzleContent.orderingSentences(),
+         sentences: [PuzzleSentenceSample] = PuzzleContent.sentences(),
          listeningSentences: [PuzzleSentenceSample] = PuzzleContent.listeningSentences(),
-         words: [String] = PuzzleContent.words,
+         words: [String] = PuzzleContent.words(),
          entries: [ConfusableEntry] = ConfusablesBundle.entries,
          length: Int = 12,
          seed: UInt64? = nil) {
+        self.orderingSentences = orderingSentences
         self.sentences = sentences
         self.listeningSentences = listeningSentences
         self.words = words
@@ -110,7 +105,8 @@ struct PuzzleSessionView: View {
     /// その形式に出せる v1 コンテンツがあるか。
     private func hasContent(for format: PuzzleFormat) -> Bool {
         switch format {
-        case .wordOrdering, .clozeChoice: return !sentences.isEmpty
+        case .wordOrdering: return !orderingSentences.isEmpty
+        case .clozeChoice: return !sentences.isEmpty
         case .listeningCloze: return !listeningSentences.isEmpty
         case .wordListening: return !words.isEmpty
         case .clozeHandwriting, .composition: return false
@@ -158,7 +154,7 @@ struct PuzzleSessionView: View {
             PuzzleStepView(
                 format: format,
                 sentence: sentenceSample(for: format),
-                word: words.isEmpty ? "" : words[stepIndex % words.count],
+                word: currentWord(for: format),
                 entries: entries,
                 soundOn: soundOn ?? false,
                 stepNumber: stepIndex,
@@ -169,12 +165,37 @@ struct PuzzleSessionView: View {
         }
     }
 
-    /// 形式に応じた文サンプルを返す（きいてあなうめは confusable 語を空所にした専用プール）。
-    /// 当該プールが空なら nil（StepView 側で安全に「とばす」表示にする）。
+    /// 形式ごとの出題プール（ぶんづくり/あなうめ/きいてあなうめで別プール）。
+    private func pool(for format: PuzzleFormat) -> [PuzzleSentenceSample] {
+        switch format {
+        case .wordOrdering: return orderingSentences
+        case .clozeChoice: return sentences
+        case .listeningCloze: return listeningSentences
+        default: return []
+        }
+    }
+
+    /// その形式が schedule 上で stepIndex までに何回出たか（＝この形式での通し番号）。
+    /// これでプールを順に消費し、同じ問題ばかりにならないようにする。
+    private func occurrence(of format: PuzzleFormat, before index: Int) -> Int {
+        guard index > 0 else { return 0 }
+        return schedule[0..<index].filter { $0 == format }.count
+    }
+
+    /// 形式に応じた文サンプルを返す。プールを sessionSeed で混ぜ、この形式での通し番号で選ぶ
+    /// （プール全体を行き渡らせ・「もういちど」で別の問題になる）。空プールなら nil（StepView が「とばす」）。
     private func sentenceSample(for format: PuzzleFormat) -> PuzzleSentenceSample? {
-        let pool = (format == .listeningCloze) ? listeningSentences : sentences
-        guard !pool.isEmpty else { return nil }
-        return pool[stepIndex % pool.count]
+        let p = pool(for: format)
+        guard !p.isEmpty else { return nil }
+        let shuffled = SeededShuffle.shuffle(p, seed: sessionSeed &+ format.seedSalt)
+        return shuffled[occurrence(of: format, before: stepIndex) % shuffled.count]
+    }
+
+    /// 単語リスニングで読み上げる語。文サンプルと同様に sessionSeed で混ぜ通し番号で選ぶ。
+    private func currentWord(for format: PuzzleFormat) -> String {
+        guard format == .wordListening, !words.isEmpty else { return "" }
+        let shuffled = SeededShuffle.shuffle(words, seed: sessionSeed &+ format.seedSalt)
+        return shuffled[occurrence(of: format, before: stepIndex) % shuffled.count]
     }
 
     private var progressBar: some View {
