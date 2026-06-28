@@ -4531,6 +4531,226 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.9490, green: 0.7804, blue: 0.4000),
             secondary: Color(red: 0.9843, green: 0.9098, blue: 0.7216),
             accent: Color(red: 0.5412, green: 0.3529, blue: 0.1686)
+        ),
+        HomeRewardCharacter(
+            id: "ya_hina",
+            category: .people,
+            japaneseName: "ヒナ",
+            englishName: "Hina",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.6235, green: 0.7843, blue: 0.9098),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_marcus",
+            category: .people,
+            japaneseName: "マーカス",
+            englishName: "Marcus",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.4784, green: 0.2902, blue: 0.1804),
+            secondary: Color(red: 0.8784, green: 0.4667, blue: 0.2353),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_emily",
+            category: .people,
+            japaneseName: "エミリー",
+            englishName: "Emily",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.5608, green: 0.7490, blue: 0.4784),
+            accent: Color(red: 0.8784, green: 0.7216, blue: 0.3608)
+        ),
+        HomeRewardCharacter(
+            id: "ya_diego",
+            category: .people,
+            japaneseName: "ディエゴ",
+            englishName: "Diego",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7843, green: 0.5373, blue: 0.3608),
+            secondary: Color(red: 0.2275, green: 0.2471, blue: 0.2745),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ya_aisha",
+            category: .people,
+            japaneseName: "アイシャ",
+            englishName: "Aisha",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7098, green: 0.5098, blue: 0.3529),
+            secondary: Color(red: 0.1804, green: 0.5490, blue: 0.5490),
+            accent: Color(red: 0.1804, green: 0.5490, blue: 0.5490)
+        ),
+        HomeRewardCharacter(
+            id: "ya_jamal",
+            category: .people,
+            japaneseName: "ジャマル",
+            englishName: "Jamal",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.4314, green: 0.2627, blue: 0.1490),
+            secondary: Color(red: 0.8784, green: 0.6902, blue: 0.2510),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_zara",
+            category: .people,
+            japaneseName: "ザラ",
+            englishName: "Zara",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.4784, green: 0.2902, blue: 0.1804),
+            secondary: Color(red: 0.8784, green: 0.4392, blue: 0.3529),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_yuki",
+            category: .people,
+            japaneseName: "ユキ",
+            englishName: "Yuki",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.9490, green: 0.8235, blue: 0.2980),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_haruto",
+            category: .people,
+            japaneseName: "ハルト",
+            englishName: "Haruto",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9098, green: 0.7529, blue: 0.6275),
+            secondary: Color(red: 0.1647, green: 0.2275, blue: 0.3608),
+            accent: Color(red: 0.2275, green: 0.1569, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ya_sofia",
+            category: .people,
+            japaneseName: "ソフィア",
+            englishName: "Sofia",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7843, green: 0.5373, blue: 0.3608),
+            secondary: Color(red: 0.7608, green: 0.3333, blue: 0.1804),
+            accent: Color(red: 0.2275, green: 0.1569, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ya_mateo",
+            category: .people,
+            japaneseName: "マテオ",
+            englishName: "Mateo",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7843, green: 0.5373, blue: 0.3608),
+            secondary: Color(red: 0.3098, green: 0.6275, blue: 0.4196),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_liam",
+            category: .people,
+            japaneseName: "リアム",
+            englishName: "Liam",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9686, green: 0.8431, blue: 0.7098),
+            secondary: Color(red: 0.6039, green: 0.7843, blue: 0.9098),
+            accent: Color(red: 0.6196, green: 0.4824, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "ya_chloe",
+            category: .people,
+            japaneseName: "クロエ",
+            englishName: "Chloe",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.2275, green: 0.2471, blue: 0.2745),
+            accent: Color(red: 0.7804, green: 0.8000, blue: 0.8235)
+        ),
+        HomeRewardCharacter(
+            id: "ya_priya",
+            category: .people,
+            japaneseName: "プリヤ",
+            englishName: "Priya",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7098, green: 0.5098, blue: 0.3529),
+            secondary: Color(red: 0.1804, green: 0.6196, blue: 0.4196),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_arjun",
+            category: .people,
+            japaneseName: "アルジュン",
+            englishName: "Arjun",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7098, green: 0.5098, blue: 0.3529),
+            secondary: Color(red: 0.4784, green: 0.1647, blue: 0.1804),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_amir",
+            category: .people,
+            japaneseName: "アミール",
+            englishName: "Amir",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7608, green: 0.6039, blue: 0.4196),
+            secondary: Color(red: 0.4196, green: 0.4784, blue: 0.2275),
+            accent: Color(red: 0.1647, green: 0.1176, blue: 0.0706)
+        ),
+        HomeRewardCharacter(
+            id: "ya_layla",
+            category: .people,
+            japaneseName: "ライラ",
+            englishName: "Layla",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7608, green: 0.6039, blue: 0.4196),
+            secondary: Color(red: 0.1804, green: 0.5490, blue: 0.5490),
+            accent: Color(red: 0.2275, green: 0.1569, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ya_taro",
+            category: .people,
+            japaneseName: "タロウ",
+            englishName: "Taro",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9098, green: 0.7529, blue: 0.6275),
+            secondary: Color(red: 0.8196, green: 0.2902, blue: 0.1804),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_sakura",
+            category: .people,
+            japaneseName: "サクラ",
+            englishName: "Sakura",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.9686, green: 0.9490, blue: 0.9098),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_leon",
+            category: .people,
+            japaneseName: "レオン",
+            englishName: "Leon",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9686, green: 0.8627, blue: 0.7608),
+            secondary: Color(red: 0.2275, green: 0.4196, blue: 0.2902),
+            accent: Color(red: 0.7843, green: 0.3529, blue: 0.1647)
         )
     ]
     // CATALOG-GENERATED-END
