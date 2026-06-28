@@ -44,20 +44,22 @@ final class ContentSchemaV2Tests: XCTestCase {
         XCTAssertEqual(back.id, item.id)
     }
 
-    /// カナリア：同梱の本物47件が、移行後も**全件 decode でき・件数不変・表層id/安定idともユニーク**。
-    /// 移行で全件に安定 sourceID を付与済み（ビルド決定論で表層UUIDは不変）。
+    /// カナリア：同梱文が移行後も**全件 decode でき・全件に安定sourceID・表層id/安定idともユニーク**。
+    /// 件数はコンテンツ追加で増えてよい（=ハードコードしない）。移行の取りこぼし（縮小）だけ下限で検知する。
     func testBundledSentenceBankIsMigrated() throws {
         guard FileManager.default.fileExists(atPath: sentenceBankURL.path) else {
             throw XCTSkip("sentence_bank.json 未生成のためスキップ")
         }
         let data = try Data(contentsOf: sentenceBankURL)
         let items = try JSONDecoder().decode([SentenceItem].self, from: data)
-        XCTAssertEqual(items.count, 47, "同梱文の件数が変わっている")
+        let n = items.count
+        // 初回移行の47件が下限。これを下回る＝取りこぼし/退行。追加で増えるぶんは許容。
+        XCTAssertGreaterThanOrEqual(n, 47, "同梱文が減っている（移行/追加の取りこぼし?）")
         // 移行済み＝全件に安定 sourceID が付き、重複が無い。
         XCTAssertTrue(items.allSatisfy { ($0.sourceID?.isEmpty == false) }, "全件に sourceID が必要")
-        XCTAssertEqual(Set(items.compactMap { $0.sourceID }).count, 47, "sourceID が重複している")
+        XCTAssertEqual(Set(items.compactMap { $0.sourceID }).count, n, "sourceID が重複している")
         // 表層 id もユニーク。
-        XCTAssertEqual(Set(items.map { $0.id }).count, 47)
+        XCTAssertEqual(Set(items.map { $0.id }).count, n, "表層idが重複している")
     }
 
     // MARK: - B. AuthoringSource dual-decode（v1配列 / v2 envelope）
