@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "swiftui": {
+      "source": "vabole/apple-skills",
+      "sourceType": "github",
+      "skillPath": "skills/swiftui/SKILL.md",
+      "computedHash": "6cf99e621883e39d0a03f7689a1ede1076c9e3ec7aaea9fbbd407c16e75562c6"
+    }
+  }
+}
