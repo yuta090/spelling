@@ -170,12 +170,12 @@ final class PersonalizedSentencesTests: XCTestCase {
             slots: [PersonSlotSpec(key: "f", role: .friend)],
             gradeBand: 1
         )
-        // 男の子：he / him / Ken's
+        // 男の子：He / him / Ken's（文頭の主語は大文字化される）
         XCTAssertEqual(SentencePersonalizer.resolve(t, cast: Cast(people: [ken]), seed: 1).tokens,
-                       ["he", "gave", "him", "Ken's"])
-        // 女の子：she / her / Yuki's
+                       ["He", "gave", "him", "Ken's"])
+        // 女の子：She / her / Yuki's
         XCTAssertEqual(SentencePersonalizer.resolve(t, cast: Cast(people: [yuki]), seed: 1).tokens,
-                       ["she", "gave", "her", "Yuki's"])
+                       ["She", "gave", "her", "Yuki's"])
     }
 
     func testUnspecifiedGenderHasNoConstraintAndTheyForms() {
@@ -190,7 +190,8 @@ final class PersonalizedSentencesTests: XCTestCase {
             slots: [PersonSlotSpec(key: "f", role: .friend)],
             gradeBand: 1
         )
-        XCTAssertEqual(SentencePersonalizer.resolve(t, cast: Cast(people: [nobody]), seed: 1).tokens, ["they"])
+        // 文頭なので they→They に大文字化される（unspecified は they 系）。
+        XCTAssertEqual(SentencePersonalizer.resolve(t, cast: Cast(people: [nobody]), seed: 1).tokens, ["They"])
     }
 
     // MARK: 4d. Codable 往復（suffix 省略を許容）
@@ -239,6 +240,43 @@ final class PersonalizedSentencesTests: XCTestCase {
             seen.insert(SentencePersonalizer.resolve(t, cast: cast, seed: s).tokens[0])
         }
         XCTAssertTrue(seen.count >= 2, "seed を変えると別の友達も出るはず: \(seen)")
+    }
+
+    // MARK: 5.5 文頭の代名詞は大文字になる（her→Her 等）
+
+    func testSentenceInitialPossessivePronounIsCapitalized() {
+        // {f:posdet}（her/his）が文頭に来るテンプレ。素の代名詞は小文字なので
+        // 描画後に文頭を大文字化していないと "her bag is bigger" になってしまう。
+        let t = PersonSentenceTemplate(
+            id: "posdet-bag-bigger",
+            category: .daily,
+            fallback: fallback("Her bag is bigger", "かのじょの かばんは もっと 大きい",
+                               ["Her", "bag", "is", "bigger"]),
+            enTokens: [.person(slot: "f", form: .possessiveDeterminer),
+                       .literal("bag"), .literal("is"), .literal("bigger")],
+            jaParts: [.person(slot: "f", suffix: "の"), .literal(" かばんは もっと 大きい")],
+            slots: [PersonSlotSpec(key: "f", role: .friend, requiredGender: .girl)],
+            gradeBand: 2
+        )
+        let item = SentencePersonalizer.resolve(t, cast: Cast(people: [yuki]), seed: 1)
+        XCTAssertEqual(item.tokens.first, "Her")        // 文頭タイルも大文字
+        XCTAssertEqual(item.en, "Her bag is bigger")
+    }
+
+    func testNameInitialUnaffectedByCapitalization() {
+        // 既に大文字の名前が文頭のときは変化しない（二重大文字化しない）。
+        let t = PersonSentenceTemplate(
+            id: "girl-likes-apples-cap",
+            category: .daily,
+            fallback: fallback("She likes apples", "かのじょは りんごが すき", ["She", "likes", "apples"]),
+            enTokens: [.person(slot: "f", form: .name), .literal("likes"), .literal("apples")],
+            jaParts: [.person(slot: "f", suffix: "は"), .literal(" りんごが すき")],
+            slots: [PersonSlotSpec(key: "f", role: .friend, requiredGender: .girl)],
+            gradeBand: 1
+        )
+        let item = SentencePersonalizer.resolve(t, cast: Cast(people: [yuki]), seed: 1)
+        XCTAssertEqual(item.tokens.first, "Yuki")
+        XCTAssertEqual(item.en, "Yuki likes apples")
     }
 
     // MARK: 6. スロット無し／非アクティブ／ローマ字無し
