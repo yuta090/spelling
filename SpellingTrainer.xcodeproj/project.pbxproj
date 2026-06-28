@@ -22,6 +22,7 @@
 		0A10010D2D00000100000001 /* ParentDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020D2D00000100000001 /* ParentDashboardView.swift */; };
 		0A10010E2D00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A10020E2D00000100000001 /* Assets.xcassets */; };
 		0A1001AA2D00000100000001 /* wordbank.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0A1002AA2D00000100000001 /* wordbank.sqlite */; };
+		0A1003AA2D00000100000001 /* person_templates.authoring.json in Resources */ = {isa = PBXBuildFile; fileRef = 0A1004AA2D00000100000001 /* person_templates.authoring.json */; };
 		5F7E2D37D6864BDF4D0DF14F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E2E2BB39714843CDD21EACC /* Foundation.framework */; };
 		9765087A2FEDA7750051D674 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 976508792FEDA7750051D674 /* Supabase */; };
 		B2C76506BF718B7F87B0EFA1 /* PaywallE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7550C658CF5DC65B7A824C3A /* PaywallE2ETests.swift */; };
@@ -35,6 +36,8 @@
 		FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE04 /* ClozeChoiceView.swift */; };
 		FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE06 /* MixedSessionView.swift */; };
 		FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000AE02 /* AnswerExplanationCard.swift */; };
+		FACE0000000000000000CA01 /* PersonTemplateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CA02 /* PersonTemplateStore.swift */; };
+		FACE0000000000000000CA03 /* ParentCastPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CA04 /* ParentCastPanel.swift */; };
 		FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0E /* WordSyncCoordinator.swift */; };
 		FACE0000000000000000CF0F /* SpellingSyncCore in Frameworks */ = {isa = PBXBuildFile; productRef = FACE0000000000000000CF10 /* SpellingSyncCore */; };
 		FACE0000000000000000CF13 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF14 /* OnboardingView.swift */; };
@@ -69,6 +72,7 @@
 		0A10020D2D00000100000001 /* ParentDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentDashboardView.swift; sourceTree = "<group>"; };
 		0A10020E2D00000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A1002AA2D00000100000001 /* wordbank.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = Resources/wordbank.sqlite; sourceTree = "<group>"; };
+		0A1004AA2D00000100000001 /* person_templates.authoring.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/person_templates.authoring.json; sourceTree = "<group>"; };
 		0A1003012D00000100000001 /* SpellingTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpellingTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E2E2BB39714843CDD21EACC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		7550C658CF5DC65B7A824C3A /* PaywallE2ETests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallE2ETests.swift; sourceTree = "<group>"; };
@@ -84,6 +88,8 @@
 		FACE0000000000000000CE04 /* ClozeChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClozeChoiceView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE06 /* MixedSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixedSessionView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000AE02 /* AnswerExplanationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerExplanationCard.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CA02 /* PersonTemplateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonTemplateStore.swift; sourceTree = "<group>"; };
+		FACE0000000000000000CA04 /* ParentCastPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentCastPanel.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF0E /* WordSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSyncCoordinator.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF14 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF16 /* ParentGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentGateView.swift; sourceTree = "<group>"; };
@@ -136,6 +142,7 @@
 				0A1002022D00000100000001 /* TestSessionView.swift */,
 				0A10020E2D00000100000001 /* Assets.xcassets */,
 				0A1002AA2D00000100000001 /* wordbank.sqlite */,
+				0A1004AA2D00000100000001 /* person_templates.authoring.json */,
 				0A1002032D00000100000001 /* GuidedWritingCanvas.swift */,
 				0A1002042D00000100000001 /* PencilCanvasView.swift */,
 				0A1002052D00000100000001 /* SpeechPlayer.swift */,
@@ -151,6 +158,8 @@
 				FACE0000000000000000CE04 /* ClozeChoiceView.swift */,
 				FACE0000000000000000CE06 /* MixedSessionView.swift */,
 				FACE0000000000000000AE02 /* AnswerExplanationCard.swift */,
+				FACE0000000000000000CA02 /* PersonTemplateStore.swift */,
+				FACE0000000000000000CA04 /* ParentCastPanel.swift */,
 				FACE0000000000000000CF0E /* WordSyncCoordinator.swift */,
 				FACE0000000000000000CF14 /* OnboardingView.swift */,
 				FACE0000000000000000CF16 /* ParentGateView.swift */,
@@ -280,6 +289,7 @@
 			files = (
 				0A10010E2D00000100000001 /* Assets.xcassets in Resources */,
 				0A1001AA2D00000100000001 /* wordbank.sqlite in Resources */,
+				0A1003AA2D00000100000001 /* person_templates.authoring.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,6 +319,8 @@
 				FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */,
 				FACE0000000000000000CE05 /* MixedSessionView.swift in Sources */,
 				FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */,
+				FACE0000000000000000CA01 /* PersonTemplateStore.swift in Sources */,
+				FACE0000000000000000CA03 /* ParentCastPanel.swift in Sources */,
 				FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */,
 				FACE0000000000000000CF13 /* OnboardingView.swift in Sources */,
 				FACE0000000000000000CF15 /* ParentGateView.swift in Sources */,

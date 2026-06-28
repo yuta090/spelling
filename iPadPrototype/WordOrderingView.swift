@@ -49,6 +49,9 @@ struct WordOrderingDemoView: View {
     private let items: [SentenceItem]
     /// 「しらない ことば」を選んだときに復習へ積むコールバック（AppModel に依存させないため）。
     private let onEnrollReviewWord: (String) -> Void
+    /// 復習チップに出してはいけない語（＝登場人物の名前）。英字のみ小文字化したキーで保持。
+    /// 未成年実名を綴り練習・復習（→同期）に侵入させないためのガード。デフォルト空＝従来どおり。
+    private let hiddenNameKeys: Set<String>
     @StateObject private var speech = SpeechPlayer()
     /// タイルがトレイ↔解答欄を「飛んで」移動するための共有ネームスペース。
     @Namespace private var tileNS
@@ -65,10 +68,26 @@ struct WordOrderingDemoView: View {
 
     init(
         items: [SentenceItem] = WordOrderingSamples.make(),
+        hiddenReviewWords: Set<String> = [],
         onEnrollReviewWord: @escaping (String) -> Void = { _ in }
     ) {
         self.items = items
         self.onEnrollReviewWord = onEnrollReviewWord
+        self.hiddenNameKeys = Set(hiddenReviewWords.map(Self.nameKey))
+    }
+
+    /// 復習除外比較用キー：英字のみ・小文字（"Yuta," も "yuki" も名前一致するように）。
+    static func nameKey(_ s: String) -> String {
+        String(s.lowercased().filter { $0.isLetter })
+    }
+
+    /// このトークンは登場人物の名前か（呼びかけ "Yuta," や所有格 "Yuki's" も含めて判定）。
+    private func isHiddenName(_ token: String) -> Bool {
+        let key = Self.nameKey(token)
+        if hiddenNameKeys.contains(key) { return true }
+        // 所有格 "Yuki's" → "yukis" の末尾 s を落として再判定。
+        if key.hasSuffix("s"), hiddenNameKeys.contains(String(key.dropLast())) { return true }
+        return false
     }
 
     private var item: SentenceItem { items[index] }
@@ -280,7 +299,8 @@ struct WordOrderingDemoView: View {
             WordOrderingHaptics.tap()
             if marked {
                 markedUnknown.remove(key)            // マーク解除（既に積んだ復習は取り消さない）
-            } else {
+            } else if !isHiddenName(word) {
+                // 名前は復習へ積まない（同期で端末外へ出さないための最終ガード）。
                 markedUnknown.insert(key)
                 onEnrollReviewWord(word)             // 復習へ積む（重複は AppModel 側で無視）
             }
@@ -303,10 +323,12 @@ struct WordOrderingDemoView: View {
     }
 
     /// 文の単語（出現順・重複を除く）。チューザーの表示元。
+    /// 登場人物の名前トークンは除外（綴り練習・復習＝同期に名前を侵入させない）。
     private var sentenceWords: [String] {
         var seen = Set<String>()
         var out: [String] = []
         for token in item.tokens {
+            if isHiddenName(token) { continue }
             let key = token.lowercased()
             if seen.insert(key).inserted {
                 out.append(token)
@@ -426,8 +448,12 @@ private enum WordOrderingHaptics {
 struct WordOrderingDebugLauncher: View {
     @EnvironmentObject private var model: AppModel
     @State private var isPresented = false
+    /// 開くたびに更新して、パーソナライズ例文の並び/友達選択を変える（決定論シードの種）。
+    @State private var sessionSeed: UInt64 = 1
+
     var body: some View {
         Button {
+            sessionSeed = sessionSeed &+ 0x9E37_79B9_7F4A_7C15
             isPresented = true
         } label: {
             Image(systemName: "arrow.left.arrow.right.square.fill")
@@ -440,9 +466,34 @@ struct WordOrderingDebugLauncher: View {
         .padding(.bottom, 12)
         .accessibilityLabel("文づくり試遊")
         .sheet(isPresented: $isPresented) {
-            // 「しらない ことば」を実際に子の復習へ積む（既存語彙にあれば無視）。
-            WordOrderingDemoView(onEnrollReviewWord: { model.enrollReviewWord($0) })
+            // 同梱テンプレ＋登録済み Cast から1セッション分を解決して出題。
+            // Cast 未登録/テンプレ無しはフォールバック（＝既定サンプル）に縮退する。
+            let items = personalizedSession()
+            if items.isEmpty {
+                WordOrderingDemoView(onEnrollReviewWord: { model.enrollReviewWord($0) })
+            } else {
+                WordOrderingDemoView(items: items,
+                                     hiddenReviewWords: castNameTokens(),
+                                     onEnrollReviewWord: { model.enrollReviewWord($0) })
+            }
         }
+    }
+
+    /// 同梱テンプレ→Cast 解決済み `SentenceItem` 列。テンプレが無ければ空（既定サンプルへ縮退）。
+    private func personalizedSession() -> [SentenceItem] {
+        let templates = PersonTemplateStore.loadBundled()
+        guard !templates.isEmpty else { return [] }
+        return PersonalizedSessionBuilder.build(
+            templates: templates,
+            cast: model.cast,
+            count: 8,
+            seed: sessionSeed
+        )
+    }
+
+    /// 例文に出る登場人物の名前（ローマ字）。復習チップから除外して同期流出を防ぐ。
+    private func castNameTokens() -> Set<String> {
+        Set(model.cast.people.map(\.romaji).filter { !$0.isEmpty })
     }
 }
 #endif

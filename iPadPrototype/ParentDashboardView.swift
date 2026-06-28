@@ -88,6 +88,9 @@ struct ParentDashboardView: View {
             }
         case .records:
             ParentRecordsWorkspace(language: language)
+        case .cast:
+            ParentCastPanel(language: language)
+                .frame(maxWidth: 820, alignment: .topLeading)
         case .settings:
             TestSettingsPanel(language: language)
                 .frame(maxWidth: 820, alignment: .topLeading)
@@ -127,6 +130,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
     case grading
     case words
     case records
+    case cast
     case settings
 
     var id: String { rawValue }
@@ -139,6 +143,8 @@ private enum ParentSection: String, CaseIterable, Identifiable {
             return language.text(japanese: "単語登録", english: "Words")
         case .records:
             return language.text(japanese: "結果を見る", english: "Results")
+        case .cast:
+            return language.text(japanese: "なかま", english: "Cast")
         case .settings:
             return language.text(japanese: "設定", english: "Settings")
         }
@@ -152,6 +158,8 @@ private enum ParentSection: String, CaseIterable, Identifiable {
             return language.text(japanese: "ステップを準備", english: "Prepare steps")
         case .records:
             return language.text(japanese: "学校とアプリ", english: "School & app")
+        case .cast:
+            return language.text(japanese: "例文に名前", english: "Names in lines")
         case .settings:
             return language.text(japanese: "出題と音声", english: "Prompts & voice")
         }
@@ -165,6 +173,8 @@ private enum ParentSection: String, CaseIterable, Identifiable {
             return "text.book.closed.fill"
         case .records:
             return "chart.bar.xaxis"
+        case .cast:
+            return "person.2.fill"
         case .settings:
             return "slider.horizontal.3"
         }

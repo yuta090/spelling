@@ -229,6 +229,13 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(selectedGrade, key: selectedGradeKey) }
     }
 
+    /// 例文パーソナライズの登場人物（本人＋友達）。親が親ゲートの奥で登録。
+    /// 未成年実名のため **v1 はローカル保存のみ**（Supabase 同期しない・解析に送らない）。
+    /// 仕様: docs/personalized-sentences-spec-2026-06-28.md
+    @Published var cast: Cast {
+        didSet { persistenceStore.save(cast, key: castKey) }
+    }
+
     @Published var focusedPracticeWordIDs = Set<UUID>()
 
     static let practiceCoinReward = 3
@@ -260,6 +267,7 @@ final class AppModel: ObservableObject {
     private let hasShownHomeCharacterHintKey = "spellingTrainer.hasShownHomeCharacterHint"
     private let childNameKey = "spellingTrainer.childName"
     private let selectedGradeKey = "spellingTrainer.selectedGrade"
+    private let castKey = "spellingTrainer.cast"
 
     /// オンボーディング初期状態の判定に使う、同梱デフォルト単語（text＋訳語のペア）。
     /// text だけでなく訳語・件数も含めて厳密一致を見て、ユーザーが少しでも触っていたら置き換えない。
@@ -297,6 +305,7 @@ final class AppModel: ObservableObject {
         hasShownHomeCharacterHint = persistenceStore.load(Bool.self, key: hasShownHomeCharacterHintKey) ?? false
         childName = persistenceStore.load(String.self, key: childNameKey) ?? ""
         selectedGrade = persistenceStore.load(String.self, key: selectedGradeKey) ?? ""
+        cast = persistenceStore.load(Cast.self, key: castKey) ?? Cast()
         let savedCharacterID = persistenceStore.load(String.self, key: selectedCharacterIDKey) ?? Self.defaultCharacterID
         selectedCharacterID = initialUnlockedCharacterIDs.contains(savedCharacterID) ? savedCharacterID : Self.defaultCharacterID
         let initialUnlockedBackgroundIDs = (persistenceStore.load(Set<String>.self, key: unlockedBackgroundIDsKey) ?? []).union(Self.defaultUnlockedBackgroundIDs)
