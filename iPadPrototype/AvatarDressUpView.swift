@@ -399,6 +399,37 @@ struct AvatarDressUpView: View {
     }()
 }
 
+#if DEBUG
+/// 着せ替えアバターのプレビューを開く開発用ランチャー（製品UIには出さない）。
+/// 他の `*DebugLauncher` と同じく、アプリルートの overlay からホーム等に小さく重ねて使う。
+struct AvatarDressUpDebugLauncher: View {
+    @State private var isPresented = false
+    var body: some View {
+        Button {
+            isPresented = true
+        } label: {
+            Image(systemName: "tshirt.fill")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 38, height: 38)
+                .background(Circle().fill(Color.black.opacity(0.45)))
+        }
+        .padding(.leading, 12)
+        .accessibilityLabel("着せ替えアバター試遊")
+        .sheet(isPresented: $isPresented) {
+            NavigationStack {
+                AvatarDressUpView()
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("とじる") { isPresented = false }
+                        }
+                    }
+            }
+        }
+    }
+}
+#endif
+
 #Preview {
     NavigationStack {
         AvatarDressUpView()

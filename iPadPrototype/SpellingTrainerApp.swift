@@ -101,6 +101,10 @@ private struct RootView: View {
             .overlay(alignment: .topLeading) {
                 ListeningClozeDebugLauncher()
             }
+            // 着せ替えアバターのプレビュー導線（製品UIには出さない）。
+            .overlay(alignment: .leading) {
+                AvatarDressUpDebugLauncher()
+            }
         #endif
     }
 }
