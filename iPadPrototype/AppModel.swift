@@ -231,7 +231,7 @@ final class AppModel: ObservableObject {
 
     @Published var focusedPracticeWordIDs = Set<UUID>()
 
-    static let practiceCoinReward = 3
+    static let practiceCoinReward = 30
     static let defaultCharacterID = HomeRewardCharacter.defaultID
     static let defaultUnlockedCharacterIDs: Set<String> = HomeRewardCharacter.defaultUnlockedIDs
     static let defaultBackgroundID = HomeBackgroundTheme.defaultID
@@ -244,7 +244,11 @@ final class AppModel: ObservableObject {
     private let schoolTestResultsKey = "spellingTrainer.schoolTestResults"
     private let settingsKey = "spellingTrainer.settings"
     private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"
-    private let rewardCoinsKey = "spellingTrainer.rewardCoins"
+    /// 旧コイン単位の残高キー（×10 移行前）。**二度と書き換えない**＝再倍化を防ぐ不変の移行元。
+    private let legacyRewardCoinsKey = "spellingTrainer.rewardCoins"
+    /// 新コイン単位（×10）の残高キー。これが存在すれば移行済み。以後の入出金はすべてここへ保存する。
+    /// 旧キーから1回だけ ×10 して書き出すため、保存途中でプロセスが落ちても再倍化しない（冪等・クラッシュ安全）。
+    private let rewardCoinsKey = "spellingTrainer.rewardCoins.v2"
     private let cachedEntitlementKey = "spellingTrainer.cachedEntitlement"
     private let debugUnlockAllKey = "spellingTrainer.debugUnlockAll"
     private let debugDisableDailyLimitKey = "spellingTrainer.debugDisableDailyLimit"
@@ -282,7 +286,18 @@ final class AppModel: ObservableObject {
         schoolTestResults = persistenceStore.load([SchoolTestResult].self, key: schoolTestResultsKey) ?? []
         settings = persistenceStore.load(TestSettings.self, key: settingsKey) ?? TestSettings()
         selectedWordStepID = persistenceStore.load(String.self, key: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
-        rewardCoins = max(persistenceStore.load(Int.self, key: rewardCoinsKey) ?? 0, 0)
+        // コイン単位 ×10 リリースの一回限り移行（純粋ロジックは CoinScaleMigration、判定/保存はここ）。
+        // v2 キーがあればそれを使い、無ければ旧キー残高 ×10 で確定する。旧キーは不変なので、
+        // v2 保存前にプロセスが落ちても次回また同じ値を再計算するだけで再倍化しない（冪等・クラッシュ安全）。
+        // （didSet は init 中は発火しないため、移行値は明示的に save する。
+        //   self.rewardCoins は全プロパティ初期化前に読めないので、ローカルで計算してから代入する。）
+        let storedV2RewardCoins = persistenceStore.load(Int.self, key: rewardCoinsKey)
+        let legacyRewardCoins = persistenceStore.load(Int.self, key: legacyRewardCoinsKey)
+        let resolvedRewardCoins = CoinScaleMigration.resolveBalance(storedV2: storedV2RewardCoins, legacy: legacyRewardCoins)
+        if CoinScaleMigration.needsPersist(storedV2: storedV2RewardCoins) {
+            persistenceStore.save(resolvedRewardCoins, key: rewardCoinsKey)
+        }
+        rewardCoins = resolvedRewardCoins
         let cachedEntitlement = persistenceStore.load(CachedEntitlement.self, key: cachedEntitlementKey) ?? .none
         isSubscribed = cachedEntitlement.isActive(now: Date())
         debugUnlockAll = persistenceStore.load(Bool.self, key: debugUnlockAllKey) ?? false
@@ -1157,7 +1172,7 @@ final class AppModel: ObservableObject {
         return outcome
     }
 
-    /// テスト満点ボーナス。**今日まだ**なら単語数に応じた 5〜10 コインを付与し、その額を返す。
+    /// テスト満点ボーナス。**今日まだ**なら単語数に応じた 50〜100 コインを付与し、その額を返す。
     /// すでに今日付与済みなら nil（1日1回）。途中で単語を足していても、完了した問題数で計算する。
     func awardPerfectTestBonusIfEligible(wordCount: Int, now: Date = Date(), calendar: Calendar = .current) -> Int? {
         guard CoinRewards.canAwardPerfectBonus(lastAward: lastPerfectBonusDay, today: now, calendar: calendar) else {
