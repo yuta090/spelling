@@ -75,6 +75,10 @@ private struct RootView: View {
             .overlay(alignment: .bottom) {
                 ClozeChoiceDebugLauncher()
             }
+            // 混合セッション（並べ替え×穴埋めを混ぜる）の試遊導線（製品UIには出さない）。
+            .overlay(alignment: .bottomLeading) {
+                MixedSessionDebugLauncher()
+            }
         #endif
     }
 }
