@@ -867,7 +867,11 @@ final class AppModel: ObservableObject {
     func syncNow() async {
         guard let household = householdIDProvider() else { return }
         do { try await syncWords(householdID: household) }
-        catch { /* バックグラウンド同期: 失敗は次トリガで回収 */ }
+        catch {
+            // バックグラウンド同期: 失敗は次トリガで回収。運用テレメトリにだけ薄く残す
+            // （詳細メッセージや単語内容は送らない＝低カーディナリティのフラグのみ）。
+            TelemetryCoordinator.shared.record(.syncPushFailed, payload: ["op": .string("syncWords")])
+        }
     }
 
     /// デバウンス付きで同期を要求する（単語の編集直後などに呼ぶ）。
@@ -1442,6 +1446,15 @@ final class AppModel: ObservableObject {
         }
         spellingReviewStates = ReviewQueue.pruneMastered(spellingReviewStates, currentStep: spellingReviewStep)
         spellingReviewStep += 1
+
+        // 運用テレメトリ: 1セッション1件の要約（低カーディナリティのみ。
+        // 単語・氏名・手書き・自由入力・生の数値は送らない＝バケットだけ）。
+        let correctCount = latestByText.values.filter { $0.decision == .autoCorrect }.count
+        TelemetryCoordinator.shared.record(.practiceSessionSummary, payload: [
+            "result": .string("completed"),
+            "word_count_bucket": .string(TelemetryBucket.count(sessionWords.count)),
+            "correct_count_bucket": .string(TelemetryBucket.count(correctCount))
+        ])
     }
 
     // MARK: - 親レポート（スコアボード・採点待ち・まちがい復習の明細）
