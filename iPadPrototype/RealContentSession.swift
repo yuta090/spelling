@@ -29,6 +29,10 @@ enum RealContentTemplates {
         ])
     }
 
+    /// 同梱テンプレを一度だけ読み込みキャッシュする。練習画面の例文ヒントは単語ごとに
+    /// 参照するため、語が変わるたびに JSON を再パースしないようここで保持する。失敗時は空。
+    static let cachedTemplates: [PersonSentenceTemplate] = loadTemplates() ?? []
+
     /// バンドルからオーサリング JSON を読み、PersonSentenceTemplate 群へ変換。
     static func loadTemplates() -> [PersonSentenceTemplate]? {
         guard let url = Bundle.main.url(forResource: resourceName, withExtension: resourceExtension),
