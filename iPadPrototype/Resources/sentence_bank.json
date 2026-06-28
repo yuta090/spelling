@@ -552,5 +552,257 @@
       "likes",
       "music"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "sleepy"
+    ],
+    "en" : "The dog is sleepy",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "8007D655-0368-51B5-85F8-22B3E7C4A2A3",
+    "ja" : "いぬは ねむい",
+    "tokens" : [
+      "The",
+      "dog",
+      "is",
+      "sleepy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "desk",
+      "new"
+    ],
+    "en" : "That desk is new",
+    "gradeBand" : 4,
+    "grammar" : "demonstratives",
+    "id" : "8BF02508-91BE-5B05-9767-23ED164D6D05",
+    "ja" : "あの つくえは あたらしい",
+    "tokens" : [
+      "That",
+      "desk",
+      "is",
+      "new"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "apple",
+      "table"
+    ],
+    "en" : "An apple is on the table",
+    "gradeBand" : 1,
+    "grammar" : "articles",
+    "id" : "3ADA6589-68D0-5D51-9670-2AFF537193F4",
+    "ja" : "りんごが つくえの うえに ある",
+    "tokens" : [
+      "An",
+      "apple",
+      "is",
+      "on",
+      "the",
+      "table"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "fly",
+      "high"
+    ],
+    "en" : "Birds can fly high",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "A9B0AB4D-0B34-5D69-B368-EBE69B297CFF",
+    "ja" : "とりは たかく とべる",
+    "tokens" : [
+      "Birds",
+      "can",
+      "fly",
+      "high"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "help",
+      "mom"
+    ],
+    "en" : "We help our mom",
+    "gradeBand" : 4,
+    "grammar" : "pronouns",
+    "id" : "4C66400E-F087-556C-B1D6-12FC7511B7A9",
+    "ja" : "わたしたちは おかあさんを てつだう",
+    "tokens" : [
+      "We",
+      "help",
+      "our",
+      "mom"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "two",
+      "rabbits",
+      "jump",
+      "park"
+    ],
+    "en" : "Two rabbits jump in the park",
+    "gradeBand" : 3,
+    "grammar" : "plurals",
+    "id" : "4AADFD0F-8826-5D50-B868-314C6FFB70DA",
+    "ja" : "にひきの うさぎが こうえんで はねる",
+    "tokens" : [
+      "Two",
+      "rabbits",
+      "jump",
+      "in",
+      "the",
+      "park"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat",
+      "breakfast",
+      "together"
+    ],
+    "en" : "We eat breakfast together",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "EA6DC942-A378-5952-9DE4-8EA63057381D",
+    "ja" : "みんなで あさごはんを たべる",
+    "tokens" : [
+      "We",
+      "eat",
+      "breakfast",
+      "together"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sun",
+      "shine",
+      "brightly"
+    ],
+    "en" : "The sun is shining brightly",
+    "gradeBand" : 5,
+    "grammar" : "presentContinuous",
+    "id" : "5FA09C37-4C20-5FB2-B7B5-C2F450C609F5",
+    "ja" : "たいようが あかるく かがやいている",
+    "tokens" : [
+      "The",
+      "sun",
+      "is",
+      "shining",
+      "brightly"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eraser"
+    ],
+    "en" : "I do not have an eraser",
+    "gradeBand" : 1,
+    "grammar" : "negation",
+    "id" : "9C79C0F9-373F-5A8E-BA77-2740C25BF172",
+    "ja" : "わたしは けしごむを もっていない",
+    "tokens" : [
+      "I",
+      "do",
+      "not",
+      "have",
+      "an",
+      "eraser"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "cat"
+    ],
+    "en" : "Do you like cats",
+    "gradeBand" : 4,
+    "grammar" : "yesNoQuestion",
+    "id" : "5BD68113-9A8D-5ECD-B298-3B580E5D299B",
+    "ja" : "ねこが すきですか",
+    "tokens" : [
+      "Do",
+      "you",
+      "like",
+      "cats"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "soup",
+      "warm"
+    ],
+    "en" : "The soup was warm",
+    "gradeBand" : 3,
+    "grammar" : "beVerbPast",
+    "id" : "B04E9296-A68A-5F10-B3E4-2EEC62FC1565",
+    "ja" : "スープは あたたかかった",
+    "tokens" : [
+      "The",
+      "soup",
+      "was",
+      "warm"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "always",
+      "wash",
+      "hand"
+    ],
+    "en" : "I always wash my hands",
+    "gradeBand" : 3,
+    "grammar" : "frequencyAdverb",
+    "id" : "A21012B5-BF4E-5B76-81ED-690D675E7EE0",
+    "ja" : "わたしは いつも てを あらう",
+    "tokens" : [
+      "I",
+      "always",
+      "wash",
+      "my",
+      "hands"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "big",
+      "bus"
+    ],
+    "en" : "We saw a big bus",
+    "gradeBand" : 2,
+    "grammar" : "pastSimple",
+    "id" : "C33EC5CE-214F-5ABC-BDFA-9D57F8E5B97B",
+    "ja" : "わたしたちは おおきい バスを みた",
+    "tokens" : [
+      "We",
+      "saw",
+      "a",
+      "big",
+      "bus"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "today"
+    ],
+    "en" : "How are you today",
+    "gradeBand" : 1,
+    "grammar" : "whQuestion",
+    "id" : "7F371EED-BC16-534A-960C-A82AFDFDABB6",
+    "ja" : "きょうは げんきですか",
+    "tokens" : [
+      "How",
+      "are",
+      "you",
+      "today"
+    ]
   }
 ]
