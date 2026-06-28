@@ -230,3 +230,23 @@ alien_hova,space,ホバ,Hova,50,alienHover,#9AA6B2,#8FD6E0,#5BE0C7,false,swift;s
 et_nova,space,ノヴァ,Nova,50,imageAsset,#B98CE0,#C7C7D6,#23314F,false,webp;space;cosmos;scifi;alien;humanoid
 et_zorp,space,ゾープ,Zorp,50,imageAsset,#8BD64A,#C7F0A0,#2E5A2E,false,webp;space;cosmos;scifi;alien;creature
 et_korr,space,コール,Korr,50,imageAsset,#E0883C,#F2C14E,#5C3A1A,false,webp;space;cosmos;scifi;alien;creature
+vox_robo,fantasy,ボクセルロボ,Voxel Robo,50,imageAsset,#3FB8B0,#FFFFFF,#F2C03C,false,webp;voxel;blocky;fantasy;robot;mechanical
+vox_neko,animal,キューブネコ,Cube Cat,50,imageAsset,#E0883C,#FFE0B2,#5C3A1A,false,webp;voxel;blocky;animal;cat;mammal;pet
+vox_knight,fantasy,ブロックきし,Block Knight,50,imageAsset,#9AA6C2,#5B86C7,#C7CCD2,false,webp;voxel;blocky;fantasy;knight;medieval
+vox_dragon,fantasy,ブロックりゅう,Block Dragon,50,imageAsset,#5FA06B,#F2D24C,#3A6B4A,false,webp;voxel;blocky;fantasy;dragon;mythical
+vox_inu,animal,ボクセルいぬ,Voxel Dog,50,imageAsset,#C2874C,#FAE0C2,#5C3A1A,false,webp;voxel;blocky;animal;dog;mammal;pet
+vox_panda,animal,ボクセルパンダ,Voxel Panda,50,imageAsset,#2B303B,#F5F5EB,#599E5C,false,webp;voxel;blocky;animal;panda;mammal
+vox_usagi,animal,ボクセルうさぎ,Voxel Rabbit,50,imageAsset,#F2EAF0,#FFF0FA,#E0A6C2,false,webp;voxel;blocky;animal;rabbit;mammal
+vox_penguin,animal,ボクセルペンギン,Voxel Penguin,50,imageAsset,#2E3A56,#F0F7FF,#F59E1F,false,webp;voxel;blocky;animal;penguin;bird
+vox_kitsune,animal,ボクセルきつね,Voxel Fox,50,imageAsset,#EB6E1F,#FFE0B2,#6E2E14,false,webp;voxel;blocky;animal;fox;mammal
+vox_kuma,animal,ボクセルくま,Voxel Bear,50,imageAsset,#8A5A38,#C7A36B,#4A2F1A,false,webp;voxel;blocky;animal;bear;mammal
+vox_car,vehicle,ボクセルカー,Voxel Car,50,imageAsset,#E0432E,#5B86C7,#2B3340,false,webp;voxel;blocky;vehicle;car;land
+vox_train,vehicle,ボクセルきかんしゃ,Voxel Train,50,imageAsset,#2E7A3A,#2B2B30,#D14A2E,false,webp;voxel;blocky;vehicle;train;rail;land
+vox_rocket,vehicle,ボクセルロケット,Voxel Rocket,50,imageAsset,#F2F2F2,#E0432E,#5B86C7,false,webp;voxel;blocky;vehicle;rocket;air
+vox_ship,vehicle,ボクセルふね,Voxel Ship,50,imageAsset,#3A6BC7,#F2F2F2,#E0A53C,false,webp;voxel;blocky;vehicle;ship;water
+vox_wizard,fantasy,ボクセルまほうつかい,Voxel Wizard,50,imageAsset,#7A4AB0,#E0A53C,#F2E0C2,false,webp;voxel;blocky;fantasy;wizard;magic
+vox_ninja,fantasy,ボクセルにんじゃ,Voxel Ninja,50,imageAsset,#2A3A5C,#1A2238,#E0C9A6,false,webp;voxel;blocky;fantasy;ninja;japan
+vox_astro,space,ボクセルうちゅうひこうし,Voxel Astronaut,50,imageAsset,#F2F2F2,#5B86C7,#3A4656,false,webp;voxel;blocky;space;astronaut;human
+vox_ghost,fantasy,ボクセルおばけ,Voxel Ghost,50,imageAsset,#EDEDF5,#C9C9E0,#E0A53C,false,webp;voxel;blocky;fantasy;ghost;spooky
+vox_apple,food,ボクセルりんご,Voxel Apple,50,imageAsset,#E0322E,#4FA06B,#7A1212,false,webp;voxel;blocky;food;apple;fruit;sweet
+vox_cake,food,ボクセルケーキ,Voxel Cake,50,imageAsset,#F7F2E8,#E0322E,#F2A6C2,false,webp;voxel;blocky;food;cake;sweet;dessert
