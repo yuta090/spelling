@@ -13,6 +13,7 @@ struct HomeView: View {
     @State private var pendingParentOpen = false
     @State private var showingResults = false
     @State private var showingWordPreview = false
+    @State private var showingPuzzle = false
     @State private var showingCharacterPicker = false
     /// このセッションでホームのキャラヒントを出すか（初回起動の1回だけ true になる）。
     @State private var showCharHint = false
@@ -143,6 +144,7 @@ struct HomeView: View {
                             showCharacterHint: showCharHint,
                             startPractice: startPractice,
                             showWords: { showingWordPreview = true },
+                            showPuzzle: { showingPuzzle = true },
                             showStepPicker: { showingStepPicker = true },
                             showCharacters: {
                                 showCharHint = false   // タップしたらこのセッションでも消す
@@ -235,6 +237,9 @@ struct HomeView: View {
                     language: language
                 )
                 .environmentObject(model)
+            }
+            .fullScreenCover(isPresented: $showingPuzzle) {
+                PuzzleSessionView()
             }
             .sheet(isPresented: $showingPracticeRetryPicker) {
                 PracticeRetryPickerSheet(
@@ -523,6 +528,7 @@ private struct ChildMissionPanel: View {
     var showCharacterHint: Bool = false
     var startPractice: () -> Void
     var showWords: () -> Void
+    var showPuzzle: () -> Void
     var showStepPicker: () -> Void
     var showCharacters: () -> Void
     var startTest: () -> Void
@@ -703,6 +709,14 @@ private struct ChildMissionPanel: View {
                     tint: Color(red: 0.20, green: 0.58, blue: 0.24),
                     disabled: !canTest,
                     action: startTest
+                )
+
+                MissionSmallButton(
+                    title: language.text(japanese: "ことばパズル", english: "Puzzle"),
+                    systemImage: "puzzlepiece.fill",
+                    tint: Color(red: 0.96, green: 0.62, blue: 0.10),
+                    disabled: false,
+                    action: showPuzzle
                 )
             }
         }
