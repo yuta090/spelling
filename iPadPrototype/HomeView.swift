@@ -785,59 +785,42 @@ private struct ChildStepPickerSheet: View {
     @Environment(\.dismiss) private var dismiss
     var language: AppLanguage
 
+    // 昇順（[0]=下=スタート/ステップ1）。マップは下から上へ登る。
     private var orderedSteps: [WordStep] {
-        Array(model.wordSteps.reversed())
+        model.wordSteps
+    }
+
+    // 今日ぶんを終えたステップ＝マップ上で「できた（緑チェック）」になる。
+    private var completedToday: Set<String> {
+        Set(orderedSteps.filter { model.todayProgress(for: $0).isComplete }.map(\.id))
     }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                HomeBackground(themeID: model.selectedBackgroundID)
-
-                VStack(spacing: 18) {
-                    VStack(spacing: 8) {
-                        Text(language.text(japanese: "ステップをえらぼう", english: "Choose a Step"))
-                            .font(.system(size: 38, weight: .heavy, design: .rounded))
-                            .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.70)
-
-                        Text(language.text(japanese: "やりたい単語セットをタップしてね", english: "Tap the word set you want"))
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.secondary)
+                if orderedSteps.isEmpty {
+                    HomeBackground(themeID: model.selectedBackgroundID)
+                    EmptyStateView(
+                        language.text(japanese: "まだステップがありません", english: "No steps yet"),
+                        systemImage: "book.closed.fill",
+                        description: Text(language.text(japanese: "保護者メニューで単語を登録してください。", english: "Add words in the parent menu."))
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    StepMapView(
+                        steps: orderedSteps,
+                        completedStepIDs: completedToday,
+                        selectedStepID: model.selectedWordStepID,
+                        language: language
+                    ) { stepID in
+                        model.selectedWordStepID = stepID
+                        dismiss()
                     }
-                    .frame(maxWidth: .infinity)
-
-                    if orderedSteps.isEmpty {
-                        EmptyStateView(
-                            language.text(japanese: "まだステップがありません", english: "No steps yet"),
-                            systemImage: "book.closed.fill",
-                            description: Text(language.text(japanese: "保護者メニューで単語を登録してください。", english: "Add words in the parent menu."))
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    } else {
-                        ScrollView {
-                            LazyVStack(spacing: 12) {
-                                ForEach(orderedSteps) { step in
-                                    ChildStepPickerCard(
-                                        step: step,
-                                        progress: model.todayProgress(for: step),
-                                        language: language,
-                                        isSelected: step.id == model.selectedWordStepID
-                                    ) {
-                                        model.selectedWordStepID = step.id
-                                        dismiss()
-                                    }
-                                }
-                            }
-                            .padding(.vertical, 4)
-                        }
-                    }
+                    .ignoresSafeArea(edges: .bottom)
                 }
-                .padding(.horizontal, 32)
-                .padding(.top, 28)
-                .padding(.bottom, 24)
             }
+            .navigationTitle(language.text(japanese: "ステップをえらぼう", english: "Choose a Step"))
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
@@ -850,88 +833,6 @@ private struct ChildStepPickerSheet: View {
                 }
             }
         }
-    }
-}
-
-private struct ChildStepPickerCard: View {
-    var step: WordStep
-    var progress: TodayStepProgress
-    var language: AppLanguage
-    var isSelected: Bool
-    var action: () -> Void
-
-    private var statusText: String {
-        if progress.totalWords == 0 {
-            return language.text(japanese: "たんごなし", english: "No words")
-        }
-        if progress.isComplete {
-            return language.text(japanese: "きょうはできた", english: "Done today")
-        }
-        if progress.hasTestActivity || progress.clearedCount > 0 {
-            return language.text(japanese: "きょう \(progress.clearedCount)こできた", english: "\(progress.clearedCount) done today")
-        }
-        return language.text(japanese: "これから", english: "Ready")
-    }
-
-    private var cardTint: Color {
-        isSelected ? Color(red: 0.16, green: 0.42, blue: 0.84) : Color(red: 0.48, green: 0.30, blue: 0.76)
-    }
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(cardTint.opacity(isSelected ? 1 : 0.14))
-                        .frame(width: 58, height: 58)
-                    Image(systemName: isSelected ? "checkmark.circle.fill" : "rectangle.stack.fill")
-                        .font(.system(size: 26, weight: .heavy))
-                        .foregroundStyle(isSelected ? .white : cardTint)
-                }
-
-                VStack(alignment: .leading, spacing: 7) {
-                    Text(step.title(language: language))
-                        .font(.system(size: 29, weight: .heavy, design: .rounded))
-                        .foregroundStyle(Color(red: 0.10, green: 0.22, blue: 0.42))
-                        .lineLimit(1)
-
-                    HStack(spacing: 8) {
-                        Text(language.text(japanese: "\(step.words.count)こ", english: "\(step.words.count) words"))
-                            .font(.headline.monospacedDigit().weight(.heavy))
-                            .foregroundStyle(Color(red: 0.14, green: 0.35, blue: 0.76))
-                            .padding(.vertical, 5)
-                            .padding(.horizontal, 10)
-                            .background(Color(red: 0.90, green: 0.96, blue: 1.0))
-                            .clipShape(Capsule())
-
-                        Text(statusText)
-                            .font(.headline.monospacedDigit().weight(.heavy))
-                            .foregroundStyle(progress.isComplete ? Color(red: 0.20, green: 0.58, blue: 0.24) : Color(red: 0.50, green: 0.33, blue: 0.74))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.72)
-                    }
-                }
-
-                Spacer(minLength: 0)
-
-                Image(systemName: "chevron.right")
-                    .font(.title3.weight(.heavy))
-                    .foregroundStyle(Color(red: 0.42, green: 0.54, blue: 0.72))
-            }
-            .padding(16)
-            .background(isSelected ? Color(red: 0.91, green: 0.96, blue: 1.0) : .white.opacity(0.94))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? Color(red: 0.16, green: 0.42, blue: 0.84) : Color(red: 0.72, green: 0.82, blue: 0.96), lineWidth: isSelected ? 2 : 1)
-            )
-            .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 6)
-            .contentShape(RoundedRectangle(cornerRadius: 8))
-        }
-        .buttonStyle(.plain)
-        .contentShape(RoundedRectangle(cornerRadius: 8))
-        .tapFeedback()
-        .accessibilityLabel("\(step.title(language: language))。\(step.words.count)。\(statusText)")
     }
 }
 
