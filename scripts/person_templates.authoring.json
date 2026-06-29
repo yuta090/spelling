@@ -2444,5 +2444,1551 @@
       "friend"
     ],
     "fallbackJa": "よい おともだちを たすけて"
+  },
+  {
+    "id": "b-invite-1",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "run",
+      "together"
+    ],
+    "slots": [],
+    "en": [
+      "Let's",
+      "run",
+      "together."
+    ],
+    "ja": "いっしょに はしろう",
+    "fallbackEn": [
+      "Let's",
+      "run",
+      "together."
+    ],
+    "fallbackJa": "いっしょに はしろう"
+  },
+  {
+    "id": "b-invite-2",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "go",
+      "school"
+    ],
+    "slots": [],
+    "en": [
+      "Let's",
+      "go",
+      "to",
+      "school."
+    ],
+    "ja": "学校へ いこう",
+    "fallbackEn": [
+      "Let's",
+      "go",
+      "to",
+      "school."
+    ],
+    "fallbackJa": "学校へ いこう"
+  },
+  {
+    "id": "b-invite-3",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "walk",
+      "together",
+      "Sora"
+    ],
+    "slots": [],
+    "en": [
+      "Let's",
+      "walk",
+      "together,",
+      "Sora."
+    ],
+    "ja": "いっしょに あるこう、そら",
+    "fallbackEn": [
+      "Let's",
+      "walk",
+      "together,",
+      "Sora."
+    ],
+    "fallbackJa": "いっしょに あるこう、そら"
+  },
+  {
+    "id": "b-invite-4",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "sing",
+      "song"
+    ],
+    "slots": [],
+    "en": [
+      "Let's",
+      "sing",
+      "a",
+      "song."
+    ],
+    "ja": "うたを うたおう",
+    "fallbackEn": [
+      "Let's",
+      "sing",
+      "a",
+      "song."
+    ],
+    "fallbackJa": "うたを うたおう"
+  },
+  {
+    "id": "b-invite-5",
+    "category": "play",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "play"
+    ],
+    "slots": [],
+    "en": [
+      "Can",
+      "you",
+      "play",
+      "with",
+      "me?"
+    ],
+    "ja": "わたしと あそべる？",
+    "fallbackEn": [
+      "Can",
+      "you",
+      "play",
+      "with",
+      "me?"
+    ],
+    "fallbackJa": "わたしと あそべる？"
+  },
+  {
+    "id": "b-invite-6",
+    "category": "play",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "come",
+      "today",
+      "Mei"
+    ],
+    "slots": [],
+    "en": [
+      "Can",
+      "you",
+      "come",
+      "today,",
+      "Mei?"
+    ],
+    "ja": "きょう こられる、めい？",
+    "fallbackEn": [
+      "Can",
+      "you",
+      "come",
+      "today,",
+      "Mei?"
+    ],
+    "fallbackJa": "きょう こられる、めい？"
+  },
+  {
+    "id": "b-invite-7",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "eat",
+      "lunch",
+      "together"
+    ],
+    "slots": [],
+    "en": [
+      "Let's",
+      "eat",
+      "lunch",
+      "together."
+    ],
+    "ja": "いっしょに 昼ごはんを たべよう",
+    "fallbackEn": [
+      "Let's",
+      "eat",
+      "lunch",
+      "together."
+    ],
+    "fallbackJa": "いっしょに 昼ごはんを たべよう"
+  },
+  {
+    "id": "b-invite-8",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "swim",
+      "lake"
+    ],
+    "slots": [],
+    "en": [
+      "Let's",
+      "swim",
+      "in",
+      "the",
+      "lake."
+    ],
+    "ja": "みずうみで およごう",
+    "fallbackEn": [
+      "Let's",
+      "swim",
+      "in",
+      "the",
+      "lake."
+    ],
+    "fallbackJa": "みずうみで およごう"
+  },
+  {
+    "id": "b-invite-9",
+    "category": "play",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "turtle",
+      "play",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "Can",
+      "the",
+      "turtle",
+      "play",
+      "today?"
+    ],
+    "ja": "かめは きょう あそべる？",
+    "fallbackEn": [
+      "Can",
+      "the",
+      "turtle",
+      "play",
+      "today?"
+    ],
+    "fallbackJa": "かめは きょう あそべる？"
+  },
+  {
+    "id": "b-invite-10",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "draw",
+      "picture"
+    ],
+    "slots": [],
+    "en": [
+      "Let's",
+      "draw",
+      "a",
+      "picture."
+    ],
+    "ja": "えを かこう",
+    "fallbackEn": [
+      "Let's",
+      "draw",
+      "a",
+      "picture."
+    ],
+    "fallbackJa": "えを かこう"
+  },
+  {
+    "id": "b-ask-1",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "like",
+      "bird"
+    ],
+    "slots": [],
+    "en": [
+      "Do",
+      "you",
+      "like",
+      "birds?"
+    ],
+    "ja": "鳥は すき？",
+    "fallbackEn": [
+      "Do",
+      "you",
+      "like",
+      "birds?"
+    ],
+    "fallbackJa": "鳥は すき？"
+  },
+  {
+    "id": "b-ask-2",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "sleepy",
+      "Sora"
+    ],
+    "slots": [],
+    "en": [
+      "Are",
+      "you",
+      "sleepy,",
+      "Sora?"
+    ],
+    "ja": "ねむい、そら？",
+    "fallbackEn": [
+      "Are",
+      "you",
+      "sleepy,",
+      "Sora?"
+    ],
+    "fallbackJa": "ねむい、そら？"
+  },
+  {
+    "id": "b-ask-3",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "swim",
+      "fast"
+    ],
+    "slots": [],
+    "en": [
+      "Can",
+      "you",
+      "swim",
+      "fast?"
+    ],
+    "ja": "はやく およげる？",
+    "fallbackEn": [
+      "Can",
+      "you",
+      "swim",
+      "fast?"
+    ],
+    "fallbackJa": "はやく およげる？"
+  },
+  {
+    "id": "b-ask-4",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "rabbit",
+      "small"
+    ],
+    "slots": [],
+    "en": [
+      "Is",
+      "the",
+      "rabbit",
+      "small?"
+    ],
+    "ja": "うさぎは 小さい？",
+    "fallbackEn": [
+      "Is",
+      "the",
+      "rabbit",
+      "small?"
+    ],
+    "fallbackJa": "うさぎは 小さい？"
+  },
+  {
+    "id": "b-ask-5",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cold",
+      "outside"
+    ],
+    "slots": [],
+    "en": [
+      "Is",
+      "it",
+      "cold",
+      "outside?"
+    ],
+    "ja": "そとは さむい？",
+    "fallbackEn": [
+      "Is",
+      "it",
+      "cold",
+      "outside?"
+    ],
+    "fallbackJa": "そとは さむい？"
+  },
+  {
+    "id": "b-ask-6",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "have",
+      "pen"
+    ],
+    "slots": [],
+    "en": [
+      "Do",
+      "you",
+      "have",
+      "a",
+      "pen?"
+    ],
+    "ja": "ペンを もっている？",
+    "fallbackEn": [
+      "Do",
+      "you",
+      "have",
+      "a",
+      "pen?"
+    ],
+    "fallbackJa": "ペンを もっている？"
+  },
+  {
+    "id": "b-ask-7",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "fox",
+      "jump",
+      "high"
+    ],
+    "slots": [],
+    "en": [
+      "Can",
+      "a",
+      "fox",
+      "jump",
+      "high?"
+    ],
+    "ja": "きつねは たかく とべる？",
+    "fallbackEn": [
+      "Can",
+      "a",
+      "fox",
+      "jump",
+      "high?"
+    ],
+    "fallbackJa": "きつねは たかく とべる？"
+  },
+  {
+    "id": "b-ask-8",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "Mei",
+      "school",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "Is",
+      "Mei",
+      "at",
+      "school",
+      "today?"
+    ],
+    "ja": "きょう めいは 学校に いる？",
+    "fallbackEn": [
+      "Is",
+      "Mei",
+      "at",
+      "school",
+      "today?"
+    ],
+    "fallbackJa": "きょう めいは 学校に いる？"
+  },
+  {
+    "id": "b-ask-9",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "late",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "Are",
+      "we",
+      "late",
+      "today?"
+    ],
+    "ja": "わたしたちは きょう おそい？",
+    "fallbackEn": [
+      "Are",
+      "we",
+      "late",
+      "today?"
+    ],
+    "fallbackJa": "わたしたちは きょう おそい？"
+  },
+  {
+    "id": "b-ask-10",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "play",
+      "baseball"
+    ],
+    "slots": [],
+    "en": [
+      "Do",
+      "you",
+      "play",
+      "baseball?"
+    ],
+    "ja": "やきゅうを する？",
+    "fallbackEn": [
+      "Do",
+      "you",
+      "play",
+      "baseball?"
+    ],
+    "fallbackJa": "やきゅうを する？"
+  },
+  {
+    "id": "b-weather-1",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "sunny",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "sunny",
+      "today."
+    ],
+    "ja": "きょうは はれている",
+    "fallbackEn": [
+      "It",
+      "is",
+      "sunny",
+      "today."
+    ],
+    "fallbackJa": "きょうは はれている"
+  },
+  {
+    "id": "b-weather-2",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "rain"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "raining",
+      "now."
+    ],
+    "ja": "今 雨が ふっている",
+    "fallbackEn": [
+      "It",
+      "is",
+      "raining",
+      "now."
+    ],
+    "fallbackJa": "今 雨が ふっている"
+  },
+  {
+    "id": "b-weather-3",
+    "category": "daily",
+    "grammar": "beVerbPast",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cold",
+      "yesterday"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "was",
+      "cold",
+      "yesterday."
+    ],
+    "ja": "きのうは さむかった",
+    "fallbackEn": [
+      "It",
+      "was",
+      "cold",
+      "yesterday."
+    ],
+    "fallbackJa": "きのうは さむかった"
+  },
+  {
+    "id": "b-weather-4",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "sky",
+      "blue",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "sky",
+      "is",
+      "blue",
+      "today."
+    ],
+    "ja": "きょうの 空は あおい",
+    "fallbackEn": [
+      "The",
+      "sky",
+      "is",
+      "blue",
+      "today."
+    ],
+    "fallbackJa": "きょうの 空は あおい"
+  },
+  {
+    "id": "b-weather-5",
+    "category": "daily",
+    "grammar": "beVerbPast",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "windy"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "was",
+      "very",
+      "windy."
+    ],
+    "ja": "とても 風が つよかった",
+    "fallbackEn": [
+      "It",
+      "was",
+      "very",
+      "windy."
+    ],
+    "fallbackJa": "とても 風が つよかった"
+  },
+  {
+    "id": "b-weather-6",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "snow",
+      "cold"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "snow",
+      "is",
+      "cold."
+    ],
+    "ja": "雪は つめたい",
+    "fallbackEn": [
+      "The",
+      "snow",
+      "is",
+      "cold."
+    ],
+    "fallbackJa": "雪は つめたい"
+  },
+  {
+    "id": "b-weather-7",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cloudy",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "cloudy",
+      "today."
+    ],
+    "ja": "きょうは くもっている",
+    "fallbackEn": [
+      "It",
+      "is",
+      "cloudy",
+      "today."
+    ],
+    "fallbackJa": "きょうは くもっている"
+  },
+  {
+    "id": "b-weather-8",
+    "category": "daily",
+    "grammar": "beVerbPast",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "wind",
+      "strong"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "wind",
+      "was",
+      "strong."
+    ],
+    "ja": "風が つよかった",
+    "fallbackEn": [
+      "The",
+      "wind",
+      "was",
+      "strong."
+    ],
+    "fallbackJa": "風が つよかった"
+  },
+  {
+    "id": "b-weather-9",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "warm",
+      "morning"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "warm",
+      "this",
+      "morning."
+    ],
+    "ja": "今朝は あたたかい",
+    "fallbackEn": [
+      "It",
+      "is",
+      "warm",
+      "this",
+      "morning."
+    ],
+    "fallbackJa": "今朝は あたたかい"
+  },
+  {
+    "id": "b-weather-10",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "hot",
+      "summer"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "hot",
+      "in",
+      "summer."
+    ],
+    "ja": "なつは あつい",
+    "fallbackEn": [
+      "It",
+      "is",
+      "hot",
+      "in",
+      "summer."
+    ],
+    "fallbackJa": "なつは あつい"
+  },
+  {
+    "id": "b-order-1",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "want",
+      "apple"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "an",
+      "apple,",
+      "please."
+    ],
+    "ja": "りんごを おねがいします",
+    "fallbackEn": [
+      "I",
+      "want",
+      "an",
+      "apple,",
+      "please."
+    ],
+    "fallbackJa": "りんごを おねがいします"
+  },
+  {
+    "id": "b-order-2",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cookie"
+    ],
+    "slots": [],
+    "en": [
+      "Two",
+      "cookies,",
+      "please."
+    ],
+    "ja": "クッキーを ２つ おねがいします",
+    "fallbackEn": [
+      "Two",
+      "cookies,",
+      "please."
+    ],
+    "fallbackJa": "クッキーを ２つ おねがいします"
+  },
+  {
+    "id": "b-order-3",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cold",
+      "water"
+    ],
+    "slots": [],
+    "en": [
+      "Cold",
+      "water,",
+      "please."
+    ],
+    "ja": "つめたい 水を おねがいします",
+    "fallbackEn": [
+      "Cold",
+      "water,",
+      "please."
+    ],
+    "fallbackJa": "つめたい 水を おねがいします"
+  },
+  {
+    "id": "b-order-4",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "want",
+      "banana"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "three",
+      "bananas,",
+      "please."
+    ],
+    "ja": "バナナを ３つ おねがいします",
+    "fallbackEn": [
+      "I",
+      "want",
+      "three",
+      "bananas,",
+      "please."
+    ],
+    "fallbackJa": "バナナを ３つ おねがいします"
+  },
+  {
+    "id": "b-order-5",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "sweet",
+      "cake"
+    ],
+    "slots": [],
+    "en": [
+      "One",
+      "sweet",
+      "cake,",
+      "please."
+    ],
+    "ja": "あまい ケーキを １つ おねがいします",
+    "fallbackEn": [
+      "One",
+      "sweet",
+      "cake,",
+      "please."
+    ],
+    "fallbackJa": "あまい ケーキを １つ おねがいします"
+  },
+  {
+    "id": "b-order-6",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "want",
+      "red",
+      "cap"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "this",
+      "red",
+      "cap."
+    ],
+    "ja": "わたしは この あかい ぼうしが ほしい",
+    "fallbackEn": [
+      "I",
+      "want",
+      "this",
+      "red",
+      "cap."
+    ],
+    "fallbackJa": "わたしは この あかい ぼうしが ほしい"
+  },
+  {
+    "id": "b-order-7",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "hot",
+      "dog"
+    ],
+    "slots": [],
+    "en": [
+      "Four",
+      "hot",
+      "dogs,",
+      "please."
+    ],
+    "ja": "ホットドッグを ４つ おねがいします",
+    "fallbackEn": [
+      "Four",
+      "hot",
+      "dogs,",
+      "please."
+    ],
+    "fallbackJa": "ホットドッグを ４つ おねがいします"
+  },
+  {
+    "id": "b-order-8",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "want",
+      "big",
+      "book"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "that",
+      "big",
+      "book."
+    ],
+    "ja": "わたしは あの 大きい ほんが ほしい",
+    "fallbackEn": [
+      "I",
+      "want",
+      "that",
+      "big",
+      "book."
+    ],
+    "fallbackJa": "わたしは あの 大きい ほんが ほしい"
+  },
+  {
+    "id": "b-order-9",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "orange",
+      "juice"
+    ],
+    "slots": [],
+    "en": [
+      "Orange",
+      "juice,",
+      "please."
+    ],
+    "ja": "オレンジジュースを おねがいします",
+    "fallbackEn": [
+      "Orange",
+      "juice,",
+      "please."
+    ],
+    "fallbackJa": "オレンジジュースを おねがいします"
+  },
+  {
+    "id": "b-order-10",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "want",
+      "notebook"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "two",
+      "notebooks,",
+      "please."
+    ],
+    "ja": "ノートを ２さつ おねがいします",
+    "fallbackEn": [
+      "I",
+      "want",
+      "two",
+      "notebooks,",
+      "please."
+    ],
+    "fallbackJa": "ノートを ２さつ おねがいします"
+  },
+  {
+    "id": "b-body-1",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "have",
+      "hand"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "two",
+      "hands."
+    ],
+    "ja": "わたしには 手が ２つ ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "two",
+      "hands."
+    ],
+    "fallbackJa": "わたしには 手が ２つ ある"
+  },
+  {
+    "id": "b-body-2",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "foot",
+      "cold"
+    ],
+    "slots": [],
+    "en": [
+      "My",
+      "feet",
+      "are",
+      "cold."
+    ],
+    "ja": "わたしの 足が つめたい",
+    "fallbackEn": [
+      "My",
+      "feet",
+      "are",
+      "cold."
+    ],
+    "fallbackJa": "わたしの 足が つめたい"
+  },
+  {
+    "id": "b-body-3",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "eye"
+    ],
+    "slots": [],
+    "en": [
+      "These",
+      "are",
+      "my",
+      "eyes."
+    ],
+    "ja": "これらは わたしの 目です",
+    "fallbackEn": [
+      "These",
+      "are",
+      "my",
+      "eyes."
+    ],
+    "fallbackJa": "これらは わたしの 目です"
+  },
+  {
+    "id": "b-body-4",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "have",
+      "headache"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "headache."
+    ],
+    "ja": "わたしは あたまが いたい",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "headache."
+    ],
+    "fallbackJa": "わたしは あたまが いたい"
+  },
+  {
+    "id": "b-body-5",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "ear",
+      "big"
+    ],
+    "slots": [],
+    "en": [
+      "My",
+      "ears",
+      "are",
+      "big."
+    ],
+    "ja": "わたしの 耳が 大きい",
+    "fallbackEn": [
+      "My",
+      "ears",
+      "are",
+      "big."
+    ],
+    "fallbackJa": "わたしの 耳が 大きい"
+  },
+  {
+    "id": "b-body-6",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "Sora",
+      "have",
+      "long",
+      "leg"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "has",
+      "two",
+      "long",
+      "legs."
+    ],
+    "ja": "そらは ながい 足が ２ほん ある",
+    "fallbackEn": [
+      "Sora",
+      "has",
+      "two",
+      "long",
+      "legs."
+    ],
+    "fallbackJa": "そらは ながい 足が ２ほん ある"
+  },
+  {
+    "id": "b-body-7",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "mouth",
+      "small"
+    ],
+    "slots": [],
+    "en": [
+      "My",
+      "mouth",
+      "is",
+      "small."
+    ],
+    "ja": "わたしの 口は 小さい",
+    "fallbackEn": [
+      "My",
+      "mouth",
+      "is",
+      "small."
+    ],
+    "fallbackJa": "わたしの 口は 小さい"
+  },
+  {
+    "id": "b-body-8",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "Mei",
+      "have",
+      "blue",
+      "eye"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "has",
+      "two",
+      "blue",
+      "eyes."
+    ],
+    "ja": "めいは あおい 目が ２つ ある",
+    "fallbackEn": [
+      "Mei",
+      "has",
+      "two",
+      "blue",
+      "eyes."
+    ],
+    "fallbackJa": "めいは あおい 目が ２つ ある"
+  },
+  {
+    "id": "b-body-9",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "have",
+      "finger"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "ten",
+      "fingers."
+    ],
+    "ja": "わたしには ゆびが １０ほん ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "ten",
+      "fingers."
+    ],
+    "fallbackJa": "わたしには ゆびが １０ほん ある"
+  },
+  {
+    "id": "b-body-10",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "arm",
+      "strong"
+    ],
+    "slots": [],
+    "en": [
+      "His",
+      "arms",
+      "are",
+      "strong."
+    ],
+    "ja": "かれの うでが つよい",
+    "fallbackEn": [
+      "His",
+      "arms",
+      "are",
+      "strong."
+    ],
+    "fallbackJa": "かれの うでが つよい"
+  },
+  {
+    "id": "b-now-1",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cat",
+      "eat"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "is",
+      "eating",
+      "now."
+    ],
+    "ja": "ねこが 今 たべている",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "is",
+      "eating",
+      "now."
+    ],
+    "fallbackJa": "ねこが 今 たべている"
+  },
+  {
+    "id": "b-now-2",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "eat",
+      "lunch"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "eating",
+      "lunch."
+    ],
+    "ja": "わたしは 昼ごはんを たべている",
+    "fallbackEn": [
+      "I",
+      "am",
+      "eating",
+      "lunch."
+    ],
+    "fallbackJa": "わたしは 昼ごはんを たべている"
+  },
+  {
+    "id": "b-now-3",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "bird",
+      "fly"
+    ],
+    "slots": [],
+    "en": [
+      "Birds",
+      "are",
+      "flying",
+      "now."
+    ],
+    "ja": "鳥が 今 とんでいる",
+    "fallbackEn": [
+      "Birds",
+      "are",
+      "flying",
+      "now."
+    ],
+    "fallbackJa": "鳥が 今 とんでいる"
+  },
+  {
+    "id": "b-now-4",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "Sora",
+      "run",
+      "fast"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "is",
+      "running",
+      "fast."
+    ],
+    "ja": "そらが はやく はしっている",
+    "fallbackEn": [
+      "Sora",
+      "is",
+      "running",
+      "fast."
+    ],
+    "fallbackJa": "そらが はやく はしっている"
+  },
+  {
+    "id": "b-now-5",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "Mei",
+      "read"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "is",
+      "reading",
+      "now."
+    ],
+    "ja": "めいが 今 よんでいる",
+    "fallbackEn": [
+      "Mei",
+      "is",
+      "reading",
+      "now."
+    ],
+    "fallbackJa": "めいが 今 よんでいる"
+  },
+  {
+    "id": "b-now-6",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "dog",
+      "bark"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "dog",
+      "is",
+      "barking",
+      "now."
+    ],
+    "ja": "犬が 今 ほえている",
+    "fallbackEn": [
+      "The",
+      "dog",
+      "is",
+      "barking",
+      "now."
+    ],
+    "fallbackJa": "犬が 今 ほえている"
+  },
+  {
+    "id": "b-now-7",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "rabbit",
+      "jump"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "rabbit",
+      "is",
+      "jumping."
+    ],
+    "ja": "うさぎが とんでいる",
+    "fallbackEn": [
+      "The",
+      "rabbit",
+      "is",
+      "jumping."
+    ],
+    "fallbackJa": "うさぎが とんでいる"
+  },
+  {
+    "id": "b-now-8",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "turtle",
+      "walk",
+      "slowly"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "turtle",
+      "is",
+      "walking",
+      "slowly."
+    ],
+    "ja": "かめが ゆっくり あるいている",
+    "fallbackEn": [
+      "The",
+      "turtle",
+      "is",
+      "walking",
+      "slowly."
+    ],
+    "fallbackJa": "かめが ゆっくり あるいている"
+  },
+  {
+    "id": "b-now-9",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "fox",
+      "run"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "fox",
+      "is",
+      "running",
+      "now."
+    ],
+    "ja": "きつねが 今 はしっている",
+    "fallbackEn": [
+      "The",
+      "fox",
+      "is",
+      "running",
+      "now."
+    ],
+    "fallbackJa": "きつねが 今 はしっている"
+  },
+  {
+    "id": "b-now-10",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "study",
+      "English"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "are",
+      "studying",
+      "English",
+      "now."
+    ],
+    "ja": "わたしたちは 今 えいごを べんきょうしている",
+    "fallbackEn": [
+      "We",
+      "are",
+      "studying",
+      "English",
+      "now."
+    ],
+    "fallbackJa": "わたしたちは 今 えいごを べんきょうしている"
   }
 ]

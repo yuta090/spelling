@@ -2493,5 +2493,1123 @@
       "good",
       "friend"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "run",
+      "together"
+    ],
+    "en" : "Let's run together",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "6EB345EF-2B52-54FB-9473-AE0155715658",
+    "ja" : "いっしょに はしろう",
+    "sourceID" : "b-invite-1",
+    "tokens" : [
+      "Let's",
+      "run",
+      "together"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "school"
+    ],
+    "en" : "Let's go to school",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "D50E3330-8850-5727-AEEE-197938C8EFCE",
+    "ja" : "学校へ いこう",
+    "sourceID" : "b-invite-2",
+    "tokens" : [
+      "Let's",
+      "go",
+      "to",
+      "school"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "walk",
+      "together",
+      "sora"
+    ],
+    "en" : "Let's walk together Sora",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "8D56F297-9008-5B97-98C9-39F09F37B844",
+    "ja" : "いっしょに あるこう、そら",
+    "sourceID" : "b-invite-3",
+    "tokens" : [
+      "Let's",
+      "walk",
+      "together",
+      "Sora"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sing",
+      "song"
+    ],
+    "en" : "Let's sing a song",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "A239402C-B5A0-58E8-8FEF-F3E8ADE0445A",
+    "ja" : "うたを うたおう",
+    "sourceID" : "b-invite-4",
+    "tokens" : [
+      "Let's",
+      "sing",
+      "a",
+      "song"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play"
+    ],
+    "en" : "Can you play with me",
+    "gradeBand" : 1,
+    "grammar" : "yesNoQuestion",
+    "id" : "20D401CA-65CC-574F-A52D-478D811E0C56",
+    "ja" : "わたしと あそべる？",
+    "sourceID" : "b-invite-5",
+    "tokens" : [
+      "Can",
+      "you",
+      "play",
+      "with",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "come",
+      "today",
+      "mei"
+    ],
+    "en" : "Can you come today Mei",
+    "gradeBand" : 2,
+    "grammar" : "yesNoQuestion",
+    "id" : "D639C325-B2B3-5C9A-9B5D-9548FB94535C",
+    "ja" : "きょう こられる、めい？",
+    "sourceID" : "b-invite-6",
+    "tokens" : [
+      "Can",
+      "you",
+      "come",
+      "today",
+      "Mei"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat",
+      "lunch",
+      "together"
+    ],
+    "en" : "Let's eat lunch together",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "F97F1EB1-8A76-5899-9A63-9AEFCD9092FC",
+    "ja" : "いっしょに 昼ごはんを たべよう",
+    "sourceID" : "b-invite-7",
+    "tokens" : [
+      "Let's",
+      "eat",
+      "lunch",
+      "together"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "swim",
+      "lake"
+    ],
+    "en" : "Let's swim in the lake",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "3A985D13-8278-54E3-BB9D-8BF0D74D3C4E",
+    "ja" : "みずうみで およごう",
+    "sourceID" : "b-invite-8",
+    "tokens" : [
+      "Let's",
+      "swim",
+      "in",
+      "the",
+      "lake"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "turtle",
+      "play",
+      "today"
+    ],
+    "en" : "Can the turtle play today",
+    "gradeBand" : 2,
+    "grammar" : "yesNoQuestion",
+    "id" : "1885845F-BA77-5185-BB4F-C86A43886615",
+    "ja" : "かめは きょう あそべる？",
+    "sourceID" : "b-invite-9",
+    "tokens" : [
+      "Can",
+      "the",
+      "turtle",
+      "play",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "draw",
+      "picture"
+    ],
+    "en" : "Let's draw a picture",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "6929BAAD-EA72-5FCE-9CB5-0BBE6493E983",
+    "ja" : "えを かこう",
+    "sourceID" : "b-invite-10",
+    "tokens" : [
+      "Let's",
+      "draw",
+      "a",
+      "picture"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "bird"
+    ],
+    "en" : "Do you like birds",
+    "gradeBand" : 3,
+    "grammar" : "yesNoQuestion",
+    "id" : "666FA7CB-DE63-5771-A0AB-916574AF1CD9",
+    "ja" : "鳥は すき？",
+    "sourceID" : "b-ask-1",
+    "tokens" : [
+      "Do",
+      "you",
+      "like",
+      "birds"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sleepy",
+      "sora"
+    ],
+    "en" : "Are you sleepy Sora",
+    "gradeBand" : 2,
+    "grammar" : "yesNoQuestion",
+    "id" : "19FC3D1A-1D16-5955-8F62-D49C0866F923",
+    "ja" : "ねむい、そら？",
+    "sourceID" : "b-ask-2",
+    "tokens" : [
+      "Are",
+      "you",
+      "sleepy",
+      "Sora"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "swim",
+      "fast"
+    ],
+    "en" : "Can you swim fast",
+    "gradeBand" : 3,
+    "grammar" : "yesNoQuestion",
+    "id" : "F0DEE6FC-EE42-55D8-A265-0B1FEB715107",
+    "ja" : "はやく およげる？",
+    "sourceID" : "b-ask-3",
+    "tokens" : [
+      "Can",
+      "you",
+      "swim",
+      "fast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "small"
+    ],
+    "en" : "Is the rabbit small",
+    "gradeBand" : 2,
+    "grammar" : "yesNoQuestion",
+    "id" : "C9784B76-A438-579B-8270-84D0C6C7BCB2",
+    "ja" : "うさぎは 小さい？",
+    "sourceID" : "b-ask-4",
+    "tokens" : [
+      "Is",
+      "the",
+      "rabbit",
+      "small"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cold",
+      "outside"
+    ],
+    "en" : "Is it cold outside",
+    "gradeBand" : 2,
+    "grammar" : "yesNoQuestion",
+    "id" : "34DB7D9B-EDA7-5CD8-B469-24784B2C1B3A",
+    "ja" : "そとは さむい？",
+    "sourceID" : "b-ask-5",
+    "tokens" : [
+      "Is",
+      "it",
+      "cold",
+      "outside"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pen"
+    ],
+    "en" : "Do you have a pen",
+    "gradeBand" : 5,
+    "grammar" : "yesNoQuestion",
+    "id" : "ADC435D3-CB63-54C7-9DD8-72434601B2FD",
+    "ja" : "ペンを もっている？",
+    "sourceID" : "b-ask-6",
+    "tokens" : [
+      "Do",
+      "you",
+      "have",
+      "a",
+      "pen"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fox",
+      "jump",
+      "high"
+    ],
+    "en" : "Can a fox jump high",
+    "gradeBand" : 3,
+    "grammar" : "yesNoQuestion",
+    "id" : "ECB0CE6B-9BEB-5665-86AE-CBCB0244B87D",
+    "ja" : "きつねは たかく とべる？",
+    "sourceID" : "b-ask-7",
+    "tokens" : [
+      "Can",
+      "a",
+      "fox",
+      "jump",
+      "high"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "school",
+      "today"
+    ],
+    "en" : "Is Mei at school today",
+    "gradeBand" : 2,
+    "grammar" : "yesNoQuestion",
+    "id" : "F6F4007C-FB6E-5C2C-806D-0A4BA438ADA7",
+    "ja" : "きょう めいは 学校に いる？",
+    "sourceID" : "b-ask-8",
+    "tokens" : [
+      "Is",
+      "Mei",
+      "at",
+      "school",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "late",
+      "today"
+    ],
+    "en" : "Are we late today",
+    "gradeBand" : 1,
+    "grammar" : "yesNoQuestion",
+    "id" : "7F8C50DF-EC72-5136-9C41-84F498F702AA",
+    "ja" : "わたしたちは きょう おそい？",
+    "sourceID" : "b-ask-9",
+    "tokens" : [
+      "Are",
+      "we",
+      "late",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "baseball"
+    ],
+    "en" : "Do you play baseball",
+    "gradeBand" : 2,
+    "grammar" : "yesNoQuestion",
+    "id" : "C99AE4FB-7038-5DCB-BEB1-3FFB99FF7480",
+    "ja" : "やきゅうを する？",
+    "sourceID" : "b-ask-10",
+    "tokens" : [
+      "Do",
+      "you",
+      "play",
+      "baseball"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sunny",
+      "today"
+    ],
+    "en" : "It is sunny today",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "0BB5803A-6AD4-5F72-A70A-0BC45BA22C83",
+    "ja" : "きょうは はれている",
+    "sourceID" : "b-weather-1",
+    "tokens" : [
+      "It",
+      "is",
+      "sunny",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rain",
+      "now"
+    ],
+    "en" : "It is raining now",
+    "gradeBand" : 3,
+    "grammar" : "presentContinuous",
+    "id" : "26147AE1-8702-5FEF-8EE6-38D220E531F7",
+    "ja" : "今 雨が ふっている",
+    "sourceID" : "b-weather-2",
+    "tokens" : [
+      "It",
+      "is",
+      "raining",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cold",
+      "yesterday"
+    ],
+    "en" : "It was cold yesterday",
+    "gradeBand" : 2,
+    "grammar" : "beVerbPast",
+    "id" : "F767B2B5-F8C3-55FC-9759-669540867251",
+    "ja" : "きのうは さむかった",
+    "sourceID" : "b-weather-3",
+    "tokens" : [
+      "It",
+      "was",
+      "cold",
+      "yesterday"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sky",
+      "blue",
+      "today"
+    ],
+    "en" : "The sky is blue today",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "252F37F2-D8DD-54C5-9A59-F8F3BD95EEEB",
+    "ja" : "きょうの 空は あおい",
+    "sourceID" : "b-weather-4",
+    "tokens" : [
+      "The",
+      "sky",
+      "is",
+      "blue",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "windy"
+    ],
+    "en" : "It was very windy",
+    "gradeBand" : 2,
+    "grammar" : "beVerbPast",
+    "id" : "3586B731-FCD3-5236-8285-7A37103707CF",
+    "ja" : "とても 風が つよかった",
+    "sourceID" : "b-weather-5",
+    "tokens" : [
+      "It",
+      "was",
+      "very",
+      "windy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "snow",
+      "cold"
+    ],
+    "en" : "The snow is cold",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "FB3E192D-1091-5572-8D66-60EF9ED00D4C",
+    "ja" : "雪は つめたい",
+    "sourceID" : "b-weather-6",
+    "tokens" : [
+      "The",
+      "snow",
+      "is",
+      "cold"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cloudy",
+      "today"
+    ],
+    "en" : "It is cloudy today",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "A5B464C0-5058-5419-BF7A-6D8B2803E538",
+    "ja" : "きょうは くもっている",
+    "sourceID" : "b-weather-7",
+    "tokens" : [
+      "It",
+      "is",
+      "cloudy",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "wind",
+      "strong"
+    ],
+    "en" : "The wind was strong",
+    "gradeBand" : 3,
+    "grammar" : "beVerbPast",
+    "id" : "26533279-3970-5CA3-9042-8923B3890CA4",
+    "ja" : "風が つよかった",
+    "sourceID" : "b-weather-8",
+    "tokens" : [
+      "The",
+      "wind",
+      "was",
+      "strong"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "warm",
+      "morning"
+    ],
+    "en" : "It is warm this morning",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "C4BDFBBB-FBC0-5650-804E-7E4B117DF63A",
+    "ja" : "今朝は あたたかい",
+    "sourceID" : "b-weather-9",
+    "tokens" : [
+      "It",
+      "is",
+      "warm",
+      "this",
+      "morning"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hot",
+      "summer"
+    ],
+    "en" : "It is hot in summer",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "8F28BC00-DD9E-58E6-94AC-2DAF9EB23BBE",
+    "ja" : "なつは あつい",
+    "sourceID" : "b-weather-10",
+    "tokens" : [
+      "It",
+      "is",
+      "hot",
+      "in",
+      "summer"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "apple"
+    ],
+    "en" : "I want an apple please",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "528F78DD-9962-57AA-9E1E-C1A6923855B0",
+    "ja" : "りんごを おねがいします",
+    "sourceID" : "b-order-1",
+    "tokens" : [
+      "I",
+      "want",
+      "an",
+      "apple",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "two",
+      "cookies"
+    ],
+    "en" : "Two cookies please",
+    "gradeBand" : 2,
+    "grammar" : "plurals",
+    "id" : "C86A2F14-E773-5D10-BE00-2B6FA0BCBB06",
+    "ja" : "クッキーを ２つ おねがいします",
+    "sourceID" : "b-order-2",
+    "tokens" : [
+      "Two",
+      "cookies",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cold",
+      "water"
+    ],
+    "en" : "Cold water please",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "F3B170B7-2E64-5DEA-8987-43E29C0F253A",
+    "ja" : "つめたい 水を おねがいします",
+    "sourceID" : "b-order-3",
+    "tokens" : [
+      "Cold",
+      "water",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "three",
+      "bananas"
+    ],
+    "en" : "I want three bananas please",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "D6E81FD6-A8C1-541D-85BF-6C2A61B10365",
+    "ja" : "バナナを ３つ おねがいします",
+    "sourceID" : "b-order-4",
+    "tokens" : [
+      "I",
+      "want",
+      "three",
+      "bananas",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "one",
+      "sweet",
+      "cake"
+    ],
+    "en" : "One sweet cake please",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "253E3D65-BC9D-5866-B8A2-592A5C2CB934",
+    "ja" : "あまい ケーキを １つ おねがいします",
+    "sourceID" : "b-order-5",
+    "tokens" : [
+      "One",
+      "sweet",
+      "cake",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "red",
+      "cap"
+    ],
+    "en" : "I want this red cap",
+    "gradeBand" : 5,
+    "grammar" : "demonstratives",
+    "id" : "D1A495DA-2F28-5721-93BD-406C706AE130",
+    "ja" : "わたしは この あかい ぼうしが ほしい",
+    "sourceID" : "b-order-6",
+    "tokens" : [
+      "I",
+      "want",
+      "this",
+      "red",
+      "cap"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "four",
+      "hot",
+      "dog"
+    ],
+    "en" : "Four hot dogs please",
+    "gradeBand" : 2,
+    "grammar" : "plurals",
+    "id" : "077217A1-0A01-5079-A66C-A7E533CB5A18",
+    "ja" : "ホットドッグを ４つ おねがいします",
+    "sourceID" : "b-order-7",
+    "tokens" : [
+      "Four",
+      "hot",
+      "dogs",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "big",
+      "book"
+    ],
+    "en" : "I want that big book",
+    "gradeBand" : 1,
+    "grammar" : "demonstratives",
+    "id" : "A6B5DC44-BBCE-5AB1-8808-D72A4F57817B",
+    "ja" : "わたしは あの 大きい ほんが ほしい",
+    "sourceID" : "b-order-8",
+    "tokens" : [
+      "I",
+      "want",
+      "that",
+      "big",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "orange",
+      "juice"
+    ],
+    "en" : "Orange juice please",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "E29B7191-6A7F-56F7-9F4A-8C83AC776D0A",
+    "ja" : "オレンジジュースを おねがいします",
+    "sourceID" : "b-order-9",
+    "tokens" : [
+      "Orange",
+      "juice",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "two",
+      "notebooks"
+    ],
+    "en" : "I want two notebooks please",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "4651040E-CF34-5F0C-B4AA-C0ED6FB96134",
+    "ja" : "ノートを ２さつ おねがいします",
+    "sourceID" : "b-order-10",
+    "tokens" : [
+      "I",
+      "want",
+      "two",
+      "notebooks",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "two",
+      "hand"
+    ],
+    "en" : "I have two hands",
+    "gradeBand" : 2,
+    "grammar" : "plurals",
+    "id" : "09442F1E-F647-55AB-AA1E-CDA5478F7D84",
+    "ja" : "わたしには 手が ２つ ある",
+    "sourceID" : "b-body-1",
+    "tokens" : [
+      "I",
+      "have",
+      "two",
+      "hands"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "foot",
+      "cold"
+    ],
+    "en" : "My feet are cold",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "B6D82D30-D7D9-5A88-9210-17C183CFD71D",
+    "ja" : "わたしの 足が つめたい",
+    "sourceID" : "b-body-2",
+    "tokens" : [
+      "My",
+      "feet",
+      "are",
+      "cold"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eye"
+    ],
+    "en" : "These are my eyes",
+    "gradeBand" : 1,
+    "grammar" : "demonstratives",
+    "id" : "77EEB18E-B7EA-5418-849E-9082D0D6C353",
+    "ja" : "これらは わたしの 目です",
+    "sourceID" : "b-body-3",
+    "tokens" : [
+      "These",
+      "are",
+      "my",
+      "eyes"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "headache"
+    ],
+    "en" : "I have a headache",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "BE835F29-58A7-592B-9C1F-A6FAC323CD6A",
+    "ja" : "わたしは あたまが いたい",
+    "sourceID" : "b-body-4",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "headache"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ear",
+      "big"
+    ],
+    "en" : "My ears are big",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "A7F51383-A89C-5B12-AB75-8F91ABBCCF41",
+    "ja" : "わたしの 耳が 大きい",
+    "sourceID" : "b-body-5",
+    "tokens" : [
+      "My",
+      "ears",
+      "are",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "two",
+      "long",
+      "leg"
+    ],
+    "en" : "Sora has two long legs",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "78E41531-D8A3-547B-BF05-10FECE3F59FD",
+    "ja" : "そらは ながい 足が ２ほん ある",
+    "sourceID" : "b-body-6",
+    "tokens" : [
+      "Sora",
+      "has",
+      "two",
+      "long",
+      "legs"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mouth",
+      "small"
+    ],
+    "en" : "My mouth is small",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "E7A1660E-0E4C-5FAB-8166-EBC5ABA07AA6",
+    "ja" : "わたしの 口は 小さい",
+    "sourceID" : "b-body-7",
+    "tokens" : [
+      "My",
+      "mouth",
+      "is",
+      "small"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "two",
+      "blue",
+      "eye"
+    ],
+    "en" : "Mei has two blue eyes",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "B280F80C-E0E2-5968-91E2-C40F79A269FB",
+    "ja" : "めいは あおい 目が ２つ ある",
+    "sourceID" : "b-body-8",
+    "tokens" : [
+      "Mei",
+      "has",
+      "two",
+      "blue",
+      "eyes"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ten",
+      "finger"
+    ],
+    "en" : "I have ten fingers",
+    "gradeBand" : 3,
+    "grammar" : "plurals",
+    "id" : "FA4ED54A-4314-577E-8897-D692055A09AB",
+    "ja" : "わたしには ゆびが １０ほん ある",
+    "sourceID" : "b-body-9",
+    "tokens" : [
+      "I",
+      "have",
+      "ten",
+      "fingers"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "arm",
+      "strong"
+    ],
+    "en" : "His arms are strong",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "183A4824-9970-549A-B904-5AC0859DAB34",
+    "ja" : "かれの うでが つよい",
+    "sourceID" : "b-body-10",
+    "tokens" : [
+      "His",
+      "arms",
+      "are",
+      "strong"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "eat",
+      "now"
+    ],
+    "en" : "The cat is eating now",
+    "gradeBand" : 4,
+    "grammar" : "presentContinuous",
+    "id" : "115EFB04-B083-54BA-9BFD-97130ABA49EB",
+    "ja" : "ねこが 今 たべている",
+    "sourceID" : "b-now-1",
+    "tokens" : [
+      "The",
+      "cat",
+      "is",
+      "eating",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat",
+      "lunch"
+    ],
+    "en" : "I am eating lunch",
+    "gradeBand" : 3,
+    "grammar" : "presentContinuous",
+    "id" : "4B4C2791-3D7A-594A-B4EC-215E55E190F6",
+    "ja" : "わたしは 昼ごはんを たべている",
+    "sourceID" : "b-now-2",
+    "tokens" : [
+      "I",
+      "am",
+      "eating",
+      "lunch"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "fly",
+      "now"
+    ],
+    "en" : "Birds are flying now",
+    "gradeBand" : 3,
+    "grammar" : "presentContinuous",
+    "id" : "D077AD5B-DDF5-55A9-BE28-75D22558171A",
+    "ja" : "鳥が 今 とんでいる",
+    "sourceID" : "b-now-3",
+    "tokens" : [
+      "Birds",
+      "are",
+      "flying",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "run",
+      "fast"
+    ],
+    "en" : "Sora is running fast",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "464F7B23-1F55-5844-870C-B9BDEE4C3710",
+    "ja" : "そらが はやく はしっている",
+    "sourceID" : "b-now-4",
+    "tokens" : [
+      "Sora",
+      "is",
+      "running",
+      "fast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "read",
+      "now"
+    ],
+    "en" : "Mei is reading now",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "90DA3126-F132-5436-9D7E-FC4BB4A8C2D3",
+    "ja" : "めいが 今 よんでいる",
+    "sourceID" : "b-now-5",
+    "tokens" : [
+      "Mei",
+      "is",
+      "reading",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "barking",
+      "now"
+    ],
+    "en" : "The dog is barking now",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "5F48443D-2C5B-5F68-96BE-6B7684A60DD7",
+    "ja" : "犬が 今 ほえている",
+    "sourceID" : "b-now-6",
+    "tokens" : [
+      "The",
+      "dog",
+      "is",
+      "barking",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "jump"
+    ],
+    "en" : "The rabbit is jumping",
+    "gradeBand" : 3,
+    "grammar" : "presentContinuous",
+    "id" : "259E013F-17EC-5AB0-9064-A3249F40B220",
+    "ja" : "うさぎが とんでいる",
+    "sourceID" : "b-now-7",
+    "tokens" : [
+      "The",
+      "rabbit",
+      "is",
+      "jumping"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "turtle",
+      "walk",
+      "slowly"
+    ],
+    "en" : "The turtle is walking slowly",
+    "gradeBand" : 3,
+    "grammar" : "presentContinuous",
+    "id" : "9D43F19B-078D-5107-967B-BC5FBE948872",
+    "ja" : "かめが ゆっくり あるいている",
+    "sourceID" : "b-now-8",
+    "tokens" : [
+      "The",
+      "turtle",
+      "is",
+      "walking",
+      "slowly"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fox",
+      "run",
+      "now"
+    ],
+    "en" : "The fox is running now",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "CA862498-BC72-56F4-8959-92124B3C038C",
+    "ja" : "きつねが 今 はしっている",
+    "sourceID" : "b-now-9",
+    "tokens" : [
+      "The",
+      "fox",
+      "is",
+      "running",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "study",
+      "english",
+      "now"
+    ],
+    "en" : "We are studying English now",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "8225D9CB-DF1C-58F9-9603-CCC210F66B95",
+    "ja" : "わたしたちは 今 えいごを べんきょうしている",
+    "sourceID" : "b-now-10",
+    "tokens" : [
+      "We",
+      "are",
+      "studying",
+      "English",
+      "now"
+    ]
   }
 ]
