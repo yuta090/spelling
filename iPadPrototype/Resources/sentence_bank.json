@@ -917,7 +917,7 @@
     "gradeBand" : 5,
     "grammar" : "presentSimple",
     "id" : "AA8B1235-13F5-574D-AFE8-99BDAD522EA3",
-    "ja" : "こんにちは わたしの おともだち",
+    "ja" : "こんにちは、 ともだち",
     "sourceID" : "a-greeting-4",
     "tokens" : [
       "Hello",
@@ -1025,7 +1025,7 @@
     "gradeBand" : 2,
     "grammar" : "presentSimple",
     "id" : "C5A5B11D-0A2F-5A6F-AE69-E299F1C153EB",
-    "ja" : "あなたは とても うれしそう",
+    "ja" : "とても うれしそうだね",
     "sourceID" : "a-feeling-5",
     "tokens" : [
       "You",
@@ -1208,7 +1208,7 @@
     "gradeBand" : 2,
     "grammar" : "beVerb",
     "id" : "500AD88D-6946-52C8-AB0C-2360A0D445F6",
-    "ja" : "もちろんです じゅんびできたよ",
+    "ja" : "もちろん、 じゅんびできたよ",
     "sourceID" : "a-reply-5",
     "tokens" : [
       "Sure",
@@ -1351,7 +1351,7 @@
     "gradeBand" : 1,
     "grammar" : "canModal",
     "id" : "14FA544A-F000-5AFC-9180-43984AB7ACBC",
-    "ja" : "わたしは あなたを たすけられる",
+    "ja" : "てつだえるよ",
     "sourceID" : "a-help-3",
     "tokens" : [
       "I",
@@ -1389,7 +1389,7 @@
     "gradeBand" : 1,
     "grammar" : "canModal",
     "id" : "AC9354D7-4EDE-5970-BF42-6CB1FF3BCC14",
-    "ja" : "メイは ソラを たすけられる",
+    "ja" : "メイは ソラを てつだえるよ",
     "sourceID" : "a-help-5",
     "tokens" : [
       "Mei",
@@ -1446,7 +1446,7 @@
     "gradeBand" : 1,
     "grammar" : "presentSimple",
     "id" : "C5BB7259-94C3-5320-8874-8945E24B3CEF",
-    "ja" : "さようなら わたしの おともだち",
+    "ja" : "さようなら、 ともだち",
     "sourceID" : "a-greeting-13",
     "tokens" : [
       "Goodbye",
@@ -1577,7 +1577,7 @@
     "gradeBand" : 5,
     "grammar" : "presentSimple",
     "id" : "A2398177-6373-5C18-9988-67328CEA1EE3",
-    "ja" : "こんにちは わたしの たいせつな おともだち",
+    "ja" : "こんにちは、 だいじな ともだち",
     "sourceID" : "a-greeting-20",
     "tokens" : [
       "Hello",
@@ -1608,14 +1608,14 @@
       "dog",
       "cold"
     ],
-    "en" : "A dog is cold",
+    "en" : "The dog is cold",
     "gradeBand" : 2,
     "grammar" : "beVerb",
-    "id" : "9DCCBFAB-D684-5C84-A2E5-06EF0E347638",
+    "id" : "29F738A1-8888-5D8B-ACF2-EB8226895037",
     "ja" : "いぬは さむがっている",
     "sourceID" : "a-feeling-12",
     "tokens" : [
-      "A",
+      "The",
       "dog",
       "is",
       "cold"
@@ -1946,7 +1946,7 @@
     "gradeBand" : 3,
     "grammar" : "presentSimple",
     "id" : "0071D670-90CE-50A7-9AF9-6BFEBD4AEF26",
-    "ja" : "あなたは あおい とりが すき",
+    "ja" : "あおい とりが すきなんだね",
     "sourceID" : "a-likewant-20",
     "tokens" : [
       "You",
@@ -1963,7 +1963,7 @@
     "gradeBand" : 1,
     "grammar" : "presentSimple",
     "id" : "93442F2C-867A-5C93-BDB4-A4A6F48DE35E",
-    "ja" : "はい おねがいします、 わたしの おともだち",
+    "ja" : "はい、 おねがいします",
     "sourceID" : "a-reply-11",
     "tokens" : [
       "Yes",
@@ -1998,7 +1998,7 @@
     "gradeBand" : 1,
     "grammar" : "presentSimple",
     "id" : "3D0F9AC1-541E-5F9D-BCDA-05C8744299CC",
-    "ja" : "わたしも そう おもいます",
+    "ja" : "わたしも そう おもう",
     "sourceID" : "a-reply-13",
     "tokens" : [
       "I",
@@ -2015,7 +2015,7 @@
     "gradeBand" : 1,
     "grammar" : "presentSimple",
     "id" : "DDF347D9-E8A5-5851-A14B-1A7ABEE2BC67",
-    "ja" : "わたしもだよ、 おともだち",
+    "ja" : "わたしもだよ",
     "sourceID" : "a-reply-14",
     "tokens" : [
       "Me",
@@ -2052,7 +2052,7 @@
     "gradeBand" : 1,
     "grammar" : "presentSimple",
     "id" : "CB49EADC-E333-5A67-AF42-5E8260EC2FD1",
-    "ja" : "はい どうぞ、 おともだち",
+    "ja" : "はい、 どうぞ",
     "sourceID" : "a-reply-16",
     "tokens" : [
       "Here",
@@ -2087,7 +2087,7 @@
     "gradeBand" : 2,
     "grammar" : "beVerb",
     "id" : "E8B0ED83-64E6-5859-92C1-F07BE6698035",
-    "ja" : "わたしは それで いいよ",
+    "ja" : "それで いいよ",
     "sourceID" : "a-reply-18",
     "tokens" : [
       "That",
@@ -2106,7 +2106,7 @@
     "gradeBand" : 1,
     "grammar" : "presentSimple",
     "id" : "95FC36B4-A0BF-57C5-96C5-680DC4CB3D27",
-    "ja" : "もちろん、 おともだち",
+    "ja" : "もちろん",
     "sourceID" : "a-reply-19",
     "tokens" : [
       "Of",
@@ -2159,7 +2159,7 @@
     "gradeBand" : 4,
     "grammar" : "presentSimple",
     "id" : "ACDCDC2B-5AF9-5AC6-A6CA-45193FDD1333",
-    "ja" : "すみません、 おともだち",
+    "ja" : "すみません",
     "sourceID" : "a-thanks-12",
     "tokens" : [
       "Excuse",
@@ -2177,7 +2177,7 @@
     "gradeBand" : 2,
     "grammar" : "beVerb",
     "id" : "A67C5BBC-E4E0-5F04-815C-473633DD23FF",
-    "ja" : "もう だいじょうぶです",
+    "ja" : "もう だいじょうぶ",
     "sourceID" : "a-thanks-13",
     "tokens" : [
       "It",
@@ -2225,20 +2225,18 @@
   },
   {
     "contentLemmas" : [
-      "sorry",
-      "now"
+      "sorry"
     ],
-    "en" : "I am sorry now",
+    "en" : "I am sorry",
     "gradeBand" : 2,
     "grammar" : "beVerb",
-    "id" : "843D28D5-1161-509A-BF35-9ECBF3F72B47",
-    "ja" : "いま ごめんね",
+    "id" : "B04AC90E-15BC-503D-AAF0-09A71D85137C",
+    "ja" : "ごめんなさい",
     "sourceID" : "a-thanks-16",
     "tokens" : [
       "I",
       "am",
-      "sorry",
-      "now"
+      "sorry"
     ]
   },
   {
@@ -2280,19 +2278,19 @@
   {
     "contentLemmas" : [
       "thank",
-      "good",
+      "little",
       "bird"
     ],
-    "en" : "Thank you good bird",
+    "en" : "Thank you little bird",
     "gradeBand" : 3,
     "grammar" : "presentSimple",
-    "id" : "7ABDC041-7131-58A1-A71F-0A30FE893C25",
-    "ja" : "ありがとう、 いい ことりさん",
+    "id" : "8F237620-971A-5E7D-8E2F-0D39D7E53664",
+    "ja" : "ありがとう、 ことりさん",
     "sourceID" : "a-thanks-19",
     "tokens" : [
       "Thank",
       "you",
-      "good",
+      "little",
       "bird"
     ]
   },
@@ -2340,7 +2338,7 @@
     "gradeBand" : 1,
     "grammar" : "canModal",
     "id" : "17D97A63-55F0-5188-9F01-6CC418417A1E",
-    "ja" : "たすけて くれますか",
+    "ja" : "てつだって くれる？",
     "sourceID" : "a-help-12",
     "tokens" : [
       "Can",
@@ -2377,7 +2375,7 @@
     "gradeBand" : 4,
     "grammar" : "canModal",
     "id" : "58C372A6-5087-5017-8D66-D01790D37CE4",
-    "ja" : "わたしは おかあさんを たすけられる",
+    "ja" : "おかあさんを てつだえるよ",
     "sourceID" : "a-help-14",
     "tokens" : [
       "I",
@@ -2395,7 +2393,7 @@
     "gradeBand" : 4,
     "grammar" : "canModal",
     "id" : "0DB53CD8-6A74-58D4-8A3D-4264BFFC9515",
-    "ja" : "わたしたちは おとうさんを たすけられる",
+    "ja" : "おとうさんを てつだえるよ",
     "sourceID" : "a-help-15",
     "tokens" : [
       "We",
@@ -2431,7 +2429,7 @@
     "gradeBand" : 1,
     "grammar" : "canModal",
     "id" : "2C635161-4B65-552C-9069-D8200600E768",
-    "ja" : "わたしたちは あなたを たすけられる",
+    "ja" : "てつだえるよ",
     "sourceID" : "a-help-17",
     "tokens" : [
       "We",
@@ -2448,7 +2446,7 @@
     "gradeBand" : 1,
     "grammar" : "canModal",
     "id" : "49737FE3-A24C-560D-AD0A-D5DBBFFDBB05",
-    "ja" : "あなたは わたしたちを たすけられる",
+    "ja" : "きみも てつだえるよ",
     "sourceID" : "a-help-18",
     "tokens" : [
       "You",
@@ -2478,19 +2476,17 @@
   {
     "contentLemmas" : [
       "help",
-      "good",
       "friend"
     ],
-    "en" : "Help your good friend",
+    "en" : "Help your friend",
     "gradeBand" : 1,
     "grammar" : "imperative",
-    "id" : "12C71B87-AB87-5907-86E7-4E730DF936B4",
-    "ja" : "なかよしの おともだちを たすけて",
+    "id" : "935B3DF8-2CBC-5A7E-8C95-222BC856363C",
+    "ja" : "ともだちを たすけて",
     "sourceID" : "a-help-20",
     "tokens" : [
       "Help",
       "your",
-      "good",
       "friend"
     ]
   },
@@ -2539,7 +2535,7 @@
     "gradeBand" : 2,
     "grammar" : "presentSimple",
     "id" : "8D56F297-9008-5B97-98C9-39F09F37B844",
-    "ja" : "いっしょに あるこう、そら",
+    "ja" : "ソラ、 いっしょに あるこう",
     "sourceID" : "b-invite-3",
     "tokens" : [
       "Let's",
@@ -2594,7 +2590,7 @@
     "gradeBand" : 2,
     "grammar" : "yesNoQuestion",
     "id" : "D639C325-B2B3-5C9A-9B5D-9548FB94535C",
-    "ja" : "きょう こられる、めい？",
+    "ja" : "メイ、 きょう こられる？",
     "sourceID" : "b-invite-6",
     "tokens" : [
       "Can",
@@ -2707,7 +2703,7 @@
     "gradeBand" : 2,
     "grammar" : "yesNoQuestion",
     "id" : "19FC3D1A-1D16-5955-8F62-D49C0866F923",
-    "ja" : "ねむい、そら？",
+    "ja" : "ソラ、 ねむい？",
     "sourceID" : "b-ask-2",
     "tokens" : [
       "Are",
@@ -2798,7 +2794,7 @@
     "gradeBand" : 3,
     "grammar" : "yesNoQuestion",
     "id" : "ECB0CE6B-9BEB-5665-86AE-CBCB0244B87D",
-    "ja" : "きつねは たかく とべる？",
+    "ja" : "きつねは たかく ジャンプできる？",
     "sourceID" : "b-ask-7",
     "tokens" : [
       "Can",
@@ -2818,7 +2814,7 @@
     "gradeBand" : 2,
     "grammar" : "yesNoQuestion",
     "id" : "F6F4007C-FB6E-5C2C-806D-0A4BA438ADA7",
-    "ja" : "きょう めいは 学校に いる？",
+    "ja" : "きょう メイは 学校に いる？",
     "sourceID" : "b-ask-8",
     "tokens" : [
       "Is",
@@ -2837,7 +2833,7 @@
     "gradeBand" : 1,
     "grammar" : "yesNoQuestion",
     "id" : "7F8C50DF-EC72-5136-9C41-84F498F702AA",
-    "ja" : "わたしたちは きょう おそい？",
+    "ja" : "きょう わたしたち おくれてる？",
     "sourceID" : "b-ask-9",
     "tokens" : [
       "Are",
@@ -3262,7 +3258,7 @@
     "gradeBand" : 2,
     "grammar" : "beVerb",
     "id" : "B6D82D30-D7D9-5A88-9210-17C183CFD71D",
-    "ja" : "わたしの 足が つめたい",
+    "ja" : "足が つめたい",
     "sourceID" : "b-body-2",
     "tokens" : [
       "My",
@@ -3279,7 +3275,7 @@
     "gradeBand" : 1,
     "grammar" : "demonstratives",
     "id" : "77EEB18E-B7EA-5418-849E-9082D0D6C353",
-    "ja" : "これらは わたしの 目です",
+    "ja" : "これが わたしの 目だよ",
     "sourceID" : "b-body-3",
     "tokens" : [
       "These",
@@ -3314,7 +3310,7 @@
     "gradeBand" : 4,
     "grammar" : "beVerb",
     "id" : "A7F51383-A89C-5B12-AB75-8F91ABBCCF41",
-    "ja" : "わたしの 耳が 大きい",
+    "ja" : "わたしは 耳が 大きい",
     "sourceID" : "b-body-5",
     "tokens" : [
       "My",
@@ -3326,20 +3322,18 @@
   {
     "contentLemmas" : [
       "sora",
-      "two",
       "long",
       "leg"
     ],
-    "en" : "Sora has two long legs",
+    "en" : "Sora has long legs",
     "gradeBand" : 3,
     "grammar" : "presentSimple",
-    "id" : "78E41531-D8A3-547B-BF05-10FECE3F59FD",
-    "ja" : "そらは ながい 足が ２ほん ある",
+    "id" : "106CAE38-A696-5C96-85CF-B70FDC1085AC",
+    "ja" : "ソラは 足が ながい",
     "sourceID" : "b-body-6",
     "tokens" : [
       "Sora",
       "has",
-      "two",
       "long",
       "legs"
     ]
@@ -3353,7 +3347,7 @@
     "gradeBand" : 3,
     "grammar" : "beVerb",
     "id" : "E7A1660E-0E4C-5FAB-8166-EBC5ABA07AA6",
-    "ja" : "わたしの 口は 小さい",
+    "ja" : "わたしは 口が 小さい",
     "sourceID" : "b-body-7",
     "tokens" : [
       "My",
@@ -3365,20 +3359,18 @@
   {
     "contentLemmas" : [
       "mei",
-      "two",
       "blue",
       "eye"
     ],
-    "en" : "Mei has two blue eyes",
+    "en" : "Mei has blue eyes",
     "gradeBand" : 2,
     "grammar" : "presentSimple",
-    "id" : "B280F80C-E0E2-5968-91E2-C40F79A269FB",
-    "ja" : "めいは あおい 目が ２つ ある",
+    "id" : "DF60074C-43B8-5677-BC7E-C7E06A0BD250",
+    "ja" : "メイは 目が あおい",
     "sourceID" : "b-body-8",
     "tokens" : [
       "Mei",
       "has",
-      "two",
       "blue",
       "eyes"
     ]
@@ -3410,7 +3402,7 @@
     "gradeBand" : 2,
     "grammar" : "beVerb",
     "id" : "183A4824-9970-549A-B904-5AC0859DAB34",
-    "ja" : "かれの うでが つよい",
+    "ja" : "かれは うでが つよい",
     "sourceID" : "b-body-10",
     "tokens" : [
       "His",
@@ -3486,7 +3478,7 @@
     "gradeBand" : 2,
     "grammar" : "presentContinuous",
     "id" : "464F7B23-1F55-5844-870C-B9BDEE4C3710",
-    "ja" : "そらが はやく はしっている",
+    "ja" : "ソラが はやく はしっている",
     "sourceID" : "b-now-4",
     "tokens" : [
       "Sora",
@@ -3505,7 +3497,7 @@
     "gradeBand" : 2,
     "grammar" : "presentContinuous",
     "id" : "90DA3126-F132-5436-9D7E-FC4BB4A8C2D3",
-    "ja" : "めいが 今 よんでいる",
+    "ja" : "メイが 今 よんでいる",
     "sourceID" : "b-now-5",
     "tokens" : [
       "Mei",
