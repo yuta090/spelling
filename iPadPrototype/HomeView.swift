@@ -240,7 +240,8 @@ struct HomeView: View {
             }
             .fullScreenCover(isPresented: $showingPuzzle) {
                 // 子の学年＋親トグルでプールを絞ってから出題（やさしい文だけ／ユーモアON-OFF）。
-                PuzzleSessionView(policy: model.contentPolicy)
+                // maxKanjiGrade は解説の漢字ふりがな出し分けに使う（例文和訳と同じ基準）。
+                PuzzleSessionView(policy: model.contentPolicy, maxKanjiGrade: model.childMaxKanjiGrade)
             }
             .sheet(isPresented: $showingPracticeRetryPicker) {
                 PracticeRetryPickerSheet(

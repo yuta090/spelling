@@ -69,6 +69,8 @@ struct PuzzleSessionView: View {
     private let words: [String]
     private let entries: [ConfusableEntry]
     private let length: Int
+    /// 解説などの和文で「漢字のまま＋ふりがな／かな化」を子の学年で出し分けるための上限（0…6）。
+    private let maxKanjiGrade: Int
 
     /// 音を出すか（冒頭ゲートで決める）。nil = 未選択。
     @State private var soundOn: Bool?
@@ -84,6 +86,7 @@ struct PuzzleSessionView: View {
          words: [String] = PuzzleContent.words(),
          entries: [ConfusableEntry] = ConfusablesBundle.entries,
          length: Int = 12,
+         maxKanjiGrade: Int = 0,
          seed: UInt64? = nil) {
         self.orderingSentences = orderingSentences
         self.sentences = sentences
@@ -91,13 +94,14 @@ struct PuzzleSessionView: View {
         self.words = words
         self.entries = entries
         self.length = length
+        self.maxKanjiGrade = maxKanjiGrade
         _sessionSeed = State(initialValue: seed ?? UInt64.random(in: .min ... .max))
     }
 
     /// 学年制約（`ContentPolicy`）で**文バンクを先に絞ってから**セッションを作る。
     /// 文ベースの3形式（ぶんづくり/あなうめ/きいてあなうめ）に効かせる。
     /// 単語リスニング(`words`)は語単位（confusables 由来）なので文の制約は掛けない。
-    init(policy: ContentPolicy, length: Int = 12, seed: UInt64? = nil) {
+    init(policy: ContentPolicy, maxKanjiGrade: Int = 0, length: Int = 12, seed: UInt64? = nil) {
         // プールは生成文（登録語そのものではない）なので tier 例外・i+1 既知語は使わない。
         let bank = ContentPolicy.admissiblePool(SentenceBankBundle.items, policy: policy, knownLemmas: [])
         self.init(
@@ -106,6 +110,7 @@ struct PuzzleSessionView: View {
             listeningSentences: PuzzleContent.listeningSentences(bank: bank),
             words: PuzzleContent.words(),
             length: length,
+            maxKanjiGrade: maxKanjiGrade,
             seed: seed
         )
     }
@@ -179,6 +184,7 @@ struct PuzzleSessionView: View {
                         entries: entries,
                         soundOn: soundOn ?? false,
                         stepNumber: stepIndex,
+                        maxKanjiGrade: maxKanjiGrade,
                         speech: speech,
                         onAdvance: advance
                     )
@@ -282,6 +288,7 @@ private struct PuzzleStepView: View {
     let entries: [ConfusableEntry]
     let soundOn: Bool
     let stepNumber: Int
+    let maxKanjiGrade: Int   // 解説の漢字を子の学年で「漢字＋ふりがな／かな化」出し分け
     @ObservedObject var speech: SpeechPlayer
     let onAdvance: () -> Void
 
@@ -532,16 +539,20 @@ private struct PuzzleStepView: View {
     }
 
     /// 「なぜ？」のミニ解説カード（不正解時）。やさしいトーン・ことばパズルの見た目言語で。
+    /// 解説は漢字を含むため、子の学年に合わせて「漢字＋ふりがな／かな化」して読めるようにする
+    /// （例文和訳と同じ `FuriganaText` を再利用）。
     private func grammarHintBlock(_ hint: (title: String, detail: String)) -> some View {
         VStack(spacing: 4) {
-            Text("なぜ？　\(hint.title)")
-                .font(.system(size: 14, weight: .heavy, design: .rounded))
-                .foregroundStyle(PuzzleTheme.accent)
-            Text(hint.detail)
-                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .foregroundStyle(PuzzleTheme.ink.opacity(0.8))
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+            FuriganaText(
+                segments: JapaneseReading.rubySegments("なぜ？　\(hint.title)", maxGrade: maxKanjiGrade),
+                baseSize: 14, baseWeight: .heavy, design: .rounded,
+                color: PuzzleTheme.accent
+            )
+            FuriganaText(
+                segments: JapaneseReading.rubySegments(hint.detail, maxGrade: maxKanjiGrade),
+                baseSize: 14, baseWeight: .semibold, design: .rounded,
+                color: PuzzleTheme.ink.opacity(0.8)
+            )
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 14).padding(.vertical, 10)
