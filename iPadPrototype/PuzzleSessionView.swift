@@ -167,17 +167,27 @@ struct PuzzleSessionView: View {
         let format = schedule[stepIndex]
         return VStack(spacing: 16) {
             progressBar
-            PuzzleStepView(
-                format: format,
-                sentence: sentenceSample(for: format),
-                word: currentWord(for: format),
-                entries: entries,
-                soundOn: soundOn ?? false,
-                stepNumber: stepIndex,
-                speech: speech,
-                onAdvance: advance
-            )
-            .id(stepIndex)   // ステップごとに状態をリセット
+            // 端末の高さが足りないと VStack が縦に潰れ、キャスト画像と文が重なってしまう
+            // （収まらないと SwiftUI は子を重ねてオーバーフローさせるため）。
+            // スクロール可能にして重なりを防ぎつつ、収まる高さのときは minHeight で従来の配置を保つ。
+            GeometryReader { geo in
+                ScrollView(showsIndicators: false) {
+                    PuzzleStepView(
+                        format: format,
+                        sentence: sentenceSample(for: format),
+                        word: currentWord(for: format),
+                        entries: entries,
+                        soundOn: soundOn ?? false,
+                        stepNumber: stepIndex,
+                        speech: speech,
+                        onAdvance: advance
+                    )
+                    .frame(minHeight: geo.size.height)
+                }
+                // ScrollView ごと作り直す＝ステップ移動時にスクロール位置を先頭へ戻し、
+                // PuzzleStepView の状態（選択・回答済み）もリセットする。
+                .id(stepIndex)
+            }
         }
     }
 
