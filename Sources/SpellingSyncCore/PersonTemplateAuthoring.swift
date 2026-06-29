@@ -13,6 +13,7 @@ public struct AuthoredTemplate: Equatable, Codable, Sendable {
     public var id: String
     public var category: SentenceCategory
     public var grammar: GrammarPoint?      // 省略/null 可
+    public var genre: Genre?               // 省略/null 可（既定＝useful 相当）。humor トグルの素
     public var gradeBand: Int
     public var contentLemmas: [String]     // 名前は入れない
     public var slots: [AuthoredSlot]
@@ -22,9 +23,10 @@ public struct AuthoredTemplate: Equatable, Codable, Sendable {
     public var fallbackJa: String          // "かのじょは りんごが すき"
 
     public init(id: String, category: SentenceCategory, grammar: GrammarPoint? = nil,
+                genre: Genre? = nil,
                 gradeBand: Int, contentLemmas: [String] = [], slots: [AuthoredSlot],
                 en: [String], ja: String, fallbackEn: [String], fallbackJa: String) {
-        self.id = id; self.category = category; self.grammar = grammar
+        self.id = id; self.category = category; self.grammar = grammar; self.genre = genre
         self.gradeBand = gradeBand; self.contentLemmas = contentLemmas; self.slots = slots
         self.en = en; self.ja = ja; self.fallbackEn = fallbackEn; self.fallbackJa = fallbackJa
     }
@@ -102,13 +104,15 @@ public enum PersonTemplateAuthoring {
             tokens: a.fallbackEn,
             gradeBand: a.gradeBand,
             contentLemmas: a.contentLemmas,
-            grammar: a.grammar
+            grammar: a.grammar,
+            genre: a.genre
         )
 
         return PersonSentenceTemplate(
             id: a.id, category: a.category, fallback: fallback,
             enTokens: enTokens, jaParts: jaParts, slots: slots,
-            gradeBand: a.gradeBand, contentLemmas: a.contentLemmas, grammar: a.grammar
+            gradeBand: a.gradeBand, contentLemmas: a.contentLemmas, grammar: a.grammar,
+            genre: a.genre
         )
     }
 

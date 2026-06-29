@@ -45,6 +45,55 @@ final class PersonTemplateAuthoringTests: XCTestCase {
         XCTAssertEqual(item.contentLemmas, ["like","apple"])  // 名前は語彙に入らない
     }
 
+    // MARK: genre 配線（humor トグルの素）
+
+    // genre 省略時は nil（既定＝useful 相当）。テンプレ・fallback・解決後すべて nil。
+    func testGenreDefaultsNilWhenOmitted() throws {
+        let json = """
+        [{
+          "id": "friend-likes-apples",
+          "category": "daily",
+          "grammar": "presentSimple",
+          "gradeBand": 1,
+          "contentLemmas": ["like","apple"],
+          "slots": [{"key":"f","role":"friend","gender":"girl"}],
+          "en": ["{f:name}","likes","apples"],
+          "ja": "{f}は りんごが すき",
+          "fallbackEn": ["She","likes","apples"],
+          "fallbackJa": "かのじょは りんごが すき"
+        }]
+        """.data(using: .utf8)!
+        let t = try PersonTemplateAuthoring.load(jsonArray: json)[0]
+        XCTAssertNil(t.genre)
+        XCTAssertNil(t.fallback.genre)
+        let item = SentencePersonalizer.resolve(t, cast: Cast(people: [girl(2, "ゆき", "Yuki")]), seed: 1)
+        XCTAssertNil(item.genre)
+    }
+
+    // genre:"humor" は authoring→テンプレ→fallback→解決後 SentenceItem まで通る。
+    func testGenreHumorFlowsThroughResolve() throws {
+        let json = """
+        [{
+          "id": "friend-likes-apples-humor",
+          "category": "daily",
+          "grammar": "presentSimple",
+          "genre": "humor",
+          "gradeBand": 1,
+          "contentLemmas": ["like","apple"],
+          "slots": [{"key":"f","role":"friend","gender":"girl"}],
+          "en": ["{f:name}","likes","apples"],
+          "ja": "{f}は りんごが すき",
+          "fallbackEn": ["She","likes","apples"],
+          "fallbackJa": "かのじょは りんごが すき"
+        }]
+        """.data(using: .utf8)!
+        let t = try PersonTemplateAuthoring.load(jsonArray: json)[0]
+        XCTAssertEqual(t.genre, .humor)
+        XCTAssertEqual(t.fallback.genre, .humor)   // Cast未登録で fallback が出ても humor のまま
+        let item = SentencePersonalizer.resolve(t, cast: Cast(people: [girl(2, "ゆき", "Yuki")]), seed: 1)
+        XCTAssertEqual(item.genre, .humor)         // 名前差し込み後も humor を維持
+    }
+
     func testVocativeSuffixAndChildResolve() throws {
         let json = """
         [{

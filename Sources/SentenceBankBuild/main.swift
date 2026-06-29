@@ -98,6 +98,7 @@ func runSQLite(_ db: String, _ query: String) -> [String] {
 struct PersonTemplateRow: Decodable {
     var id: String?
     var grammar: String?
+    var genre: String?
     var gradeBand: Int?
     var fallbackEn: [String]?
     var fallbackJa: String?
@@ -129,6 +130,14 @@ for row in rows {
     if let b = row.gradeBand, !(1...5).contains(b) {
         fail("gradeBand は 1...5 で指定してください（row \(rowID) の \(b)）")
     }
+    // ジャンルタグも typo を黙って無効化しない（nil=未指定/useful と打ち間違いを区別する）。
+    var genre: Genre?
+    if let g = row.genre {
+        guard let parsed = Genre(rawValue: g) else {
+            fail("未知の genre タグ: \"\(g)\"（row \(rowID)）。useful/humor/story のいずれかを指定してください")
+        }
+        genre = parsed
+    }
     // 安定 sourceID＝authoring の id を再利用（無ければ英文から決定論で付与）。
     // 英文を直して表層 id(UUIDv5) が変わっても履歴の鍵を保つ。
     let sourceID = ContentSourceID.derive(authoringID: row.id, en: en)
@@ -138,7 +147,8 @@ for row in rows {
         grammar: grammar,
         declaredBand: row.gradeBand,
         source: "curated",
-        sourceID: sourceID
+        sourceID: sourceID,
+        genre: genre
     ))
 }
 guard !candidates.isEmpty else { fail("curated 候補が0件（fallbackEn/Ja を確認）") }
@@ -186,6 +196,16 @@ for it in result.accepted { dist[it.gradeBand, default: 0] += 1 }
 if !dist.isEmpty {
     let s = dist.sorted { $0.key < $1.key }.map { "band\($0.key):\($0.value)" }.joined(separator: " ")
     print("採用の学年分布: \(s)")
+}
+
+// ジャンル分布（humor は全体10%目安・プール限定）。nil は useful 相当。
+let total = result.accepted.count
+let humor = result.accepted.filter { $0.genre == .humor }.count
+let story = result.accepted.filter { $0.genre == .story }.count
+if total > 0 {
+    let pct = Double(humor) / Double(total) * 100
+    print(String(format: "ジャンル: useful/未指定:%d  humor:%d(%.1f%%)  story:%d",
+                 total - humor - story, humor, pct, story))
 }
 
 if !result.rejected.isEmpty {

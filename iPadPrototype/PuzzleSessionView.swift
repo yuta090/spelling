@@ -526,10 +526,18 @@ private struct PuzzleStepView: View {
     // MARK: 共通 プロンプト/アクション/フィードバック
 
     private var promptJa: some View {
-        Text(sentence?.item.ja ?? "")
-            .font(.system(size: 24, weight: .bold, design: .rounded))
-            .foregroundStyle(PuzzleTheme.ink)
-            .multilineTextAlignment(.center)
+        VStack(spacing: 6) {
+            // ユーモア文は「わざと変」と分かる目印を出す（spec §5）。文字で説明せずアイコンのみ。
+            if sentence?.item.genre == .humor {
+                Text("😄")
+                    .font(.system(size: 30))
+                    .accessibilityLabel("おもしろもんだい")
+            }
+            Text(sentence?.item.ja ?? "")
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundStyle(PuzzleTheme.ink)
+                .multilineTextAlignment(.center)
+        }
     }
 
     @ViewBuilder private var actions: some View {
