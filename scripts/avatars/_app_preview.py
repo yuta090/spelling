@@ -119,7 +119,7 @@ def main():
     # (1) 着せ替え例: 女/男 それぞれフル装備
     examples = [
         ("base_female", "hair_twin_tails", "女の子 / ツインテール + パーカー"),
-        ("base_male", "hair_m_twoblock_black", "男の子 / ツーブロック + パーカー"),
+        ("base_male", "hair_m_comma_black", "男の子 / コンマヘア + パーカー"),
     ]
     cards = []
     for base, hair, label in examples:
