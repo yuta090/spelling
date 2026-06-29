@@ -189,6 +189,42 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(lastPerfectBonusDay, key: lastPerfectBonusDayKey) }
     }
 
+    /// ことばパズルを最後に「完了」した日（無料プランの1日2回ゲートの日替わり判定に使う）。
+    @Published var puzzleLastPlayedDay: Date? {
+        didSet { persistenceStore.save(puzzleLastPlayedDay, key: puzzleLastPlayedDayKey) }
+    }
+    /// その日にことばパズルを完了した回数。日付が変わると `DailyPlayLimiter` が 0 扱いにする。
+    @Published var puzzlePlaysToday: Int {
+        didSet { persistenceStore.save(puzzlePlaysToday, key: puzzlePlaysTodayKey) }
+    }
+
+    /// 無料プランのことばパズル1日上限（完了＝1回）。プレミアム/デバッグ解放は別枠で無制限にする。
+    private let puzzleLimiter = DailyPlayLimiter(dailyLimit: 2)
+
+    /// 今日あと何回ことばパズルを遊べるか。プレミアム（フルアクセス）・デバッグ解放時は無制限。
+    var puzzlePlaysRemainingToday: Int {
+        if hasFullAccess { return Int.max }
+        #if DEBUG
+        if debugDisableDailyLimit { return Int.max }
+        #endif
+        return puzzleLimiter.remaining(lastPlayedDay: puzzleLastPlayedDay, storedCount: puzzlePlaysToday, today: Date())
+    }
+
+    /// ことばパズルを今すぐ始められるか（無料は1日2回まで）。
+    var canPlayPuzzleToday: Bool { puzzlePlaysRemainingToday > 0 }
+
+    /// ことばパズルを1回完了したときに呼ぶ（カウントを進めて永続化）。
+    /// プレミアム/デバッグ時も記録自体は行うが、残り回数判定では無制限なので影響しない。
+    func recordPuzzleCompletion() {
+        let result = puzzleLimiter.recordingCompletion(
+            lastPlayedDay: puzzleLastPlayedDay,
+            storedCount: puzzlePlaysToday,
+            today: Date()
+        )
+        puzzleLastPlayedDay = result.day
+        puzzlePlaysToday = result.count
+    }
+
     @Published var selectedCharacterID: String {
         didSet { saveSelectedCharacterID() }
     }
@@ -313,6 +349,8 @@ final class AppModel: ObservableObject {
     private let loginStreakKey = "spellingTrainer.loginStreak"
     private let lastLoginDayKey = "spellingTrainer.lastLoginDay"
     private let lastPerfectBonusDayKey = "spellingTrainer.lastPerfectBonusDay"
+    private let puzzleLastPlayedDayKey = "spellingTrainer.puzzleLastPlayedDay"
+    private let puzzlePlaysTodayKey = "spellingTrainer.puzzlePlaysToday"
     private let selectedCharacterIDKey = "spellingTrainer.selectedCharacterID"
     private let unlockedCharacterIDsKey = "spellingTrainer.unlockedCharacterIDs"
     private let selectedBackgroundIDKey = "spellingTrainer.selectedBackgroundID"
@@ -370,6 +408,8 @@ final class AppModel: ObservableObject {
         loginStreak = max(persistenceStore.load(Int.self, key: loginStreakKey) ?? 0, 0)
         lastLoginDay = persistenceStore.load(Date.self, key: lastLoginDayKey)
         lastPerfectBonusDay = persistenceStore.load(Date.self, key: lastPerfectBonusDayKey)
+        puzzleLastPlayedDay = persistenceStore.load(Date.self, key: puzzleLastPlayedDayKey)
+        puzzlePlaysToday = max(persistenceStore.load(Int.self, key: puzzlePlaysTodayKey) ?? 0, 0)
         let initialUnlockedCharacterIDs = (persistenceStore.load(Set<String>.self, key: unlockedCharacterIDsKey) ?? []).union(Self.defaultUnlockedCharacterIDs)
         unlockedCharacterIDs = initialUnlockedCharacterIDs
         homeReviewWordIDs = persistenceStore.load(Set<UUID>.self, key: homeReviewWordIDsKey) ?? []

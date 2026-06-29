@@ -71,6 +71,11 @@ struct PuzzleSessionView: View {
     private let length: Int
     /// 解説などの和文で「漢字のまま＋ふりがな／かな化」を子の学年で出し分けるための上限（0…6）。
     private let maxKanjiGrade: Int
+    /// この回に完了できる回数（無料は今日の残り回数を渡す。プレミアム/デバッグは実質無制限）。
+    /// これを超えたら「もういちど」を出さず「またあした」に切り替える。
+    private let playAllowance: Int
+    /// 1回完了するたびに呼ぶ（アプリ層で回数を記録・永続化する）。
+    private let onCompleted: () -> Void
 
     /// 音を出すか（冒頭ゲートで決める）。nil = 未選択。
     @State private var soundOn: Bool?
@@ -79,6 +84,8 @@ struct PuzzleSessionView: View {
     /// このセッションの並び・出題を決めるシード。毎回ちがう並びにするため起動時に乱数で決める
     /// （`seed` を明示注入すればテスト/プレビューで決定論にできる）。「もういちど」で振り直す。
     @State private var sessionSeed: UInt64
+    /// この提示中に完了した回数（「もういちど」も含めて数える＝1回の入室で許可数まで遊べる）。
+    @State private var completionsThisSitting = 0
 
     init(orderingSentences: [PuzzleSentenceSample] = PuzzleContent.orderingSentences(),
          sentences: [PuzzleSentenceSample] = PuzzleContent.sentences(),
@@ -87,6 +94,8 @@ struct PuzzleSessionView: View {
          entries: [ConfusableEntry] = ConfusablesBundle.entries,
          length: Int = 12,
          maxKanjiGrade: Int = 0,
+         playAllowance: Int = .max,
+         onCompleted: @escaping () -> Void = {},
          seed: UInt64? = nil) {
         self.orderingSentences = orderingSentences
         self.sentences = sentences
@@ -95,13 +104,16 @@ struct PuzzleSessionView: View {
         self.entries = entries
         self.length = length
         self.maxKanjiGrade = maxKanjiGrade
+        self.playAllowance = playAllowance
+        self.onCompleted = onCompleted
         _sessionSeed = State(initialValue: seed ?? UInt64.random(in: .min ... .max))
     }
 
     /// 学年制約（`ContentPolicy`）で**文バンクを先に絞ってから**セッションを作る。
     /// 文ベースの3形式（ぶんづくり/あなうめ/きいてあなうめ）に効かせる。
     /// 単語リスニング(`words`)は語単位（confusables 由来）なので文の制約は掛けない。
-    init(policy: ContentPolicy, maxKanjiGrade: Int = 0, length: Int = 12, seed: UInt64? = nil) {
+    init(policy: ContentPolicy, maxKanjiGrade: Int = 0, length: Int = 12,
+         playAllowance: Int = .max, onCompleted: @escaping () -> Void = {}, seed: UInt64? = nil) {
         // プールは生成文（登録語そのものではない）なので tier 例外・i+1 既知語は使わない。
         let bank = ContentPolicy.admissiblePool(SentenceBankBundle.items, policy: policy, knownLemmas: [])
         self.init(
@@ -111,6 +123,8 @@ struct PuzzleSessionView: View {
             words: PuzzleContent.words(),
             length: length,
             maxKanjiGrade: maxKanjiGrade,
+            playAllowance: playAllowance,
+            onCompleted: onCompleted,
             seed: seed
         )
     }
@@ -245,13 +259,20 @@ struct PuzzleSessionView: View {
     }
 
     private func advance() {
-        guard !schedule.isEmpty else { return }
+        // すでに完了済みなら何もしない＝最終ステップの二重発火で onCompleted が二重に走るのを防ぐ。
+        guard !schedule.isEmpty, !finished else { return }
         if stepIndex + 1 >= schedule.count {
             finished = true
+            // 1回完了＝回数を消費。アプリ層に記録させ、この回の消費数も数える。
+            completionsThisSitting += 1
+            onCompleted()
         } else {
             stepIndex += 1
         }
     }
+
+    /// まだ「もういちど」を許すか（無料は今日の残り回数まで。プレミアム/デバッグは実質無制限）。
+    private var canReplay: Bool { completionsThisSitting < playAllowance }
 
     private var completion: some View {
         VStack(spacing: 24) {
@@ -263,11 +284,21 @@ struct PuzzleSessionView: View {
                 .font(.system(size: 34, weight: .heavy, design: .rounded))
                 .foregroundStyle(PuzzleTheme.ink)
             VStack(spacing: 12) {
-                PuzzlePrimaryButton(title: "もういちど", tint: PuzzleTheme.accent) {
-                    // 新しいシードで並び・出題を振り直す。
-                    sessionSeed = UInt64.random(in: .min ... .max)
-                    stepIndex = 0
-                    finished = false
+                if canReplay {
+                    PuzzlePrimaryButton(title: "もういちど", tint: PuzzleTheme.accent) {
+                        // 新しいシードで並び・出題を振り直す。
+                        sessionSeed = UInt64.random(in: .min ... .max)
+                        stepIndex = 0
+                        finished = false
+                    }
+                } else {
+                    // 今日のぶんはおしまい。やさしく「またあした」と伝える（専門用語・課金訴求は出さない）。
+                    Text("きょうの ことばパズルは おしまい！\nまた あした あそぼう 🌟")
+                        .font(.system(size: 17, weight: .heavy, design: .rounded))
+                        .foregroundStyle(PuzzleTheme.ink.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.bottom, 2)
                 }
                 PuzzlePrimaryButton(title: "おわる", tint: PuzzleTheme.ink.opacity(0.7)) {
                     dismiss()
