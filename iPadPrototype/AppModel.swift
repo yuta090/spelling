@@ -266,6 +266,20 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(selectedGrade, key: selectedGradeKey) }
     }
 
+    /// 子に見せる和訳で許す「漢字配当学年」(0…6)。1学年前ルール（小1→0＝ひらがな）。
+    /// 学年未選択のときは安全側でひらがな（0）にする。例文・意味ヒントの漢字/かな出し分けに使う。
+    var childMaxKanjiGrade: Int {
+        guard let grade = GradeLevel(rawValue: selectedGrade) else { return 0 }
+        return KanjiLevelGate.maxGrade(forSchoolGrade: grade.schoolGrade)
+    }
+
+    /// 子の学年＋親トグルから決まる「出題プールの絞り込み制約」（Core・spec §10）。
+    /// ことばパズルのプール組み立て入口で適用する。学年未選択は入門(a)扱いで安全側。
+    var contentPolicy: ContentPolicy {
+        let tier = GradeLevel(rawValue: selectedGrade)?.tier.contentTier ?? .a
+        return ContentPolicy.standard(tier: tier, humorEnabled: settings.humorEnabled)
+    }
+
     /// 例文パーソナライズの登場人物（本人＋友達）。親が親ゲートの奥で登録。
     /// 未成年実名のため **v1 はローカル保存のみ**（Supabase 同期しない・解析に送らない）。
     /// 仕様: docs/personalized-sentences-spec-2026-06-28.md
@@ -867,7 +881,11 @@ final class AppModel: ObservableObject {
     func syncNow() async {
         guard let household = householdIDProvider() else { return }
         do { try await syncWords(householdID: household) }
-        catch { /* バックグラウンド同期: 失敗は次トリガで回収 */ }
+        catch {
+            // バックグラウンド同期: 失敗は次トリガで回収。運用テレメトリにだけ薄く残す
+            // （詳細メッセージや単語内容は送らない＝低カーディナリティのフラグのみ）。
+            TelemetryCoordinator.shared.record(.syncPushFailed, payload: ["op": .string("syncWords")])
+        }
     }
 
     /// デバウンス付きで同期を要求する（単語の編集直後などに呼ぶ）。
@@ -1442,6 +1460,15 @@ final class AppModel: ObservableObject {
         }
         spellingReviewStates = ReviewQueue.pruneMastered(spellingReviewStates, currentStep: spellingReviewStep)
         spellingReviewStep += 1
+
+        // 運用テレメトリ: 1セッション1件の要約（低カーディナリティのみ。
+        // 単語・氏名・手書き・自由入力・生の数値は送らない＝バケットだけ）。
+        let correctCount = latestByText.values.filter { $0.decision == .autoCorrect }.count
+        TelemetryCoordinator.shared.record(.practiceSessionSummary, payload: [
+            "result": .string("completed"),
+            "word_count_bucket": .string(TelemetryBucket.count(sessionWords.count)),
+            "correct_count_bucket": .string(TelemetryBucket.count(correctCount))
+        ])
     }
 
     // MARK: - 親レポート（スコアボード・採点待ち・まちがい復習の明細）

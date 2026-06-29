@@ -4306,6 +4306,8 @@ private struct ParentNewStepSheet: View {
                         japanese: "読み取りに失敗しました。もう一度撮り直してください。",
                         english: "Scanning failed. Please retake the photo."
                     )
+                    // 運用テレメトリ: OCR失敗（内容は送らず、どの導線で失敗したかのみ）。
+                    TelemetryCoordinator.shared.record(.ocrFailed, payload: ["op": .string("word_import_scan")])
                 }
             }
         }
@@ -4698,6 +4700,8 @@ private struct ParentWordListPanel: View {
                         japanese: "読み取りに失敗しました。もう一度撮り直してください。",
                         english: "Scanning failed. Please retake the photo."
                     )
+                    // 運用テレメトリ: OCR失敗（内容は送らず、どの導線で失敗したかのみ）。
+                    TelemetryCoordinator.shared.record(.ocrFailed, payload: ["op": .string("word_import_scan")])
                 }
             }
         }
@@ -5680,6 +5684,8 @@ private struct ParentLegacyWordListPanel: View {
                         japanese: "読み取りに失敗しました。もう一度撮り直してください。",
                         english: "Scanning failed. Please retake the photo."
                     )
+                    // 運用テレメトリ: OCR失敗（内容は送らず、どの導線で失敗したかのみ）。
+                    TelemetryCoordinator.shared.record(.ocrFailed, payload: ["op": .string("word_import_scan")])
                 }
             }
         }
@@ -6400,24 +6406,49 @@ private struct TestSettingsPanel: View {
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                Picker(language.text(japanese: "ヒント表示", english: "Hint timing"), selection: $model.settings.practiceHintTiming) {
-                    ForEach(PracticeHintTiming.allCases) { timing in
-                        Text(timing.label(language: language)).tag(timing)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel(language.text(japanese: "練習中のヒント表示タイミング", english: "Practice hint timing"))
-
-                Text(model.settings.practiceHintTiming.description(language: language))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                Text(language.text(
+                    japanese: "練習中は、単語の下にいつも日本語訳と例文を表示します。",
+                    english: "During practice the meaning and example always appear below the word."
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
                 Text(language.text(
                     japanese: "最後のラウンドでは、なぞるお手本の文字がゆっくり消えて、自分で書く練習になります。",
                     english: "On the final round the model letters fade out so the child writes from memory."
                 ))
                 .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+
+            SettingBlock(title: language.text(japanese: "ことばパズル", english: "Word Puzzle")) {
+                Toggle(isOn: $model.settings.humorEnabled) {
+                    Text(language.text(japanese: "おもしろ問題を出す", english: "Show funny questions"))
+                        .font(.subheadline.weight(.bold))
+                }
+                .tint(ParentPalette.primary)
+                Text(language.text(
+                    japanese: "ときどき「わざと変な」たのしい文を混ぜます。英語とつづりはいつも正しいままです。",
+                    english: "Occasionally mixes in playful 'deliberately silly' sentences. The English and spelling stay correct."
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+                Divider()
+
+                Toggle(isOn: $model.settings.hintsEnabled) {
+                    Text(language.text(japanese: "ヒントを出す", english: "Show hints"))
+                        .font(.subheadline.weight(.bold))
+                }
+                .tint(ParentPalette.primary)
+                Text(language.text(
+                    japanese: "問題を解いている途中に「？」で、意味や音などのヒントを見られます。",
+                    english: "During a question, the '?' button reveals hints such as meaning and sound."
+                ))
+                .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             }
@@ -6446,6 +6477,18 @@ private struct TestSettingsPanel: View {
 
                 Divider()
                 BenchExportRow()
+
+                Divider()
+                Button {
+                    model.awardPracticeCoins(1000)
+                } label: {
+                    HStack {
+                        Image(systemName: "dollarsign.circle.fill")
+                        Text(language.text(japanese: "コインを1000枚追加", english: "Add 1000 coins"))
+                            .font(.subheadline.weight(.bold))
+                    }
+                }
+                .tint(ParentPalette.primary)
 
                 Divider()
                 Button {

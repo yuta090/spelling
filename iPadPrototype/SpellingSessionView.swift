@@ -151,18 +151,11 @@ struct SpellingSessionView: View {
         }
     }
 
-    /// このラウンドで日本語訳・例文ヒントを表示するか。
-    /// 復習(review)には専用の `ReviewHintPanel` があり、設定も「れんしゅう」配下なので練習限定にする。
+    /// 日本語訳・例文ヒントを表示するか。
+    /// 練習(practice)では、ラウンドやレイアウトに関わらず常に単語の下に表示する。
+    /// 復習(review)には専用の `ReviewHintPanel` があるため練習限定。
     private var showsPracticeHint: Bool {
-        guard mode == .practice else { return false }
-        switch model.settings.practiceHintTiming {
-        case .never:
-            return false
-        case .everyRound:
-            return true
-        case .lastRound:
-            return isLastPracticeRepeat
-        }
+        mode == .practice
     }
 
     private var isPracticeRepeatAdvanceButton: Bool {
@@ -405,7 +398,26 @@ struct SpellingSessionView: View {
                     }
 
                     if usesCompactPracticeGrid {
-                        compactPracticeHeader
+                        VStack(spacing: 8) {
+                            compactPracticeHeader
+                            // 2列レイアウトでも各単語の下に例文ヒントを出す（どのレイアウトでも表示）。
+                            if showsPracticeHint {
+                                HStack(alignment: .top, spacing: 12) {
+                                    ForEach(compactPracticeWords, id: \.id) { word in
+                                        ExampleHintView(
+                                            word: word.text,
+                                            language: language,
+                                            cast: model.cast,
+                                            maxKanjiGrade: model.childMaxKanjiGrade,
+                                            style: .compact,
+                                            onSpeak: { speech.speak($0, language: "en-US") }
+                                        )
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                }
+                                .frame(maxWidth: 1120)
+                            }
+                        }
                     } else {
                         wordHeader
                     }
@@ -554,10 +566,16 @@ struct SpellingSessionView: View {
         } else {
             VStack(spacing: 8) {
                 practiceWordHeader
-                // 練習・復習では日本語訳・例文をヒント表示（テストは答えが見えてしまうので出さない）。
-                // 表示タイミングは設定（既定は最後のラウンドのみ）に従う。
+                // 練習では日本語訳・例文を単語の下に常に表示（テストは答えが見えてしまうので出さない）。
                 if showsPracticeHint {
-                    ExampleHintView(word: currentWord.text, language: language, cast: model.cast)
+                    ExampleHintView(
+                        word: currentWord.text,
+                        language: language,
+                        cast: model.cast,
+                        maxKanjiGrade: model.childMaxKanjiGrade,
+                        style: .full,
+                        onSpeak: { speech.speak($0, language: "en-US") }
+                    )
                 }
             }
         }
@@ -2151,6 +2169,11 @@ private struct PracticeWordCelebrationOverlay: View {
         ZStack {
             SparkleBurst(seed: seed, variant: style.burstVariant)
 
+            // 獲得したコインが大量に噴き出して降りそそぐ演出（カードより少し上から湧く）。
+            PracticeCoinFountain(reward: coinReward)
+                .offset(y: -28)
+                .zIndex(6)
+
             VStack(spacing: 12) {
                 ZStack {
                     Circle()
@@ -2251,6 +2274,87 @@ private struct PracticeCoinView: View {
                 .foregroundStyle(.white)
                 .shadow(color: .orange.opacity(0.32), radius: 3, x: 0, y: 2)
         }
+    }
+}
+
+/// コイン獲得時に**たくさんの金貨**が噴き上がって降りそそぐ演出。
+/// 報酬が多いほど枚数を増やす。`reduceMotion` のときは出さない。
+private struct PracticeCoinFountain: View {
+    var reward: Int
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    // phase 0=発射前 / 1=噴き上がった頂点 / 2=落下しきった。
+    @State private var phase = 0
+
+    // 28〜80枚に収める（報酬量に応じて段階的に増やす）。
+    private var count: Int {
+        min(max(reward / 2 + 24, 28), 80)
+    }
+
+    // index から決定的な疑似乱数（0..<1）。salt を変えて別の値を取り出す。
+    private func rnd(_ index: Int, _ salt: Int) -> Double {
+        let v = (index &* 1103515245 &+ salt &* 12345 &+ 1013904223) & 0x7fffffff
+        return Double(v % 1000) / 1000.0
+    }
+
+    var body: some View {
+        if reduceMotion {
+            EmptyView()
+        } else {
+            ZStack {
+                ForEach(0..<count, id: \.self) { i in
+                    let spread = (rnd(i, 1) - 0.5) * 2.0       // -1..1（横方向）
+                    let peakX = spread * 150.0                  // 頂点での横位置（控えめに開く）
+                    let peakY = -(120.0 + rnd(i, 2) * 210.0)    // 噴き上がる高さ（上は負）
+                    let fallX = spread * 280.0                  // 落下時にさらに外へ
+                    let fallY = 320.0 + rnd(i, 3) * 260.0       // 画面下へ落下
+                    let size = 16.0 + rnd(i, 4) * 22.0          // 16〜38pt
+                    let spin = (rnd(i, 5) < 0.5 ? -1.0 : 1.0) * (540.0 + rnd(i, 6) * 720.0)
+
+                    // phase に応じて 発射前→頂点→落下 の3地点を補間する。
+                    let x = phase == 0 ? 0 : (phase == 1 ? peakX : fallX)
+                    let y = phase == 0 ? 0 : (phase == 1 ? peakY : fallY)
+                    let scale = phase == 0 ? 0.5 : (phase == 1 ? 1.0 : 0.82)
+                    let rot = phase == 0 ? 0 : (phase == 1 ? spin * 0.45 : spin)
+                    let opacity = phase == 0 ? 0.0 : (phase == 1 ? 1.0 : 0.0)
+
+                    GoldCoin(diameter: size)
+                        .rotationEffect(.degrees(rot))
+                        .offset(x: x, y: y)
+                        .scaleEffect(scale)
+                        .opacity(opacity)
+                }
+            }
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+            .onAppear {
+                // 噴き上がり（速め）→ 落下（ゆっくり）の2段階。合計 ~0.95s で表示ウィンドウ内に収める。
+                withAnimation(.easeOut(duration: 0.30)) { phase = 1 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.26) {
+                    withAnimation(.easeIn(duration: 0.66)) { phase = 2 }
+                }
+            }
+        }
+    }
+}
+
+/// 噴水で使う、ツヤのある小さな金貨。
+private struct GoldCoin: View {
+    var diameter: CGFloat
+
+    var body: some View {
+        ZStack {
+            Circle().fill(RadialGradient(
+                colors: [Color(red: 1.0, green: 0.96, blue: 0.66),
+                         Color(red: 1.0, green: 0.80, blue: 0.26),
+                         Color(red: 0.93, green: 0.58, blue: 0.08)],
+                center: .init(x: 0.36, y: 0.30), startRadius: 1, endRadius: diameter))
+            Circle().stroke(Color(red: 0.78, green: 0.46, blue: 0.05), lineWidth: max(diameter * 0.08, 1.2))
+            Image(systemName: "star.fill")
+                .font(.system(size: diameter * 0.46, weight: .heavy))
+                .foregroundStyle(Color(red: 1.0, green: 0.98, blue: 0.82))
+        }
+        .frame(width: diameter, height: diameter)
+        .shadow(color: Color(red: 0.7, green: 0.4, blue: 0.05).opacity(0.35), radius: 2, y: 1)
     }
 }
 
@@ -2823,82 +2927,196 @@ private struct PracticeButtonTapEffectOverlay: View {
     }
 }
 
+/// 練習中、単語の下に出すヒントの並べ方。
+private enum HintStyle {
+    /// 標準（1単語）。意味を左に大きく、例文を右に控えめに置く横2カラム。
+    case full
+    /// 2こまとめ書きグリッド用。横幅が狭いので縦に詰めて並べる。
+    case compact
+}
+
+/// 単語の下に出す「いみ＋れいぶん」ヒント。
+///
+/// 子ども向け方針（CLAUDE.md）に合わせて:
+/// - **意味を主役**にして大きく、例文は控えめに（情報を減らす）。
+/// - 和訳の漢字は **子の学年で出し分け**（`maxKanjiGrade`）。習った漢字は残し、超える漢字はかなに。
+/// - 例文の英語は **🔊 で聞ける**（音で伝える）。
 private struct ExampleHintView: View {
     var word: String
     var language: AppLanguage
     /// 例文を名前入りに差し替えるための登場人物（親が登録した Cast）。未登録なら従来の静的例文。
     var cast: Cast
+    /// 和訳で許す漢字配当学年(0…6)。これを超える漢字はひらがな読みに落とす。
+    var maxKanjiGrade: Int
+    var style: HintStyle = .full
+    /// 例文の英語を読み上げるためのコールバック（呼び出し側で SpeechPlayer に渡す）。
+    var onSpeak: (String) -> Void = { _ in }
 
-    // WordBank（同梱SQLite）参照は単語ごとに一度だけ行い保持する。
+    // WordBank（同梱SQLite）参照は単語ごとに一度だけ行い、学年で整形して保持する。
     // ※ @State + onAppear を空の Group に付けると onAppear が発火せずヒントが出ない。
-    //    そのため常に存在する VStack に .onChange(initial:) を付けて確実に読み込む。
+    //    そのため常に存在する VStack に .onValueChange(initial:) を付けて確実に読み込む。
     @State private var meaning: String?
-    @State private var example: WordExample?
+    @State private var exampleEN: String?
+    @State private var exampleJA: String?
+
+    private var hasContent: Bool {
+        meaning != nil || exampleEN != nil
+    }
+
+    private let inkBlue = Color(red: 0.12, green: 0.24, blue: 0.45)
+    private let meaningGreen = Color(red: 0.16, green: 0.46, blue: 0.40)
+    private let examplePurple = Color(red: 0.45, green: 0.32, blue: 0.66)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if meaning != nil || example != nil {
-                VStack(alignment: .leading, spacing: 8) {
-                    if let meaning {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Label(language.text(japanese: "いみ", english: "Meaning"), systemImage: "character.book.closed.fill")
-                                .font(.caption.weight(.heavy))
-                                .foregroundStyle(Color(red: 0.20, green: 0.45, blue: 0.40))
-                            Text(meaning)
-                                .font(.system(size: 17, weight: .semibold))
-                                .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.45))
-                                .lineLimit(3)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-
-                    if let example {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Label(language.text(japanese: "れいぶん", english: "Example"), systemImage: "text.quote")
-                                .font(.caption.weight(.heavy))
-                                .foregroundStyle(Color(red: 0.45, green: 0.32, blue: 0.66))
-                            Text(example.en)
-                                .font(.system(size: 19, weight: .semibold, design: .rounded))
-                                .foregroundStyle(Color(red: 0.12, green: 0.24, blue: 0.45))
-                                .fixedSize(horizontal: false, vertical: true)
-                            Text(example.ja)
-                                .font(.system(size: 15, weight: .medium))
-                                .foregroundStyle(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-                }
-                .frame(maxWidth: 700, alignment: .leading)
-                .padding(.vertical, 8)
-                .padding(.horizontal, 14)
-                .background(.white.opacity(0.72))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color(red: 0.80, green: 0.84, blue: 0.95), lineWidth: 1)
-                )
+        // ※ .onValueChange(initial:) は iOS16 では onAppear 相当。中身が空になりうる Group に付けると
+        //    初回に発火せずヒントが出ない。必ず「常に存在する VStack」に付けて確実に読み込む。
+        VStack(alignment: .leading, spacing: 0) {
+            if hasContent {
+                content
+                    .padding(.vertical, style == .compact ? 8 : 10)
+                    .padding(.horizontal, style == .compact ? 12 : 16)
+                    .background(.white.opacity(0.82))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(red: 0.80, green: 0.84, blue: 0.95), lineWidth: 1)
+                    )
             }
         }
-        // 語が変わったとき＋Cast を編集したとき（親が練習中になかま登録を変えた等）に
-        // 再読込し、表示が古いままにならないようにする。
+        // 語・Cast・学年が変わったら整形し直す（古い表示を残さない）。
         .onValueChange(of: word, initial: true) { _ in loadHint() }
         .onValueChange(of: cast) { _ in loadHint() }
+        .onValueChange(of: maxKanjiGrade) { _ in loadHint() }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch style {
+        case .full:
+            HStack(alignment: .top, spacing: 14) {
+                meaningColumn
+                if exampleEN != nil {
+                    Divider().frame(maxHeight: 64)
+                    exampleColumn
+                    Spacer(minLength: 0)
+                }
+            }
+            .frame(maxWidth: 700, alignment: .leading)
+        case .compact:
+            VStack(alignment: .leading, spacing: 8) {
+                meaningColumn
+                if exampleEN != nil {
+                    exampleColumn
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var meaningColumn: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            miniLabel(language.text(japanese: "いみ", english: "Meaning"),
+                      systemImage: "character.book.closed.fill",
+                      tint: meaningGreen)
+            if let meaning {
+                Text(meaning)
+                    .font(.system(size: style == .compact ? 24 : 30, weight: .heavy, design: .rounded))
+                    .foregroundStyle(inkBlue)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.6)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                // 意味が無い語でも列の幅が崩れないように軽く埋める。
+                Text("—")
+                    .font(.system(size: style == .compact ? 24 : 30, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.secondary.opacity(0.5))
+            }
+        }
+        .frame(minWidth: style == .compact ? 0 : 96,
+               idealWidth: style == .compact ? nil : 140,
+               maxWidth: style == .compact ? .infinity : 190,
+               alignment: .leading)
+    }
+
+    private var exampleColumn: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 8) {
+                miniLabel(language.text(japanese: "れいぶん", english: "Example"),
+                          systemImage: "text.quote",
+                          tint: examplePurple)
+                if let exampleEN, !exampleEN.isEmpty {
+                    speakButton(exampleEN)
+                }
+            }
+            if let exampleEN {
+                Text(exampleEN)
+                    .font(.system(size: style == .compact ? 16 : 18, weight: .semibold, design: .rounded))
+                    .foregroundStyle(inkBlue)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if let exampleJA, !exampleJA.isEmpty {
+                Text(exampleJA)
+                    .font(.system(size: style == .compact ? 13 : 14, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private func miniLabel(_ title: String, systemImage: String, tint: Color) -> some View {
+        Label(title, systemImage: systemImage)
+            .font(.system(size: 11, weight: .heavy))
+            .foregroundStyle(tint)
+            .labelStyle(.titleAndIcon)
+    }
+
+    private func speakButton(_ text: String) -> some View {
+        Button {
+            onSpeak(text)
+        } label: {
+            Image(systemName: "speaker.wave.2.fill")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(Color(red: 0.14, green: 0.34, blue: 0.76))
+                .frame(width: 30, height: 30)
+                .background(Color(red: 0.84, green: 0.91, blue: 1.0))
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(language.text(japanese: "れいぶんを聞く", english: "Hear the example"))
     }
 
     private func loadHint() {
-        meaning = WordBank.shared.japanese(for: word)
-        // Cast に名前があり、その語を教える承認テンプレがあれば名前入り例文に差し替える。
-        // 名前が入らない/該当なしのときは従来どおり同梱の静的例文にフォールバック。
+        // 意味: 最初の語義だけに絞り（GlossFormatter）、学年を超える漢字をかなに落とす。
+        if let raw = WordBank.shared.japanese(for: word) {
+            let sense = GlossFormatter.primarySense(raw)
+            let display = JapaneseReading.kanaizingOverGrade(sense, maxGrade: maxKanjiGrade)
+            meaning = display.isEmpty ? nil : display
+        } else {
+            meaning = nil
+        }
+
+        // 例文: Cast に名前があり承認テンプレがあれば名前入りに差し替え。無ければ同梱の静的例文。
         // seed は固定（同じ語では安定して同じ人が出る）。名前は表示のみで復習語には登録しない。
+        let chosen: WordExample?
         if let personalized = PersonalizedExample.sentence(
             for: word,
             templates: RealContentTemplates.cachedTemplates,
             cast: cast,
             seed: 20_260_628
         ) {
-            example = WordExample(en: personalized.en, ja: personalized.ja)
+            chosen = WordExample(en: personalized.en, ja: personalized.ja)
         } else {
-            example = WordBank.shared.examples(for: word, limit: 1).first
+            chosen = WordBank.shared.examples(for: word, limit: 1).first
+        }
+
+        if let chosen {
+            exampleEN = chosen.en.isEmpty ? nil : chosen.en
+            // 例文の和訳を子向けに整える（分かち書き→学年超え漢字をかな化。順序は readableExample 側が保証）。
+            let ja = JapaneseReading.readableExample(chosen.ja, maxGrade: maxKanjiGrade)
+            exampleJA = ja.isEmpty ? nil : ja
+        } else {
+            exampleEN = nil
+            exampleJA = nil
         }
     }
 }

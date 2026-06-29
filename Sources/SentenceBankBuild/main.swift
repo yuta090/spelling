@@ -129,12 +129,16 @@ for row in rows {
     if let b = row.gradeBand, !(1...5).contains(b) {
         fail("gradeBand は 1...5 で指定してください（row \(rowID) の \(b)）")
     }
+    // 安定 sourceID＝authoring の id を再利用（無ければ英文から決定論で付与）。
+    // 英文を直して表層 id(UUIDv5) が変わっても履歴の鍵を保つ。
+    let sourceID = ContentSourceID.derive(authoringID: row.id, en: en)
     candidates.append(.init(
         en: en.joined(separator: " "),
         ja: ja,
         grammar: grammar,
         declaredBand: row.gradeBand,
-        source: "curated"
+        source: "curated",
+        sourceID: sourceID
     ))
 }
 guard !candidates.isEmpty else { fail("curated 候補が0件（fallbackEn/Ja を確認）") }

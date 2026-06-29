@@ -31,6 +31,25 @@ final class SentenceBankBuilderTests: XCTestCase {
         XCTAssertEqual(item?.en, "She likes apples")
     }
 
+    // 安定 sourceID は候補から built 文へそのまま通る（移行で履歴の鍵を埋め込む）。
+    func testBuildCarriesSourceID() {
+        let c = SentenceBankBuilder.Candidate(
+            en: "I like apples", ja: "りんご", grammar: .presentSimple,
+            declaredBand: 1, source: "curated", sourceID: "like-apples")
+        let r = SentenceBankBuilder.build(candidates: [c], band: band,
+                                          targetBand: 3, grammarCeiling: .applied)
+        XCTAssertEqual(r.accepted.count, 1)
+        XCTAssertEqual(r.accepted.first?.sourceID, "like-apples")
+    }
+
+    // sourceID 未指定の候補は nil のまま（後方互換）。
+    func testBuildSourceIDDefaultsNil() {
+        let r = SentenceBankBuilder.build(
+            candidates: [cand("She likes apples", "和訳", grammar: .presentSimple)],
+            band: band, targetBand: 3, grammarCeiling: .applied)
+        XCTAssertNil(r.accepted.first?.sourceID)
+    }
+
     // gradeBand は内容語の最大（bigger→big=2）。
     func testGradeBandIsMaxOfContentWords() {
         let r = SentenceBankBuilder.build(

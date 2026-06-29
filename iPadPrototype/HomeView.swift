@@ -239,7 +239,8 @@ struct HomeView: View {
                 .environmentObject(model)
             }
             .fullScreenCover(isPresented: $showingPuzzle) {
-                PuzzleSessionView()
+                // 子の学年＋親トグルでプールを絞ってから出題（やさしい文だけ／ユーモアON-OFF）。
+                PuzzleSessionView(policy: model.contentPolicy)
             }
             .sheet(isPresented: $showingPracticeRetryPicker) {
                 PracticeRetryPickerSheet(
@@ -2179,6 +2180,12 @@ enum HomeRewardCharacterStyle {
     case personBun
     case personBuzz
     case personPonytail
+    case personTwintails
+    case personBob
+    case personAfro
+    case personSpiky
+    case personBraids
+    case personWavy
     case robot
     case ghost
     case star
@@ -2283,6 +2290,14 @@ enum HomeRewardCharacterStyle {
     case saturn
     case moon
     case alien
+    case alienBlob
+    case alienTriclops
+    case alienSquid
+    case alienWorm
+    case alienMushroom
+    case alienBugeye
+    case alienCrystal
+    case alienHover
     case velociraptor
     case ankylosaurus
     case spinosaurus
@@ -2853,6 +2868,204 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.4000, green: 0.2588, blue: 0.1647),
             secondary: Color(red: 0.8784, green: 0.5412, blue: 0.2353),
             accent: Color(red: 0.8784, green: 0.4157, blue: 0.6588)
+        ),
+        HomeRewardCharacter(
+            id: "kid_yui",
+            category: .people,
+            japaneseName: "ユイ",
+            englishName: "Yui",
+            price: 40,
+            style: .personTwintails,
+            primary: Color(red: 0.9686, green: 0.8431, blue: 0.7098),
+            secondary: Color(red: 0.9490, green: 0.6510, blue: 0.7608),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_rin",
+            category: .people,
+            japaneseName: "リン",
+            englishName: "Rin",
+            price: 50,
+            style: .personTwintails,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.4000, green: 0.7608, blue: 0.7608),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "kid_emma",
+            category: .people,
+            japaneseName: "エマ",
+            englishName: "Emma",
+            price: 50,
+            style: .personBob,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.8784, green: 0.7216, blue: 0.3608)
+        ),
+        HomeRewardCharacter(
+            id: "kid_hana",
+            category: .people,
+            japaneseName: "ハナ",
+            englishName: "Hana",
+            price: 40,
+            style: .personBob,
+            primary: Color(red: 0.7765, green: 0.5412, blue: 0.3686),
+            secondary: Color(red: 0.8784, green: 0.3373, blue: 0.2314),
+            accent: Color(red: 0.0824, green: 0.0667, blue: 0.0510)
+        ),
+        HomeRewardCharacter(
+            id: "kid_max",
+            category: .people,
+            japaneseName: "マックス",
+            englishName: "Max",
+            price: 60,
+            style: .personAfro,
+            primary: Color(red: 0.5412, green: 0.3529, blue: 0.2196),
+            secondary: Color(red: 0.8784, green: 0.4667, blue: 0.2353),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_zoe",
+            category: .people,
+            japaneseName: "ゾーイ",
+            englishName: "Zoe",
+            price: 60,
+            style: .personAfro,
+            primary: Color(red: 0.6471, green: 0.4157, blue: 0.2431),
+            secondary: Color(red: 0.2275, green: 0.6196, blue: 0.6196),
+            accent: Color(red: 0.1647, green: 0.1059, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_taku",
+            category: .people,
+            japaneseName: "タク",
+            englishName: "Taku",
+            price: 40,
+            style: .personSpiky,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.2275, green: 0.4314, blue: 0.6471),
+            accent: Color(red: 0.0824, green: 0.0667, blue: 0.0510)
+        ),
+        HomeRewardCharacter(
+            id: "kid_kai",
+            category: .people,
+            japaneseName: "カイ",
+            englishName: "Kai",
+            price: 50,
+            style: .personSpiky,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.2980, green: 0.6510, blue: 0.4196),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "kid_sara",
+            category: .people,
+            japaneseName: "サラ",
+            englishName: "Sara",
+            price: 60,
+            style: .personBraids,
+            primary: Color(red: 0.5412, green: 0.3529, blue: 0.2196),
+            secondary: Color(red: 0.5451, green: 0.3608, blue: 0.7804),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_noa",
+            category: .people,
+            japaneseName: "ノア",
+            englishName: "Noa",
+            price: 50,
+            style: .personBraids,
+            primary: Color(red: 0.7765, green: 0.5412, blue: 0.3686),
+            secondary: Color(red: 0.8784, green: 0.4157, blue: 0.6588),
+            accent: Color(red: 0.1647, green: 0.1059, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_lily",
+            category: .people,
+            japaneseName: "リリー",
+            englishName: "Lily",
+            price: 50,
+            style: .personWavy,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.7255, green: 0.5490, blue: 0.8784),
+            accent: Color(red: 0.5451, green: 0.2275, blue: 0.1647)
+        ),
+        HomeRewardCharacter(
+            id: "kid_yuna",
+            category: .people,
+            japaneseName: "ユナ",
+            englishName: "Yuna",
+            price: 50,
+            style: .personWavy,
+            primary: Color(red: 0.8784, green: 0.6588, blue: 0.4706),
+            secondary: Color(red: 0.9412, green: 0.5412, blue: 0.4235),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "kid_ren",
+            category: .people,
+            japaneseName: "レン",
+            englishName: "Ren",
+            price: 50,
+            style: .personShort,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.1647, green: 0.2902, blue: 0.4784),
+            accent: Color(red: 0.2275, green: 0.4314, blue: 0.6471)
+        ),
+        HomeRewardCharacter(
+            id: "kid_aoi",
+            category: .people,
+            japaneseName: "アオイ",
+            englishName: "Aoi",
+            price: 50,
+            style: .personLong,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.4000, green: 0.7608, blue: 0.7608),
+            accent: Color(red: 0.5451, green: 0.3608, blue: 0.7804)
+        ),
+        HomeRewardCharacter(
+            id: "kid_sho",
+            category: .people,
+            japaneseName: "ショウ",
+            englishName: "Sho",
+            price: 40,
+            style: .personBuzz,
+            primary: Color(red: 0.5412, green: 0.3529, blue: 0.2196),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "kid_momo",
+            category: .people,
+            japaneseName: "モモ",
+            englishName: "Momo",
+            price: 50,
+            style: .personPonytail,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.9490, green: 0.6510, blue: 0.7608),
+            accent: Color(red: 0.8784, green: 0.4157, blue: 0.6588)
+        ),
+        HomeRewardCharacter(
+            id: "kid_gen",
+            category: .people,
+            japaneseName: "ゲン",
+            englishName: "Gen",
+            price: 50,
+            style: .personCurly,
+            primary: Color(red: 0.8471, green: 0.6078, blue: 0.4235),
+            secondary: Color(red: 0.2980, green: 0.6510, blue: 0.4196),
+            accent: Color(red: 0.7529, green: 0.2235, blue: 0.1686)
+        ),
+        HomeRewardCharacter(
+            id: "kid_eri",
+            category: .people,
+            japaneseName: "エリ",
+            englishName: "Eri",
+            price: 60,
+            style: .personBun,
+            primary: Color(red: 0.9686, green: 0.8431, blue: 0.7098),
+            secondary: Color(red: 0.2275, green: 0.6196, blue: 0.6196),
+            accent: Color(red: 0.7216, green: 0.7373, blue: 0.7608)
         ),
         HomeRewardCharacter(
             id: "robot",
@@ -4327,6 +4540,567 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.9490, green: 0.7804, blue: 0.4000),
             secondary: Color(red: 0.9843, green: 0.9098, blue: 0.7216),
             accent: Color(red: 0.5412, green: 0.3529, blue: 0.1686)
+        ),
+        HomeRewardCharacter(
+            id: "ya_hina",
+            category: .people,
+            japaneseName: "ヒナ",
+            englishName: "Hina",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.6235, green: 0.7843, blue: 0.9098),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_marcus",
+            category: .people,
+            japaneseName: "マーカス",
+            englishName: "Marcus",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.4784, green: 0.2902, blue: 0.1804),
+            secondary: Color(red: 0.8784, green: 0.4667, blue: 0.2353),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_emily",
+            category: .people,
+            japaneseName: "エミリー",
+            englishName: "Emily",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.5608, green: 0.7490, blue: 0.4784),
+            accent: Color(red: 0.8784, green: 0.7216, blue: 0.3608)
+        ),
+        HomeRewardCharacter(
+            id: "ya_diego",
+            category: .people,
+            japaneseName: "ディエゴ",
+            englishName: "Diego",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7843, green: 0.5373, blue: 0.3608),
+            secondary: Color(red: 0.2275, green: 0.2471, blue: 0.2745),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ya_aisha",
+            category: .people,
+            japaneseName: "アイシャ",
+            englishName: "Aisha",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7098, green: 0.5098, blue: 0.3529),
+            secondary: Color(red: 0.1804, green: 0.5490, blue: 0.5490),
+            accent: Color(red: 0.1804, green: 0.5490, blue: 0.5490)
+        ),
+        HomeRewardCharacter(
+            id: "ya_jamal",
+            category: .people,
+            japaneseName: "ジャマル",
+            englishName: "Jamal",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.4314, green: 0.2627, blue: 0.1490),
+            secondary: Color(red: 0.8784, green: 0.6902, blue: 0.2510),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_zara",
+            category: .people,
+            japaneseName: "ザラ",
+            englishName: "Zara",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.4784, green: 0.2902, blue: 0.1804),
+            secondary: Color(red: 0.8784, green: 0.4392, blue: 0.3529),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_yuki",
+            category: .people,
+            japaneseName: "ユキ",
+            englishName: "Yuki",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.9490, green: 0.8235, blue: 0.2980),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_haruto",
+            category: .people,
+            japaneseName: "ハルト",
+            englishName: "Haruto",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9098, green: 0.7529, blue: 0.6275),
+            secondary: Color(red: 0.1647, green: 0.2275, blue: 0.3608),
+            accent: Color(red: 0.2275, green: 0.1569, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ya_sofia",
+            category: .people,
+            japaneseName: "ソフィア",
+            englishName: "Sofia",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7843, green: 0.5373, blue: 0.3608),
+            secondary: Color(red: 0.7608, green: 0.3333, blue: 0.1804),
+            accent: Color(red: 0.2275, green: 0.1569, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ya_mateo",
+            category: .people,
+            japaneseName: "マテオ",
+            englishName: "Mateo",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7843, green: 0.5373, blue: 0.3608),
+            secondary: Color(red: 0.3098, green: 0.6275, blue: 0.4196),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_liam",
+            category: .people,
+            japaneseName: "リアム",
+            englishName: "Liam",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9686, green: 0.8431, blue: 0.7098),
+            secondary: Color(red: 0.6039, green: 0.7843, blue: 0.9098),
+            accent: Color(red: 0.6196, green: 0.4824, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "ya_chloe",
+            category: .people,
+            japaneseName: "クロエ",
+            englishName: "Chloe",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9882, green: 0.8784, blue: 0.7608),
+            secondary: Color(red: 0.2275, green: 0.2471, blue: 0.2745),
+            accent: Color(red: 0.7804, green: 0.8000, blue: 0.8235)
+        ),
+        HomeRewardCharacter(
+            id: "ya_priya",
+            category: .people,
+            japaneseName: "プリヤ",
+            englishName: "Priya",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7098, green: 0.5098, blue: 0.3529),
+            secondary: Color(red: 0.1804, green: 0.6196, blue: 0.4196),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_arjun",
+            category: .people,
+            japaneseName: "アルジュン",
+            englishName: "Arjun",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7098, green: 0.5098, blue: 0.3529),
+            secondary: Color(red: 0.4784, green: 0.1647, blue: 0.1804),
+            accent: Color(red: 0.1020, green: 0.0706, blue: 0.0314)
+        ),
+        HomeRewardCharacter(
+            id: "ya_amir",
+            category: .people,
+            japaneseName: "アミール",
+            englishName: "Amir",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7608, green: 0.6039, blue: 0.4196),
+            secondary: Color(red: 0.4196, green: 0.4784, blue: 0.2275),
+            accent: Color(red: 0.1647, green: 0.1176, blue: 0.0706)
+        ),
+        HomeRewardCharacter(
+            id: "ya_layla",
+            category: .people,
+            japaneseName: "ライラ",
+            englishName: "Layla",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.7608, green: 0.6039, blue: 0.4196),
+            secondary: Color(red: 0.1804, green: 0.5490, blue: 0.5490),
+            accent: Color(red: 0.2275, green: 0.1569, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "ya_taro",
+            category: .people,
+            japaneseName: "タロウ",
+            englishName: "Taro",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9098, green: 0.7529, blue: 0.6275),
+            secondary: Color(red: 0.8196, green: 0.2902, blue: 0.1804),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_sakura",
+            category: .people,
+            japaneseName: "サクラ",
+            englishName: "Sakura",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.7882, blue: 0.6510),
+            secondary: Color(red: 0.9686, green: 0.9490, blue: 0.9098),
+            accent: Color(red: 0.1020, green: 0.0784, blue: 0.0627)
+        ),
+        HomeRewardCharacter(
+            id: "ya_leon",
+            category: .people,
+            japaneseName: "レオン",
+            englishName: "Leon",
+            price: 40,
+            style: .imageAsset,
+            primary: Color(red: 0.9686, green: 0.8627, blue: 0.7608),
+            secondary: Color(red: 0.2275, green: 0.4196, blue: 0.2902),
+            accent: Color(red: 0.7843, green: 0.3529, blue: 0.1647)
+        ),
+        HomeRewardCharacter(
+            id: "alien_blob",
+            category: .space,
+            japaneseName: "ブロブ",
+            englishName: "Blob",
+            price: 50,
+            style: .alienBlob,
+            primary: Color(red: 0.4196, green: 0.7961, blue: 0.4667),
+            secondary: Color(red: 0.7490, green: 0.9412, blue: 0.6510),
+            accent: Color(red: 0.1804, green: 0.3529, blue: 0.5490)
+        ),
+        HomeRewardCharacter(
+            id: "alien_mitsume",
+            category: .space,
+            japaneseName: "ミツメ",
+            englishName: "Mitsume",
+            price: 50,
+            style: .alienTriclops,
+            primary: Color(red: 0.7255, green: 0.5490, blue: 0.8784),
+            secondary: Color(red: 0.4784, green: 0.3529, blue: 0.6902),
+            accent: Color(red: 0.1020, green: 0.1020, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "alien_ikar",
+            category: .space,
+            japaneseName: "イカル",
+            englishName: "Ikar",
+            price: 50,
+            style: .alienSquid,
+            primary: Color(red: 0.3569, green: 0.7843, blue: 0.8392),
+            secondary: Color(red: 0.7804, green: 0.4784, blue: 0.8392),
+            accent: Color(red: 0.1373, green: 0.1922, blue: 0.3098)
+        ),
+        HomeRewardCharacter(
+            id: "alien_nyoro",
+            category: .space,
+            japaneseName: "ニョロ",
+            englishName: "Nyoro",
+            price: 50,
+            style: .alienWorm,
+            primary: Color(red: 0.4784, green: 0.7804, blue: 0.4784),
+            secondary: Color(red: 0.7608, green: 0.9412, blue: 0.6510),
+            accent: Color(red: 0.1804, green: 0.3529, blue: 0.5490)
+        ),
+        HomeRewardCharacter(
+            id: "alien_kino",
+            category: .space,
+            japaneseName: "キノ",
+            englishName: "Kino",
+            price: 50,
+            style: .alienMushroom,
+            primary: Color(red: 0.8784, green: 0.3373, blue: 0.2314),
+            secondary: Color(red: 0.9490, green: 0.8706, blue: 0.7608),
+            accent: Color(red: 1.0000, green: 0.9490, blue: 0.8784)
+        ),
+        HomeRewardCharacter(
+            id: "alien_medama",
+            category: .space,
+            japaneseName: "メダマ",
+            englishName: "Medama",
+            price: 50,
+            style: .alienBugeye,
+            primary: Color(red: 0.4196, green: 0.7961, blue: 0.6902),
+            secondary: Color(red: 0.2902, green: 0.6196, blue: 0.5255),
+            accent: Color(red: 0.8784, green: 0.6471, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "alien_kirari",
+            category: .space,
+            japaneseName: "キラリ",
+            englishName: "Kirari",
+            price: 50,
+            style: .alienCrystal,
+            primary: Color(red: 0.5490, green: 0.6196, blue: 0.8784),
+            secondary: Color(red: 0.7804, green: 0.8235, blue: 0.9686),
+            accent: Color(red: 0.9490, green: 0.8235, blue: 0.2980)
+        ),
+        HomeRewardCharacter(
+            id: "alien_hova",
+            category: .space,
+            japaneseName: "ホバ",
+            englishName: "Hova",
+            price: 50,
+            style: .alienHover,
+            primary: Color(red: 0.6039, green: 0.6510, blue: 0.6980),
+            secondary: Color(red: 0.5608, green: 0.8392, blue: 0.8784),
+            accent: Color(red: 0.3569, green: 0.8784, blue: 0.7804)
+        ),
+        HomeRewardCharacter(
+            id: "et_nova",
+            category: .space,
+            japaneseName: "ノヴァ",
+            englishName: "Nova",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.7255, green: 0.5490, blue: 0.8784),
+            secondary: Color(red: 0.7804, green: 0.7804, blue: 0.8392),
+            accent: Color(red: 0.1373, green: 0.1922, blue: 0.3098)
+        ),
+        HomeRewardCharacter(
+            id: "et_zorp",
+            category: .space,
+            japaneseName: "ゾープ",
+            englishName: "Zorp",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.5451, green: 0.8392, blue: 0.2902),
+            secondary: Color(red: 0.7804, green: 0.9412, blue: 0.6275),
+            accent: Color(red: 0.1804, green: 0.3529, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "et_korr",
+            category: .space,
+            japaneseName: "コール",
+            englishName: "Korr",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.5333, blue: 0.2353),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "vox_robo",
+            category: .fantasy,
+            japaneseName: "ボクセルロボ",
+            englishName: "Voxel Robo",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.2471, green: 0.7216, blue: 0.6902),
+            secondary: Color(red: 1.0000, green: 1.0000, blue: 1.0000),
+            accent: Color(red: 0.9490, green: 0.7529, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "vox_neko",
+            category: .animal,
+            japaneseName: "キューブネコ",
+            englishName: "Cube Cat",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.5333, blue: 0.2353),
+            secondary: Color(red: 1.0000, green: 0.8784, blue: 0.6980),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "vox_knight",
+            category: .fantasy,
+            japaneseName: "ブロックきし",
+            englishName: "Block Knight",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.6039, green: 0.6510, blue: 0.7608),
+            secondary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            accent: Color(red: 0.7804, green: 0.8000, blue: 0.8235)
+        ),
+        HomeRewardCharacter(
+            id: "vox_dragon",
+            category: .fantasy,
+            japaneseName: "ブロックりゅう",
+            englishName: "Block Dragon",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.3725, green: 0.6275, blue: 0.4196),
+            secondary: Color(red: 0.9490, green: 0.8235, blue: 0.2980),
+            accent: Color(red: 0.2275, green: 0.4196, blue: 0.2902)
+        ),
+        HomeRewardCharacter(
+            id: "vox_inu",
+            category: .animal,
+            japaneseName: "ボクセルいぬ",
+            englishName: "Voxel Dog",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.7608, green: 0.5294, blue: 0.2980),
+            secondary: Color(red: 0.9804, green: 0.8784, blue: 0.7608),
+            accent: Color(red: 0.3608, green: 0.2275, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "vox_panda",
+            category: .animal,
+            japaneseName: "ボクセルパンダ",
+            englishName: "Voxel Panda",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.1686, green: 0.1882, blue: 0.2314),
+            secondary: Color(red: 0.9608, green: 0.9608, blue: 0.9216),
+            accent: Color(red: 0.3490, green: 0.6196, blue: 0.3608)
+        ),
+        HomeRewardCharacter(
+            id: "vox_usagi",
+            category: .animal,
+            japaneseName: "ボクセルうさぎ",
+            englishName: "Voxel Rabbit",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.9176, blue: 0.9412),
+            secondary: Color(red: 1.0000, green: 0.9412, blue: 0.9804),
+            accent: Color(red: 0.8784, green: 0.6510, blue: 0.7608)
+        ),
+        HomeRewardCharacter(
+            id: "vox_penguin",
+            category: .animal,
+            japaneseName: "ボクセルペンギン",
+            englishName: "Voxel Penguin",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.1804, green: 0.2275, blue: 0.3373),
+            secondary: Color(red: 0.9412, green: 0.9686, blue: 1.0000),
+            accent: Color(red: 0.9608, green: 0.6196, blue: 0.1216)
+        ),
+        HomeRewardCharacter(
+            id: "vox_kitsune",
+            category: .animal,
+            japaneseName: "ボクセルきつね",
+            englishName: "Voxel Fox",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9216, green: 0.4314, blue: 0.1216),
+            secondary: Color(red: 1.0000, green: 0.8784, blue: 0.6980),
+            accent: Color(red: 0.4314, green: 0.1804, blue: 0.0784)
+        ),
+        HomeRewardCharacter(
+            id: "vox_kuma",
+            category: .animal,
+            japaneseName: "ボクセルくま",
+            englishName: "Voxel Bear",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.5412, green: 0.3529, blue: 0.2196),
+            secondary: Color(red: 0.7804, green: 0.6392, blue: 0.4196),
+            accent: Color(red: 0.2902, green: 0.1843, blue: 0.1020)
+        ),
+        HomeRewardCharacter(
+            id: "vox_car",
+            category: .vehicle,
+            japaneseName: "ボクセルカー",
+            englishName: "Voxel Car",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.2627, blue: 0.1804),
+            secondary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            accent: Color(red: 0.1686, green: 0.2000, blue: 0.2510)
+        ),
+        HomeRewardCharacter(
+            id: "vox_train",
+            category: .vehicle,
+            japaneseName: "ボクセルきかんしゃ",
+            englishName: "Voxel Train",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.1804, green: 0.4784, blue: 0.2275),
+            secondary: Color(red: 0.1686, green: 0.1686, blue: 0.1882),
+            accent: Color(red: 0.8196, green: 0.2902, blue: 0.1804)
+        ),
+        HomeRewardCharacter(
+            id: "vox_rocket",
+            category: .vehicle,
+            japaneseName: "ボクセルロケット",
+            englishName: "Voxel Rocket",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            secondary: Color(red: 0.8784, green: 0.2627, blue: 0.1804),
+            accent: Color(red: 0.3569, green: 0.5255, blue: 0.7804)
+        ),
+        HomeRewardCharacter(
+            id: "vox_ship",
+            category: .vehicle,
+            japaneseName: "ボクセルふね",
+            englishName: "Voxel Ship",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.2275, green: 0.4196, blue: 0.7804),
+            secondary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            accent: Color(red: 0.8784, green: 0.6471, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "vox_wizard",
+            category: .fantasy,
+            japaneseName: "ボクセルまほうつかい",
+            englishName: "Voxel Wizard",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.4784, green: 0.2902, blue: 0.6902),
+            secondary: Color(red: 0.8784, green: 0.6471, blue: 0.2353),
+            accent: Color(red: 0.9490, green: 0.8784, blue: 0.7608)
+        ),
+        HomeRewardCharacter(
+            id: "vox_ninja",
+            category: .fantasy,
+            japaneseName: "ボクセルにんじゃ",
+            englishName: "Voxel Ninja",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.1647, green: 0.2275, blue: 0.3608),
+            secondary: Color(red: 0.1020, green: 0.1333, blue: 0.2196),
+            accent: Color(red: 0.8784, green: 0.7882, blue: 0.6510)
+        ),
+        HomeRewardCharacter(
+            id: "vox_astro",
+            category: .space,
+            japaneseName: "ボクセルうちゅうひこうし",
+            englishName: "Voxel Astronaut",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9490, green: 0.9490, blue: 0.9490),
+            secondary: Color(red: 0.3569, green: 0.5255, blue: 0.7804),
+            accent: Color(red: 0.2275, green: 0.2745, blue: 0.3373)
+        ),
+        HomeRewardCharacter(
+            id: "vox_ghost",
+            category: .fantasy,
+            japaneseName: "ボクセルおばけ",
+            englishName: "Voxel Ghost",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9294, green: 0.9294, blue: 0.9608),
+            secondary: Color(red: 0.7882, green: 0.7882, blue: 0.8784),
+            accent: Color(red: 0.8784, green: 0.6471, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
+            id: "vox_apple",
+            category: .food,
+            japaneseName: "ボクセルりんご",
+            englishName: "Voxel Apple",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.8784, green: 0.1961, blue: 0.1804),
+            secondary: Color(red: 0.3098, green: 0.6275, blue: 0.4196),
+            accent: Color(red: 0.4784, green: 0.0706, blue: 0.0706)
+        ),
+        HomeRewardCharacter(
+            id: "vox_cake",
+            category: .food,
+            japaneseName: "ボクセルケーキ",
+            englishName: "Voxel Cake",
+            price: 50,
+            style: .imageAsset,
+            primary: Color(red: 0.9686, green: 0.9490, blue: 0.9098),
+            secondary: Color(red: 0.8784, green: 0.1961, blue: 0.1804),
+            accent: Color(red: 0.9490, green: 0.6510, blue: 0.7608)
         )
     ]
     // CATALOG-GENERATED-END
@@ -4490,10 +5264,15 @@ private struct CharacterPickerSheet: View {
                 .overlay(alignment: .top) {
                     if showStickyTab {
                         VStack(spacing: 0) {
-                            tabPicker
-                                .frame(maxWidth: contentWidth)
-                                .padding(.horizontal, 28)
-                                .padding(.vertical, 10)
+                            // インラインヘッダーが流れて消えても、固定バーでコイン残高を見せ続ける。
+                            // インラインと同じく右側に置いて位置を揃える。
+                            HStack(spacing: 10) {
+                                tabPicker
+                                HomeCoinBadge(coins: model.rewardCoins, language: language)
+                            }
+                            .frame(maxWidth: contentWidth)
+                            .padding(.horizontal, 28)
+                            .padding(.vertical, 10)
                             Divider()
                         }
                         .frame(maxWidth: .infinity)
@@ -4810,9 +5589,22 @@ private struct HomeLearnedWordMilestone: View {
                 .font(.system(size: 30, weight: .heavy, design: .rounded))
                 .foregroundStyle(Color(red: 0.20, green: 0.58, blue: 0.24))
         }
-        .frame(maxWidth: .infinity, alignment: .center)
         .lineLimit(1)
         .minimumScaleFactor(0.68)
+        // 背景の絵の上でも読めるよう、文字はクッキリ塗りのまま
+        // 後ろに白い角丸プレートを敷く（縁取りより濁らない）。
+        .padding(.horizontal, 26)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 26, style: .continuous)
+                .fill(Color.white.opacity(0.9))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 26, style: .continuous)
+                        .stroke(Color.white.opacity(0.95), lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 4)
+        )
+        .frame(maxWidth: .infinity, alignment: .center)
         .accessibilityLabel(language.text(japanese: "これまで学習した単語 \(count)個", english: "\(count) learned words"))
     }
 }
@@ -4925,6 +5717,18 @@ struct RewardCharacterAvatar: View {
                 PersonCharacterFace(character: character, hair: .buzz)
             case .personPonytail:
                 PersonCharacterFace(character: character, hair: .ponytail)
+            case .personTwintails:
+                PersonCharacterFace(character: character, hair: .twintails)
+            case .personBob:
+                PersonCharacterFace(character: character, hair: .bob)
+            case .personAfro:
+                PersonCharacterFace(character: character, hair: .afro)
+            case .personSpiky:
+                PersonCharacterFace(character: character, hair: .spiky)
+            case .personBraids:
+                PersonCharacterFace(character: character, hair: .braids)
+            case .personWavy:
+                PersonCharacterFace(character: character, hair: .wavy)
             case .robot:
                 RobotCharacterFace(character: character)
             case .ghost:
@@ -5133,6 +5937,22 @@ struct RewardCharacterAvatar: View {
                 MoonCharacterFace(character: character)
             case .alien:
                 AlienCharacterFace(character: character)
+            case .alienBlob:
+                AlienBlobCharacterFace(character: character)
+            case .alienTriclops:
+                AlienTriclopsCharacterFace(character: character)
+            case .alienSquid:
+                AlienSquidCharacterFace(character: character)
+            case .alienWorm:
+                AlienWormCharacterFace(character: character)
+            case .alienMushroom:
+                AlienMushroomCharacterFace(character: character)
+            case .alienBugeye:
+                AlienBugeyeCharacterFace(character: character)
+            case .alienCrystal:
+                AlienCrystalCharacterFace(character: character)
+            case .alienHover:
+                AlienHoverCharacterFace(character: character)
             case .velociraptor:
                 VelociraptorCharacterFace(character: character)
             case .ankylosaurus:
@@ -5647,6 +6467,12 @@ private enum PersonHair {
     case bun
     case buzz
     case ponytail
+    case twintails
+    case bob
+    case afro
+    case spiky
+    case braids
+    case wavy
 }
 
 private struct PersonCharacterFace: View {
@@ -5688,6 +6514,24 @@ private struct PersonCharacterFace: View {
             Capsule().fill(character.accent).frame(width: 20, height: 48).rotationEffect(.degrees(18)).offset(x: 35, y: 8)
         case .bun:
             Circle().fill(character.accent).frame(width: 26, height: 26).offset(y: -34)
+        case .twintails:
+            Capsule().fill(character.accent).frame(width: 18, height: 46).rotationEffect(.degrees(-22)).offset(x: -34, y: 10)
+            Capsule().fill(character.accent).frame(width: 18, height: 46).rotationEffect(.degrees(22)).offset(x: 34, y: 10)
+        case .bob:
+            RoundedRectangle(cornerRadius: 22).fill(character.accent).frame(width: 76, height: 70).offset(y: 2)
+        case .afro:
+            Circle().fill(character.accent).frame(width: 86, height: 82).offset(y: -4)
+        case .braids:
+            ForEach(0..<3) { index in
+                Circle().fill(character.accent).frame(width: 16, height: 16).offset(x: -33, y: CGFloat(index) * 13 + 6)
+            }
+            ForEach(0..<3) { index in
+                Circle().fill(character.accent).frame(width: 16, height: 16).offset(x: 33, y: CGFloat(index) * 13 + 6)
+            }
+        case .wavy:
+            RoundedRectangle(cornerRadius: 30).fill(character.accent).frame(width: 72, height: 84).offset(y: 10)
+            Circle().fill(character.accent).frame(width: 24, height: 24).offset(x: -29, y: 44)
+            Circle().fill(character.accent).frame(width: 24, height: 24).offset(x: 29, y: 44)
         default:
             EmptyView()
         }
@@ -5708,7 +6552,16 @@ private struct PersonCharacterFace: View {
                     .rotationEffect(.degrees(Double(index) * 28 - 70))
             }
             Circle().fill(character.accent).frame(width: 24, height: 24).offset(y: -32)
-        case .long, .ponytail, .bun:
+        case .spiky:
+            // 髪の土台キャップ → そこからトゲを生やす（坊主に浮かないよう接続）
+            Circle().fill(character.accent).frame(width: 66, height: 62).offset(y: -12)
+                .mask(Rectangle().frame(width: 70, height: 28).offset(y: -22))
+            ForEach(0..<5) { index in
+                Triangle().fill(character.accent).frame(width: 16, height: 22)
+                    .offset(x: CGFloat(index - 2) * 14, y: -34)
+            }
+        default:
+            // long, ponytail, bun, twintails, bob, afro, braids, wavy: 共通の前髪
             Circle().fill(character.accent).frame(width: 64, height: 58).offset(y: -12)
                 .mask(Rectangle().frame(width: 70, height: 30).offset(y: -20))
         }
@@ -7739,6 +8592,174 @@ private struct AlienCharacterFace: View {
     }
 }
 
+// MARK: - Aliens (batch 2: モードS 宇宙人)
+
+private struct AlienBlobCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 14, height: 12).offset(x: -16, y: 40)
+            Capsule().fill(character.primary).frame(width: 14, height: 12).offset(x: 16, y: 40)
+            Capsule().fill(character.primary).frame(width: 4, height: 16).offset(y: -38)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(y: -46)
+            Ellipse().fill(character.primary).frame(width: 80, height: 74).offset(y: 4)
+            Ellipse().fill(character.secondary).frame(width: 46, height: 40).offset(y: 22)
+            Circle().fill(.white).frame(width: 44, height: 44).offset(y: -4)
+            Circle().fill(character.accent).frame(width: 24, height: 24).offset(y: -3)
+            Circle().fill(.black).frame(width: 12, height: 12).offset(y: -3)
+            Circle().fill(.white).frame(width: 5, height: 5).offset(x: 5, y: -7)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                .frame(width: 18, height: 8).offset(y: 24)
+        }
+    }
+}
+
+private struct AlienTriclopsCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 10, height: 26).rotationEffect(.degrees(22)).offset(x: -32, y: 20)
+            Capsule().fill(character.primary).frame(width: 10, height: 26).rotationEffect(.degrees(-22)).offset(x: 32, y: 20)
+            Capsule().fill(character.secondary).frame(width: 46, height: 42).offset(y: 32)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).rotationEffect(.degrees(18)).offset(x: -12, y: -38)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).rotationEffect(.degrees(-18)).offset(x: 12, y: -38)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: -15, y: -44)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: 15, y: -44)
+            Circle().fill(character.primary).frame(width: 68, height: 60).offset(y: -6)
+            ForEach(-1...1, id: \.self) { i in
+                Circle().fill(.white).frame(width: 17, height: 19).offset(x: CGFloat(i) * 19, y: -8)
+                Circle().fill(.black).frame(width: 8, height: 8).offset(x: CGFloat(i) * 19, y: -6)
+            }
+            SmileArc().stroke(.black.opacity(0.55), style: StrokeStyle(lineWidth: 2.2, lineCap: .round))
+                .frame(width: 16, height: 7).offset(y: 12)
+        }
+    }
+}
+
+private struct AlienSquidCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            ForEach(0..<5, id: \.self) { i in
+                Capsule().fill(i % 2 == 0 ? character.primary : character.secondary)
+                    .frame(width: 9, height: 30)
+                    .rotationEffect(.degrees(Double(i - 2) * 9))
+                    .offset(x: CGFloat(i - 2) * 14, y: 34)
+            }
+            Ellipse().fill(character.primary).frame(width: 84, height: 70).offset(y: -6)
+            Ellipse().fill(character.secondary).frame(width: 84, height: 26).offset(y: 16)
+                .mask(Ellipse().frame(width: 84, height: 70).offset(y: -6))
+            Circle().fill(.white).frame(width: 20, height: 22).offset(x: -15, y: -8)
+            Circle().fill(.white).frame(width: 20, height: 22).offset(x: 15, y: -8)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: -14, y: -6)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: 16, y: -6)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2.3, lineCap: .round))
+                .frame(width: 18, height: 8).offset(y: 8)
+        }
+    }
+}
+
+private struct AlienWormCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 30, height: 30).offset(x: 14, y: 40)
+            Circle().fill(character.secondary).frame(width: 11, height: 11).offset(x: 14, y: 40)
+            Circle().fill(character.primary).frame(width: 36, height: 36).offset(x: -8, y: 26)
+            Circle().fill(character.secondary).frame(width: 13, height: 13).offset(x: -8, y: 26)
+            Circle().fill(character.primary).frame(width: 40, height: 40).offset(x: 10, y: 8)
+            Circle().fill(character.secondary).frame(width: 14, height: 14).offset(x: 10, y: 8)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).rotationEffect(.degrees(20)).offset(x: -8, y: -30)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).rotationEffect(.degrees(-20)).offset(x: 8, y: -30)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: -11, y: -36)
+            Circle().fill(character.accent).frame(width: 9, height: 9).offset(x: 11, y: -36)
+            Circle().fill(character.primary).frame(width: 50, height: 48).offset(x: -8, y: -14)
+            Circle().fill(.white).frame(width: 13, height: 14).offset(x: -16, y: -16)
+            Circle().fill(.white).frame(width: 13, height: 14).offset(x: 0, y: -16)
+            Circle().fill(.black).frame(width: 6, height: 6).offset(x: -16, y: -15)
+            Circle().fill(.black).frame(width: 6, height: 6).offset(x: 0, y: -15)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 13, height: 6).offset(x: -8, y: -3)
+        }
+    }
+}
+
+private struct AlienMushroomCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.secondary).frame(width: 46, height: 54).offset(y: 24)
+            Ellipse().fill(character.primary).frame(width: 92, height: 60).offset(y: -18)
+            Circle().fill(character.accent).frame(width: 14, height: 14).offset(x: -24, y: -22)
+            Circle().fill(character.accent).frame(width: 10, height: 10).offset(x: 6, y: -30)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: 26, y: -16)
+            Circle().fill(.white).frame(width: 15, height: 16).offset(x: -11, y: 18)
+            Circle().fill(.white).frame(width: 15, height: 16).offset(x: 11, y: 18)
+            Circle().fill(.black).frame(width: 7, height: 7).offset(x: -11, y: 19)
+            Circle().fill(.black).frame(width: 7, height: 7).offset(x: 11, y: 19)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 14, height: 6).offset(y: 32)
+        }
+    }
+}
+
+private struct AlienBugeyeCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 9, height: 24).rotationEffect(.degrees(24)).offset(x: -28, y: 20)
+            Capsule().fill(character.primary).frame(width: 9, height: 24).rotationEffect(.degrees(-24)).offset(x: 28, y: 20)
+            Capsule().fill(character.secondary).frame(width: 46, height: 44).offset(y: 30)
+            Circle().fill(character.primary).frame(width: 48, height: 44).offset(y: -2)
+            Capsule().fill(character.primary).frame(width: 6, height: 22).offset(x: -14, y: -28)
+            Capsule().fill(character.primary).frame(width: 6, height: 22).offset(x: 14, y: -28)
+            Circle().fill(.white).frame(width: 26, height: 26).offset(x: -14, y: -40)
+            Circle().fill(.white).frame(width: 26, height: 26).offset(x: 14, y: -40)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: -12, y: -39)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: 16, y: -39)
+            Circle().fill(.black).frame(width: 6, height: 6).offset(x: -12, y: -39)
+            Circle().fill(.black).frame(width: 6, height: 6).offset(x: 16, y: -39)
+            SmileArc().stroke(.black.opacity(0.55), style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 16, height: 7).offset(y: 6)
+        }
+    }
+}
+
+private struct AlienCrystalCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10).fill(character.secondary).frame(width: 26, height: 26).rotationEffect(.degrees(45)).offset(x: -34, y: 28)
+            RoundedRectangle(cornerRadius: 10).fill(character.secondary).frame(width: 22, height: 22).rotationEffect(.degrees(45)).offset(x: 34, y: 30)
+            RoundedRectangle(cornerRadius: 16).fill(character.primary).frame(width: 74, height: 74).rotationEffect(.degrees(45)).offset(y: -2)
+            Capsule().fill(character.secondary.opacity(0.6)).frame(width: 3, height: 30).rotationEffect(.degrees(45)).offset(x: -10, y: -2)
+            Capsule().fill(character.secondary.opacity(0.6)).frame(width: 3, height: 30).rotationEffect(.degrees(-45)).offset(x: 10, y: -2)
+            Circle().fill(.white).frame(width: 14, height: 15).offset(x: -11, y: -4)
+            Circle().fill(.white).frame(width: 14, height: 15).offset(x: 11, y: -4)
+            Circle().fill(.black).frame(width: 7, height: 7).offset(x: -11, y: -3)
+            Circle().fill(.black).frame(width: 7, height: 7).offset(x: 11, y: -3)
+            SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round)).frame(width: 14, height: 6).offset(y: 12)
+            Circle().fill(character.accent).frame(width: 8, height: 8).offset(x: 22, y: -26)
+        }
+    }
+}
+
+private struct AlienHoverCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.secondary.opacity(0.5)).frame(width: 54, height: 16).offset(y: 42)
+            Capsule().fill(character.primary).frame(width: 3, height: 14).offset(y: -42)
+            Circle().fill(character.accent).frame(width: 11, height: 11).offset(y: -50)
+            Circle().fill(character.primary).frame(width: 74, height: 70).offset(y: -2)
+            Ellipse().fill(character.secondary).frame(width: 70, height: 18).offset(y: 24)
+                .mask(Circle().frame(width: 74, height: 70).offset(y: -2))
+            Capsule().fill(.black.opacity(0.82)).frame(width: 58, height: 24).offset(y: -4)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: -12, y: -4)
+            Circle().fill(character.accent).frame(width: 12, height: 12).offset(x: 12, y: -4)
+            Circle().fill(.white).frame(width: 4, height: 4).offset(x: -14, y: -6)
+            Circle().fill(.white).frame(width: 4, height: 4).offset(x: 10, y: -6)
+        }
+    }
+}
+
 // MARK: - Dinosaurs (batch 2)
 
 private struct VelociraptorCharacterFace: View {
@@ -8209,7 +9230,122 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "newyork", japaneseName: "ニューヨーク", englishName: "New York", price: 260, imageName: "bg_newyork"),
         HomeBackgroundTheme(id: "london", japaneseName: "ロンドン", englishName: "London", price: 240, imageName: "bg_london"),
         HomeBackgroundTheme(id: "basketball", japaneseName: "バスケアリーナ", englishName: "Basketball Arena", price: 220, imageName: "bg_basketball"),
-        HomeBackgroundTheme(id: "airport", japaneseName: "くうこうラウンジ", englishName: "Airport Lounge", price: 220, imageName: "bg_airport")
+        HomeBackgroundTheme(id: "airport", japaneseName: "くうこうラウンジ", englishName: "Airport Lounge", price: 220, imageName: "bg_airport"),
+        HomeBackgroundTheme(id: "shibuyaday", japaneseName: "しぶや(ひる)", englishName: "Shibuya Day", price: 240, imageName: "bg_shibuyaday"),
+        HomeBackgroundTheme(id: "spaceship", japaneseName: "うちゅうせんのなか", englishName: "Spaceship", price: 200, imageName: "bg_spaceship"),
+        HomeBackgroundTheme(id: "earthspace", japaneseName: "うちゅうのちきゅう", englishName: "Earth from Space", price: 180, imageName: "bg_earthspace"),
+        HomeBackgroundTheme(id: "cakeshop", japaneseName: "ケーキやさん", englishName: "Cake Shop", price: 160, imageName: "bg_cakeshop"),
+        HomeBackgroundTheme(id: "bakery", japaneseName: "パンやさん", englishName: "Bakery", price: 150, imageName: "bg_bakery"),
+        HomeBackgroundTheme(id: "flowershop", japaneseName: "おはなやさん", englishName: "Flower Shop", price: 150, imageName: "bg_flowershop"),
+        HomeBackgroundTheme(id: "police", japaneseName: "こうばん", englishName: "Police Box", price: 160, imageName: "bg_police"),
+        HomeBackgroundTheme(id: "firestation", japaneseName: "しょうぼうしょ", englishName: "Fire Station", price: 170, imageName: "bg_firestation"),
+        HomeBackgroundTheme(id: "dinomuseum", japaneseName: "きょうりゅうはくぶつかん", englishName: "Dinosaur Museum", price: 190, imageName: "bg_dinomuseum"),
+        HomeBackgroundTheme(id: "trainstation", japaneseName: "えきのホーム", englishName: "Train Station", price: 170, imageName: "bg_trainstation"),
+        HomeBackgroundTheme(id: "toyshop", japaneseName: "おもちゃやさん", englishName: "Toy Shop", price: 160, imageName: "bg_toyshop"),
+        HomeBackgroundTheme(id: "soccerfield", japaneseName: "サッカーピッチ", englishName: "Soccer Pitch", price: 240, imageName: "bg_soccerfield"),
+        HomeBackgroundTheme(id: "blockworld", japaneseName: "ブロックのせかい", englishName: "Block World", price: 200, imageName: "bg_blockworld"),
+        HomeBackgroundTheme(id: "sciencelab", japaneseName: "かがくラボ", englishName: "Science Lab", price: 190, imageName: "bg_sciencelab"),
+        HomeBackgroundTheme(id: "planetarium", japaneseName: "プラネタリウム", englishName: "Planetarium", price: 240, imageName: "bg_planetarium"),
+        HomeBackgroundTheme(id: "ninjavillage", japaneseName: "にんじゃのさと", englishName: "Ninja Village", price: 190, imageName: "bg_ninjavillage"),
+        HomeBackgroundTheme(id: "robotlab", japaneseName: "ロボットこうぼう", englishName: "Robot Workshop", price: 230, imageName: "bg_robotlab"),
+        HomeBackgroundTheme(id: "artatelier", japaneseName: "おえかきアトリエ", englishName: "Art Atelier", price: 180, imageName: "bg_artatelier"),
+        HomeBackgroundTheme(id: "musicstudio", japaneseName: "おんがくスタジオ", englishName: "Music Studio", price: 240, imageName: "bg_musicstudio"),
+        HomeBackgroundTheme(id: "neoncafe", japaneseName: "ネオンカフェ", englishName: "Neon Cafe", price: 260, imageName: "bg_neoncafe"),
+        HomeBackgroundTheme(id: "arcade", japaneseName: "ゲームセンター", englishName: "Arcade", price: 260, imageName: "bg_arcade"),
+        HomeBackgroundTheme(id: "beachresort", japaneseName: "ビーチリゾート", englishName: "Beach Resort", price: 260, imageName: "bg_beachresort"),
+        HomeBackgroundTheme(id: "skilodge", japaneseName: "スキーじょう", englishName: "Ski Resort", price: 250, imageName: "bg_skilodge"),
+        HomeBackgroundTheme(id: "summerfes", japaneseName: "なつまつり", englishName: "Summer Festival", price: 200, imageName: "bg_summerfes"),
+        HomeBackgroundTheme(id: "fireworks", japaneseName: "はなびたいかい", englishName: "Fireworks", price: 240, imageName: "bg_fireworks"),
+        HomeBackgroundTheme(id: "xmasmarket", japaneseName: "クリスマスマーケット", englishName: "Christmas Market", price: 240, imageName: "bg_xmasmarket"),
+        HomeBackgroundTheme(id: "halloween", japaneseName: "ハロウィンのよる", englishName: "Halloween Night", price: 200, imageName: "bg_halloween"),
+        HomeBackgroundTheme(id: "shrine", japaneseName: "おしょうがつ", englishName: "New Year Shrine", price: 190, imageName: "bg_shrine"),
+        HomeBackgroundTheme(id: "voxelforest", japaneseName: "ボクセルのもり", englishName: "Voxel Forest", price: 200, imageName: "bg_voxelforest"),
+        HomeBackgroundTheme(id: "voxeldesert", japaneseName: "ボクセルのさばく", englishName: "Voxel Desert", price: 200, imageName: "bg_voxeldesert"),
+        HomeBackgroundTheme(id: "voxelocean", japaneseName: "ボクセルのうみ", englishName: "Voxel Ocean", price: 200, imageName: "bg_voxelocean"),
+        HomeBackgroundTheme(id: "voxelsnow", japaneseName: "ボクセルのゆきはら", englishName: "Voxel Snowland", price: 200, imageName: "bg_voxelsnow"),
+        HomeBackgroundTheme(id: "voxelvolcano", japaneseName: "ボクセルのかざん", englishName: "Voxel Volcano", price: 210, imageName: "bg_voxelvolcano"),
+        HomeBackgroundTheme(id: "voxelsky", japaneseName: "ボクセルのそらじま", englishName: "Voxel Sky Islands", price: 210, imageName: "bg_voxelsky"),
+        HomeBackgroundTheme(id: "voxelplains", japaneseName: "ボクセルのそうげん", englishName: "Voxel Plains", price: 200, imageName: "bg_voxelplains"),
+        HomeBackgroundTheme(id: "voxelvillage", japaneseName: "ボクセルのむら", englishName: "Voxel Village", price: 210, imageName: "bg_voxelvillage"),
+        HomeBackgroundTheme(id: "voxeljungle", japaneseName: "ボクセルのジャングル", englishName: "Voxel Jungle", price: 210, imageName: "bg_voxeljungle"),
+        HomeBackgroundTheme(id: "voxelcave", japaneseName: "ボクセルのどうくつ", englishName: "Voxel Cave", price: 210, imageName: "bg_voxelcave"),
+        HomeBackgroundTheme(id: "voxelmountain", japaneseName: "ボクセルのやま", englishName: "Voxel Mountain Trail", price: 210, imageName: "bg_voxelmountain"),
+        HomeBackgroundTheme(id: "voxelwaterfall", japaneseName: "ボクセルのたき", englishName: "Voxel Waterfall", price: 210, imageName: "bg_voxelwaterfall"),
+        HomeBackgroundTheme(id: "voxellava", japaneseName: "ボクセルのようがん", englishName: "Voxel Lava Field", price: 220, imageName: "bg_voxellava"),
+        HomeBackgroundTheme(id: "voxelcanyon", japaneseName: "ボクセルのだいきょうこく", englishName: "Voxel Canyon", price: 215, imageName: "bg_voxelcanyon"),
+        HomeBackgroundTheme(id: "voxelmesa", japaneseName: "ボクセルのあかいわ", englishName: "Voxel Mesa", price: 215, imageName: "bg_voxelmesa"),
+        HomeBackgroundTheme(id: "voxelglacier", japaneseName: "ボクセルのひょうが", englishName: "Voxel Glacier", price: 215, imageName: "bg_voxelglacier"),
+        HomeBackgroundTheme(id: "voxelmushroom", japaneseName: "ボクセルのキノコもり", englishName: "Voxel Mushroom Forest", price: 220, imageName: "bg_voxelmushroom"),
+        HomeBackgroundTheme(id: "voxelstorm", japaneseName: "ボクセルのあらし", englishName: "Voxel Storm Cliffs", price: 220, imageName: "bg_voxelstorm"),
+        HomeBackgroundTheme(id: "dinovalley", japaneseName: "きょうりゅうのたに", englishName: "Dinosaur Valley", price: 200, imageName: "bg_dinovalley"),
+        HomeBackgroundTheme(id: "tanabata", japaneseName: "たなばた", englishName: "Tanabata Festival", price: 180, imageName: "bg_tanabata"),
+        HomeBackgroundTheme(id: "koinobori", japaneseName: "こどものひ", englishName: "Children's Day", price: 180, imageName: "bg_koinobori"),
+        HomeBackgroundTheme(id: "hinamatsuri", japaneseName: "ひなまつり", englishName: "Hinamatsuri", price: 180, imageName: "bg_hinamatsuri"),
+        HomeBackgroundTheme(id: "construction", japaneseName: "こうじげんば", englishName: "Construction Site", price: 200, imageName: "bg_construction"),
+        HomeBackgroundTheme(id: "harbor", japaneseName: "みなと", englishName: "Harbor", price: 200, imageName: "bg_harbor"),
+        HomeBackgroundTheme(id: "deepsea", japaneseName: "しんかい", englishName: "Deep Sea", price: 200, imageName: "bg_deepsea"),
+        HomeBackgroundTheme(id: "coralreef", japaneseName: "さんごしょう", englishName: "Coral Reef", price: 200, imageName: "bg_coralreef"),
+        HomeBackgroundTheme(id: "dragonpeak", japaneseName: "ドラゴンのやま", englishName: "Dragon Peak", price: 220, imageName: "bg_dragonpeak"),
+        HomeBackgroundTheme(id: "cloudcastle", japaneseName: "くものおしろ", englishName: "Cloud Castle", price: 220, imageName: "bg_cloudcastle"),
+        HomeBackgroundTheme(id: "pyramids", japaneseName: "ピラミッド", englishName: "Pyramids of Egypt", price: 240, imageName: "bg_pyramids"),
+        HomeBackgroundTheme(id: "greatwall", japaneseName: "ばんりのちょうじょう", englishName: "Great Wall", price: 240, imageName: "bg_greatwall"),
+        HomeBackgroundTheme(id: "aurora", japaneseName: "オーロラ", englishName: "Aurora", price: 240, imageName: "bg_aurora"),
+        HomeBackgroundTheme(id: "moonbase", japaneseName: "つきのきち", englishName: "Moon Base", price: 260, imageName: "bg_moonbase"),
+        HomeBackgroundTheme(id: "savanna", japaneseName: "サバンナ", englishName: "Savanna", price: 240, imageName: "bg_savanna"),
+        HomeBackgroundTheme(id: "nightsakura", japaneseName: "よざくら", englishName: "Night Sakura", price: 240, imageName: "bg_nightsakura"),
+        HomeBackgroundTheme(id: "voxelcity", japaneseName: "ボクセルシティ", englishName: "Voxel City", price: 200, imageName: "bg_voxelcity"),
+        HomeBackgroundTheme(id: "voxelfarm", japaneseName: "ボクセルぼくじょう", englishName: "Voxel Farm", price: 200, imageName: "bg_voxelfarm"),
+        HomeBackgroundTheme(id: "voxelcastle", japaneseName: "ボクセルキャッスル", englishName: "Voxel Castle", price: 200, imageName: "bg_voxelcastle"),
+        HomeBackgroundTheme(id: "voxelautumn", japaneseName: "ボクセルこうよう", englishName: "Voxel Autumn", price: 200, imageName: "bg_voxelautumn"),
+        HomeBackgroundTheme(id: "ghosthouse", japaneseName: "おばけやしき", englishName: "Ghost House", price: 200, imageName: "bg_ghosthouse"),
+        HomeBackgroundTheme(id: "beetleforest", japaneseName: "カブトムシのもり", englishName: "Beetle Forest", price: 180, imageName: "bg_beetleforest"),
+        HomeBackgroundTheme(id: "butterflygarden", japaneseName: "ちょうのにわ", englishName: "Butterfly Garden", price: 180, imageName: "bg_butterflygarden"),
+        HomeBackgroundTheme(id: "fireflynight", japaneseName: "ほたるのよる", englishName: "Firefly Night", price: 200, imageName: "bg_fireflynight"),
+        HomeBackgroundTheme(id: "dragonflypond", japaneseName: "とんぼのいけ", englishName: "Dragonfly Pond", price: 180, imageName: "bg_dragonflypond"),
+        HomeBackgroundTheme(id: "rainyhydrangea", japaneseName: "あめとあじさい", englishName: "Rainy Hydrangea", price: 180, imageName: "bg_rainyhydrangea"),
+        HomeBackgroundTheme(id: "tsukimi", japaneseName: "おつきみ", englishName: "Moon Viewing", price: 200, imageName: "bg_tsukimi"),
+        HomeBackgroundTheme(id: "setsubun", japaneseName: "せつぶん", englishName: "Setsubun", price: 180, imageName: "bg_setsubun"),
+        HomeBackgroundTheme(id: "newyear", japaneseName: "おしょうがつ", englishName: "New Year", price: 200, imageName: "bg_newyear"),
+        HomeBackgroundTheme(id: "easter", japaneseName: "イースター", englishName: "Easter", price: 180, imageName: "bg_easter"),
+        HomeBackgroundTheme(id: "fairyforest", japaneseName: "ようせいのもり", englishName: "Fairy Forest", price: 220, imageName: "bg_fairyforest"),
+        HomeBackgroundTheme(id: "crystalcave", japaneseName: "クリスタルのどうくつ", englishName: "Crystal Cave", price: 220, imageName: "bg_crystalcave"),
+        HomeBackgroundTheme(id: "piratecove", japaneseName: "かいぞくのいりえ", englishName: "Pirate Cove", price: 200, imageName: "bg_piratecove"),
+        HomeBackgroundTheme(id: "treehouse", japaneseName: "ツリーハウス", englishName: "Treehouse", price: 200, imageName: "bg_treehouse"),
+        HomeBackgroundTheme(id: "hotairballoons", japaneseName: "ききゅうのそら", englishName: "Hot Air Balloons", price: 200, imageName: "bg_hotairballoons"),
+        HomeBackgroundTheme(id: "bamboo", japaneseName: "たけやぶ", englishName: "Bamboo Grove", price: 180, imageName: "bg_bamboo"),
+        HomeBackgroundTheme(id: "ricefield", japaneseName: "いなかのたんぼ", englishName: "Countryside Rice Field", price: 180, imageName: "bg_ricefield"),
+        HomeBackgroundTheme(id: "icepalace", japaneseName: "こおりのきゅうでん", englishName: "Ice Palace", price: 240, imageName: "bg_icepalace"),
+        HomeBackgroundTheme(id: "desertpalace", japaneseName: "まほうのさばく", englishName: "Desert Palace", price: 240, imageName: "bg_desertpalace"),
+        HomeBackgroundTheme(id: "seakingdom", japaneseName: "うみのおうこく", englishName: "Sea Kingdom", price: 240, imageName: "bg_seakingdom"),
+        HomeBackgroundTheme(id: "lionrock", japaneseName: "サンライズのいわ", englishName: "Sunrise Rock", price: 240, imageName: "bg_lionrock"),
+        HomeBackgroundTheme(id: "toyroom", japaneseName: "おもちゃのへや", englishName: "Toy Room", price: 200, imageName: "bg_toyroom"),
+        HomeBackgroundTheme(id: "tropicalisland", japaneseName: "みなみのしま", englishName: "Tropical Island", price: 220, imageName: "bg_tropicalisland"),
+        HomeBackgroundTheme(id: "ballroom", japaneseName: "まほうのぶとうかい", englishName: "Magic Ballroom", price: 240, imageName: "bg_ballroom"),
+        HomeBackgroundTheme(id: "junglevines", japaneseName: "みどりのジャングル", englishName: "Green Jungle", price: 220, imageName: "bg_junglevines"),
+        HomeBackgroundTheme(id: "lanternnight", japaneseName: "そらとぶランタン", englishName: "Lantern Night", price: 240, imageName: "bg_lanternnight"),
+        HomeBackgroundTheme(id: "library", japaneseName: "まほうのとしょかん", englishName: "Magic Library", price: 220, imageName: "bg_library"),
+        HomeBackgroundTheme(id: "fairytalevillage", japaneseName: "おとぎのむら", englishName: "Fairytale Village", price: 220, imageName: "bg_fairytalevillage"),
+        HomeBackgroundTheme(id: "skyship", japaneseName: "そらとぶふね", englishName: "Flying Ship", price: 240, imageName: "bg_skyship"),
+        HomeBackgroundTheme(id: "wonderland", japaneseName: "ふしぎのにわ", englishName: "Wonderland Garden", price: 220, imageName: "bg_wonderland"),
+        HomeBackgroundTheme(id: "flowertower", japaneseName: "はなのとう", englishName: "Flower Tower", price: 220, imageName: "bg_flowertower"),
+        HomeBackgroundTheme(id: "buildsite", japaneseName: "こうじげんば", englishName: "Construction Site", price: 200, imageName: "bg_buildsite"),
+        HomeBackgroundTheme(id: "rocketlaunch", japaneseName: "ロケットはっしゃ", englishName: "Rocket Launch", price: 240, imageName: "bg_rocketlaunch"),
+        HomeBackgroundTheme(id: "bullettrain", japaneseName: "しんかんせん", englishName: "Bullet Train", price: 220, imageName: "bg_bullettrain"),
+        HomeBackgroundTheme(id: "fireengine", japaneseName: "しょうぼうたい", englishName: "Fire Engine", price: 200, imageName: "bg_fireengine"),
+        HomeBackgroundTheme(id: "portcranes", japaneseName: "みなとのクレーン", englishName: "Port Cranes", price: 200, imageName: "bg_portcranes"),
+        HomeBackgroundTheme(id: "wildsavanna", japaneseName: "サバンナ", englishName: "Wild Savanna", price: 240, imageName: "bg_wildsavanna"),
+        HomeBackgroundTheme(id: "polarnight", japaneseName: "きょくほくのうみ", englishName: "Arctic Night", price: 220, imageName: "bg_polarnight"),
+        HomeBackgroundTheme(id: "rainforest", japaneseName: "ねったいうりん", englishName: "Rainforest", price: 220, imageName: "bg_rainforest"),
+        HomeBackgroundTheme(id: "flamingolake", japaneseName: "フラミンゴのみずうみ", englishName: "Flamingo Lake", price: 200, imageName: "bg_flamingolake"),
+        HomeBackgroundTheme(id: "dinoplains", japaneseName: "きょうりゅうのへいげん", englishName: "Dinosaur Plains", price: 240, imageName: "bg_dinoplains"),
+        HomeBackgroundTheme(id: "volcanoera", japaneseName: "かざんじだい", englishName: "Volcano Era", price: 240, imageName: "bg_volcanoera"),
+        HomeBackgroundTheme(id: "ancientsea", japaneseName: "おおむかしのうみ", englishName: "Ancient Sea", price: 220, imageName: "bg_ancientsea"),
+        HomeBackgroundTheme(id: "iceagemammoth", japaneseName: "ひょうがき", englishName: "Ice Age", price: 220, imageName: "bg_iceagemammoth"),
+        HomeBackgroundTheme(id: "pteranodonsky", japaneseName: "そらとぶよくりゅう", englishName: "Flying Reptiles", price: 240, imageName: "bg_pteranodonsky"),
+        HomeBackgroundTheme(id: "voxelreef", japaneseName: "ボクセルのサンゴしょう", englishName: "Voxel Reef", price: 220, imageName: "bg_voxelreef"),
+        HomeBackgroundTheme(id: "voxelpirate", japaneseName: "ボクセルのかいぞくせん", englishName: "Voxel Pirates", price: 220, imageName: "bg_voxelpirate"),
+        HomeBackgroundTheme(id: "voxeldragon", japaneseName: "ボクセルのドラゴンのたに", englishName: "Voxel Dragon", price: 240, imageName: "bg_voxeldragon"),
+        HomeBackgroundTheme(id: "voxelaurora", japaneseName: "ボクセルのオーロラ", englishName: "Voxel Aurora", price: 220, imageName: "bg_voxelaurora")
     ]
     // BG-CATALOG-GENERATED-END
 }

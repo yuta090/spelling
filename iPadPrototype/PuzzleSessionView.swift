@@ -94,6 +94,22 @@ struct PuzzleSessionView: View {
         _sessionSeed = State(initialValue: seed ?? UInt64.random(in: .min ... .max))
     }
 
+    /// 学年制約（`ContentPolicy`）で**文バンクを先に絞ってから**セッションを作る。
+    /// 文ベースの3形式（ぶんづくり/あなうめ/きいてあなうめ）に効かせる。
+    /// 単語リスニング(`words`)は語単位（confusables 由来）なので文の制約は掛けない。
+    init(policy: ContentPolicy, length: Int = 12, seed: UInt64? = nil) {
+        // プールは生成文（登録語そのものではない）なので tier 例外・i+1 既知語は使わない。
+        let bank = ContentPolicy.admissiblePool(SentenceBankBundle.items, policy: policy, knownLemmas: [])
+        self.init(
+            orderingSentences: PuzzleContent.orderingSentences(bank: bank),
+            sentences: PuzzleContent.sentences(bank: bank),
+            listeningSentences: PuzzleContent.listeningSentences(bank: bank),
+            words: PuzzleContent.words(),
+            length: length,
+            seed: seed
+        )
+    }
+
     /// 音設定に応じた出題プール（おとなしなら音必須の形式を外す）。
     /// さらに、その形式に出せるコンテンツが無ければプールから外す（空出題で詰まらせない）。
     private var pool: [PuzzleFormat] {
@@ -521,24 +537,31 @@ private struct PuzzleStepView: View {
         }
     }
 
-    /// 答え合わせ後に英語を聞き返せる形式か（音ありのとき）。
+    /// 答え合わせ後に英語を聞き返せるか（音ありのとき）。
+    /// こたえあわせ後は、どの形式でも正しい英語を聞けるようにする（ぶんづくりも含む）。
+    /// 読み上げる中身を用意できる形式だけ true（中身が無いと押しても無音になるため）。
     private var canListenBack: Bool {
         guard soundOn else { return false }
+        return listenBackText != nil
+    }
+
+    /// こたえあわせ後に読み上げる英語（形式ごとに正しい英文／語）。
+    private var listenBackText: String? {
         switch format {
-        case .clozeChoice, .listeningCloze, .wordListening: return true
-        case .wordOrdering, .clozeHandwriting, .composition: return false
+        case .wordOrdering:
+            return orderingExercise.map { $0.answer.joined(separator: " ") }
+        case .clozeChoice, .listeningCloze:
+            return clozeExercise.map { $0.displayTokens.joined(separator: " ") }
+        case .wordListening:
+            return listeningExercise.map { _ in word }
+        case .clozeHandwriting, .composition:
+            return nil
         }
     }
 
     private func listenBack() {
-        switch format {
-        case .wordListening:
-            speech.speak(word, language: "en-US")
-        case .clozeChoice, .listeningCloze:
-            if let ex = clozeExercise { speech.speak(ex.displayTokens.joined(separator: " "), language: "en-US") }
-        default:
-            break
-        }
+        guard let text = listenBackText else { return }
+        speech.speak(text, language: "en-US")
     }
 
     private func setup() {

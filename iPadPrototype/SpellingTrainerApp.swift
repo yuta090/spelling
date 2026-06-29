@@ -56,6 +56,12 @@ private struct RootView: View {
                     guard let session, session.isSignedIn, !session.isAnonymous else { return nil }
                     return session.activeHouseholdID
                 }
+                // 運用テレメトリ（送信専用）の世帯供給元＋MetricKit購読を開始。
+                // 親・紐づく子端末いずれも自世帯の event_log に INSERT 可（RLS）。世帯未確定なら溜める。
+                TelemetryCoordinator.shared.configure { [weak session] in
+                    guard let session, session.isSignedIn else { return nil }
+                    return session.activeHouseholdID
+                }
                 await session.refreshOnAppear()
                 await model.syncNow()
             }
@@ -67,6 +73,8 @@ private struct RootView: View {
                 } else {
                     // 前面を離れた（inactive/background）：滞在ぶんを利用時間へ確定。
                     model.endUsageSession()
+                    // 溜めた運用テレメトリをバッチ送信（前面離脱の猶予で送り切る）。
+                    Task { await TelemetryCoordinator.shared.flush() }
                 }
             }
             .onChange(of: session.activeHouseholdID) { _ in
