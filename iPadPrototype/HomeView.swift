@@ -9977,7 +9977,27 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "kappapond", japaneseName: "かっぱのぬま", englishName: "Kappa Pond", price: 200, imageName: "bg_kappapond"),
         HomeBackgroundTheme(id: "hauntedshrine", japaneseName: "おばけじんじゃ", englishName: "Haunted Shrine", price: 240, imageName: "bg_hauntedshrine"),
         HomeBackgroundTheme(id: "oninoyama", japaneseName: "おにのやま", englishName: "Ogre Mountain", price: 220, imageName: "bg_oninoyama"),
-        HomeBackgroundTheme(id: "lanternghosts", japaneseName: "ちょうちんおばけ", englishName: "Lantern Ghosts", price: 200, imageName: "bg_lanternghosts")
+        HomeBackgroundTheme(id: "lanternghosts", japaneseName: "ちょうちんおばけ", englishName: "Lantern Ghosts", price: 200, imageName: "bg_lanternghosts"),
+        HomeBackgroundTheme(id: "fujizakura", japaneseName: "ふじとさくら", englishName: "Mt Fuji & Sakura", price: 260, imageName: "bg_fujizakura"),
+        HomeBackgroundTheme(id: "kyotoautumn", japaneseName: "きょうとのもみじ", englishName: "Kyoto Autumn", price: 260, imageName: "bg_kyotoautumn"),
+        HomeBackgroundTheme(id: "snowonsen", japaneseName: "ゆきみおんせん", englishName: "Snow Hot Spring", price: 260, imageName: "bg_snowonsen"),
+        HomeBackgroundTheme(id: "terracedrice", japaneseName: "たなだのゆうぐれ", englishName: "Terraced Rice", price: 240, imageName: "bg_terracedrice"),
+        HomeBackgroundTheme(id: "shirakawa", japaneseName: "ゆきのむら", englishName: "Snow Village", price: 260, imageName: "bg_shirakawa"),
+        HomeBackgroundTheme(id: "galaxystation", japaneseName: "ぎんがステーション", englishName: "Galaxy Station", price: 260, imageName: "bg_galaxystation"),
+        HomeBackgroundTheme(id: "marsbase", japaneseName: "かせいきち", englishName: "Mars Base", price: 260, imageName: "bg_marsbase"),
+        HomeBackgroundTheme(id: "saturnview", japaneseName: "どせいのわ", englishName: "Saturn View", price: 260, imageName: "bg_saturnview"),
+        HomeBackgroundTheme(id: "blackhole", japaneseName: "ブラックホール", englishName: "Black Hole", price: 260, imageName: "bg_blackhole"),
+        HomeBackgroundTheme(id: "meteornight", japaneseName: "りゅうせいぐん", englishName: "Meteor Shower", price: 240, imageName: "bg_meteornight"),
+        HomeBackgroundTheme(id: "cockpit", japaneseName: "コックピット", englishName: "Cockpit", price: 240, imageName: "bg_cockpit"),
+        HomeBackgroundTheme(id: "hospital", japaneseName: "びょういん", englishName: "Hospital", price: 220, imageName: "bg_hospital"),
+        HomeBackgroundTheme(id: "patisserie", japaneseName: "パティシエのちゅうぼう", englishName: "Patisserie", price: 220, imageName: "bg_patisserie"),
+        HomeBackgroundTheme(id: "digsite", japaneseName: "はっくつげんば", englishName: "Dig Site", price: 220, imageName: "bg_digsite"),
+        HomeBackgroundTheme(id: "vetclinic", japaneseName: "どうぶつびょういん", englishName: "Vet Clinic", price: 220, imageName: "bg_vetclinic"),
+        HomeBackgroundTheme(id: "catcafe", japaneseName: "ねこカフェ", englishName: "Cat Cafe", price: 220, imageName: "bg_catcafe"),
+        HomeBackgroundTheme(id: "pandabamboo", japaneseName: "パンダのたけやぶ", englishName: "Panda Grove", price: 220, imageName: "bg_pandabamboo"),
+        HomeBackgroundTheme(id: "bunnyisland", japaneseName: "うさぎのしま", englishName: "Bunny Island", price: 220, imageName: "bg_bunnyisland"),
+        HomeBackgroundTheme(id: "penguinbeach", japaneseName: "ペンギンビーチ", englishName: "Penguin Beach", price: 220, imageName: "bg_penguinbeach"),
+        HomeBackgroundTheme(id: "puppyfarm", japaneseName: "こいぬのまきば", englishName: "Puppy Meadow", price: 220, imageName: "bg_puppyfarm")
     ]
     // BG-CATALOG-GENERATED-END
 }
