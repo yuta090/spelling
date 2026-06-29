@@ -26,8 +26,8 @@
       "layers": [ { "file": "hair_m_center_black.png", "z": "front_hair" } ] },
     { "id": "hair_m_kmash_brown", "slot": "hair", "labelJa": "マッシュ", "base": "male",
       "layers": [ { "file": "hair_m_kmash_brown.png", "z": "front_hair" } ] },
-    { "id": "hair_m_twoblock_black", "slot": "hair", "labelJa": "ツーブロック", "base": "male",
-      "layers": [ { "file": "hair_m_twoblock_black.png", "z": "front_hair" } ] },
+    { "id": "hair_m_comma_black", "slot": "hair", "labelJa": "コンマヘア", "base": "male",
+      "layers": [ { "file": "hair_m_comma_black.png", "z": "front_hair" } ] },
     { "id": "hair_m_wolf_brown", "slot": "hair", "labelJa": "ウルフ", "base": "male",
       "layers": [ { "file": "hair_m_wolf_brown.png", "z": "front_hair" } ] },
 
