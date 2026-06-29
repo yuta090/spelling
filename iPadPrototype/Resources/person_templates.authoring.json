@@ -614,9 +614,9 @@
     "contentLemmas": ["hello", "good", "friend"],
     "slots": [],
     "en": ["Hello,", "my", "good", "friend."],
-    "ja": "こんにちは わたしの おともだち",
+    "ja": "こんにちは、 ともだち",
     "fallbackEn": ["Hello,", "my", "good", "friend."],
-    "fallbackJa": "こんにちは わたしの おともだち"
+    "fallbackJa": "こんにちは、 ともだち"
   },
   {
     "id": "a-greeting-5",
@@ -686,9 +686,9 @@
     "contentLemmas": ["look", "happy"],
     "slots": [],
     "en": ["You", "look", "very", "happy."],
-    "ja": "あなたは とても うれしそう",
+    "ja": "とても うれしそうだね",
     "fallbackEn": ["You", "look", "very", "happy."],
-    "fallbackJa": "あなたは とても うれしそう"
+    "fallbackJa": "とても うれしそうだね"
   },
   {
     "id": "a-likewant-1",
@@ -806,9 +806,9 @@
     "contentLemmas": ["sure", "ready"],
     "slots": [],
     "en": ["Sure,", "I", "am", "ready."],
-    "ja": "もちろんです じゅんびできたよ",
+    "ja": "もちろん、 じゅんびできたよ",
     "fallbackEn": ["Sure,", "I", "am", "ready."],
-    "fallbackJa": "もちろんです じゅんびできたよ"
+    "fallbackJa": "もちろん、 じゅんびできたよ"
   },
   {
     "id": "a-thanks-1",
@@ -902,9 +902,9 @@
     "contentLemmas": ["help"],
     "slots": [],
     "en": ["I", "can", "help", "you."],
-    "ja": "わたしは あなたを たすけられる",
+    "ja": "てつだえるよ",
     "fallbackEn": ["I", "can", "help", "you."],
-    "fallbackJa": "わたしは あなたを たすけられる"
+    "fallbackJa": "てつだえるよ"
   },
   {
     "id": "a-help-4",
@@ -926,9 +926,9 @@
     "contentLemmas": ["mei", "help", "sora"],
     "slots": [],
     "en": ["Mei", "can", "help", "Sora."],
-    "ja": "メイは ソラを たすけられる",
+    "ja": "メイは ソラを てつだえるよ",
     "fallbackEn": ["Mei", "can", "help", "Sora."],
-    "fallbackJa": "メイは ソラを たすけられる"
+    "fallbackJa": "メイは ソラを てつだえるよ"
   },
   {
     "id": "a-greeting-11",
@@ -997,14 +997,14 @@
       "good",
       "friend"
     ],
-    "ja": "さようなら わたしの おともだち",
+    "ja": "さようなら、 ともだち",
     "fallbackEn": [
       "Goodbye",
       "my",
       "good",
       "friend"
     ],
-    "fallbackJa": "さようなら わたしの おともだち"
+    "fallbackJa": "さようなら、 ともだち"
   },
   {
     "id": "a-greeting-14",
@@ -1176,14 +1176,14 @@
       "dear",
       "friend"
     ],
-    "ja": "こんにちは わたしの たいせつな おともだち",
+    "ja": "こんにちは、 だいじな ともだち",
     "fallbackEn": [
       "Hello",
       "my",
       "dear",
       "friend"
     ],
-    "fallbackJa": "こんにちは わたしの たいせつな おともだち"
+    "fallbackJa": "こんにちは、 だいじな ともだち"
   },
   {
     "id": "a-feeling-11",
@@ -1220,14 +1220,14 @@
     ],
     "slots": [],
     "en": [
-      "A",
+      "The",
       "dog",
       "is",
       "cold"
     ],
     "ja": "いぬは さむがっている",
     "fallbackEn": [
-      "A",
+      "The",
       "dog",
       "is",
       "cold"
@@ -1683,14 +1683,14 @@
       "blue",
       "birds"
     ],
-    "ja": "あなたは あおい とりが すき",
+    "ja": "あおい とりが すきなんだね",
     "fallbackEn": [
       "You",
       "like",
       "blue",
       "birds"
     ],
-    "fallbackJa": "あなたは あおい とりが すき"
+    "fallbackJa": "あおい とりが すきなんだね"
   },
   {
     "id": "a-reply-11",
@@ -1708,14 +1708,14 @@
       "my",
       "friend"
     ],
-    "ja": "はい おねがいします、 わたしの おともだち",
+    "ja": "はい、 おねがいします",
     "fallbackEn": [
       "Yes",
       "please,",
       "my",
       "friend"
     ],
-    "fallbackJa": "はい おねがいします、 わたしの おともだち"
+    "fallbackJa": "はい、 おねがいします"
   },
   {
     "id": "a-reply-12",
@@ -1757,14 +1757,14 @@
       "so",
       "too"
     ],
-    "ja": "わたしも そう おもいます",
+    "ja": "わたしも そう おもう",
     "fallbackEn": [
       "I",
       "think",
       "so",
       "too"
     ],
-    "fallbackJa": "わたしも そう おもいます"
+    "fallbackJa": "わたしも そう おもう"
   },
   {
     "id": "a-reply-14",
@@ -1781,14 +1781,14 @@
       "my",
       "friend"
     ],
-    "ja": "わたしもだよ、 おともだち",
+    "ja": "わたしもだよ",
     "fallbackEn": [
       "Me",
       "too,",
       "my",
       "friend"
     ],
-    "fallbackJa": "わたしもだよ、 おともだち"
+    "fallbackJa": "わたしもだよ"
   },
   {
     "id": "a-reply-15",
@@ -1834,14 +1834,14 @@
       "are,",
       "friend"
     ],
-    "ja": "はい どうぞ、 おともだち",
+    "ja": "はい、 どうぞ",
     "fallbackEn": [
       "Here",
       "you",
       "are,",
       "friend"
     ],
-    "fallbackJa": "はい どうぞ、 おともだち"
+    "fallbackJa": "はい、 どうぞ"
   },
   {
     "id": "a-reply-17",
@@ -1885,7 +1885,7 @@
       "with",
       "me"
     ],
-    "ja": "わたしは それで いいよ",
+    "ja": "それで いいよ",
     "fallbackEn": [
       "That",
       "is",
@@ -1893,7 +1893,7 @@
       "with",
       "me"
     ],
-    "fallbackJa": "わたしは それで いいよ"
+    "fallbackJa": "それで いいよ"
   },
   {
     "id": "a-reply-19",
@@ -1911,14 +1911,14 @@
       "my",
       "friend"
     ],
-    "ja": "もちろん、 おともだち",
+    "ja": "もちろん",
     "fallbackEn": [
       "Of",
       "course,",
       "my",
       "friend"
     ],
-    "fallbackJa": "もちろん、 おともだち"
+    "fallbackJa": "もちろん"
   },
   {
     "id": "a-reply-20",
@@ -1986,14 +1986,14 @@
       "my",
       "friend"
     ],
-    "ja": "すみません、 おともだち",
+    "ja": "すみません",
     "fallbackEn": [
       "Excuse",
       "me,",
       "my",
       "friend"
     ],
-    "fallbackJa": "すみません、 おともだち"
+    "fallbackJa": "すみません"
   },
   {
     "id": "a-thanks-13",
@@ -2011,14 +2011,14 @@
       "okay",
       "now"
     ],
-    "ja": "もう だいじょうぶです",
+    "ja": "もう だいじょうぶ",
     "fallbackEn": [
       "It",
       "is",
       "okay",
       "now"
     ],
-    "fallbackJa": "もう だいじょうぶです"
+    "fallbackJa": "もう だいじょうぶ"
   },
   {
     "id": "a-thanks-14",
@@ -2076,24 +2076,21 @@
     "grammar": "beVerb",
     "gradeBand": 1,
     "contentLemmas": [
-      "sorry",
-      "now"
+      "sorry"
     ],
     "slots": [],
     "en": [
       "I",
       "am",
-      "sorry",
-      "now"
+      "sorry"
     ],
-    "ja": "いま ごめんね",
+    "ja": "ごめんなさい",
     "fallbackEn": [
       "I",
       "am",
-      "sorry",
-      "now"
+      "sorry"
     ],
-    "fallbackJa": "いま ごめんね"
+    "fallbackJa": "ごめんなさい"
   },
   {
     "id": "a-thanks-17",
@@ -2152,24 +2149,24 @@
     "gradeBand": 1,
     "contentLemmas": [
       "thank",
-      "good",
+      "little",
       "bird"
     ],
     "slots": [],
     "en": [
       "Thank",
       "you,",
-      "good",
+      "little",
       "bird"
     ],
-    "ja": "ありがとう、 いい ことりさん",
+    "ja": "ありがとう、 ことりさん",
     "fallbackEn": [
       "Thank",
       "you,",
-      "good",
+      "little",
       "bird"
     ],
-    "fallbackJa": "ありがとう、 いい ことりさん"
+    "fallbackJa": "ありがとう、 ことりさん"
   },
   {
     "id": "a-thanks-20",
@@ -2235,14 +2232,14 @@
       "help",
       "me"
     ],
-    "ja": "たすけて くれますか",
+    "ja": "てつだって くれる？",
     "fallbackEn": [
       "Can",
       "you",
       "help",
       "me"
     ],
-    "fallbackJa": "たすけて くれますか"
+    "fallbackJa": "てつだって くれる？"
   },
   {
     "id": "a-help-13",
@@ -2286,14 +2283,14 @@
       "help",
       "mom"
     ],
-    "ja": "わたしは おかあさんを たすけられる",
+    "ja": "おかあさんを てつだえるよ",
     "fallbackEn": [
       "I",
       "can",
       "help",
       "mom"
     ],
-    "fallbackJa": "わたしは おかあさんを たすけられる"
+    "fallbackJa": "おかあさんを てつだえるよ"
   },
   {
     "id": "a-help-15",
@@ -2311,14 +2308,14 @@
       "help",
       "dad"
     ],
-    "ja": "わたしたちは おとうさんを たすけられる",
+    "ja": "おとうさんを てつだえるよ",
     "fallbackEn": [
       "We",
       "can",
       "help",
       "dad"
     ],
-    "fallbackJa": "わたしたちは おとうさんを たすけられる"
+    "fallbackJa": "おとうさんを てつだえるよ"
   },
   {
     "id": "a-help-16",
@@ -2361,14 +2358,14 @@
       "help",
       "you"
     ],
-    "ja": "わたしたちは あなたを たすけられる",
+    "ja": "てつだえるよ",
     "fallbackEn": [
       "We",
       "can",
       "help",
       "you"
     ],
-    "fallbackJa": "わたしたちは あなたを たすけられる"
+    "fallbackJa": "てつだえるよ"
   },
   {
     "id": "a-help-18",
@@ -2385,14 +2382,14 @@
       "help",
       "us"
     ],
-    "ja": "あなたは わたしたちを たすけられる",
+    "ja": "きみも てつだえるよ",
     "fallbackEn": [
       "You",
       "can",
       "help",
       "us"
     ],
-    "fallbackJa": "あなたは わたしたちを たすけられる"
+    "fallbackJa": "きみも てつだえるよ"
   },
   {
     "id": "a-help-19",
@@ -2426,24 +2423,21 @@
     "gradeBand": 1,
     "contentLemmas": [
       "help",
-      "good",
       "friend"
     ],
     "slots": [],
     "en": [
       "Help",
       "your",
-      "good",
       "friend"
     ],
-    "ja": "なかよしの おともだちを たすけて",
+    "ja": "ともだちを たすけて",
     "fallbackEn": [
       "Help",
       "your",
-      "good",
       "friend"
     ],
-    "fallbackJa": "なかよしの おともだちを たすけて"
+    "fallbackJa": "ともだちを たすけて"
   },
   {
     "id": "b-invite-1",
@@ -2510,14 +2504,14 @@
       "together,",
       "Sora."
     ],
-    "ja": "いっしょに あるこう、そら",
+    "ja": "ソラ、 いっしょに あるこう",
     "fallbackEn": [
       "Let's",
       "walk",
       "together,",
       "Sora."
     ],
-    "fallbackJa": "いっしょに あるこう、そら"
+    "fallbackJa": "ソラ、 いっしょに あるこう"
   },
   {
     "id": "b-invite-4",
@@ -2588,7 +2582,7 @@
       "today,",
       "Mei?"
     ],
-    "ja": "きょう こられる、めい？",
+    "ja": "メイ、 きょう こられる？",
     "fallbackEn": [
       "Can",
       "you",
@@ -2596,7 +2590,7 @@
       "today,",
       "Mei?"
     ],
-    "fallbackJa": "きょう こられる、めい？"
+    "fallbackJa": "メイ、 きょう こられる？"
   },
   {
     "id": "b-invite-7",
@@ -2745,14 +2739,14 @@
       "sleepy,",
       "Sora?"
     ],
-    "ja": "ねむい、そら？",
+    "ja": "ソラ、 ねむい？",
     "fallbackEn": [
       "Are",
       "you",
       "sleepy,",
       "Sora?"
     ],
-    "fallbackJa": "ねむい、そら？"
+    "fallbackJa": "ソラ、 ねむい？"
   },
   {
     "id": "b-ask-3",
@@ -2874,7 +2868,7 @@
       "jump",
       "high?"
     ],
-    "ja": "きつねは たかく とべる？",
+    "ja": "きつねは たかく ジャンプできる？",
     "fallbackEn": [
       "Can",
       "a",
@@ -2882,7 +2876,7 @@
       "jump",
       "high?"
     ],
-    "fallbackJa": "きつねは たかく とべる？"
+    "fallbackJa": "きつねは たかく ジャンプできる？"
   },
   {
     "id": "b-ask-8",
@@ -2902,7 +2896,7 @@
       "school",
       "today?"
     ],
-    "ja": "きょう めいは 学校に いる？",
+    "ja": "きょう メイは 学校に いる？",
     "fallbackEn": [
       "Is",
       "Mei",
@@ -2910,7 +2904,7 @@
       "school",
       "today?"
     ],
-    "fallbackJa": "きょう めいは 学校に いる？"
+    "fallbackJa": "きょう メイは 学校に いる？"
   },
   {
     "id": "b-ask-9",
@@ -2928,14 +2922,14 @@
       "late",
       "today?"
     ],
-    "ja": "わたしたちは きょう おそい？",
+    "ja": "きょう わたしたち おくれてる？",
     "fallbackEn": [
       "Are",
       "we",
       "late",
       "today?"
     ],
-    "fallbackJa": "わたしたちは きょう おそい？"
+    "fallbackJa": "きょう わたしたち おくれてる？"
   },
   {
     "id": "b-ask-10",
@@ -3513,14 +3507,14 @@
       "are",
       "cold."
     ],
-    "ja": "わたしの 足が つめたい",
+    "ja": "足が つめたい",
     "fallbackEn": [
       "My",
       "feet",
       "are",
       "cold."
     ],
-    "fallbackJa": "わたしの 足が つめたい"
+    "fallbackJa": "足が つめたい"
   },
   {
     "id": "b-body-3",
@@ -3537,14 +3531,14 @@
       "my",
       "eyes."
     ],
-    "ja": "これらは わたしの 目です",
+    "ja": "これが わたしの 目だよ",
     "fallbackEn": [
       "These",
       "are",
       "my",
       "eyes."
     ],
-    "fallbackJa": "これらは わたしの 目です"
+    "fallbackJa": "これが わたしの 目だよ"
   },
   {
     "id": "b-body-4",
@@ -3587,14 +3581,14 @@
       "are",
       "big."
     ],
-    "ja": "わたしの 耳が 大きい",
+    "ja": "わたしは 耳が 大きい",
     "fallbackEn": [
       "My",
       "ears",
       "are",
       "big."
     ],
-    "fallbackJa": "わたしの 耳が 大きい"
+    "fallbackJa": "わたしは 耳が 大きい"
   },
   {
     "id": "b-body-6",
@@ -3611,19 +3605,17 @@
     "en": [
       "Sora",
       "has",
-      "two",
       "long",
       "legs."
     ],
-    "ja": "そらは ながい 足が ２ほん ある",
+    "ja": "ソラは 足が ながい",
     "fallbackEn": [
       "Sora",
       "has",
-      "two",
       "long",
       "legs."
     ],
-    "fallbackJa": "そらは ながい 足が ２ほん ある"
+    "fallbackJa": "ソラは 足が ながい"
   },
   {
     "id": "b-body-7",
@@ -3641,14 +3633,14 @@
       "is",
       "small."
     ],
-    "ja": "わたしの 口は 小さい",
+    "ja": "わたしは 口が 小さい",
     "fallbackEn": [
       "My",
       "mouth",
       "is",
       "small."
     ],
-    "fallbackJa": "わたしの 口は 小さい"
+    "fallbackJa": "わたしは 口が 小さい"
   },
   {
     "id": "b-body-8",
@@ -3665,19 +3657,17 @@
     "en": [
       "Mei",
       "has",
-      "two",
       "blue",
       "eyes."
     ],
-    "ja": "めいは あおい 目が ２つ ある",
+    "ja": "メイは 目が あおい",
     "fallbackEn": [
       "Mei",
       "has",
-      "two",
       "blue",
       "eyes."
     ],
-    "fallbackJa": "めいは あおい 目が ２つ ある"
+    "fallbackJa": "メイは 目が あおい"
   },
   {
     "id": "b-body-9",
@@ -3720,14 +3710,14 @@
       "are",
       "strong."
     ],
-    "ja": "かれの うでが つよい",
+    "ja": "かれは うでが つよい",
     "fallbackEn": [
       "His",
       "arms",
       "are",
       "strong."
     ],
-    "fallbackJa": "かれの うでが つよい"
+    "fallbackJa": "かれは うでが つよい"
   },
   {
     "id": "b-now-1",
@@ -3823,14 +3813,14 @@
       "running",
       "fast."
     ],
-    "ja": "そらが はやく はしっている",
+    "ja": "ソラが はやく はしっている",
     "fallbackEn": [
       "Sora",
       "is",
       "running",
       "fast."
     ],
-    "fallbackJa": "そらが はやく はしっている"
+    "fallbackJa": "ソラが はやく はしっている"
   },
   {
     "id": "b-now-5",
@@ -3848,14 +3838,14 @@
       "reading",
       "now."
     ],
-    "ja": "めいが 今 よんでいる",
+    "ja": "メイが 今 よんでいる",
     "fallbackEn": [
       "Mei",
       "is",
       "reading",
       "now."
     ],
-    "fallbackJa": "めいが 今 よんでいる"
+    "fallbackJa": "メイが 今 よんでいる"
   },
   {
     "id": "b-now-6",
