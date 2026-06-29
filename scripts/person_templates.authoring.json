@@ -770,9 +770,9 @@
     "contentLemmas": ["no", "thank", "sora"],
     "slots": [],
     "en": ["No,", "thank", "you,", "Sora."],
-    "ja": "いいえ ありがとう ソラ",
+    "ja": "いいえ けっこうです、 ソラ",
     "fallbackEn": ["No,", "thank", "you,", "Sora."],
-    "fallbackJa": "いいえ ありがとう ソラ"
+    "fallbackJa": "いいえ けっこうです、 ソラ"
   },
   {
     "id": "a-reply-3",
@@ -2086,14 +2086,14 @@
       "sorry",
       "now"
     ],
-    "ja": "いまは ごめんなさい",
+    "ja": "いま ごめんね",
     "fallbackEn": [
       "I",
       "am",
       "sorry",
       "now"
     ],
-    "fallbackJa": "いまは ごめんなさい"
+    "fallbackJa": "いま ごめんね"
   },
   {
     "id": "a-thanks-17",
@@ -2436,14 +2436,14 @@
       "good",
       "friend"
     ],
-    "ja": "よい おともだちを たすけて",
+    "ja": "なかよしの おともだちを たすけて",
     "fallbackEn": [
       "Help",
       "your",
       "good",
       "friend"
     ],
-    "fallbackJa": "よい おともだちを たすけて"
+    "fallbackJa": "なかよしの おともだちを たすけて"
   },
   {
     "id": "b-invite-1",
@@ -3900,14 +3900,14 @@
       "is",
       "jumping."
     ],
-    "ja": "うさぎが とんでいる",
+    "ja": "うさぎが はねている",
     "fallbackEn": [
       "The",
       "rabbit",
       "is",
       "jumping."
     ],
-    "fallbackJa": "うさぎが とんでいる"
+    "fallbackJa": "うさぎが はねている"
   },
   {
     "id": "b-now-8",

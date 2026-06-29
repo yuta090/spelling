@@ -1154,7 +1154,7 @@
     "gradeBand" : 1,
     "grammar" : "presentSimple",
     "id" : "74187CF4-9319-5E09-93AB-9F8C8883CDE1",
-    "ja" : "いいえ ありがとう ソラ",
+    "ja" : "いいえ けっこうです、 ソラ",
     "sourceID" : "a-reply-2",
     "tokens" : [
       "No",
@@ -2232,7 +2232,7 @@
     "gradeBand" : 2,
     "grammar" : "beVerb",
     "id" : "843D28D5-1161-509A-BF35-9ECBF3F72B47",
-    "ja" : "いまは ごめんなさい",
+    "ja" : "いま ごめんね",
     "sourceID" : "a-thanks-16",
     "tokens" : [
       "I",
@@ -2485,7 +2485,7 @@
     "gradeBand" : 1,
     "grammar" : "imperative",
     "id" : "12C71B87-AB87-5907-86E7-4E730DF936B4",
-    "ja" : "よい おともだちを たすけて",
+    "ja" : "なかよしの おともだちを たすけて",
     "sourceID" : "a-help-20",
     "tokens" : [
       "Help",
@@ -3543,7 +3543,7 @@
     "gradeBand" : 3,
     "grammar" : "presentContinuous",
     "id" : "259E013F-17EC-5AB0-9064-A3249F40B220",
-    "ja" : "うさぎが とんでいる",
+    "ja" : "うさぎが はねている",
     "sourceID" : "b-now-7",
     "tokens" : [
       "The",
