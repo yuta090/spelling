@@ -3603,5 +3603,1212 @@
       "English",
       "now"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "soccer",
+      "yesterday"
+    ],
+    "en" : "I played soccer yesterday",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "6B53D953-8C09-5C9A-BAA6-63A50D58F0D8",
+    "ja" : "きのう サッカーを したよ。",
+    "sourceID" : "c-past-1",
+    "tokens" : [
+      "I",
+      "played",
+      "soccer",
+      "yesterday"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "watch",
+      "movie"
+    ],
+    "en" : "We watched a movie",
+    "gradeBand" : 2,
+    "grammar" : "pastSimple",
+    "id" : "EFC602DD-DE90-5FC8-B376-49FC8B5B8925",
+    "ja" : "みんなで えいがを みたよ。",
+    "sourceID" : "c-past-2",
+    "tokens" : [
+      "We",
+      "watched",
+      "a",
+      "movie"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "sleep",
+      "all",
+      "day"
+    ],
+    "en" : "The cat slept all day",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "9A4134EC-2D16-51D5-8CC5-D98223FDDBD8",
+    "ja" : "ねこは いちにちじゅう ねていたよ。",
+    "sourceID" : "c-past-3",
+    "tokens" : [
+      "The",
+      "cat",
+      "slept",
+      "all",
+      "day"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "walk",
+      "school"
+    ],
+    "en" : "Sora walked to school",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "7B139712-20A2-5C24-A22B-8ABEFDC9D31B",
+    "ja" : "ソラは 学校まで あるいて いったよ。",
+    "sourceID" : "c-past-4",
+    "tokens" : [
+      "Sora",
+      "walked",
+      "to",
+      "school"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "cook",
+      "pancakes",
+      "morning"
+    ],
+    "en" : "Mei cooked pancakes this morning",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "8AA13428-95D4-5594-836D-7D0636FE9E85",
+    "ja" : "メイは けさ パンケーキを つくったよ。",
+    "sourceID" : "c-past-5",
+    "tokens" : [
+      "Mei",
+      "cooked",
+      "pancakes",
+      "this",
+      "morning"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "lost",
+      "red",
+      "cap"
+    ],
+    "en" : "I lost my red cap",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "E97D4E8D-944C-524D-9C16-CAACD4F5BDE7",
+    "ja" : "あかい ぼうしを なくしちゃった。",
+    "sourceID" : "c-past-6",
+    "tokens" : [
+      "I",
+      "lost",
+      "my",
+      "red",
+      "cap"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "barked",
+      "night"
+    ],
+    "en" : "The dog barked at night",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "21AA37F1-3BCF-5EC2-9822-7A0D18FBB074",
+    "ja" : "いぬが 夜に ほえたよ。",
+    "sourceID" : "c-past-7",
+    "tokens" : [
+      "The",
+      "dog",
+      "barked",
+      "at",
+      "night"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "visited",
+      "big",
+      "zoo"
+    ],
+    "en" : "We visited a big zoo",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "88CDBEFD-F131-5122-B65B-4ADC0C2EFBE9",
+    "ja" : "大きな 動物園に いったよ。",
+    "sourceID" : "c-past-8",
+    "tokens" : [
+      "We",
+      "visited",
+      "a",
+      "big",
+      "zoo"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "buy",
+      "new",
+      "game"
+    ],
+    "en" : "Sora bought a new game",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "669128A3-D0A8-5674-A7CD-17872BD8CBFE",
+    "ja" : "ソラは 新しい ゲームを かったよ。",
+    "sourceID" : "c-past-9",
+    "tokens" : [
+      "Sora",
+      "bought",
+      "a",
+      "new",
+      "game"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "jump",
+      "high"
+    ],
+    "en" : "A rabbit jumped very high",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "C3A73086-B1A0-5C61-AC89-89BFC3F958A2",
+    "ja" : "うさぎが とても 高く ジャンプしたよ。",
+    "sourceID" : "c-past-10",
+    "tokens" : [
+      "A",
+      "rabbit",
+      "jumped",
+      "very",
+      "high"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "big",
+      "cat"
+    ],
+    "en" : "A dog is bigger than a cat",
+    "gradeBand" : 4,
+    "grammar" : "comparativeEr",
+    "id" : "E9BCDA30-E94E-5618-ADFC-4B52E0BC50C4",
+    "ja" : "いぬは ねこより 大きいよ。",
+    "sourceID" : "c-compare-1",
+    "tokens" : [
+      "A",
+      "dog",
+      "is",
+      "bigger",
+      "than",
+      "a",
+      "cat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "summer",
+      "hot",
+      "winter"
+    ],
+    "en" : "Summer is hotter than winter",
+    "gradeBand" : 3,
+    "grammar" : "comparativeEr",
+    "id" : "82982721-6089-59FC-8DBA-8BACFE39AADC",
+    "ja" : "夏は 冬より 暑いよ。",
+    "sourceID" : "c-compare-2",
+    "tokens" : [
+      "Summer",
+      "is",
+      "hotter",
+      "than",
+      "winter"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bag",
+      "heavier"
+    ],
+    "en" : "My bag is heavier than yours",
+    "gradeBand" : 4,
+    "grammar" : "comparativeEr",
+    "id" : "8767F802-7F6C-5D33-81F5-00A7236032CB",
+    "ja" : "わたしの かばんは 君のより 重いよ。",
+    "sourceID" : "c-compare-3",
+    "tokens" : [
+      "My",
+      "bag",
+      "is",
+      "heavier",
+      "than",
+      "yours"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "taller",
+      "mei"
+    ],
+    "en" : "Sora is taller than Mei",
+    "gradeBand" : 4,
+    "grammar" : "comparativeEr",
+    "id" : "F1241984-99DE-5A28-98BF-DBE44354CF2F",
+    "ja" : "ソラは メイより せが 高いよ。",
+    "sourceID" : "c-compare-4",
+    "tokens" : [
+      "Sora",
+      "is",
+      "taller",
+      "than",
+      "Mei"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "fast",
+      "turtle"
+    ],
+    "en" : "A rabbit is faster than a turtle",
+    "gradeBand" : 4,
+    "grammar" : "comparativeEr",
+    "id" : "E453FE93-0726-530C-96E0-638276CFFFBB",
+    "ja" : "うさぎは かめより 速いよ。",
+    "sourceID" : "c-compare-5",
+    "tokens" : [
+      "A",
+      "rabbit",
+      "is",
+      "faster",
+      "than",
+      "a",
+      "turtle"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "book",
+      "old",
+      "one"
+    ],
+    "en" : "This book is older than that one",
+    "gradeBand" : 1,
+    "grammar" : "comparativeEr",
+    "id" : "3AA5BB89-A44F-5E13-857B-1D2678CDAD2B",
+    "ja" : "この 本は あれより 古いよ。",
+    "sourceID" : "c-compare-6",
+    "tokens" : [
+      "This",
+      "book",
+      "is",
+      "older",
+      "than",
+      "that",
+      "one"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "today",
+      "cold",
+      "yesterday"
+    ],
+    "en" : "Today is colder than yesterday",
+    "gradeBand" : 2,
+    "grammar" : "comparativeEr",
+    "id" : "E48E0F2E-6C34-589D-B8E2-70BEE08B5A33",
+    "ja" : "今日は 昨日より 寒いよ。",
+    "sourceID" : "c-compare-7",
+    "tokens" : [
+      "Today",
+      "is",
+      "colder",
+      "than",
+      "yesterday"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "plane",
+      "fast",
+      "train"
+    ],
+    "en" : "Planes are faster than trains",
+    "gradeBand" : 3,
+    "grammar" : "comparativeEr",
+    "id" : "04110222-5EEF-5E07-A397-6844C29F8DD2",
+    "ja" : "飛行機は 電車より 速いよ。",
+    "sourceID" : "c-compare-8",
+    "tokens" : [
+      "Planes",
+      "are",
+      "faster",
+      "than",
+      "trains"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sun",
+      "bright",
+      "moon"
+    ],
+    "en" : "The sun is brighter than the moon",
+    "gradeBand" : 5,
+    "grammar" : "comparativeEr",
+    "id" : "DE98AD15-6B30-55C1-B034-624F0C2633FD",
+    "ja" : "太陽は 月より 明るいよ。",
+    "sourceID" : "c-compare-9",
+    "tokens" : [
+      "The",
+      "sun",
+      "is",
+      "brighter",
+      "than",
+      "the",
+      "moon"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pencil",
+      "long"
+    ],
+    "en" : "My pencil is longer than yours",
+    "gradeBand" : 4,
+    "grammar" : "comparativeEr",
+    "id" : "5D2FEE26-515C-599E-8A30-0A73B3501DC0",
+    "ja" : "わたしの えんぴつは 君のより 長いよ。",
+    "sourceID" : "c-compare-10",
+    "tokens" : [
+      "My",
+      "pencil",
+      "is",
+      "longer",
+      "than",
+      "yours"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "favorite",
+      "color"
+    ],
+    "en" : "What is your favorite color",
+    "gradeBand" : 3,
+    "grammar" : "whQuestion",
+    "id" : "50C61D0B-8F15-57F0-B916-A231039C8A62",
+    "ja" : "いちばん 好きな 色は なに？",
+    "sourceID" : "c-wh-1",
+    "tokens" : [
+      "What",
+      "is",
+      "your",
+      "favorite",
+      "color"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "blue",
+      "pen"
+    ],
+    "en" : "Where is my blue pen",
+    "gradeBand" : 5,
+    "grammar" : "whQuestion",
+    "id" : "FEBC219E-CC94-5EDF-A77E-479BE8B6482F",
+    "ja" : "わたしの 青い ペンは どこ？",
+    "sourceID" : "c-wh-2",
+    "tokens" : [
+      "Where",
+      "is",
+      "my",
+      "blue",
+      "pen"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tall",
+      "boy"
+    ],
+    "en" : "Who is that tall boy",
+    "gradeBand" : 4,
+    "grammar" : "whQuestion",
+    "id" : "4A12EBE1-B3B4-5598-8458-209E827C9052",
+    "ja" : "あの せの高い 男の子は だれ？",
+    "sourceID" : "c-wh-3",
+    "tokens" : [
+      "Who",
+      "is",
+      "that",
+      "tall",
+      "boy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "birthday"
+    ],
+    "en" : "When is your birthday",
+    "gradeBand" : 4,
+    "grammar" : "whQuestion",
+    "id" : "86D184CE-2399-5985-87D1-7FF10B3B9791",
+    "ja" : "たんじょうびは いつ？",
+    "sourceID" : "c-wh-4",
+    "tokens" : [
+      "When",
+      "is",
+      "your",
+      "birthday"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "weather",
+      "today"
+    ],
+    "en" : "How is the weather today",
+    "gradeBand" : 3,
+    "grammar" : "whQuestion",
+    "id" : "8F93E9FE-6E1D-5158-B32D-8866F0ACAE9A",
+    "ja" : "今日の 天気は どう？",
+    "sourceID" : "c-wh-5",
+    "tokens" : [
+      "How",
+      "is",
+      "the",
+      "weather",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat",
+      "lunch"
+    ],
+    "en" : "What do you eat for lunch",
+    "gradeBand" : 3,
+    "grammar" : "whQuestion",
+    "id" : "30C8D79D-3F1E-5E8E-B6EA-86E78625496E",
+    "ja" : "お昼ごはんに なにを 食べる？",
+    "sourceID" : "c-wh-6",
+    "tokens" : [
+      "What",
+      "do",
+      "you",
+      "eat",
+      "for",
+      "lunch"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fox",
+      "live"
+    ],
+    "en" : "Where does the fox live",
+    "gradeBand" : 4,
+    "grammar" : "whQuestion",
+    "id" : "475DC266-8E65-528F-BA14-FFB31D9E08C6",
+    "ja" : "きつねは どこに 住んでいるの？",
+    "sourceID" : "c-wh-7",
+    "tokens" : [
+      "Where",
+      "does",
+      "the",
+      "fox",
+      "live"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "make",
+      "pretty",
+      "cake"
+    ],
+    "en" : "Who made this pretty cake",
+    "gradeBand" : 5,
+    "grammar" : "whQuestion",
+    "id" : "81FFBD7C-C6FA-5C03-B46A-9CDE2ED9CD76",
+    "ja" : "だれが この かわいい ケーキを つくったの？",
+    "sourceID" : "c-wh-8",
+    "tokens" : [
+      "Who",
+      "made",
+      "this",
+      "pretty",
+      "cake"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bus",
+      "come"
+    ],
+    "en" : "When does the bus come",
+    "gradeBand" : 2,
+    "grammar" : "whQuestion",
+    "id" : "127F94FC-ED90-536B-A6AD-48E4EE5DA56E",
+    "ja" : "バスは いつ くるの？",
+    "sourceID" : "c-wh-9",
+    "tokens" : [
+      "When",
+      "does",
+      "the",
+      "bus",
+      "come"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "school"
+    ],
+    "en" : "How do you go to school",
+    "gradeBand" : 1,
+    "grammar" : "whQuestion",
+    "id" : "8E2D2F68-83A2-56B6-9D53-A5FCDE1CE349",
+    "ja" : "どうやって 学校に いくの？",
+    "sourceID" : "c-wh-10",
+    "tokens" : [
+      "How",
+      "do",
+      "you",
+      "go",
+      "to",
+      "school"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "soccer",
+      "much"
+    ],
+    "en" : "I like soccer very much",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "D769B3E6-ADFF-57B1-9128-68AD478D9AAA",
+    "ja" : "サッカーが 大好きだよ。",
+    "sourceID" : "c-hobby-1",
+    "tokens" : [
+      "I",
+      "like",
+      "soccer",
+      "very",
+      "much"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "play",
+      "guitar",
+      "every",
+      "day"
+    ],
+    "en" : "Sora plays the guitar every day",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "4370EC15-C476-53D0-8966-9C10020664A9",
+    "ja" : "ソラは 毎日 ギターを ひくよ。",
+    "sourceID" : "c-hobby-2",
+    "tokens" : [
+      "Sora",
+      "plays",
+      "the",
+      "guitar",
+      "every",
+      "day"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "draw",
+      "cute",
+      "picture"
+    ],
+    "en" : "Mei draws cute pictures",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "8D1289CC-64EC-5028-BCE5-0CDC075BCE4F",
+    "ja" : "メイは かわいい 絵を かくよ。",
+    "sourceID" : "c-hobby-3",
+    "tokens" : [
+      "Mei",
+      "draws",
+      "cute",
+      "pictures"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "game",
+      "school"
+    ],
+    "en" : "We play games after school",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "6ACB4FA5-819D-5292-9E8C-6CABC65C7100",
+    "ja" : "放課後に みんなで ゲームを するよ。",
+    "sourceID" : "c-hobby-4",
+    "tokens" : [
+      "We",
+      "play",
+      "games",
+      "after",
+      "school"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "book",
+      "room"
+    ],
+    "en" : "I read books in my room",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "F428BE85-A798-5DD1-9E10-65764FA7F994",
+    "ja" : "部屋で 本を 読むよ。",
+    "sourceID" : "c-hobby-5",
+    "tokens" : [
+      "I",
+      "read",
+      "books",
+      "in",
+      "my",
+      "room"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "mei",
+      "sing",
+      "together"
+    ],
+    "en" : "Sora and Mei sing together",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "E771A7A4-18A2-5CE1-909A-E12344D7C669",
+    "ja" : "ソラと メイは いっしょに うたうよ。",
+    "sourceID" : "c-hobby-6",
+    "tokens" : [
+      "Sora",
+      "and",
+      "Mei",
+      "sing",
+      "together"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "like",
+      "sweet",
+      "apples"
+    ],
+    "en" : "My bird likes sweet apples",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "A9B7563B-5885-5A75-BC4A-42CF54E7D4D2",
+    "ja" : "うちの 小鳥は あまい リンゴが 好きだよ。",
+    "sourceID" : "c-hobby-7",
+    "tokens" : [
+      "My",
+      "bird",
+      "likes",
+      "sweet",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "swim",
+      "pool"
+    ],
+    "en" : "We swim in the pool",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "8E840D9F-5D75-5242-8211-171A712138FB",
+    "ja" : "プールで 泳ぐよ。",
+    "sourceID" : "c-hobby-8",
+    "tokens" : [
+      "We",
+      "swim",
+      "in",
+      "the",
+      "pool"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "collect",
+      "cool",
+      "card"
+    ],
+    "en" : "Sora collects cool cards",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "42DFDDBD-0ED4-591B-BA65-D6F3194D9826",
+    "ja" : "ソラは かっこいい カードを あつめているよ。",
+    "sourceID" : "c-hobby-9",
+    "tokens" : [
+      "Sora",
+      "collects",
+      "cool",
+      "cards"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "dance",
+      "fun",
+      "music"
+    ],
+    "en" : "Mei dances to fun music",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "7035577B-E01D-58C8-B23D-A898F9311266",
+    "ja" : "メイは たのしい 音楽に あわせて おどるよ。",
+    "sourceID" : "c-hobby-10",
+    "tokens" : [
+      "Mei",
+      "dances",
+      "to",
+      "fun",
+      "music"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mountain",
+      "high"
+    ],
+    "en" : "The mountain is very high",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "1CE7471D-8114-58B1-B78D-64625BE4F1CC",
+    "ja" : "その 山は とても 高いよ。",
+    "sourceID" : "c-nature-1",
+    "tokens" : [
+      "The",
+      "mountain",
+      "is",
+      "very",
+      "high"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "snow",
+      "white",
+      "cold"
+    ],
+    "en" : "Snow is white and cold",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "5E53F0F9-DFEA-5955-8BE6-27E05AE5CFD4",
+    "ja" : "雪は 白くて 冷たいよ。",
+    "sourceID" : "c-nature-2",
+    "tokens" : [
+      "Snow",
+      "is",
+      "white",
+      "and",
+      "cold"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "leave",
+      "turn",
+      "red",
+      "fall"
+    ],
+    "en" : "Leaves turn red in fall",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "AF6950CE-FB8A-55C9-B8AD-CF909B8F9ABC",
+    "ja" : "秋になると 木の葉が 赤くなるよ。",
+    "sourceID" : "c-nature-3",
+    "tokens" : [
+      "Leaves",
+      "turn",
+      "red",
+      "in",
+      "fall"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sun",
+      "shine",
+      "sky"
+    ],
+    "en" : "The sun shines in the sky",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "7357B463-1CDB-573C-AD4E-85D0090C3F03",
+    "ja" : "空で 太陽が かがやいているよ。",
+    "sourceID" : "c-nature-4",
+    "tokens" : [
+      "The",
+      "sun",
+      "shines",
+      "in",
+      "the",
+      "sky"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rain",
+      "fall",
+      "cloud"
+    ],
+    "en" : "Rain falls from the clouds",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "7A508829-857D-52E9-8CD6-F98E989DC1D5",
+    "ja" : "雲から 雨が ふってくるよ。",
+    "sourceID" : "c-nature-5",
+    "tokens" : [
+      "Rain",
+      "falls",
+      "from",
+      "the",
+      "clouds"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "wind",
+      "blow",
+      "softly",
+      "today"
+    ],
+    "en" : "The wind blows softly today",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "1F07EBF3-9C0E-5D58-B098-21D5AEB77DD8",
+    "ja" : "今日は やさしい 風が ふいているよ。",
+    "sourceID" : "c-nature-6",
+    "tokens" : [
+      "The",
+      "wind",
+      "blows",
+      "softly",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "yellow",
+      "flower",
+      "bloom",
+      "spring"
+    ],
+    "en" : "Yellow flowers bloom in spring",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "60148B87-AF0F-50C5-B8ED-13BC2296DF42",
+    "ja" : "春には 黄色い 花が さくよ。",
+    "sourceID" : "c-nature-7",
+    "tokens" : [
+      "Yellow",
+      "flowers",
+      "bloom",
+      "in",
+      "spring"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "river",
+      "flow",
+      "sea"
+    ],
+    "en" : "The river flows to the sea",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "0D082C10-FAFD-5F52-BCF2-E6609260EF16",
+    "ja" : "川は 海に向かって ながれているよ。",
+    "sourceID" : "c-nature-8",
+    "tokens" : [
+      "The",
+      "river",
+      "flows",
+      "to",
+      "the",
+      "sea"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "star",
+      "shine",
+      "brightly",
+      "night"
+    ],
+    "en" : "Stars shine brightly at night",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "EC69A4BB-5E83-5D92-ADAD-A4090D93A407",
+    "ja" : "夜には 星が きらきら かがやくよ。",
+    "sourceID" : "c-nature-9",
+    "tokens" : [
+      "Stars",
+      "shine",
+      "brightly",
+      "at",
+      "night"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "forest",
+      "quiet",
+      "green"
+    ],
+    "en" : "The forest is quiet and green",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "1D11A73D-7B45-5707-B94D-2728A0B740C8",
+    "ja" : "森は しずかで みどりが いっぱいだよ。",
+    "sourceID" : "c-nature-10",
+    "tokens" : [
+      "The",
+      "forest",
+      "is",
+      "quiet",
+      "and",
+      "green"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "open",
+      "big",
+      "window"
+    ],
+    "en" : "Please open the big window",
+    "gradeBand" : 2,
+    "grammar" : "imperative",
+    "id" : "184976DF-4F2E-5F8A-8422-B6F130F4086E",
+    "ja" : "大きな まどを あけてください。",
+    "sourceID" : "c-feeling-1",
+    "tokens" : [
+      "Please",
+      "open",
+      "the",
+      "big",
+      "window"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "close",
+      "door"
+    ],
+    "en" : "Close the door please",
+    "gradeBand" : 1,
+    "grammar" : "imperative",
+    "id" : "3E4F0FEF-F780-5232-99C1-B6168D4C15A5",
+    "ja" : "ドアを しめてください。",
+    "sourceID" : "c-feeling-2",
+    "tokens" : [
+      "Close",
+      "the",
+      "door",
+      "please"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "feel",
+      "happy",
+      "today"
+    ],
+    "en" : "I feel happy today",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "7613E463-B0A7-53F2-80E2-853E7903A119",
+    "ja" : "今日は とても うれしいな。",
+    "sourceID" : "c-feeling-3",
+    "tokens" : [
+      "I",
+      "feel",
+      "happy",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "show",
+      "toy"
+    ],
+    "en" : "Please show me your toy",
+    "gradeBand" : 4,
+    "grammar" : "imperative",
+    "id" : "D7857972-7CF2-5BE8-8580-D03A76342DAE",
+    "ja" : "君の おもちゃを みせてください。",
+    "sourceID" : "c-feeling-4",
+    "tokens" : [
+      "Please",
+      "show",
+      "me",
+      "your",
+      "toy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "look",
+      "tire",
+      "now"
+    ],
+    "en" : "Sora looks very tired now",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "C722BC09-D79D-5B08-A478-21A0A99A2BB5",
+    "ja" : "ソラは 今 とても つかれているみたい。",
+    "sourceID" : "c-feeling-5",
+    "tokens" : [
+      "Sora",
+      "looks",
+      "very",
+      "tired",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "quiet",
+      "room"
+    ],
+    "en" : "Be quiet in the room",
+    "gradeBand" : 3,
+    "grammar" : "imperative",
+    "id" : "552B0A37-816C-5173-A9F8-95387AFE15A0",
+    "ja" : "部屋の中では 静かに しようね。",
+    "sourceID" : "c-feeling-6",
+    "tokens" : [
+      "Be",
+      "quiet",
+      "in",
+      "the",
+      "room"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pass",
+      "salt"
+    ],
+    "en" : "Please pass me the salt",
+    "gradeBand" : 5,
+    "grammar" : "imperative",
+    "id" : "A69587E9-D98F-53F1-B7C9-016BDDA8E864",
+    "ja" : "お塩を とってください。",
+    "sourceID" : "c-feeling-7",
+    "tokens" : [
+      "Please",
+      "pass",
+      "me",
+      "the",
+      "salt"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "feel",
+      "sad",
+      "afternoon"
+    ],
+    "en" : "Mei feels sad this afternoon",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "8056DDA7-5528-5BDF-8132-13022655DBAD",
+    "ja" : "メイは 今日の 午後 かなしい気分だよ。",
+    "sourceID" : "c-feeling-8",
+    "tokens" : [
+      "Mei",
+      "feels",
+      "sad",
+      "this",
+      "afternoon"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "don't",
+      "run",
+      "near",
+      "pond"
+    ],
+    "en" : "Don't run near the pond",
+    "gradeBand" : 4,
+    "grammar" : "imperative",
+    "id" : "C9EC74FC-8C19-5BFB-9B26-DD0B20855A7B",
+    "ja" : "池の ちかくで はしらないでね。",
+    "sourceID" : "c-feeling-9",
+    "tokens" : [
+      "Don't",
+      "run",
+      "near",
+      "the",
+      "pond"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "proud",
+      "team"
+    ],
+    "en" : "I am proud of my team",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "7D3DF88F-1B74-5C3C-B03C-9A9D016648B8",
+    "ja" : "わたしは 自分の チームが ほこらしいよ。",
+    "sourceID" : "c-feeling-10",
+    "tokens" : [
+      "I",
+      "am",
+      "proud",
+      "of",
+      "my",
+      "team"
+    ]
   }
 ]

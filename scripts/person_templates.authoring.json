@@ -3980,5 +3980,1696 @@
       "now."
     ],
     "fallbackJa": "わたしたちは 今 えいごを べんきょうしている"
+  },
+  {
+    "id": "c-past-1",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "play",
+      "soccer",
+      "yesterday"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "played",
+      "soccer",
+      "yesterday."
+    ],
+    "ja": "きのう サッカーを したよ。",
+    "fallbackEn": [
+      "I",
+      "played",
+      "soccer",
+      "yesterday."
+    ],
+    "fallbackJa": "きのう サッカーを したよ。"
+  },
+  {
+    "id": "c-past-2",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "watch",
+      "movie"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "watched",
+      "a",
+      "movie."
+    ],
+    "ja": "みんなで えいがを みたよ。",
+    "fallbackEn": [
+      "We",
+      "watched",
+      "a",
+      "movie."
+    ],
+    "fallbackJa": "みんなで えいがを みたよ。"
+  },
+  {
+    "id": "c-past-3",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "cat",
+      "sleep",
+      "day"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "slept",
+      "all",
+      "day."
+    ],
+    "ja": "ねこは いちにちじゅう ねていたよ。",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "slept",
+      "all",
+      "day."
+    ],
+    "fallbackJa": "ねこは いちにちじゅう ねていたよ。"
+  },
+  {
+    "id": "c-past-4",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Sora",
+      "walk",
+      "school"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "walked",
+      "to",
+      "school."
+    ],
+    "ja": "ソラは 学校まで あるいて いったよ。",
+    "fallbackEn": [
+      "Sora",
+      "walked",
+      "to",
+      "school."
+    ],
+    "fallbackJa": "ソラは 学校まで あるいて いったよ。"
+  },
+  {
+    "id": "c-past-5",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Mei",
+      "cook",
+      "pancake",
+      "morning"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "cooked",
+      "pancakes",
+      "this",
+      "morning."
+    ],
+    "ja": "メイは けさ パンケーキを つくったよ。",
+    "fallbackEn": [
+      "Mei",
+      "cooked",
+      "pancakes",
+      "this",
+      "morning."
+    ],
+    "fallbackJa": "メイは けさ パンケーキを つくったよ。"
+  },
+  {
+    "id": "c-past-6",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "lose",
+      "red",
+      "cap"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "lost",
+      "my",
+      "red",
+      "cap."
+    ],
+    "ja": "あかい ぼうしを なくしちゃった。",
+    "fallbackEn": [
+      "I",
+      "lost",
+      "my",
+      "red",
+      "cap."
+    ],
+    "fallbackJa": "あかい ぼうしを なくしちゃった。"
+  },
+  {
+    "id": "c-past-7",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "dog",
+      "bark",
+      "night"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "dog",
+      "barked",
+      "at",
+      "night."
+    ],
+    "ja": "いぬが 夜に ほえたよ。",
+    "fallbackEn": [
+      "The",
+      "dog",
+      "barked",
+      "at",
+      "night."
+    ],
+    "fallbackJa": "いぬが 夜に ほえたよ。"
+  },
+  {
+    "id": "c-past-8",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "visit",
+      "big",
+      "zoo"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "visited",
+      "a",
+      "big",
+      "zoo."
+    ],
+    "ja": "大きな 動物園に いったよ。",
+    "fallbackEn": [
+      "We",
+      "visited",
+      "a",
+      "big",
+      "zoo."
+    ],
+    "fallbackJa": "大きな 動物園に いったよ。"
+  },
+  {
+    "id": "c-past-9",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Sora",
+      "buy",
+      "new",
+      "game"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "bought",
+      "a",
+      "new",
+      "game."
+    ],
+    "ja": "ソラは 新しい ゲームを かったよ。",
+    "fallbackEn": [
+      "Sora",
+      "bought",
+      "a",
+      "new",
+      "game."
+    ],
+    "fallbackJa": "ソラは 新しい ゲームを かったよ。"
+  },
+  {
+    "id": "c-past-10",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "rabbit",
+      "jump",
+      "high"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "rabbit",
+      "jumped",
+      "very",
+      "high."
+    ],
+    "ja": "うさぎが とても 高く ジャンプしたよ。",
+    "fallbackEn": [
+      "A",
+      "rabbit",
+      "jumped",
+      "very",
+      "high."
+    ],
+    "fallbackJa": "うさぎが とても 高く ジャンプしたよ。"
+  },
+  {
+    "id": "c-compare-1",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "dog",
+      "big",
+      "cat"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "dog",
+      "is",
+      "bigger",
+      "than",
+      "a",
+      "cat."
+    ],
+    "ja": "いぬは ねこより 大きいよ。",
+    "fallbackEn": [
+      "A",
+      "dog",
+      "is",
+      "bigger",
+      "than",
+      "a",
+      "cat."
+    ],
+    "fallbackJa": "いぬは ねこより 大きいよ。"
+  },
+  {
+    "id": "c-compare-2",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "summer",
+      "hot",
+      "winter"
+    ],
+    "slots": [],
+    "en": [
+      "Summer",
+      "is",
+      "hotter",
+      "than",
+      "winter."
+    ],
+    "ja": "夏は 冬より 暑いよ。",
+    "fallbackEn": [
+      "Summer",
+      "is",
+      "hotter",
+      "than",
+      "winter."
+    ],
+    "fallbackJa": "夏は 冬より 暑いよ。"
+  },
+  {
+    "id": "c-compare-3",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "bag",
+      "heavy"
+    ],
+    "slots": [],
+    "en": [
+      "My",
+      "bag",
+      "is",
+      "heavier",
+      "than",
+      "yours."
+    ],
+    "ja": "わたしの かばんは 君のより 重いよ。",
+    "fallbackEn": [
+      "My",
+      "bag",
+      "is",
+      "heavier",
+      "than",
+      "yours."
+    ],
+    "fallbackJa": "わたしの かばんは 君のより 重いよ。"
+  },
+  {
+    "id": "c-compare-4",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Sora",
+      "tall",
+      "Mei"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "is",
+      "taller",
+      "than",
+      "Mei."
+    ],
+    "ja": "ソラは メイより せが 高いよ。",
+    "fallbackEn": [
+      "Sora",
+      "is",
+      "taller",
+      "than",
+      "Mei."
+    ],
+    "fallbackJa": "ソラは メイより せが 高いよ。"
+  },
+  {
+    "id": "c-compare-5",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "rabbit",
+      "fast",
+      "turtle"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "rabbit",
+      "is",
+      "faster",
+      "than",
+      "a",
+      "turtle."
+    ],
+    "ja": "うさぎは かめより 速いよ。",
+    "fallbackEn": [
+      "A",
+      "rabbit",
+      "is",
+      "faster",
+      "than",
+      "a",
+      "turtle."
+    ],
+    "fallbackJa": "うさぎは かめより 速いよ。"
+  },
+  {
+    "id": "c-compare-6",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "book",
+      "old"
+    ],
+    "slots": [],
+    "en": [
+      "This",
+      "book",
+      "is",
+      "older",
+      "than",
+      "that",
+      "one."
+    ],
+    "ja": "この 本は あれより 古いよ。",
+    "fallbackEn": [
+      "This",
+      "book",
+      "is",
+      "older",
+      "than",
+      "that",
+      "one."
+    ],
+    "fallbackJa": "この 本は あれより 古いよ。"
+  },
+  {
+    "id": "c-compare-7",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "today",
+      "cold",
+      "yesterday"
+    ],
+    "slots": [],
+    "en": [
+      "Today",
+      "is",
+      "colder",
+      "than",
+      "yesterday."
+    ],
+    "ja": "今日は 昨日より 寒いよ。",
+    "fallbackEn": [
+      "Today",
+      "is",
+      "colder",
+      "than",
+      "yesterday."
+    ],
+    "fallbackJa": "今日は 昨日より 寒いよ。"
+  },
+  {
+    "id": "c-compare-8",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "plane",
+      "fast",
+      "train"
+    ],
+    "slots": [],
+    "en": [
+      "Planes",
+      "are",
+      "faster",
+      "than",
+      "trains."
+    ],
+    "ja": "飛行機は 電車より 速いよ。",
+    "fallbackEn": [
+      "Planes",
+      "are",
+      "faster",
+      "than",
+      "trains."
+    ],
+    "fallbackJa": "飛行機は 電車より 速いよ。"
+  },
+  {
+    "id": "c-compare-9",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "sun",
+      "bright",
+      "moon"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "sun",
+      "is",
+      "brighter",
+      "than",
+      "the",
+      "moon."
+    ],
+    "ja": "太陽は 月より 明るいよ。",
+    "fallbackEn": [
+      "The",
+      "sun",
+      "is",
+      "brighter",
+      "than",
+      "the",
+      "moon."
+    ],
+    "fallbackJa": "太陽は 月より 明るいよ。"
+  },
+  {
+    "id": "c-compare-10",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "pencil",
+      "long"
+    ],
+    "slots": [],
+    "en": [
+      "My",
+      "pencil",
+      "is",
+      "longer",
+      "than",
+      "yours."
+    ],
+    "ja": "わたしの えんぴつは 君のより 長いよ。",
+    "fallbackEn": [
+      "My",
+      "pencil",
+      "is",
+      "longer",
+      "than",
+      "yours."
+    ],
+    "fallbackJa": "わたしの えんぴつは 君のより 長いよ。"
+  },
+  {
+    "id": "c-wh-1",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "favorite",
+      "color"
+    ],
+    "slots": [],
+    "en": [
+      "What",
+      "is",
+      "your",
+      "favorite",
+      "color?"
+    ],
+    "ja": "いちばん 好きな 色は なに？",
+    "fallbackEn": [
+      "What",
+      "is",
+      "your",
+      "favorite",
+      "color?"
+    ],
+    "fallbackJa": "いちばん 好きな 色は なに？"
+  },
+  {
+    "id": "c-wh-2",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "blue",
+      "pen"
+    ],
+    "slots": [],
+    "en": [
+      "Where",
+      "is",
+      "my",
+      "blue",
+      "pen?"
+    ],
+    "ja": "わたしの 青い ペンは どこ？",
+    "fallbackEn": [
+      "Where",
+      "is",
+      "my",
+      "blue",
+      "pen?"
+    ],
+    "fallbackJa": "わたしの 青い ペンは どこ？"
+  },
+  {
+    "id": "c-wh-3",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "tall",
+      "boy"
+    ],
+    "slots": [],
+    "en": [
+      "Who",
+      "is",
+      "that",
+      "tall",
+      "boy?"
+    ],
+    "ja": "あの せの高い 男の子は だれ？",
+    "fallbackEn": [
+      "Who",
+      "is",
+      "that",
+      "tall",
+      "boy?"
+    ],
+    "fallbackJa": "あの せの高い 男の子は だれ？"
+  },
+  {
+    "id": "c-wh-4",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "birthday"
+    ],
+    "slots": [],
+    "en": [
+      "When",
+      "is",
+      "your",
+      "birthday?"
+    ],
+    "ja": "たんじょうびは いつ？",
+    "fallbackEn": [
+      "When",
+      "is",
+      "your",
+      "birthday?"
+    ],
+    "fallbackJa": "たんじょうびは いつ？"
+  },
+  {
+    "id": "c-wh-5",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "weather",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "How",
+      "is",
+      "the",
+      "weather",
+      "today?"
+    ],
+    "ja": "今日の 天気は どう？",
+    "fallbackEn": [
+      "How",
+      "is",
+      "the",
+      "weather",
+      "today?"
+    ],
+    "fallbackJa": "今日の 天気は どう？"
+  },
+  {
+    "id": "c-wh-6",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "eat",
+      "lunch"
+    ],
+    "slots": [],
+    "en": [
+      "What",
+      "do",
+      "you",
+      "eat",
+      "for",
+      "lunch?"
+    ],
+    "ja": "お昼ごはんに なにを 食べる？",
+    "fallbackEn": [
+      "What",
+      "do",
+      "you",
+      "eat",
+      "for",
+      "lunch?"
+    ],
+    "fallbackJa": "お昼ごはんに なにを 食べる？"
+  },
+  {
+    "id": "c-wh-7",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "fox",
+      "live"
+    ],
+    "slots": [],
+    "en": [
+      "Where",
+      "does",
+      "the",
+      "fox",
+      "live?"
+    ],
+    "ja": "きつねは どこに 住んでいるの？",
+    "fallbackEn": [
+      "Where",
+      "does",
+      "the",
+      "fox",
+      "live?"
+    ],
+    "fallbackJa": "きつねは どこに 住んでいるの？"
+  },
+  {
+    "id": "c-wh-8",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "make",
+      "pretty",
+      "cake"
+    ],
+    "slots": [],
+    "en": [
+      "Who",
+      "made",
+      "this",
+      "pretty",
+      "cake?"
+    ],
+    "ja": "だれが この かわいい ケーキを つくったの？",
+    "fallbackEn": [
+      "Who",
+      "made",
+      "this",
+      "pretty",
+      "cake?"
+    ],
+    "fallbackJa": "だれが この かわいい ケーキを つくったの？"
+  },
+  {
+    "id": "c-wh-9",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "bus",
+      "come"
+    ],
+    "slots": [],
+    "en": [
+      "When",
+      "does",
+      "the",
+      "bus",
+      "come?"
+    ],
+    "ja": "バスは いつ くるの？",
+    "fallbackEn": [
+      "When",
+      "does",
+      "the",
+      "bus",
+      "come?"
+    ],
+    "fallbackJa": "バスは いつ くるの？"
+  },
+  {
+    "id": "c-wh-10",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "go",
+      "school"
+    ],
+    "slots": [],
+    "en": [
+      "How",
+      "do",
+      "you",
+      "go",
+      "to",
+      "school?"
+    ],
+    "ja": "どうやって 学校に いくの？",
+    "fallbackEn": [
+      "How",
+      "do",
+      "you",
+      "go",
+      "to",
+      "school?"
+    ],
+    "fallbackJa": "どうやって 学校に いくの？"
+  },
+  {
+    "id": "c-hobby-1",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "like",
+      "soccer"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "soccer",
+      "very",
+      "much."
+    ],
+    "ja": "サッカーが 大好きだよ。",
+    "fallbackEn": [
+      "I",
+      "like",
+      "soccer",
+      "very",
+      "much."
+    ],
+    "fallbackJa": "サッカーが 大好きだよ。"
+  },
+  {
+    "id": "c-hobby-2",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Sora",
+      "play",
+      "guitar",
+      "day"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "plays",
+      "the",
+      "guitar",
+      "every",
+      "day."
+    ],
+    "ja": "ソラは 毎日 ギターを ひくよ。",
+    "fallbackEn": [
+      "Sora",
+      "plays",
+      "the",
+      "guitar",
+      "every",
+      "day."
+    ],
+    "fallbackJa": "ソラは 毎日 ギターを ひくよ。"
+  },
+  {
+    "id": "c-hobby-3",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Mei",
+      "draw",
+      "cute",
+      "picture"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "draws",
+      "cute",
+      "pictures."
+    ],
+    "ja": "メイは かわいい 絵を かくよ。",
+    "fallbackEn": [
+      "Mei",
+      "draws",
+      "cute",
+      "pictures."
+    ],
+    "fallbackJa": "メイは かわいい 絵を かくよ。"
+  },
+  {
+    "id": "c-hobby-4",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "play",
+      "game",
+      "school"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "play",
+      "games",
+      "after",
+      "school."
+    ],
+    "ja": "放課後に みんなで ゲームを するよ。",
+    "fallbackEn": [
+      "We",
+      "play",
+      "games",
+      "after",
+      "school."
+    ],
+    "fallbackJa": "放課後に みんなで ゲームを するよ。"
+  },
+  {
+    "id": "c-hobby-5",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "read",
+      "book",
+      "room"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "read",
+      "books",
+      "in",
+      "my",
+      "room."
+    ],
+    "ja": "部屋で 本を 読むよ。",
+    "fallbackEn": [
+      "I",
+      "read",
+      "books",
+      "in",
+      "my",
+      "room."
+    ],
+    "fallbackJa": "部屋で 本を 読むよ。"
+  },
+  {
+    "id": "c-hobby-6",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Sora",
+      "Mei",
+      "sing",
+      "together"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "and",
+      "Mei",
+      "sing",
+      "together."
+    ],
+    "ja": "ソラと メイは いっしょに うたうよ。",
+    "fallbackEn": [
+      "Sora",
+      "and",
+      "Mei",
+      "sing",
+      "together."
+    ],
+    "fallbackJa": "ソラと メイは いっしょに うたうよ。"
+  },
+  {
+    "id": "c-hobby-7",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "bird",
+      "like",
+      "sweet",
+      "apple"
+    ],
+    "slots": [],
+    "en": [
+      "My",
+      "bird",
+      "likes",
+      "sweet",
+      "apples."
+    ],
+    "ja": "うちの 小鳥は あまい リンゴが 好きだよ。",
+    "fallbackEn": [
+      "My",
+      "bird",
+      "likes",
+      "sweet",
+      "apples."
+    ],
+    "fallbackJa": "うちの 小鳥は あまい リンゴが 好きだよ。"
+  },
+  {
+    "id": "c-hobby-8",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "swim",
+      "pool"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "swim",
+      "in",
+      "the",
+      "pool."
+    ],
+    "ja": "プールで 泳ぐよ。",
+    "fallbackEn": [
+      "We",
+      "swim",
+      "in",
+      "the",
+      "pool."
+    ],
+    "fallbackJa": "プールで 泳ぐよ。"
+  },
+  {
+    "id": "c-hobby-9",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Sora",
+      "collect",
+      "cool",
+      "card"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "collects",
+      "cool",
+      "cards."
+    ],
+    "ja": "ソラは かっこいい カードを あつめているよ。",
+    "fallbackEn": [
+      "Sora",
+      "collects",
+      "cool",
+      "cards."
+    ],
+    "fallbackJa": "ソラは かっこいい カードを あつめているよ。"
+  },
+  {
+    "id": "c-hobby-10",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Mei",
+      "dance",
+      "fun",
+      "music"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "dances",
+      "to",
+      "fun",
+      "music."
+    ],
+    "ja": "メイは たのしい 音楽に あわせて おどるよ。",
+    "fallbackEn": [
+      "Mei",
+      "dances",
+      "to",
+      "fun",
+      "music."
+    ],
+    "fallbackJa": "メイは たのしい 音楽に あわせて おどるよ。"
+  },
+  {
+    "id": "c-nature-1",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "mountain",
+      "high"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "mountain",
+      "is",
+      "very",
+      "high."
+    ],
+    "ja": "その 山は とても 高いよ。",
+    "fallbackEn": [
+      "The",
+      "mountain",
+      "is",
+      "very",
+      "high."
+    ],
+    "fallbackJa": "その 山は とても 高いよ。"
+  },
+  {
+    "id": "c-nature-2",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "snow",
+      "white",
+      "cold"
+    ],
+    "slots": [],
+    "en": [
+      "Snow",
+      "is",
+      "white",
+      "and",
+      "cold."
+    ],
+    "ja": "雪は 白くて 冷たいよ。",
+    "fallbackEn": [
+      "Snow",
+      "is",
+      "white",
+      "and",
+      "cold."
+    ],
+    "fallbackJa": "雪は 白くて 冷たいよ。"
+  },
+  {
+    "id": "c-nature-3",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "leaf",
+      "turn",
+      "red",
+      "fall"
+    ],
+    "slots": [],
+    "en": [
+      "Leaves",
+      "turn",
+      "red",
+      "in",
+      "fall."
+    ],
+    "ja": "秋になると 木の葉が 赤くなるよ。",
+    "fallbackEn": [
+      "Leaves",
+      "turn",
+      "red",
+      "in",
+      "fall."
+    ],
+    "fallbackJa": "秋になると 木の葉が 赤くなるよ。"
+  },
+  {
+    "id": "c-nature-4",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "sun",
+      "shine",
+      "sky"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "sun",
+      "shines",
+      "in",
+      "the",
+      "sky."
+    ],
+    "ja": "空で 太陽が かがやいているよ。",
+    "fallbackEn": [
+      "The",
+      "sun",
+      "shines",
+      "in",
+      "the",
+      "sky."
+    ],
+    "fallbackJa": "空で 太陽が かがやいているよ。"
+  },
+  {
+    "id": "c-nature-5",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "rain",
+      "fall",
+      "cloud"
+    ],
+    "slots": [],
+    "en": [
+      "Rain",
+      "falls",
+      "from",
+      "the",
+      "clouds."
+    ],
+    "ja": "雲から 雨が ふってくるよ。",
+    "fallbackEn": [
+      "Rain",
+      "falls",
+      "from",
+      "the",
+      "clouds."
+    ],
+    "fallbackJa": "雲から 雨が ふってくるよ。"
+  },
+  {
+    "id": "c-nature-6",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "wind",
+      "blow",
+      "softly",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "wind",
+      "blows",
+      "softly",
+      "today."
+    ],
+    "ja": "今日は やさしい 風が ふいているよ。",
+    "fallbackEn": [
+      "The",
+      "wind",
+      "blows",
+      "softly",
+      "today."
+    ],
+    "fallbackJa": "今日は やさしい 風が ふいているよ。"
+  },
+  {
+    "id": "c-nature-7",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "yellow",
+      "flower",
+      "bloom",
+      "spring"
+    ],
+    "slots": [],
+    "en": [
+      "Yellow",
+      "flowers",
+      "bloom",
+      "in",
+      "spring."
+    ],
+    "ja": "春には 黄色い 花が さくよ。",
+    "fallbackEn": [
+      "Yellow",
+      "flowers",
+      "bloom",
+      "in",
+      "spring."
+    ],
+    "fallbackJa": "春には 黄色い 花が さくよ。"
+  },
+  {
+    "id": "c-nature-8",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "river",
+      "flow",
+      "sea"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "river",
+      "flows",
+      "to",
+      "the",
+      "sea."
+    ],
+    "ja": "川は 海に向かって ながれているよ。",
+    "fallbackEn": [
+      "The",
+      "river",
+      "flows",
+      "to",
+      "the",
+      "sea."
+    ],
+    "fallbackJa": "川は 海に向かって ながれているよ。"
+  },
+  {
+    "id": "c-nature-9",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "star",
+      "shine",
+      "brightly",
+      "night"
+    ],
+    "slots": [],
+    "en": [
+      "Stars",
+      "shine",
+      "brightly",
+      "at",
+      "night."
+    ],
+    "ja": "夜には 星が きらきら かがやくよ。",
+    "fallbackEn": [
+      "Stars",
+      "shine",
+      "brightly",
+      "at",
+      "night."
+    ],
+    "fallbackJa": "夜には 星が きらきら かがやくよ。"
+  },
+  {
+    "id": "c-nature-10",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "forest",
+      "quiet",
+      "green"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "forest",
+      "is",
+      "quiet",
+      "and",
+      "green."
+    ],
+    "ja": "森は しずかで みどりが いっぱいだよ。",
+    "fallbackEn": [
+      "The",
+      "forest",
+      "is",
+      "quiet",
+      "and",
+      "green."
+    ],
+    "fallbackJa": "森は しずかで みどりが いっぱいだよ。"
+  },
+  {
+    "id": "c-feeling-1",
+    "category": "daily",
+    "grammar": "imperative",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "open",
+      "big",
+      "window"
+    ],
+    "slots": [],
+    "en": [
+      "Please",
+      "open",
+      "the",
+      "big",
+      "window."
+    ],
+    "ja": "大きな まどを あけてください。",
+    "fallbackEn": [
+      "Please",
+      "open",
+      "the",
+      "big",
+      "window."
+    ],
+    "fallbackJa": "大きな まどを あけてください。"
+  },
+  {
+    "id": "c-feeling-2",
+    "category": "daily",
+    "grammar": "imperative",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "close",
+      "door"
+    ],
+    "slots": [],
+    "en": [
+      "Close",
+      "the",
+      "door,",
+      "please."
+    ],
+    "ja": "ドアを しめてください。",
+    "fallbackEn": [
+      "Close",
+      "the",
+      "door,",
+      "please."
+    ],
+    "fallbackJa": "ドアを しめてください。"
+  },
+  {
+    "id": "c-feeling-3",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "feel",
+      "happy",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "feel",
+      "happy",
+      "today."
+    ],
+    "ja": "今日は とても うれしいな。",
+    "fallbackEn": [
+      "I",
+      "feel",
+      "happy",
+      "today."
+    ],
+    "fallbackJa": "今日は とても うれしいな。"
+  },
+  {
+    "id": "c-feeling-4",
+    "category": "daily",
+    "grammar": "imperative",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "show",
+      "toy"
+    ],
+    "slots": [],
+    "en": [
+      "Please",
+      "show",
+      "me",
+      "your",
+      "toy."
+    ],
+    "ja": "君の おもちゃを みせてください。",
+    "fallbackEn": [
+      "Please",
+      "show",
+      "me",
+      "your",
+      "toy."
+    ],
+    "fallbackJa": "君の おもちゃを みせてください。"
+  },
+  {
+    "id": "c-feeling-5",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Sora",
+      "look",
+      "tired"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "looks",
+      "very",
+      "tired",
+      "now."
+    ],
+    "ja": "ソラは 今 とても つかれているみたい。",
+    "fallbackEn": [
+      "Sora",
+      "looks",
+      "very",
+      "tired",
+      "now."
+    ],
+    "fallbackJa": "ソラは 今 とても つかれているみたい。"
+  },
+  {
+    "id": "c-feeling-6",
+    "category": "daily",
+    "grammar": "imperative",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "quiet",
+      "room"
+    ],
+    "slots": [],
+    "en": [
+      "Be",
+      "quiet",
+      "in",
+      "the",
+      "room."
+    ],
+    "ja": "部屋の中では 静かに しようね。",
+    "fallbackEn": [
+      "Be",
+      "quiet",
+      "in",
+      "the",
+      "room."
+    ],
+    "fallbackJa": "部屋の中では 静かに しようね。"
+  },
+  {
+    "id": "c-feeling-7",
+    "category": "daily",
+    "grammar": "imperative",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "pass",
+      "salt"
+    ],
+    "slots": [],
+    "en": [
+      "Please",
+      "pass",
+      "me",
+      "the",
+      "salt."
+    ],
+    "ja": "お塩を とってください。",
+    "fallbackEn": [
+      "Please",
+      "pass",
+      "me",
+      "the",
+      "salt."
+    ],
+    "fallbackJa": "お塩を とってください。"
+  },
+  {
+    "id": "c-feeling-8",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "Mei",
+      "feel",
+      "sad",
+      "afternoon"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "feels",
+      "sad",
+      "this",
+      "afternoon."
+    ],
+    "ja": "メイは 今日の 午後 かなしい気分だよ。",
+    "fallbackEn": [
+      "Mei",
+      "feels",
+      "sad",
+      "this",
+      "afternoon."
+    ],
+    "fallbackJa": "メイは 今日の 午後 かなしい気分だよ。"
+  },
+  {
+    "id": "c-feeling-9",
+    "category": "daily",
+    "grammar": "imperative",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "run",
+      "near",
+      "pond"
+    ],
+    "slots": [],
+    "en": [
+      "Don't",
+      "run",
+      "near",
+      "the",
+      "pond."
+    ],
+    "ja": "池の ちかくで はしらないでね。",
+    "fallbackEn": [
+      "Don't",
+      "run",
+      "near",
+      "the",
+      "pond."
+    ],
+    "fallbackJa": "池の ちかくで はしらないでね。"
+  },
+  {
+    "id": "c-feeling-10",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "proud",
+      "team"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "proud",
+      "of",
+      "my",
+      "team."
+    ],
+    "ja": "わたしは 自分の チームが ほこらしいよ。",
+    "fallbackEn": [
+      "I",
+      "am",
+      "proud",
+      "of",
+      "my",
+      "team."
+    ],
+    "fallbackJa": "わたしは 自分の チームが ほこらしいよ。"
   }
 ]
