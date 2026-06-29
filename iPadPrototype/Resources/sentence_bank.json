@@ -6117,5 +6117,655 @@
       "to",
       "everyone"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "wear",
+      "hat"
+    ],
+    "en" : "A dog wears hats",
+    "genre" : "humor",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "1CDAE6B4-BC2D-57CE-A187-BEEA70E53EF2",
+    "ja" : "いぬが ぼうしを かぶるよ",
+    "sourceID" : "h-a-1",
+    "tokens" : [
+      "A",
+      "dog",
+      "wears",
+      "hats"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "brush",
+      "tooth"
+    ],
+    "en" : "Cats brush their teeth",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "A6FDC15C-297F-5AF4-8B8F-2FD25E5B2AE4",
+    "ja" : "ねこが はを みがくよ",
+    "sourceID" : "h-a-2",
+    "tokens" : [
+      "Cats",
+      "brush",
+      "their",
+      "teeth"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "cook",
+      "hot",
+      "dog"
+    ],
+    "en" : "Birds cook hot dogs",
+    "genre" : "humor",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "5756F867-22EF-56D4-A3FE-53E495C4F5FB",
+    "ja" : "とりが ホットドッグを つくるよ",
+    "sourceID" : "h-a-3",
+    "tokens" : [
+      "Birds",
+      "cook",
+      "hot",
+      "dogs"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "eat",
+      "ten",
+      "carrots"
+    ],
+    "en" : "Sora eats ten carrots",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "E3A23065-9791-5BFD-B46F-8FAC97C9FB98",
+    "ja" : "ソラが にんじんを じゅっぽん たべるよ",
+    "sourceID" : "h-a-4",
+    "tokens" : [
+      "Sora",
+      "eats",
+      "ten",
+      "carrots"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "drive",
+      "car"
+    ],
+    "en" : "A rabbit drives cars",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "5F43B8C4-94C7-50CB-8483-1F8456185D1E",
+    "ja" : "うさぎが くるまを うんてん するよ",
+    "sourceID" : "h-a-5",
+    "tokens" : [
+      "A",
+      "rabbit",
+      "drives",
+      "cars"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "turtles",
+      "dance",
+      "table"
+    ],
+    "en" : "Turtles dance on tables",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "DD1C69B9-7C4A-5AC1-A7AF-8ABF5C800569",
+    "ja" : "かめが テーブルの うえで おどるよ",
+    "sourceID" : "h-a-6",
+    "tokens" : [
+      "Turtles",
+      "dance",
+      "on",
+      "tables"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "sing",
+      "pig"
+    ],
+    "en" : "Mei sings to pigs",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "481A28CB-9BDD-5ECD-9288-097D61CE8F96",
+    "ja" : "メイが ぶたに うたを うたうよ",
+    "sourceID" : "h-a-7",
+    "tokens" : [
+      "Mei",
+      "sings",
+      "to",
+      "pigs"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "foxes",
+      "sleep",
+      "shoe"
+    ],
+    "en" : "Foxes sleep in shoes",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "100C86F6-C99F-5F8D-9401-559BC49809C1",
+    "ja" : "きつねが くつの なかで ねむるよ",
+    "sourceID" : "h-a-8",
+    "tokens" : [
+      "Foxes",
+      "sleep",
+      "in",
+      "shoes"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "read",
+      "book"
+    ],
+    "en" : "The cat is reading a book",
+    "genre" : "humor",
+    "gradeBand" : 4,
+    "grammar" : "presentContinuous",
+    "id" : "5DEC167B-467B-5FA2-891E-5D909E7E10D3",
+    "ja" : "ねこが 本を 読んでいるよ",
+    "sourceID" : "h-b-1",
+    "tokens" : [
+      "The",
+      "cat",
+      "is",
+      "reading",
+      "a",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "drawing",
+      "fish"
+    ],
+    "en" : "A dog is drawing a fish",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentContinuous",
+    "id" : "54035792-3CEF-551A-A3DE-78F8D443CAE2",
+    "ja" : "犬が さかなの 絵を かいているよ",
+    "sourceID" : "h-b-2",
+    "tokens" : [
+      "A",
+      "dog",
+      "is",
+      "drawing",
+      "a",
+      "fish"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "turtle",
+      "run",
+      "fast"
+    ],
+    "en" : "The turtle runs very fast",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "086CB877-491D-5DBC-83DC-17FB2193C201",
+    "ja" : "かめが とても はやく 走るよ",
+    "sourceID" : "h-b-3",
+    "tokens" : [
+      "The",
+      "turtle",
+      "runs",
+      "very",
+      "fast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "eat",
+      "pizza"
+    ],
+    "en" : "A rabbit is eating pizza",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentContinuous",
+    "id" : "C4858896-015D-5CAC-8A4D-0C9BDDA99C64",
+    "ja" : "うさぎが ピザを 食べているよ",
+    "sourceID" : "h-b-4",
+    "tokens" : [
+      "A",
+      "rabbit",
+      "is",
+      "eating",
+      "pizza"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pig",
+      "fly",
+      "sky"
+    ],
+    "en" : "Pigs fly in the sky",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "6A644266-60A6-5858-83B6-54BCF87C3311",
+    "ja" : "ぶたが 空を とぶよ",
+    "sourceID" : "h-b-5",
+    "tokens" : [
+      "Pigs",
+      "fly",
+      "in",
+      "the",
+      "sky"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "talk",
+      "flower"
+    ],
+    "en" : "Mei is talking to flowers",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentContinuous",
+    "id" : "D149980E-B671-5D4F-A91A-A6BB68AA2E1C",
+    "ja" : "メイが 花と 話しているよ",
+    "sourceID" : "h-b-6",
+    "tokens" : [
+      "Mei",
+      "is",
+      "talking",
+      "to",
+      "flowers"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "drink",
+      "milk"
+    ],
+    "en" : "The bird is drinking milk",
+    "genre" : "humor",
+    "gradeBand" : 4,
+    "grammar" : "presentContinuous",
+    "id" : "20E45E51-DAA3-55DE-A812-98005223E298",
+    "ja" : "とりが 牛にゅうを のんでいるよ",
+    "sourceID" : "h-b-7",
+    "tokens" : [
+      "The",
+      "bird",
+      "is",
+      "drinking",
+      "milk"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "wear",
+      "blue",
+      "shoe"
+    ],
+    "en" : "Sora is wearing blue shoes",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentContinuous",
+    "id" : "3C2633F0-2B32-5891-8704-056A36CC04A5",
+    "ja" : "ソラが 青い くつを はいているよ",
+    "sourceID" : "h-b-8",
+    "tokens" : [
+      "Sora",
+      "is",
+      "wearing",
+      "blue",
+      "shoes"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "sing",
+      "song"
+    ],
+    "en" : "The rabbit sang a song",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "2BFF0BAB-213F-5633-B479-B77B5F7F5D77",
+    "ja" : "うさぎが 歌を 歌ったよ",
+    "sourceID" : "h-c-1",
+    "tokens" : [
+      "The",
+      "rabbit",
+      "sang",
+      "a",
+      "song"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "turtle",
+      "play",
+      "tennis"
+    ],
+    "en" : "A turtle can play tennis",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "canModal",
+    "id" : "DEBED7D9-C59A-52CA-A673-D5ADA11F8522",
+    "ja" : "かめは テニスができるよ",
+    "sourceID" : "h-c-2",
+    "tokens" : [
+      "A",
+      "turtle",
+      "can",
+      "play",
+      "tennis"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "big",
+      "car"
+    ],
+    "en" : "This dog is bigger than a car",
+    "genre" : "humor",
+    "gradeBand" : 2,
+    "grammar" : "comparativeEr",
+    "id" : "B642DE14-A47A-5E9E-889A-79A4E0F4426E",
+    "ja" : "この 犬は 車より 大きいよ",
+    "sourceID" : "h-c-3",
+    "tokens" : [
+      "This",
+      "dog",
+      "is",
+      "bigger",
+      "than",
+      "a",
+      "car"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fox",
+      "swim",
+      "warm",
+      "tea"
+    ],
+    "en" : "The fox swam in warm tea",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "E9FC7F44-E695-5265-96D4-20ADD4011651",
+    "ja" : "きつねが 温かい お茶の中で 泳いだよ",
+    "sourceID" : "h-c-4",
+    "tokens" : [
+      "The",
+      "fox",
+      "swam",
+      "in",
+      "warm",
+      "tea"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "make",
+      "giant",
+      "cake"
+    ],
+    "en" : "Sora made a giant cake",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "E972A041-9327-5DC7-B19C-AA1D2856466B",
+    "ja" : "ソラが とても大きな ケーキを 作ったよ",
+    "sourceID" : "h-c-5",
+    "tokens" : [
+      "Sora",
+      "made",
+      "a",
+      "giant",
+      "cake"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "fly",
+      "like",
+      "bird"
+    ],
+    "en" : "Mei can fly like a bird",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "canModal",
+    "id" : "C3D96807-D5DF-513A-913E-ED29BDB0A83A",
+    "ja" : "メイは 鳥のように 飛べるよ",
+    "sourceID" : "h-c-6",
+    "tokens" : [
+      "Mei",
+      "can",
+      "fly",
+      "like",
+      "a",
+      "bird"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "run",
+      "fast",
+      "car"
+    ],
+    "en" : "This cat runs faster than cars",
+    "genre" : "humor",
+    "gradeBand" : 4,
+    "grammar" : "comparativeEr",
+    "id" : "C63F2257-6642-5FF4-9A40-5A39BDF7F7D7",
+    "ja" : "この ねこは 車より 速く 走るよ",
+    "sourceID" : "h-c-7",
+    "tokens" : [
+      "This",
+      "cat",
+      "runs",
+      "faster",
+      "than",
+      "cars"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "wash",
+      "own",
+      "face"
+    ],
+    "en" : "A dog washed its own face",
+    "genre" : "humor",
+    "gradeBand" : 3,
+    "grammar" : "pastSimple",
+    "id" : "628A23BB-D56B-5677-A329-0E1472EA6166",
+    "ja" : "犬が 自分の 顔を あらったよ",
+    "sourceID" : "h-c-8",
+    "tokens" : [
+      "A",
+      "dog",
+      "washed",
+      "its",
+      "own",
+      "face"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "walk",
+      "water"
+    ],
+    "en" : "The rabbit will walk on water",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "D24129C8-4C1F-5415-AE9E-8DFFB6068FD3",
+    "ja" : "うさぎが これから 水の上を 歩くよ",
+    "sourceID" : "h-d-1",
+    "tokens" : [
+      "The",
+      "rabbit",
+      "will",
+      "walk",
+      "on",
+      "water"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "eat",
+      "homework"
+    ],
+    "en" : "My dog has eaten my homework",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "2B6E2BD6-CFA8-5FF2-80B1-531A6B0371F1",
+    "ja" : "うちの 犬が 宿題を 食べてしまったよ",
+    "sourceID" : "h-d-2",
+    "tokens" : [
+      "My",
+      "dog",
+      "has",
+      "eaten",
+      "my",
+      "homework"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "go",
+      "catch",
+      "wind"
+    ],
+    "en" : "Mei is going to catch the wind",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "260039A4-98E1-53B4-ADE9-014322C3078A",
+    "ja" : "メイは 風を つかまえるつもりだよ",
+    "sourceID" : "h-d-3",
+    "tokens" : [
+      "Mei",
+      "is",
+      "going",
+      "to",
+      "catch",
+      "the",
+      "wind"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "paint",
+      "nice",
+      "picture"
+    ],
+    "en" : "A bird has painted a nice picture",
+    "genre" : "humor",
+    "gradeBand" : 3,
+    "grammar" : "presentPerfect",
+    "id" : "693EEC69-9BF8-54C1-811E-7D5097732AF4",
+    "ja" : "とりが すてきな 絵を かき終えたよ",
+    "sourceID" : "h-d-4",
+    "tokens" : [
+      "A",
+      "bird",
+      "has",
+      "painted",
+      "a",
+      "nice",
+      "picture"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "sleep",
+      "teacup"
+    ],
+    "en" : "The cat will sleep in a teacup",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "01A75BBC-6B22-583D-A0D7-274B3332A2EF",
+    "ja" : "ねこが これから ティーカップの中で ねむるよ",
+    "sourceID" : "h-d-5",
+    "tokens" : [
+      "The",
+      "cat",
+      "will",
+      "sleep",
+      "in",
+      "a",
+      "teacup"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "found",
+      "talk",
+      "tree"
+    ],
+    "en" : "Sora has found a talking tree",
+    "genre" : "humor",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "F09BEBC5-8FFB-501A-8B53-3CAD27C0CA11",
+    "ja" : "ソラが しゃべる 木を 見つけたよ",
+    "sourceID" : "h-d-6",
+    "tokens" : [
+      "Sora",
+      "has",
+      "found",
+      "a",
+      "talking",
+      "tree"
+    ]
   }
 ]

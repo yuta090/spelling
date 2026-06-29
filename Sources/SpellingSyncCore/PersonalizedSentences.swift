@@ -191,6 +191,7 @@ public struct PersonSentenceTemplate: Equatable, Codable, Sendable {
     public var gradeBand: Int
     public var contentLemmas: [String]
     public var grammar: GrammarPoint?
+    public var genre: Genre?                    // 解決後 SentenceItem へコピー（humor トグルの素）
 
     public init(
         id: String,
@@ -201,7 +202,8 @@ public struct PersonSentenceTemplate: Equatable, Codable, Sendable {
         slots: [PersonSlotSpec],
         gradeBand: Int,
         contentLemmas: [String] = [],
-        grammar: GrammarPoint? = nil
+        grammar: GrammarPoint? = nil,
+        genre: Genre? = nil
     ) {
         self.id = id
         self.category = category
@@ -212,6 +214,7 @@ public struct PersonSentenceTemplate: Equatable, Codable, Sendable {
         self.gradeBand = gradeBand
         self.contentLemmas = contentLemmas
         self.grammar = grammar
+        self.genre = genre
     }
 }
 
@@ -272,7 +275,8 @@ public enum SentencePersonalizer {
             tokens: tokens,
             gradeBand: template.gradeBand,
             contentLemmas: template.contentLemmas,   // 名前は含めない（作成側の責務）
-            grammar: template.grammar
+            grammar: template.grammar,
+            genre: template.genre
         )
     }
 
