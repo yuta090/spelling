@@ -9345,7 +9345,20 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "voxelreef", japaneseName: "ボクセルのサンゴしょう", englishName: "Voxel Reef", price: 220, imageName: "bg_voxelreef"),
         HomeBackgroundTheme(id: "voxelpirate", japaneseName: "ボクセルのかいぞくせん", englishName: "Voxel Pirates", price: 220, imageName: "bg_voxelpirate"),
         HomeBackgroundTheme(id: "voxeldragon", japaneseName: "ボクセルのドラゴンのたに", englishName: "Voxel Dragon", price: 240, imageName: "bg_voxeldragon"),
-        HomeBackgroundTheme(id: "voxelaurora", japaneseName: "ボクセルのオーロラ", englishName: "Voxel Aurora", price: 220, imageName: "bg_voxelaurora")
+        HomeBackgroundTheme(id: "voxelaurora", japaneseName: "ボクセルのオーロラ", englishName: "Voxel Aurora", price: 220, imageName: "bg_voxelaurora"),
+        HomeBackgroundTheme(id: "hauntedcastle", japaneseName: "おばけのおしろ", englishName: "Haunted Castle", price: 240, imageName: "bg_hauntedcastle"),
+        HomeBackgroundTheme(id: "spookygraveyard", japaneseName: "おばけのはかば", englishName: "Spooky Graveyard", price: 220, imageName: "bg_spookygraveyard"),
+        HomeBackgroundTheme(id: "witchcottage", japaneseName: "まじょのいえ", englishName: "Witch Cottage", price: 220, imageName: "bg_witchcottage"),
+        HomeBackgroundTheme(id: "monsterlab", japaneseName: "かいぶつラボ", englishName: "Monster Lab", price: 220, imageName: "bg_monsterlab"),
+        HomeBackgroundTheme(id: "werewolfwoods", japaneseName: "まんげつのもり", englishName: "Full Moon Woods", price: 240, imageName: "bg_werewolfwoods"),
+        HomeBackgroundTheme(id: "cursedtomb", japaneseName: "のろいのいせき", englishName: "Cursed Tomb", price: 240, imageName: "bg_cursedtomb"),
+        HomeBackgroundTheme(id: "swampmonster", japaneseName: "ぬまのモンスター", englishName: "Swamp Monster", price: 200, imageName: "bg_swampmonster"),
+        HomeBackgroundTheme(id: "foggyforest", japaneseName: "きりのもり", englishName: "Foggy Forest", price: 220, imageName: "bg_foggyforest"),
+        HomeBackgroundTheme(id: "yokaiparade", japaneseName: "ひゃっきやこう", englishName: "Yokai Parade", price: 240, imageName: "bg_yokaiparade"),
+        HomeBackgroundTheme(id: "kappapond", japaneseName: "かっぱのぬま", englishName: "Kappa Pond", price: 200, imageName: "bg_kappapond"),
+        HomeBackgroundTheme(id: "hauntedshrine", japaneseName: "おばけじんじゃ", englishName: "Haunted Shrine", price: 240, imageName: "bg_hauntedshrine"),
+        HomeBackgroundTheme(id: "oninoyama", japaneseName: "おにのやま", englishName: "Ogre Mountain", price: 220, imageName: "bg_oninoyama"),
+        HomeBackgroundTheme(id: "lanternghosts", japaneseName: "ちょうちんおばけ", englishName: "Lantern Ghosts", price: 200, imageName: "bg_lanternghosts")
     ]
     // BG-CATALOG-GENERATED-END
 }
