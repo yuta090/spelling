@@ -9997,7 +9997,31 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "pandabamboo", japaneseName: "パンダのたけやぶ", englishName: "Panda Grove", price: 220, imageName: "bg_pandabamboo"),
         HomeBackgroundTheme(id: "bunnyisland", japaneseName: "うさぎのしま", englishName: "Bunny Island", price: 220, imageName: "bg_bunnyisland"),
         HomeBackgroundTheme(id: "penguinbeach", japaneseName: "ペンギンビーチ", englishName: "Penguin Beach", price: 220, imageName: "bg_penguinbeach"),
-        HomeBackgroundTheme(id: "puppyfarm", japaneseName: "こいぬのまきば", englishName: "Puppy Meadow", price: 220, imageName: "bg_puppyfarm")
+        HomeBackgroundTheme(id: "puppyfarm", japaneseName: "こいぬのまきば", englishName: "Puppy Meadow", price: 220, imageName: "bg_puppyfarm"),
+        HomeBackgroundTheme(id: "uyuni", japaneseName: "かがみのみずうみ", englishName: "Mirror Lake", price: 260, imageName: "bg_uyuni"),
+        HomeBackgroundTheme(id: "grandcanyon", japaneseName: "おおきなたにがわ", englishName: "Grand Canyon", price: 260, imageName: "bg_grandcanyon"),
+        HomeBackgroundTheme(id: "santorini", japaneseName: "あおいドームのまち", englishName: "Cliff Town", price: 260, imageName: "bg_santorini"),
+        HomeBackgroundTheme(id: "maldives", japaneseName: "みずうえコテージ", englishName: "Overwater Villas", price: 260, imageName: "bg_maldives"),
+        HomeBackgroundTheme(id: "mountainruins", japaneseName: "くものいせき", englishName: "Mountain Ruins", price: 260, imageName: "bg_mountainruins"),
+        HomeBackgroundTheme(id: "bigfalls", japaneseName: "だいばくふ", englishName: "Great Falls", price: 260, imageName: "bg_bigfalls"),
+        HomeBackgroundTheme(id: "wizardhall", japaneseName: "まほうのひろま", englishName: "Wizard Hall", price: 260, imageName: "bg_wizardhall"),
+        HomeBackgroundTheme(id: "dragonhoard", japaneseName: "ドラゴンのたから", englishName: "Dragon Hoard", price: 260, imageName: "bg_dragonhoard"),
+        HomeBackgroundTheme(id: "skykingdom", japaneseName: "てんくうのしろ", englishName: "Sky Kingdom", price: 260, imageName: "bg_skykingdom"),
+        HomeBackgroundTheme(id: "rainbowpalace", japaneseName: "にじのきゅうでん", englishName: "Rainbow Palace", price: 240, imageName: "bg_rainbowpalace"),
+        HomeBackgroundTheme(id: "elfspring", japaneseName: "エルフのいずみ", englishName: "Elf Spring", price: 240, imageName: "bg_elfspring"),
+        HomeBackgroundTheme(id: "birthday", japaneseName: "たんじょうび", englishName: "Birthday", price: 220, imageName: "bg_birthday"),
+        HomeBackgroundTheme(id: "trophystage", japaneseName: "ひょうしょうだい", englishName: "Award Stage", price: 220, imageName: "bg_trophystage"),
+        HomeBackgroundTheme(id: "throne", japaneseName: "おうさまのま", englishName: "Throne Room", price: 260, imageName: "bg_throne"),
+        HomeBackgroundTheme(id: "partyfireworks", japaneseName: "おいわいのはなび", englishName: "Party Fireworks", price: 240, imageName: "bg_partyfireworks"),
+        HomeBackgroundTheme(id: "rewardroom", japaneseName: "ごほうびルーム", englishName: "Reward Room", price: 240, imageName: "bg_rewardroom"),
+        HomeBackgroundTheme(id: "auroracoast", japaneseName: "オーロラのうみべ", englishName: "Aurora Coast", price: 260, imageName: "bg_auroracoast"),
+        HomeBackgroundTheme(id: "starfallsea", japaneseName: "ほしふるうみ", englishName: "Starfall Sea", price: 260, imageName: "bg_starfallsea"),
+        HomeBackgroundTheme(id: "milkywaylake", japaneseName: "てんのがわのみずうみ", englishName: "Milky Way Lake", price: 260, imageName: "bg_milkywaylake"),
+        HomeBackgroundTheme(id: "auroramountain", japaneseName: "オーロラのゆきやま", englishName: "Aurora Peaks", price: 260, imageName: "bg_auroramountain"),
+        HomeBackgroundTheme(id: "cometnight", japaneseName: "すいせいのよぞら", englishName: "Comet Night", price: 240, imageName: "bg_cometnight"),
+        HomeBackgroundTheme(id: "glowingsea", japaneseName: "ひかるうみ", englishName: "Glowing Sea", price: 260, imageName: "bg_glowingsea"),
+        HomeBackgroundTheme(id: "desertstars", japaneseName: "さばくのほしぞら", englishName: "Desert Stars", price: 240, imageName: "bg_desertstars"),
+        HomeBackgroundTheme(id: "starrycape", japaneseName: "ほしぞらのみさき", englishName: "Starry Cape", price: 260, imageName: "bg_starrycape")
     ]
     // BG-CATALOG-GENERATED-END
 }
