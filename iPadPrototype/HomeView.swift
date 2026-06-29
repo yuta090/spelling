@@ -9327,7 +9327,25 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "fairytalevillage", japaneseName: "おとぎのむら", englishName: "Fairytale Village", price: 220, imageName: "bg_fairytalevillage"),
         HomeBackgroundTheme(id: "skyship", japaneseName: "そらとぶふね", englishName: "Flying Ship", price: 240, imageName: "bg_skyship"),
         HomeBackgroundTheme(id: "wonderland", japaneseName: "ふしぎのにわ", englishName: "Wonderland Garden", price: 220, imageName: "bg_wonderland"),
-        HomeBackgroundTheme(id: "flowertower", japaneseName: "はなのとう", englishName: "Flower Tower", price: 220, imageName: "bg_flowertower")
+        HomeBackgroundTheme(id: "flowertower", japaneseName: "はなのとう", englishName: "Flower Tower", price: 220, imageName: "bg_flowertower"),
+        HomeBackgroundTheme(id: "buildsite", japaneseName: "こうじげんば", englishName: "Construction Site", price: 200, imageName: "bg_buildsite"),
+        HomeBackgroundTheme(id: "rocketlaunch", japaneseName: "ロケットはっしゃ", englishName: "Rocket Launch", price: 240, imageName: "bg_rocketlaunch"),
+        HomeBackgroundTheme(id: "bullettrain", japaneseName: "しんかんせん", englishName: "Bullet Train", price: 220, imageName: "bg_bullettrain"),
+        HomeBackgroundTheme(id: "fireengine", japaneseName: "しょうぼうたい", englishName: "Fire Engine", price: 200, imageName: "bg_fireengine"),
+        HomeBackgroundTheme(id: "portcranes", japaneseName: "みなとのクレーン", englishName: "Port Cranes", price: 200, imageName: "bg_portcranes"),
+        HomeBackgroundTheme(id: "wildsavanna", japaneseName: "サバンナ", englishName: "Wild Savanna", price: 240, imageName: "bg_wildsavanna"),
+        HomeBackgroundTheme(id: "polarnight", japaneseName: "きょくほくのうみ", englishName: "Arctic Night", price: 220, imageName: "bg_polarnight"),
+        HomeBackgroundTheme(id: "rainforest", japaneseName: "ねったいうりん", englishName: "Rainforest", price: 220, imageName: "bg_rainforest"),
+        HomeBackgroundTheme(id: "flamingolake", japaneseName: "フラミンゴのみずうみ", englishName: "Flamingo Lake", price: 200, imageName: "bg_flamingolake"),
+        HomeBackgroundTheme(id: "dinoplains", japaneseName: "きょうりゅうのへいげん", englishName: "Dinosaur Plains", price: 240, imageName: "bg_dinoplains"),
+        HomeBackgroundTheme(id: "volcanoera", japaneseName: "かざんじだい", englishName: "Volcano Era", price: 240, imageName: "bg_volcanoera"),
+        HomeBackgroundTheme(id: "ancientsea", japaneseName: "おおむかしのうみ", englishName: "Ancient Sea", price: 220, imageName: "bg_ancientsea"),
+        HomeBackgroundTheme(id: "iceagemammoth", japaneseName: "ひょうがき", englishName: "Ice Age", price: 220, imageName: "bg_iceagemammoth"),
+        HomeBackgroundTheme(id: "pteranodonsky", japaneseName: "そらとぶよくりゅう", englishName: "Flying Reptiles", price: 240, imageName: "bg_pteranodonsky"),
+        HomeBackgroundTheme(id: "voxelreef", japaneseName: "ボクセルのサンゴしょう", englishName: "Voxel Reef", price: 220, imageName: "bg_voxelreef"),
+        HomeBackgroundTheme(id: "voxelpirate", japaneseName: "ボクセルのかいぞくせん", englishName: "Voxel Pirates", price: 220, imageName: "bg_voxelpirate"),
+        HomeBackgroundTheme(id: "voxeldragon", japaneseName: "ボクセルのドラゴンのたに", englishName: "Voxel Dragon", price: 240, imageName: "bg_voxeldragon"),
+        HomeBackgroundTheme(id: "voxelaurora", japaneseName: "ボクセルのオーロラ", englishName: "Voxel Aurora", price: 220, imageName: "bg_voxelaurora")
     ]
     // BG-CATALOG-GENERATED-END
 }
