@@ -63,14 +63,91 @@ public enum JapaneseReading {
         return output.isEmpty ? text : output
     }
 
-    /// 子向けの例文和訳を表示用に整える。
+    /// ふりがな（ルビ）表示用の1かたまり。`text` を表示し、`reading` があれば上にふりがなを振る。
+    public struct RubySegment: Equatable, Sendable {
+        /// 画面に出す本体（習った漢字／かな／記号／英字）。
+        public let text: String
+        /// ふりがな（本体が習った漢字で読みが要るときのみ。かな・記号・未習かな化済みは nil）。
+        public let reading: String?
+        public init(text: String, reading: String?) {
+            self.text = text
+            self.reading = reading
+        }
+    }
+
+    /// 和文を**学年ハイブリッド＋ふりがな**の表示かたまりに分解する。
     ///
-    /// **順序が重要**: まず漢字のまま `wakachi`（語境界が明確なうちに文節を区切る）→ そのあと
-    /// `kanaizingOverGrade` で学年を超える漢字をかなに落とす。逆順だと、かな化した複合語
-    /// （例: 蔵書→ぞうしょ）が再トークナイズで「ぞう しょ」のように割れてしまう。
-    /// `kanaizingOverGrade` はスペースを保つのでこの順序で破綻しない。
-    public static func readableExample(_ ja: String, maxGrade: Int) -> String {
-        kanaizingOverGrade(wakachi(ja), maxGrade: maxGrade)
+    /// 方針（CLAUDE.md 子ども原則）:
+    /// - **習った学年以内の漢字を含む語** → 漢字のまま残し、その語の読みを `reading`（ふりがな）に付ける。
+    /// - **学年を超える漢字を含む語** → その語の読み（ひらがな）に置き換える（`reading` は nil）。
+    /// - かな・記号・英字・スペース → そのまま（`reading` は nil）。
+    ///
+    /// ふりがなは語単位（グループルビ）。読みは `kanaizingOverGrade` と同じ OS 内蔵辞書由来で、稀に
+    /// 揺れる（私→わたくし）。許可学年内の漢字に振る前提なので、致命的な誤読は出にくい。
+    /// 例文に使うときは呼び出し側で `wakachi` を通してから渡すと、文節スペースも保たれる
+    /// （スペースは隣接しない別かたまりとして返る）。
+    public static func rubySegments(_ text: String, maxGrade: Int) -> [RubySegment] {
+        guard !text.isEmpty else { return [] }
+
+        let ns = text as NSString
+        let cf = text as CFString
+        let fullRange = CFRangeMake(0, ns.length)
+        let locale = CFLocaleCreate(nil, CFLocaleIdentifier("ja" as CFString))
+        guard let tokenizer = CFStringTokenizerCreate(nil, cf, fullRange, kCFStringTokenizerUnitWordBoundary, locale) else {
+            return [RubySegment(text: text, reading: nil)]
+        }
+
+        var segments: [RubySegment] = []
+        var cursor = 0
+
+        // ふりがな不要のかたまりは直前のふりがな無しかたまりに連結して、断片を減らす。
+        func appendPlain(_ s: String) {
+            guard !s.isEmpty else { return }
+            if let last = segments.last, last.reading == nil {
+                segments[segments.count - 1] = RubySegment(text: last.text + s, reading: nil)
+            } else {
+                segments.append(RubySegment(text: s, reading: nil))
+            }
+        }
+
+        var type = CFStringTokenizerAdvanceToNextToken(tokenizer)
+        while !type.isEmpty {
+            let range = CFStringTokenizerGetCurrentTokenRange(tokenizer)
+            let start = range.location
+            let length = range.length
+
+            // トークン手前の区切り（スペース・記号）は原文のまま。
+            if start > cursor {
+                appendPlain(ns.substring(with: NSRange(location: cursor, length: start - cursor)))
+            }
+
+            let surface = ns.substring(with: NSRange(location: start, length: length))
+            if surface.contains(where: KanjiLevelGate.isKanji) {
+                let reading = hiraganaReading(of: tokenizer)
+                if KanjiLevelGate.offendingKanji(in: surface, maxGrade: maxGrade).isEmpty {
+                    // 習った漢字 → 漢字のまま＋ふりがな（読みが取れて表記と違うときだけ振る）。
+                    if let reading, !reading.isEmpty, reading != surface {
+                        segments.append(RubySegment(text: surface, reading: reading))
+                    } else {
+                        appendPlain(surface)
+                    }
+                } else {
+                    // 未習漢字を含む → 読み（かな）に置き換え。ふりがなは振らない。
+                    appendPlain((reading?.isEmpty == false) ? reading! : surface)
+                }
+            } else {
+                appendPlain(surface)
+            }
+
+            cursor = start + length
+            type = CFStringTokenizerAdvanceToNextToken(tokenizer)
+        }
+
+        if cursor < ns.length {
+            appendPlain(ns.substring(with: NSRange(location: cursor, length: ns.length - cursor)))
+        }
+
+        return segments
     }
 
     /// 和文を**分かち書き**にする（文節ごとに半角スペースを入れる）。

@@ -2955,17 +2955,17 @@ private struct ExampleHintView: View {
     // WordBank（同梱SQLite）参照は単語ごとに一度だけ行い、学年で整形して保持する。
     // ※ @State + onAppear を空の Group に付けると onAppear が発火せずヒントが出ない。
     //    そのため常に存在する VStack に .onValueChange(initial:) を付けて確実に読み込む。
-    @State private var meaning: String?
+    // 意味・例文和訳は「学年ハイブリッド＋ふりがな」のかたまり（RubySegment）で保持する。
+    @State private var meaningSegments: [JapaneseReading.RubySegment] = []
     @State private var exampleEN: String?
-    @State private var exampleJA: String?
+    @State private var exampleJASegments: [JapaneseReading.RubySegment] = []
 
     private var hasContent: Bool {
-        meaning != nil || exampleEN != nil
+        !meaningSegments.isEmpty || exampleEN != nil
     }
 
     private let inkBlue = Color(red: 0.12, green: 0.24, blue: 0.45)
     private let meaningGreen = Color(red: 0.16, green: 0.46, blue: 0.40)
-    private let examplePurple = Color(red: 0.45, green: 0.32, blue: 0.66)
 
     var body: some View {
         // ※ .onValueChange(initial:) は iOS16 では onAppear 相当。中身が空になりうる Group に付けると
@@ -3018,13 +3018,13 @@ private struct ExampleHintView: View {
             miniLabel(language.text(japanese: "いみ", english: "Meaning"),
                       systemImage: "character.book.closed.fill",
                       tint: meaningGreen)
-            if let meaning {
-                Text(meaning)
-                    .font(.system(size: style == .compact ? 24 : 30, weight: .heavy, design: .rounded))
-                    .foregroundStyle(inkBlue)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.6)
-                    .fixedSize(horizontal: false, vertical: true)
+            if !meaningSegments.isEmpty {
+                // 習った漢字はふりがな付き、未習漢字はかな（学年ハイブリッド）。
+                FuriganaText(segments: meaningSegments,
+                         baseSize: style == .compact ? 24 : 30,
+                         baseWeight: .heavy,
+                         design: .rounded,
+                         color: inkBlue)
             } else {
                 // 意味が無い語でも列の幅が崩れないように軽く埋める。
                 Text("—")
@@ -3034,31 +3034,30 @@ private struct ExampleHintView: View {
         }
         .frame(minWidth: style == .compact ? 0 : 96,
                idealWidth: style == .compact ? nil : 140,
-               maxWidth: style == .compact ? .infinity : 190,
+               maxWidth: style == .compact ? .infinity : 200,
                alignment: .leading)
     }
 
     private var exampleColumn: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            HStack(spacing: 8) {
-                miniLabel(language.text(japanese: "れいぶん", english: "Example"),
-                          systemImage: "text.quote",
-                          tint: examplePurple)
-                if let exampleEN, !exampleEN.isEmpty {
-                    speakButton(exampleEN)
+        // 「れいぶん」ラベルは出さない。再生ボタンは英語例文の左に置く。
+        VStack(alignment: .leading, spacing: 4) {
+            if let exampleEN {
+                HStack(alignment: .center, spacing: 8) {
+                    if !exampleEN.isEmpty {
+                        speakButton(exampleEN)
+                    }
+                    Text(exampleEN)
+                        .font(.system(size: style == .compact ? 16 : 18, weight: .semibold, design: .rounded))
+                        .foregroundStyle(inkBlue)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            if let exampleEN {
-                Text(exampleEN)
-                    .font(.system(size: style == .compact ? 16 : 18, weight: .semibold, design: .rounded))
-                    .foregroundStyle(inkBlue)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            if let exampleJA, !exampleJA.isEmpty {
-                Text(exampleJA)
-                    .font(.system(size: style == .compact ? 13 : 14, weight: .medium))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+            if !exampleJASegments.isEmpty {
+                FuriganaText(segments: exampleJASegments,
+                         baseSize: style == .compact ? 13 : 14,
+                         baseWeight: .medium,
+                         design: .default,
+                         color: Color.secondary)
             }
         }
     }
@@ -3086,13 +3085,12 @@ private struct ExampleHintView: View {
     }
 
     private func loadHint() {
-        // 意味: 最初の語義だけに絞り（GlossFormatter）、学年を超える漢字をかなに落とす。
+        // 意味: 最初の語義だけに絞り（GlossFormatter）、学年ハイブリッド＋ふりがなのかたまりにする。
         if let raw = WordBank.shared.japanese(for: word) {
             let sense = GlossFormatter.primarySense(raw)
-            let display = JapaneseReading.kanaizingOverGrade(sense, maxGrade: maxKanjiGrade)
-            meaning = display.isEmpty ? nil : display
+            meaningSegments = JapaneseReading.rubySegments(sense, maxGrade: maxKanjiGrade)
         } else {
-            meaning = nil
+            meaningSegments = []
         }
 
         // 例文: Cast に名前があり承認テンプレがあれば名前入りに差し替え。無ければ同梱の静的例文。
@@ -3111,12 +3109,82 @@ private struct ExampleHintView: View {
 
         if let chosen {
             exampleEN = chosen.en.isEmpty ? nil : chosen.en
-            // 例文の和訳を子向けに整える（分かち書き→学年超え漢字をかな化。順序は readableExample 側が保証）。
-            let ja = JapaneseReading.readableExample(chosen.ja, maxGrade: maxKanjiGrade)
-            exampleJA = ja.isEmpty ? nil : ja
+            // 例文の和訳: まず分かち書き（語境界が明確なうちに区切る）→ 学年ハイブリッド＋ふりがなへ。
+            let wakachi = JapaneseReading.wakachi(chosen.ja)
+            exampleJASegments = JapaneseReading.rubySegments(wakachi, maxGrade: maxKanjiGrade)
         } else {
             exampleEN = nil
-            exampleJA = nil
+            exampleJASegments = []
+        }
+    }
+}
+
+/// ふりがな（ルビ）付きの和文を折り返し表示する。`JapaneseReading.RubySegment` のかたまりを
+/// 「ふりがな（上・小）＋本体（下）」の単位にして、既存の汎用 `RubyFlowLayout` で行内に流し込む。
+/// ふりがなが1つも無いときは普通の `Text`（軽い・自然な折返し）にフォールバックする。
+/// ※ 単語プロンプト用の `RubyPromptText`（`漢字[よみ]` マークアップ・漢字単位ルビ）とは別系統。
+///   こちらは語単位（グループルビ）の `RubySegment` を直接描く・フォントを可変にできる。
+private struct FuriganaText: View {
+    let segments: [JapaneseReading.RubySegment]
+    var baseSize: CGFloat
+    var baseWeight: Font.Weight = .regular
+    var design: Font.Design = .default
+    var color: Color
+    var rubyColor: Color = Color.secondary
+
+    private var rubySize: CGFloat { max(9, baseSize * 0.5) }
+    private var hasAnyRuby: Bool { segments.contains { $0.reading != nil } }
+
+    var body: some View {
+        if !hasAnyRuby {
+            Text(segments.map(\.text).joined())
+                .font(.system(size: baseSize, weight: baseWeight, design: design))
+                .foregroundStyle(color)
+                .fixedSize(horizontal: false, vertical: true)
+        } else {
+            RubyFlowLayout(horizontalSpacing: 0, verticalSpacing: 2, maxLines: nil) {
+                ForEach(Array(renderUnits.enumerated()), id: \.offset) { _, unit in
+                    self.unit(unit)
+                }
+            }
+            // ばらばらの Text を VoiceOver が変な順で読まないよう、表示文をまとめて1要素にする。
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(segments.map(\.text).joined())
+        }
+    }
+
+    /// 折返し点を増やすため、ふりがな無しのかたまりはスペース境界で細かく割る。
+    private var renderUnits: [JapaneseReading.RubySegment] {
+        var units: [JapaneseReading.RubySegment] = []
+        for seg in segments {
+            guard seg.reading == nil else { units.append(seg); continue }
+            var current = ""
+            for ch in seg.text {
+                if ch == " " || ch == "\u{3000}" {
+                    if !current.isEmpty { units.append(.init(text: current, reading: nil)); current = "" }
+                    units.append(.init(text: String(ch), reading: nil))
+                } else {
+                    current.append(ch)
+                }
+            }
+            if !current.isEmpty { units.append(.init(text: current, reading: nil)) }
+        }
+        return units
+    }
+
+    @ViewBuilder
+    private func unit(_ seg: JapaneseReading.RubySegment) -> some View {
+        VStack(spacing: 1) {
+            // ふりがな行は常に高さを確保し、本体のベースラインを単位間で揃える。
+            Text(seg.reading ?? " ")
+                .font(.system(size: rubySize, weight: .semibold))
+                .foregroundStyle(rubyColor)
+                .opacity(seg.reading == nil ? 0 : 1)
+                .fixedSize()
+            Text(seg.text)
+                .font(.system(size: baseSize, weight: baseWeight, design: design))
+                .foregroundStyle(color)
+                .fixedSize()
         }
     }
 }
