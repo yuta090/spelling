@@ -14,6 +14,11 @@ struct HomeView: View {
     @State private var showingResults = false
     @State private var showingWordPreview = false
     @State private var showingPuzzle = false
+    /// パズルを開いた瞬間の「この回に完了できる回数」。提示中は model 追従で揺れないよう固定する
+    /// （完了→model更新でcoverが再評価されても、この回の許可数は開いた時点のまま保つ）。
+    @State private var puzzleAllowanceSnapshot = 0
+    /// 無料プランで今日のことばパズルを遊びきった時の「またあした」案内。
+    @State private var showingPuzzleLimit = false
     @State private var showingCharacterPicker = false
     /// このセッションでホームのキャラヒントを出すか（初回起動の1回だけ true になる）。
     @State private var showCharHint = false
@@ -144,7 +149,7 @@ struct HomeView: View {
                             showCharacterHint: showCharHint,
                             startPractice: startPractice,
                             showWords: { showingWordPreview = true },
-                            showPuzzle: { showingPuzzle = true },
+                            showPuzzle: { tryOpenPuzzle() },
                             showStepPicker: { showingStepPicker = true },
                             showCharacters: {
                                 showCharHint = false   // タップしたらこのセッションでも消す
@@ -241,7 +246,17 @@ struct HomeView: View {
             .fullScreenCover(isPresented: $showingPuzzle) {
                 // 子の学年＋親トグルでプールを絞ってから出題（やさしい文だけ／ユーモアON-OFF）。
                 // maxKanjiGrade は解説の漢字ふりがな出し分けに使う（例文和訳と同じ基準）。
-                PuzzleSessionView(policy: model.contentPolicy, maxKanjiGrade: model.childMaxKanjiGrade)
+                // playAllowance＝この回に完了できる回数（無料は今日の残り。完了ごとに記録）。
+                PuzzleSessionView(
+                    policy: model.contentPolicy,
+                    maxKanjiGrade: model.childMaxKanjiGrade,
+                    playAllowance: puzzleAllowanceSnapshot,
+                    onCompleted: { model.recordPuzzleCompletion() }
+                )
+            }
+            // 無料プランで今日のことばパズルを遊びきった時の、やさしい「またあした」案内。
+            .sheet(isPresented: $showingPuzzleLimit) {
+                PuzzleDailyLimitSheet(language: language)
             }
             .sheet(isPresented: $showingPracticeRetryPicker) {
                 PracticeRetryPickerSheet(
@@ -303,6 +318,18 @@ struct HomeView: View {
         }
 
             IrisTransitionOverlay(controller: iris)
+        }
+    }
+
+    /// ことばパズルを開く。無料プランで今日のぶん（1日2回）を遊びきっていたら、
+    /// 出題せず「またあした」案内を出す（プレミアム/デバッグ解放は無制限）。
+    private func tryOpenPuzzle() {
+        if model.canPlayPuzzleToday {
+            // この回の許可数を開いた時点で固定（提示中の model 更新で揺れないように）。
+            puzzleAllowanceSnapshot = model.puzzlePlaysRemainingToday
+            showingPuzzle = true
+        } else {
+            showingPuzzleLimit = true
         }
     }
 
@@ -778,6 +805,48 @@ private struct MissionSmallButton: View {
         .tapFeedback(scale: 0.93, bounce: true)
         .tint(tint)
         .disabled(disabled)
+    }
+}
+
+/// 無料プランで今日のことばパズル（1日2回）を遊びきった時の、子ども向け「またあした」案内。
+/// 専門用語・課金訴求は出さず、やさしく次の遊び（れんしゅう・たんご）へ気持ちを向ける。
+private struct PuzzleDailyLimitSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(spacing: 22) {
+            Spacer(minLength: 0)
+            Text("🌙")
+                .font(.system(size: 72))
+            Text(language.text(japanese: "きょうの ことばパズルは おしまい！",
+                               english: "That's all the puzzles for today!"))
+                .font(.system(size: 24, weight: .heavy, design: .rounded))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(language.text(japanese: "また あした あそぼうね。\nきょうは れんしゅうや たんごで あそべるよ 🌟",
+                               english: "Come back tomorrow!\nFor now, try practice or words 🌟"))
+                .font(.system(size: 17, weight: .bold, design: .rounded))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            Button {
+                dismiss()
+            } label: {
+                Text(language.text(japanese: "わかった！", english: "OK!"))
+                    .font(.system(size: 20, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: 280)
+                    .padding(.vertical, 14)
+                    .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 18))
+            }
+            .buttonStyle(.plain)
+            .tapFeedback(bounce: true)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .presentationDetents([.medium])
     }
 }
 
