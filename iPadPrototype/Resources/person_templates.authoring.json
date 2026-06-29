@@ -929,5 +929,1520 @@
     "ja": "メイは ソラを たすけられる",
     "fallbackEn": ["Mei", "can", "help", "Sora."],
     "fallbackJa": "メイは ソラを たすけられる"
+  },
+  {
+    "id": "a-greeting-11",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "afternoon"
+    ],
+    "slots": [],
+    "en": [
+      "Good",
+      "afternoon",
+      "to",
+      "you"
+    ],
+    "ja": "こんにちは",
+    "fallbackEn": [
+      "Good",
+      "afternoon",
+      "to",
+      "you"
+    ],
+    "fallbackJa": "こんにちは"
+  },
+  {
+    "id": "a-greeting-12",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "night",
+      "sleepy",
+      "turtle"
+    ],
+    "slots": [],
+    "en": [
+      "Good",
+      "night,",
+      "sleepy",
+      "turtle"
+    ],
+    "ja": "おやすみ、 ねむい かめさん",
+    "fallbackEn": [
+      "Good",
+      "night,",
+      "sleepy",
+      "turtle"
+    ],
+    "fallbackJa": "おやすみ、 ねむい かめさん"
+  },
+  {
+    "id": "a-greeting-13",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "goodbye",
+      "good",
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Goodbye",
+      "my",
+      "good",
+      "friend"
+    ],
+    "ja": "さようなら わたしの おともだち",
+    "fallbackEn": [
+      "Goodbye",
+      "my",
+      "good",
+      "friend"
+    ],
+    "fallbackJa": "さようなら わたしの おともだち"
+  },
+  {
+    "id": "a-greeting-14",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "see",
+      "later"
+    ],
+    "slots": [],
+    "en": [
+      "See",
+      "you",
+      "later,",
+      "Sora"
+    ],
+    "ja": "またあとでね、 ソラ",
+    "fallbackEn": [
+      "See",
+      "you",
+      "later,",
+      "Sora"
+    ],
+    "fallbackJa": "またあとでね、 ソラ"
+  },
+  {
+    "id": "a-greeting-15",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "welcome",
+      "school"
+    ],
+    "slots": [],
+    "en": [
+      "Welcome",
+      "to",
+      "our",
+      "school"
+    ],
+    "ja": "わたしたちの がっこうへ ようこそ",
+    "fallbackEn": [
+      "Welcome",
+      "to",
+      "our",
+      "school"
+    ],
+    "fallbackJa": "わたしたちの がっこうへ ようこそ"
+  },
+  {
+    "id": "a-greeting-16",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "welcome",
+      "home"
+    ],
+    "slots": [],
+    "en": [
+      "Welcome",
+      "to",
+      "my",
+      "home"
+    ],
+    "ja": "わたしの いえへ ようこそ",
+    "fallbackEn": [
+      "Welcome",
+      "to",
+      "my",
+      "home"
+    ],
+    "fallbackJa": "わたしの いえへ ようこそ"
+  },
+  {
+    "id": "a-greeting-17",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "have",
+      "nice",
+      "day"
+    ],
+    "slots": [],
+    "en": [
+      "Have",
+      "a",
+      "nice",
+      "day"
+    ],
+    "ja": "よい いちにちを",
+    "fallbackEn": [
+      "Have",
+      "a",
+      "nice",
+      "day"
+    ],
+    "fallbackJa": "よい いちにちを"
+  },
+  {
+    "id": "a-greeting-18",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "hello",
+      "happy",
+      "little",
+      "bird"
+    ],
+    "slots": [],
+    "en": [
+      "Hello,",
+      "happy",
+      "little",
+      "bird"
+    ],
+    "ja": "こんにちは、 うれしい ことりさん",
+    "fallbackEn": [
+      "Hello,",
+      "happy",
+      "little",
+      "bird"
+    ],
+    "fallbackJa": "こんにちは、 うれしい ことりさん"
+  },
+  {
+    "id": "a-greeting-19",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "see",
+      "later"
+    ],
+    "slots": [],
+    "en": [
+      "See",
+      "you",
+      "later,",
+      "Mei"
+    ],
+    "ja": "またあとでね、 メイ",
+    "fallbackEn": [
+      "See",
+      "you",
+      "later,",
+      "Mei"
+    ],
+    "fallbackJa": "またあとでね、 メイ"
+  },
+  {
+    "id": "a-greeting-20",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "hello",
+      "dear",
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Hello",
+      "my",
+      "dear",
+      "friend"
+    ],
+    "ja": "こんにちは わたしの たいせつな おともだち",
+    "fallbackEn": [
+      "Hello",
+      "my",
+      "dear",
+      "friend"
+    ],
+    "fallbackJa": "こんにちは わたしの たいせつな おともだち"
+  },
+  {
+    "id": "a-feeling-11",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "hungry"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "very",
+      "hungry"
+    ],
+    "ja": "わたしは とても おなかが すいた",
+    "fallbackEn": [
+      "I",
+      "am",
+      "very",
+      "hungry"
+    ],
+    "fallbackJa": "わたしは とても おなかが すいた"
+  },
+  {
+    "id": "a-feeling-12",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "dog",
+      "cold"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "dog",
+      "is",
+      "cold"
+    ],
+    "ja": "いぬは さむがっている",
+    "fallbackEn": [
+      "A",
+      "dog",
+      "is",
+      "cold"
+    ],
+    "fallbackJa": "いぬは さむがっている"
+  },
+  {
+    "id": "a-feeling-13",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "fine",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "is",
+      "fine",
+      "today"
+    ],
+    "ja": "ソラは きょう げんきです",
+    "fallbackEn": [
+      "Sora",
+      "is",
+      "fine",
+      "today"
+    ],
+    "fallbackJa": "ソラは きょう げんきです"
+  },
+  {
+    "id": "a-feeling-14",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "fox",
+      "thirsty"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "fox",
+      "is",
+      "thirsty"
+    ],
+    "ja": "きつねは のどが かわいた",
+    "fallbackEn": [
+      "The",
+      "fox",
+      "is",
+      "thirsty"
+    ],
+    "fallbackJa": "きつねは のどが かわいた"
+  },
+  {
+    "id": "a-feeling-15",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "warm",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "are",
+      "warm",
+      "now"
+    ],
+    "ja": "わたしたちは いま あたたかい",
+    "fallbackEn": [
+      "We",
+      "are",
+      "warm",
+      "now"
+    ],
+    "fallbackJa": "わたしたちは いま あたたかい"
+  },
+  {
+    "id": "a-feeling-16",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "tired"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "very",
+      "tired"
+    ],
+    "ja": "わたしは とても つかれた",
+    "fallbackEn": [
+      "I",
+      "am",
+      "very",
+      "tired"
+    ],
+    "fallbackJa": "わたしは とても つかれた"
+  },
+  {
+    "id": "a-feeling-17",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "cat",
+      "sad"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "is",
+      "sad"
+    ],
+    "ja": "ねこは かなしい",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "is",
+      "sad"
+    ],
+    "fallbackJa": "ねこは かなしい"
+  },
+  {
+    "id": "a-feeling-18",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "happy",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "are",
+      "happy",
+      "now"
+    ],
+    "ja": "わたしたちは いま うれしい",
+    "fallbackEn": [
+      "We",
+      "are",
+      "happy",
+      "now"
+    ],
+    "fallbackJa": "わたしたちは いま うれしい"
+  },
+  {
+    "id": "a-feeling-19",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "rabbit",
+      "afraid"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "rabbit",
+      "is",
+      "afraid"
+    ],
+    "ja": "うさぎは こわがっている",
+    "fallbackEn": [
+      "The",
+      "rabbit",
+      "is",
+      "afraid"
+    ],
+    "fallbackJa": "うさぎは こわがっている"
+  },
+  {
+    "id": "a-feeling-20",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "sleepy",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "sleepy",
+      "now"
+    ],
+    "ja": "わたしは いま ねむい",
+    "fallbackEn": [
+      "I",
+      "am",
+      "sleepy",
+      "now"
+    ],
+    "fallbackJa": "わたしは いま ねむい"
+  },
+  {
+    "id": "a-likewant-11",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "like",
+      "warm",
+      "milk"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "warm",
+      "milk"
+    ],
+    "ja": "わたしは あたたかい ぎゅうにゅうが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "warm",
+      "milk"
+    ],
+    "fallbackJa": "わたしは あたたかい ぎゅうにゅうが すき"
+  },
+  {
+    "id": "a-likewant-12",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "want",
+      "cold",
+      "water"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "cold",
+      "water"
+    ],
+    "ja": "わたしは つめたい みずが ほしい",
+    "fallbackEn": [
+      "I",
+      "want",
+      "cold",
+      "water"
+    ],
+    "fallbackJa": "わたしは つめたい みずが ほしい"
+  },
+  {
+    "id": "a-likewant-13",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "cat",
+      "want",
+      "fish"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "wants",
+      "fish"
+    ],
+    "ja": "ねこは さかなが ほしい",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "wants",
+      "fish"
+    ],
+    "fallbackJa": "ねこは さかなが ほしい"
+  },
+  {
+    "id": "a-likewant-14",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "like",
+      "sweet",
+      "apple"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "likes",
+      "sweet",
+      "apples"
+    ],
+    "ja": "メイは あまい りんごが すき",
+    "fallbackEn": [
+      "Mei",
+      "likes",
+      "sweet",
+      "apples"
+    ],
+    "fallbackJa": "メイは あまい りんごが すき"
+  },
+  {
+    "id": "a-likewant-15",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "fox",
+      "want",
+      "food"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "fox",
+      "wants",
+      "food"
+    ],
+    "ja": "きつねは たべものが ほしい",
+    "fallbackEn": [
+      "The",
+      "fox",
+      "wants",
+      "food"
+    ],
+    "fallbackJa": "きつねは たべものが ほしい"
+  },
+  {
+    "id": "a-likewant-16",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "like",
+      "big",
+      "tree"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "like",
+      "big",
+      "trees"
+    ],
+    "ja": "わたしたちは おおきな きが すき",
+    "fallbackEn": [
+      "We",
+      "like",
+      "big",
+      "trees"
+    ],
+    "fallbackJa": "わたしたちは おおきな きが すき"
+  },
+  {
+    "id": "a-likewant-17",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "rabbit",
+      "like",
+      "carrot"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "rabbit",
+      "likes",
+      "carrots"
+    ],
+    "ja": "うさぎは にんじんが すき",
+    "fallbackEn": [
+      "The",
+      "rabbit",
+      "likes",
+      "carrots"
+    ],
+    "fallbackJa": "うさぎは にんじんが すき"
+  },
+  {
+    "id": "a-likewant-18",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "want",
+      "book"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "a",
+      "book"
+    ],
+    "ja": "わたしは ほんが ほしい",
+    "fallbackEn": [
+      "I",
+      "want",
+      "a",
+      "book"
+    ],
+    "fallbackJa": "わたしは ほんが ほしい"
+  },
+  {
+    "id": "a-likewant-19",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "turtle",
+      "want",
+      "grass"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "turtle",
+      "wants",
+      "grass"
+    ],
+    "ja": "かめは くさが ほしい",
+    "fallbackEn": [
+      "The",
+      "turtle",
+      "wants",
+      "grass"
+    ],
+    "fallbackJa": "かめは くさが ほしい"
+  },
+  {
+    "id": "a-likewant-20",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "like",
+      "blue",
+      "bird"
+    ],
+    "slots": [],
+    "en": [
+      "You",
+      "like",
+      "blue",
+      "birds"
+    ],
+    "ja": "あなたは あおい とりが すき",
+    "fallbackEn": [
+      "You",
+      "like",
+      "blue",
+      "birds"
+    ],
+    "fallbackJa": "あなたは あおい とりが すき"
+  },
+  {
+    "id": "a-reply-11",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "yes",
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Yes",
+      "please,",
+      "my",
+      "friend"
+    ],
+    "ja": "はい おねがいします、 わたしの おともだち",
+    "fallbackEn": [
+      "Yes",
+      "please,",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "はい おねがいします、 わたしの おともだち"
+  },
+  {
+    "id": "a-reply-12",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "no",
+      "thank"
+    ],
+    "slots": [],
+    "en": [
+      "No",
+      "thank",
+      "you,",
+      "Mei"
+    ],
+    "ja": "いいえ けっこうです、 メイ",
+    "fallbackEn": [
+      "No",
+      "thank",
+      "you,",
+      "Mei"
+    ],
+    "fallbackJa": "いいえ けっこうです、 メイ"
+  },
+  {
+    "id": "a-reply-13",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "think"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "think",
+      "so",
+      "too"
+    ],
+    "ja": "わたしも そう おもいます",
+    "fallbackEn": [
+      "I",
+      "think",
+      "so",
+      "too"
+    ],
+    "fallbackJa": "わたしも そう おもいます"
+  },
+  {
+    "id": "a-reply-14",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Me",
+      "too,",
+      "my",
+      "friend"
+    ],
+    "ja": "わたしもだよ、 おともだち",
+    "fallbackEn": [
+      "Me",
+      "too,",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "わたしもだよ、 おともだち"
+  },
+  {
+    "id": "a-reply-15",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "right",
+      "let",
+      "go"
+    ],
+    "slots": [],
+    "en": [
+      "All",
+      "right,",
+      "let",
+      "us",
+      "go"
+    ],
+    "ja": "いいよ、 いこう",
+    "fallbackEn": [
+      "All",
+      "right,",
+      "let",
+      "us",
+      "go"
+    ],
+    "fallbackJa": "いいよ、 いこう"
+  },
+  {
+    "id": "a-reply-16",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "here",
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Here",
+      "you",
+      "are,",
+      "friend"
+    ],
+    "ja": "はい どうぞ、 おともだち",
+    "fallbackEn": [
+      "Here",
+      "you",
+      "are,",
+      "friend"
+    ],
+    "fallbackJa": "はい どうぞ、 おともだち"
+  },
+  {
+    "id": "a-reply-17",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "yes",
+      "understand",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "Yes,",
+      "I",
+      "understand",
+      "now"
+    ],
+    "ja": "はい、 いま わかりました",
+    "fallbackEn": [
+      "Yes,",
+      "I",
+      "understand",
+      "now"
+    ],
+    "fallbackJa": "はい、 いま わかりました"
+  },
+  {
+    "id": "a-reply-18",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "fine"
+    ],
+    "slots": [],
+    "en": [
+      "That",
+      "is",
+      "fine",
+      "with",
+      "me"
+    ],
+    "ja": "わたしは それで いいよ",
+    "fallbackEn": [
+      "That",
+      "is",
+      "fine",
+      "with",
+      "me"
+    ],
+    "fallbackJa": "わたしは それで いいよ"
+  },
+  {
+    "id": "a-reply-19",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "course",
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Of",
+      "course,",
+      "my",
+      "friend"
+    ],
+    "ja": "もちろん、 おともだち",
+    "fallbackEn": [
+      "Of",
+      "course,",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "もちろん、 おともだち"
+  },
+  {
+    "id": "a-reply-20",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "yes",
+      "try"
+    ],
+    "slots": [],
+    "en": [
+      "Yes,",
+      "we",
+      "can",
+      "try"
+    ],
+    "ja": "はい、 やってみよう",
+    "fallbackEn": [
+      "Yes,",
+      "we",
+      "can",
+      "try"
+    ],
+    "fallbackJa": "はい、 やってみよう"
+  },
+  {
+    "id": "a-thanks-11",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "thank",
+      "much"
+    ],
+    "slots": [],
+    "en": [
+      "Thank",
+      "you",
+      "so",
+      "much"
+    ],
+    "ja": "どうも ありがとう",
+    "fallbackEn": [
+      "Thank",
+      "you",
+      "so",
+      "much"
+    ],
+    "fallbackJa": "どうも ありがとう"
+  },
+  {
+    "id": "a-thanks-12",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "excuse",
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Excuse",
+      "me,",
+      "my",
+      "friend"
+    ],
+    "ja": "すみません、 おともだち",
+    "fallbackEn": [
+      "Excuse",
+      "me,",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "すみません、 おともだち"
+  },
+  {
+    "id": "a-thanks-13",
+    "category": "greeting",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "okay",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "okay",
+      "now"
+    ],
+    "ja": "もう だいじょうぶです",
+    "fallbackEn": [
+      "It",
+      "is",
+      "okay",
+      "now"
+    ],
+    "fallbackJa": "もう だいじょうぶです"
+  },
+  {
+    "id": "a-thanks-14",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "no",
+      "problem"
+    ],
+    "slots": [],
+    "en": [
+      "No",
+      "problem",
+      "at",
+      "all"
+    ],
+    "ja": "ぜんぜん だいじょうぶ",
+    "fallbackEn": [
+      "No",
+      "problem",
+      "at",
+      "all"
+    ],
+    "fallbackJa": "ぜんぜん だいじょうぶ"
+  },
+  {
+    "id": "a-thanks-15",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "thank",
+      "kind"
+    ],
+    "slots": [],
+    "en": [
+      "Thank",
+      "you,",
+      "kind",
+      "Sora"
+    ],
+    "ja": "ありがとう、 やさしい ソラ",
+    "fallbackEn": [
+      "Thank",
+      "you,",
+      "kind",
+      "Sora"
+    ],
+    "fallbackJa": "ありがとう、 やさしい ソラ"
+  },
+  {
+    "id": "a-thanks-16",
+    "category": "greeting",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "sorry",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "sorry",
+      "now"
+    ],
+    "ja": "いまは ごめんなさい",
+    "fallbackEn": [
+      "I",
+      "am",
+      "sorry",
+      "now"
+    ],
+    "fallbackJa": "いまは ごめんなさい"
+  },
+  {
+    "id": "a-thanks-17",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "thanks",
+      "help"
+    ],
+    "slots": [],
+    "en": [
+      "Thanks",
+      "for",
+      "your",
+      "help"
+    ],
+    "ja": "たすけてくれて ありがとう",
+    "fallbackEn": [
+      "Thanks",
+      "for",
+      "your",
+      "help"
+    ],
+    "fallbackJa": "たすけてくれて ありがとう"
+  },
+  {
+    "id": "a-thanks-18",
+    "category": "greeting",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "fine",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "fine",
+      "now"
+    ],
+    "ja": "もう だいじょうぶ",
+    "fallbackEn": [
+      "It",
+      "is",
+      "fine",
+      "now"
+    ],
+    "fallbackJa": "もう だいじょうぶ"
+  },
+  {
+    "id": "a-thanks-19",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "thank",
+      "good",
+      "bird"
+    ],
+    "slots": [],
+    "en": [
+      "Thank",
+      "you,",
+      "good",
+      "bird"
+    ],
+    "ja": "ありがとう、 いい ことりさん",
+    "fallbackEn": [
+      "Thank",
+      "you,",
+      "good",
+      "bird"
+    ],
+    "fallbackJa": "ありがとう、 いい ことりさん"
+  },
+  {
+    "id": "a-thanks-20",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "sorry",
+      "mess"
+    ],
+    "slots": [],
+    "en": [
+      "Sorry",
+      "for",
+      "the",
+      "mess"
+    ],
+    "ja": "ちらかして ごめんなさい",
+    "fallbackEn": [
+      "Sorry",
+      "for",
+      "the",
+      "mess"
+    ],
+    "fallbackJa": "ちらかして ごめんなさい"
+  },
+  {
+    "id": "a-help-11",
+    "category": "home",
+    "grammar": "imperative",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help"
+    ],
+    "slots": [],
+    "en": [
+      "Help",
+      "me",
+      "please,",
+      "Sora"
+    ],
+    "ja": "たすけて、 ソラ",
+    "fallbackEn": [
+      "Help",
+      "me",
+      "please,",
+      "Sora"
+    ],
+    "fallbackJa": "たすけて、 ソラ"
+  },
+  {
+    "id": "a-help-12",
+    "category": "home",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help"
+    ],
+    "slots": [],
+    "en": [
+      "Can",
+      "you",
+      "help",
+      "me"
+    ],
+    "ja": "たすけて くれますか",
+    "fallbackEn": [
+      "Can",
+      "you",
+      "help",
+      "me"
+    ],
+    "fallbackJa": "たすけて くれますか"
+  },
+  {
+    "id": "a-help-13",
+    "category": "home",
+    "grammar": "imperative",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help",
+      "dog",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "Help",
+      "a",
+      "dog",
+      "now"
+    ],
+    "ja": "いま いぬを たすけて",
+    "fallbackEn": [
+      "Help",
+      "a",
+      "dog",
+      "now"
+    ],
+    "fallbackJa": "いま いぬを たすけて"
+  },
+  {
+    "id": "a-help-14",
+    "category": "home",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help",
+      "mom"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "can",
+      "help",
+      "mom"
+    ],
+    "ja": "わたしは おかあさんを たすけられる",
+    "fallbackEn": [
+      "I",
+      "can",
+      "help",
+      "mom"
+    ],
+    "fallbackJa": "わたしは おかあさんを たすけられる"
+  },
+  {
+    "id": "a-help-15",
+    "category": "home",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help",
+      "dad"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "can",
+      "help",
+      "dad"
+    ],
+    "ja": "わたしたちは おとうさんを たすけられる",
+    "fallbackEn": [
+      "We",
+      "can",
+      "help",
+      "dad"
+    ],
+    "fallbackJa": "わたしたちは おとうさんを たすけられる"
+  },
+  {
+    "id": "a-help-16",
+    "category": "home",
+    "grammar": "imperative",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help",
+      "slow",
+      "turtle"
+    ],
+    "slots": [],
+    "en": [
+      "Help",
+      "the",
+      "slow",
+      "turtle"
+    ],
+    "ja": "ゆっくりな かめを たすけて",
+    "fallbackEn": [
+      "Help",
+      "the",
+      "slow",
+      "turtle"
+    ],
+    "fallbackJa": "ゆっくりな かめを たすけて"
+  },
+  {
+    "id": "a-help-17",
+    "category": "home",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "can",
+      "help",
+      "you"
+    ],
+    "ja": "わたしたちは あなたを たすけられる",
+    "fallbackEn": [
+      "We",
+      "can",
+      "help",
+      "you"
+    ],
+    "fallbackJa": "わたしたちは あなたを たすけられる"
+  },
+  {
+    "id": "a-help-18",
+    "category": "home",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help"
+    ],
+    "slots": [],
+    "en": [
+      "You",
+      "can",
+      "help",
+      "us"
+    ],
+    "ja": "あなたは わたしたちを たすけられる",
+    "fallbackEn": [
+      "You",
+      "can",
+      "help",
+      "us"
+    ],
+    "fallbackJa": "あなたは わたしたちを たすけられる"
+  },
+  {
+    "id": "a-help-19",
+    "category": "home",
+    "grammar": "imperative",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "Please",
+      "help",
+      "us",
+      "now"
+    ],
+    "ja": "いま わたしたちを たすけてください",
+    "fallbackEn": [
+      "Please",
+      "help",
+      "us",
+      "now"
+    ],
+    "fallbackJa": "いま わたしたちを たすけてください"
+  },
+  {
+    "id": "a-help-20",
+    "category": "home",
+    "grammar": "imperative",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "help",
+      "good",
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Help",
+      "your",
+      "good",
+      "friend"
+    ],
+    "ja": "よい おともだちを たすけて",
+    "fallbackEn": [
+      "Help",
+      "your",
+      "good",
+      "friend"
+    ],
+    "fallbackJa": "よい おともだちを たすけて"
   }
 ]
