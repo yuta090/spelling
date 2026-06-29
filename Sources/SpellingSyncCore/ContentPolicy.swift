@@ -19,6 +19,21 @@ public enum Genre: String, Codable, Sendable, Equatable, CaseIterable {
     case story
 }
 
+// MARK: - 段階（tier）
+
+/// 年齢段階（spec §5 の a/b/c/d）。アプリの学年(GradeLevel)→段階の対応はアプリ側で持つ
+/// （Core はアプリの GradeLevel/StarterTier を知らない）。ここは「段階→出題制約」の正本だけを持つ。
+public enum ContentTier: String, Sendable, Equatable, CaseIterable {
+    /// 入門（小1-2）。
+    case a
+    /// 小3-4。
+    case b
+    /// 小5-6・中1。
+    case c
+    /// 中2-3。
+    case d
+}
+
 // MARK: - 出題制約
 
 public struct ContentPolicy: Equatable, Sendable {
@@ -40,6 +55,34 @@ public struct ContentPolicy: Equatable, Sendable {
         self.maxKanjiGrade = maxKanjiGrade
         self.enabledGenres = enabledGenres
         self.maxNewLemmasPerSentence = maxNewLemmasPerSentence
+    }
+}
+
+extension ContentPolicy {
+    /// 段階（tier）→ 標準の出題制約（spec §5 の 4段階表が正本）。
+    ///
+    /// - 文法天井・漢字学年は段階で上げる（学年差の主軸）。
+    /// - band は **ゆるい上限**（rare語落としだけ／段階で変えない）。spec §5「band格下げ」。
+    /// - i+1 は段階別「使ってよい語リスト」が未導入のため**今は無効**（実質無制限）。導入時に有効化する。
+    /// - ジャンルは useful/story を常に許可し、humor は親トグルでのみ追加（プール限定）。
+    public static func standard(tier: ContentTier, humorEnabled: Bool) -> ContentPolicy {
+        let grammarCeiling: GrammarStage
+        let maxKanjiGrade: Int
+        switch tier {
+        case .a: grammarCeiling = .intro1; maxKanjiGrade = 0   // 入門：ひらがな主体
+        case .b: grammarCeiling = .intro2; maxKanjiGrade = 2
+        case .c: grammarCeiling = .basic1; maxKanjiGrade = 4
+        case .d: grammarCeiling = .applied; maxKanjiGrade = 6
+        }
+        var genres: Set<Genre> = [.useful, .story]
+        if humorEnabled { genres.insert(.humor) }
+        return ContentPolicy(
+            targetBand: 5,                          // ゆるい上限（最高band）。学年差は文法天井＋漢字で付ける
+            grammarCeiling: grammarCeiling,
+            maxKanjiGrade: maxKanjiGrade,
+            enabledGenres: genres,
+            maxNewLemmasPerSentence: .max           // i+1 無効（段階別既知語リスト導入で有効化）
+        )
     }
 }
 

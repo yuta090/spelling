@@ -141,4 +141,52 @@ final class ContentPolicyTests: XCTestCase {
         let json = String(data: try JSONEncoder().encode(it), encoding: .utf8)!
         XCTAssertFalse(json.contains("genre"), "nil の genre は出力に出さない")
     }
+
+    // MARK: - 段階(tier) → 標準ポリシー（spec §5 4段階表）
+
+    // 段階ごとの文法天井・漢字学年が spec の表どおりか。
+    func testStandardPolicyPerTier() {
+        let a = ContentPolicy.standard(tier: .a, humorEnabled: false)
+        XCTAssertEqual(a.grammarCeiling, .intro1)
+        XCTAssertEqual(a.maxKanjiGrade, 0)
+
+        let b = ContentPolicy.standard(tier: .b, humorEnabled: false)
+        XCTAssertEqual(b.grammarCeiling, .intro2)
+        XCTAssertEqual(b.maxKanjiGrade, 2)
+
+        let c = ContentPolicy.standard(tier: .c, humorEnabled: false)
+        XCTAssertEqual(c.grammarCeiling, .basic1)
+        XCTAssertEqual(c.maxKanjiGrade, 4)
+
+        let d = ContentPolicy.standard(tier: .d, humorEnabled: false)
+        XCTAssertEqual(d.grammarCeiling, .applied)
+        XCTAssertEqual(d.maxKanjiGrade, 6)
+    }
+
+    // band は“ゆるい上限”（学年差を付けない）＝全段階で同じ緩い値。
+    func testStandardPolicyBandIsLooseAndConstant() {
+        let bands = ContentTier.allCases.map { ContentPolicy.standard(tier: $0, humorEnabled: false).targetBand }
+        XCTAssertEqual(Set(bands).count, 1, "band は段階で変えない（ゆるい上限）")
+        XCTAssertGreaterThanOrEqual(bands[0], 5, "rare語落とし用のゆるい上限（最高band以上）")
+    }
+
+    // i+1 は段階別既知語リスト導入前なので“無効（実質無制限）”。
+    func testStandardPolicyIPlus1DisabledForNow() {
+        let p = ContentPolicy.standard(tier: .a, humorEnabled: false)
+        // 既知語ゼロでも、内容語が複数ある文を i+1 で落とさない。
+        let it = item("apple orange grape", band: 1, lemmas: ["apple", "orange", "grape"])
+        let out = ContentPolicy.admissiblePool([it], policy: p, knownLemmas: [])
+        XCTAssertEqual(out.count, 1, "i+1 は今は効かせない（既知語リスト未導入）")
+    }
+
+    // ジャンル：humor トグル ON のときだけ humor を許可。useful/story は常に許可。
+    func testStandardPolicyHumorToggle() {
+        let off = ContentPolicy.standard(tier: .a, humorEnabled: false)
+        XCTAssertTrue(off.enabledGenres.contains(.useful))
+        XCTAssertTrue(off.enabledGenres.contains(.story))
+        XCTAssertFalse(off.enabledGenres.contains(.humor), "humor OFF なら除外")
+
+        let on = ContentPolicy.standard(tier: .a, humorEnabled: true)
+        XCTAssertTrue(on.enabledGenres.contains(.humor), "humor ON なら許可")
+    }
 }

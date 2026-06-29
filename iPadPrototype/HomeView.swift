@@ -239,7 +239,8 @@ struct HomeView: View {
                 .environmentObject(model)
             }
             .fullScreenCover(isPresented: $showingPuzzle) {
-                PuzzleSessionView()
+                // 子の学年＋親トグルでプールを絞ってから出題（やさしい文だけ／ユーモアON-OFF）。
+                PuzzleSessionView(policy: model.contentPolicy)
             }
             .sheet(isPresented: $showingPracticeRetryPicker) {
                 PracticeRetryPickerSheet(

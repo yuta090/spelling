@@ -6423,6 +6423,36 @@ private struct TestSettingsPanel: View {
                 .fixedSize(horizontal: false, vertical: true)
             }
 
+            SettingBlock(title: language.text(japanese: "ことばパズル", english: "Word Puzzle")) {
+                Toggle(isOn: $model.settings.humorEnabled) {
+                    Text(language.text(japanese: "おもしろ問題を出す", english: "Show funny questions"))
+                        .font(.subheadline.weight(.bold))
+                }
+                .tint(ParentPalette.primary)
+                Text(language.text(
+                    japanese: "ときどき「わざと変な」たのしい文を混ぜます。英語とつづりはいつも正しいままです。",
+                    english: "Occasionally mixes in playful 'deliberately silly' sentences. The English and spelling stay correct."
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+                Divider()
+
+                Toggle(isOn: $model.settings.hintsEnabled) {
+                    Text(language.text(japanese: "ヒントを出す", english: "Show hints"))
+                        .font(.subheadline.weight(.bold))
+                }
+                .tint(ParentPalette.primary)
+                Text(language.text(
+                    japanese: "問題を解いている途中に「？」で、意味や音などのヒントを見られます。",
+                    english: "During a question, the '?' button reveals hints such as meaning and sound."
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+
             SettingBlock(title: language.text(japanese: "OCR判定", english: "OCR Grading")) {
                 SliderSetting(
                     title: language.text(japanese: "書き直し", english: "Rewrite"),
