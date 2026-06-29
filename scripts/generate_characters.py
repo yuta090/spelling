@@ -61,6 +61,11 @@ VALID_STYLES = {
     "alienBugeye", "alienCrystal", "alienHover",
     "velociraptor", "ankylosaurus", "spinosaurus", "parasaurolophus",
     "plesiosaurus", "dinoEgg",
+    "mouse", "cow", "horse", "wolf", "kangaroo", "bat", "goat",
+    "otter", "orca", "seahorse", "shrimp",
+    "duck", "flamingo", "parrot", "swan",
+    "snail", "dragonfly",
+    "banana", "taiyaki", "cookie",
     # 画像ベースの「なかま」共通スタイル。画像は id から nakama_<id>(WebP DataSet) で引く。
     "imageAsset",
 }

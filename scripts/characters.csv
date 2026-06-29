@@ -250,3 +250,23 @@ vox_astro,space,ボクセルうちゅうひこうし,Voxel Astronaut,50,imageAss
 vox_ghost,fantasy,ボクセルおばけ,Voxel Ghost,50,imageAsset,#EDEDF5,#C9C9E0,#E0A53C,false,webp;voxel;blocky;fantasy;ghost;spooky
 vox_apple,food,ボクセルりんご,Voxel Apple,50,imageAsset,#E0322E,#4FA06B,#7A1212,false,webp;voxel;blocky;food;apple;fruit;sweet
 vox_cake,food,ボクセルケーキ,Voxel Cake,50,imageAsset,#F7F2E8,#E0322E,#F2A6C2,false,webp;voxel;blocky;food;cake;sweet;dessert
+mouse,animal,ねずみ,Mouse,40,mouse,#B8BCC4,#ECEEF2,#E89BB0,false,swift;animal;mammal;land
+cow,animal,うし,Cow,50,cow,#F2F0EB,#F4B6A6,#4A4038,false,swift;animal;mammal;farm;land
+horse,animal,うま,Horse,50,horse,#C8915E,#E6C39A,#5B3A22,false,swift;animal;mammal;farm;land
+wolf,animal,オオカミ,Wolf,50,wolf,#8C97A6,#D7DCE3,#3A3F4A,false,swift;animal;mammal;forest;land
+kangaroo,animal,かんがるー,Kangaroo,50,kangaroo,#C98A5E,#E8C9A8,#5B3A22,false,swift;animal;mammal;land
+bat,animal,こうもり,Bat,40,bat,#6B5E7B,#9486A8,#F2D24C,false,swift;animal;mammal;air
+goat,animal,やぎ,Goat,40,goat,#EDE9E2,#D2C7B4,#8A7A5A,false,swift;animal;mammal;farm;land
+otter,sea,らっこ,Otter,50,otter,#8A6A4F,#D9C3A8,#4A3324,false,swift;animal;sea;marine;mammal
+orca,sea,しゃち,Orca,60,orca,#2B2F36,#F2F4F7,#FFFFFF,false,swift;sea;marine;mammal
+seahorse,sea,たつのおとしご,Seahorse,50,seahorse,#F2A93C,#F7C66B,#C9742A,false,swift;sea;marine;fish
+shrimp,sea,えび,Shrimp,40,shrimp,#F08A6B,#F7C2A8,#C9542E,false,swift;sea;marine;water
+duck,animal,あひる,Duck,40,duck,#F4D24C,#FBE89A,#F2913C,false,swift;animal;bird;water
+flamingo,animal,フラミンゴ,Flamingo,60,flamingo,#F299B8,#F7C2D4,#2B2F36,false,swift;animal;bird
+parrot,animal,インコ,Parrot,50,parrot,#3FAE6B,#F2D24C,#E0533B,false,swift;animal;bird;pet
+swan,animal,はくちょう,Swan,50,swan,#F4F4F2,#E3E6EC,#E0833C,false,swift;animal;bird;water
+snail,insect,かたつむり,Snail,40,snail,#C99A6B,#E8D2B0,#8A5A38,false,swift;insect;bug;land
+dragonfly,insect,とんぼ,Dragonfly,40,dragonfly,#3FA8C2,#BFE6F0,#2E6B8C,false,swift;insect;bug;air
+banana,food,バナナ,Banana,40,banana,#F4D24C,#FBE89A,#8A6A3A,false,swift;food;fruit;sweet
+taiyaki,food,たいやき,Taiyaki,50,taiyaki,#D99A4C,#E8C48A,#8A5A2A,false,swift;food;sweet;dessert;japan
+cookie,food,クッキー,Cookie,40,cookie,#D9A86B,#E8C99A,#6B4A2A,false,swift;food;sweet;dessert
