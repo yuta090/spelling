@@ -266,6 +266,13 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(selectedGrade, key: selectedGradeKey) }
     }
 
+    /// 子に見せる和訳で許す「漢字配当学年」(0…6)。1学年前ルール（小1→0＝ひらがな）。
+    /// 学年未選択のときは安全側でひらがな（0）にする。例文・意味ヒントの漢字/かな出し分けに使う。
+    var childMaxKanjiGrade: Int {
+        guard let grade = GradeLevel(rawValue: selectedGrade) else { return 0 }
+        return KanjiLevelGate.maxGrade(forSchoolGrade: grade.schoolGrade)
+    }
+
     /// 子の学年＋親トグルから決まる「出題プールの絞り込み制約」（Core・spec §10）。
     /// ことばパズルのプール組み立て入口で適用する。学年未選択は入門(a)扱いで安全側。
     var contentPolicy: ContentPolicy {
