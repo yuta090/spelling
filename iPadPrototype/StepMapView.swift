@@ -74,6 +74,13 @@ struct StepMapView: View {
     private let accent = Color(red: 0.16, green: 0.42, blue: 0.84)
 
     @State private var pulse = false
+    // タップ後すぐ閉じず、選んだステップへ「ついた」演出を見せてから閉じる。
+    // pendingID = 選択確定の途中（なかまがそのノードへ移動して点灯）。confirmPop = 到着のきらっと。
+    @State private var pendingID: String?
+    @State private var confirmPop = false
+    // 演出途中で「とじる」やスワイプで閉じられたら、遅延中の確定/きらっとを取り消す（取り残し防止）。
+    @State private var popWork: DispatchWorkItem?
+    @State private var commitWork: DispatchWorkItem?
 
     // レイアウト定数（縦向き想定。横向き最適化は別タスク）。
     private let spacing: Double = 190
@@ -82,13 +89,20 @@ struct StepMapView: View {
 
     private var orderedIDs: [String] { steps.map(\.id) }
 
+    // タップ確定中は pendingID を「選択中」として扱う＝なかま・ノードがそのステップへ移って点灯する。
+    private var effectiveSelectedID: String { pendingID ?? selectedStepID }
+
     private var nodeStates: [StepMapLayout.NodeState] {
-        StepMapLayout.nodeStates(orderedIDs: orderedIDs, completedToday: completedStepIDs, selectedID: selectedStepID)
+        StepMapLayout.nodeStates(orderedIDs: orderedIDs, completedToday: completedStepIDs, selectedID: effectiveSelectedID)
     }
 
     private var currentID: String? {
-        StepMapLayout.currentStepID(orderedIDs: orderedIDs, completedToday: completedStepIDs, selectedID: selectedStepID)
+        StepMapLayout.currentStepID(orderedIDs: orderedIDs, completedToday: completedStepIDs, selectedID: effectiveSelectedID)
     }
+
+    // なかまの足元位置。確定中は完了済みステップでも必ず「選んだノード」へ寄り添わせる
+    // （currentStepID は完了済みを current にしないため、ここで pendingID を優先する）。
+    private var avatarStepID: String? { pendingID ?? currentID }
 
     var body: some View {
         GeometryReader { geo in
@@ -128,8 +142,9 @@ struct StepMapView: View {
                         // ノード
                         ForEach(Array(steps.enumerated()), id: \.element.id) { idx, step in
                             let p = cgPoint(nodePoints[idx])
+                            let isChosen = pendingID == step.id
                             Button {
-                                onSelect(step.id)
+                                chooseStep(step.id, proxy: proxy)
                             } label: {
                                 StepNodeView(
                                     title: step.title(language: language),
@@ -142,12 +157,23 @@ struct StepMapView: View {
                             }
                             .buttonStyle(.plain)
                             .tapFeedback()
+                            // 選んだノードだけ、到着の瞬間にぽよんと弾ませて閉じる前の合図にする。
+                            .scaleEffect(isChosen && confirmPop ? 1.16 : 1)
+                            .overlay {
+                                if isChosen && confirmPop {
+                                    Text("✨")
+                                        .font(.system(size: 30))
+                                        .offset(y: -54)
+                                        .transition(.scale.combined(with: .opacity))
+                                }
+                            }
+                            .zIndex(isChosen ? 1 : 0)
                             .position(p)
                             .id(step.id)
                         }
 
                         // 「いまここ」足元のアバター（子が今選んでいるなかま）
-                        if let cur = currentID, let idx = steps.firstIndex(where: { $0.id == cur }) {
+                        if let cur = avatarStepID, let idx = steps.firstIndex(where: { $0.id == cur }) {
                             let p = cgPoint(nodePoints[idx])
                             RewardCharacterAvatar(character: character)
                                 .frame(width: 58, height: 58)
@@ -169,6 +195,38 @@ struct StepMapView: View {
         .onAppear {
             withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) { pulse = true }
         }
+        .onDisappear {
+            // 演出の余韻中に閉じられた場合に備え、遅延中の確定/きらっとを止める。
+            popWork?.cancel()
+            commitWork?.cancel()
+        }
+    }
+
+    // タップ→すぐ閉じるのではなく、なかまが選んだステップへ歩いて「ついた」演出を見せてから閉じる。
+    // ① pendingID をセット＝なかま/ノードがそのステップへ移って点灯（spring で気持ちよく）
+    // ② 中央へスクロールして主役を見せる
+    // ③ 到着のきらっと（confirmPop）→ 余韻を置いてから onSelect（モデル確定＋シート閉じ）
+    private func chooseStep(_ id: String, proxy: ScrollViewProxy) {
+        guard pendingID == nil else { return }   // 二度押し・連打を無視
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.72)) {
+            pendingID = id
+        }
+        withAnimation(.easeInOut(duration: 0.5)) {
+            proxy.scrollTo(id, anchor: .center)
+        }
+        let pop = DispatchWorkItem {
+            withAnimation(.spring(response: 0.34, dampingFraction: 0.5)) {
+                confirmPop = true
+            }
+        }
+        let commit = DispatchWorkItem {
+            guard pendingID == id else { return }   // 途中で閉じられていたら確定しない
+            onSelect(id)
+        }
+        popWork = pop
+        commitWork = commit
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.55, execute: pop)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.95, execute: commit)
     }
 
     private func cgPoint(_ p: StepMapLayout.Point) -> CGPoint { CGPoint(x: p.x, y: p.y) }
