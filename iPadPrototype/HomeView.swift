@@ -9962,7 +9962,25 @@ struct HomeBackgroundTheme: Identifiable {
         HomeBackgroundTheme(id: "cometnight", japaneseName: "すいせいのよぞら", englishName: "Comet Night", price: 240, imageName: "bg_cometnight"),
         HomeBackgroundTheme(id: "glowingsea", japaneseName: "ひかるうみ", englishName: "Glowing Sea", price: 260, imageName: "bg_glowingsea"),
         HomeBackgroundTheme(id: "desertstars", japaneseName: "さばくのほしぞら", englishName: "Desert Stars", price: 240, imageName: "bg_desertstars"),
-        HomeBackgroundTheme(id: "starrycape", japaneseName: "ほしぞらのみさき", englishName: "Starry Cape", price: 260, imageName: "bg_starrycape")
+        HomeBackgroundTheme(id: "starrycape", japaneseName: "ほしぞらのみさき", englishName: "Starry Cape", price: 260, imageName: "bg_starrycape"),
+        HomeBackgroundTheme(id: "cruiseship", japaneseName: "ごうかきゃくせん", englishName: "Cruise Ship", price: 260, imageName: "bg_cruiseship"),
+        HomeBackgroundTheme(id: "airshow", japaneseName: "エアショー", englishName: "Air Show", price: 260, imageName: "bg_airshow"),
+        HomeBackgroundTheme(id: "steamtrain", japaneseName: "じょうききかんしゃ", englishName: "Steam Train", price: 240, imageName: "bg_steamtrain"),
+        HomeBackgroundTheme(id: "submarine", japaneseName: "しんかいたんさてい", englishName: "Deep-Sea Sub", price: 240, imageName: "bg_submarine"),
+        HomeBackgroundTheme(id: "tallship", japaneseName: "だいこうかいのはんせん", englishName: "Tall Ship", price: 240, imageName: "bg_tallship"),
+        HomeBackgroundTheme(id: "cablecar", japaneseName: "やまのロープウェイ", englishName: "Cable Car", price: 220, imageName: "bg_cablecar"),
+        HomeBackgroundTheme(id: "aquariumtunnel", japaneseName: "すいぞくかんトンネル", englishName: "Aquarium Tunnel", price: 240, imageName: "bg_aquariumtunnel"),
+        HomeBackgroundTheme(id: "whaleswim", japaneseName: "クジラとおよぐ", englishName: "Swim with Whale", price: 260, imageName: "bg_whaleswim"),
+        HomeBackgroundTheme(id: "jellyfishtank", japaneseName: "クラゲのすいそう", englishName: "Jellyfish Tank", price: 240, imageName: "bg_jellyfishtank"),
+        HomeBackgroundTheme(id: "dolphinshow", japaneseName: "イルカショー", englishName: "Dolphin Show", price: 220, imageName: "bg_dolphinshow"),
+        HomeBackgroundTheme(id: "seaturtle", japaneseName: "ウミガメのうみ", englishName: "Sea Turtle", price: 200, imageName: "bg_seaturtle"),
+        HomeBackgroundTheme(id: "mantaray", japaneseName: "マンタのうみ", englishName: "Manta Ray", price: 240, imageName: "bg_mantaray"),
+        HomeBackgroundTheme(id: "skylanternfest", japaneseName: "スカイランタン", englishName: "Sky Lanterns", price: 260, imageName: "bg_skylanternfest"),
+        HomeBackgroundTheme(id: "riocarnival", japaneseName: "カーニバル", englishName: "Carnival", price: 260, imageName: "bg_riocarnival"),
+        HomeBackgroundTheme(id: "holifestival", japaneseName: "いろのまつり", englishName: "Color Festival", price: 240, imageName: "bg_holifestival"),
+        HomeBackgroundTheme(id: "natsumatsuri", japaneseName: "なつまつり", englishName: "Summer Festival", price: 220, imageName: "bg_natsumatsuri"),
+        HomeBackgroundTheme(id: "diwali", japaneseName: "ひかりのまつり", englishName: "Diwali Lights", price: 240, imageName: "bg_diwali"),
+        HomeBackgroundTheme(id: "dragondance", japaneseName: "りゅうのまい", englishName: "Dragon Dance", price: 220, imageName: "bg_dragondance")
     ]
     // BG-CATALOG-GENERATED-END
 }
