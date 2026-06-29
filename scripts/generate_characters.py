@@ -29,7 +29,7 @@ VALID_CATEGORIES = {
 }
 VALID_STYLES = {
     "bear", "cat", "dog", "rabbit", "panda", "penguin", "lion", "fox", "koala",
-    "sheep", "elephant", "giraffe", "owl", "turtle", "whale",
+    "sheep", "elephant", "giraffe", "owl", "turtle", "whale", "bird",
     "car", "train", "rocket", "plane", "bus", "ship", "helicopter", "bicycle",
     "tractor", "balloon",
     "monkey", "pig",

@@ -2316,6 +2316,7 @@ enum HomeRewardCharacterStyle {
     case seahorse
     case shrimp
     case duck
+    case bird
     case flamingo
     case parrot
     case swan
@@ -5255,6 +5256,17 @@ struct HomeRewardCharacter: Identifiable {
             accent: Color(red: 0.9490, green: 0.5686, blue: 0.2353)
         ),
         HomeRewardCharacter(
+            id: "bird",
+            category: .animal,
+            japaneseName: "とり",
+            englishName: "Bird",
+            price: 40,
+            style: .bird,
+            primary: Color(red: 0.4353, green: 0.7176, blue: 0.9098),
+            secondary: Color(red: 0.8627, green: 0.9333, blue: 0.9843),
+            accent: Color(red: 0.9490, green: 0.6627, blue: 0.2353)
+        ),
+        HomeRewardCharacter(
             id: "flamingo",
             category: .animal,
             japaneseName: "フラミンゴ",
@@ -6229,6 +6241,8 @@ struct RewardCharacterAvatar: View {
                 ShrimpCharacterFace(character: character)
             case .duck:
                 DuckCharacterFace(character: character)
+            case .bird:
+                BirdCharacterFace(character: character)
             case .flamingo:
                 FlamingoCharacterFace(character: character)
             case .parrot:
@@ -9339,6 +9353,32 @@ private struct DuckCharacterFace: View {
             CharacterEyes(color: .black.opacity(0.82))
             Ellipse().fill(character.accent).frame(width: 40, height: 18).offset(y: 16)
             Ellipse().fill(character.accent.opacity(0.6)).frame(width: 40, height: 7).offset(y: 21)
+        }
+    }
+}
+
+private struct BirdCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            // しっぽ
+            Capsule().fill(character.primary).frame(width: 13, height: 24)
+                .rotationEffect(.degrees(-34)).offset(x: -33, y: 20)
+            // からだ
+            Circle().fill(character.primary).frame(width: 66, height: 66).offset(y: 4)
+            // おなか
+            Ellipse().fill(character.secondary).frame(width: 36, height: 42).offset(y: 14)
+            // つばさ
+            Ellipse().fill(character.secondary.opacity(0.8)).frame(width: 24, height: 32)
+                .rotationEffect(.degrees(16)).offset(x: 21, y: 8)
+            // あたまの羽
+            Capsule().fill(character.primary).frame(width: 7, height: 15)
+                .rotationEffect(.degrees(-16)).offset(x: -3, y: -36)
+            // め
+            CharacterEyes(color: .black.opacity(0.82)).offset(y: -6)
+            // くちばし
+            Triangle().fill(character.accent).frame(width: 15, height: 12)
+                .rotationEffect(.degrees(180)).offset(y: 4)
         }
     }
 }
