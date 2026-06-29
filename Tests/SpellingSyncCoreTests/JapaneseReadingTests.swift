@@ -101,26 +101,64 @@ final class JapaneseReadingTests: XCTestCase {
         XCTAssertTrue(out.contains("「にゃあ"), "開き括弧と語をくっつける: \(out)")
     }
 
-    // MARK: - readableExample（分かち書き → かな化、順序保証）
+    // MARK: - rubySegments（学年ハイブリッド＋ふりがな）
 
-    func testReadableExampleKeepsCompoundIntactWhenKanaized() {
-        // 蔵書(未習) は小1ではかな化されるが、複合語として「ぞうしょ」のまま（"ぞう しょ"に割らない）。
-        let out = JapaneseReading.readableExample("彼は蔵書をふやした。", maxGrade: 1)
-        XCTAssertTrue(out.contains("ぞうしょ"), "複合語を割らない: \(out)")
-        XCTAssertFalse(out.contains("ぞう しょ"), "複合語を割らない: \(out)")
-        XCTAssertFalse(out.contains("蔵書"), "未習漢字はかなに: \(out)")
-        XCTAssertFalse(out.contains("  "), "二重スペースなし: \(out)")
+    private func joinedText(_ segs: [JapaneseReading.RubySegment]) -> String {
+        segs.map(\.text).joined()
     }
 
-    func testReadableExampleKeepsWithinGradeKanjiAndWakachi() {
-        // 小6では 蔵書 は漢字のまま、かつ分かち書きされる。
-        let out = JapaneseReading.readableExample("彼は蔵書をふやした。", maxGrade: 6)
-        XCTAssertTrue(out.contains("蔵書"), "習った漢字は残す: \(out)")
-        XCTAssertTrue(out.contains(" "), "分かち書きする: \(out)")
-        XCTAssertTrue(out.hasSuffix("。"), "末尾は句点: \(out)")
+    func testRubySegmentsEmpty() {
+        XCTAssertTrue(JapaneseReading.rubySegments("", maxGrade: 6).isEmpty)
     }
 
-    func testReadableExampleEmptyStaysEmpty() {
-        XCTAssertEqual(JapaneseReading.readableExample("", maxGrade: 1), "")
+    func testRubySegmentsLearnedKanjiGetsFurigana() {
+        // 家族(家2 族3) は小6(maxGrade6)では習った漢字 → 漢字のまま＋ふりがな。
+        let segs = JapaneseReading.rubySegments("家族", maxGrade: 6)
+        XCTAssertEqual(segs.count, 1)
+        XCTAssertEqual(segs.first?.text, "家族")
+        XCTAssertEqual(segs.first?.reading, "かぞく")
+    }
+
+    func testRubySegmentsOverGradeKanjiBecomesKanaWithoutFurigana() {
+        // 小1(maxGrade0)では 家族 は未習 → かな化、ふりがな無し。
+        let segs = JapaneseReading.rubySegments("家族", maxGrade: 0)
+        XCTAssertEqual(joinedText(segs), "かぞく")
+        XCTAssertTrue(segs.allSatisfy { $0.reading == nil }, "未習かな化にはふりがなを振らない")
+        XCTAssertFalse(joinedText(segs).contains("家"))
+    }
+
+    func testRubySegmentsMixedGradeTokenKanaizesWholeWord() {
+        // 家族(家2=習った / 族3=未習) は1語トークン。1字でも未習を含めば語全体をかな化（部分ルビにしない）。
+        let segs = JapaneseReading.rubySegments("家族", maxGrade: 2)
+        XCTAssertEqual(joinedText(segs), "かぞく")
+        XCTAssertTrue(segs.allSatisfy { $0.reading == nil }, "未習を含む語にふりがなを振らない")
+        XCTAssertFalse(joinedText(segs).contains("家"))
+        XCTAssertFalse(joinedText(segs).contains("族"))
+    }
+
+    func testRubySegmentsKanaHasNoFurigana() {
+        let segs = JapaneseReading.rubySegments("ねこ", maxGrade: 6)
+        XCTAssertEqual(segs.count, 1)
+        XCTAssertEqual(segs.first?.text, "ねこ")
+        XCTAssertNil(segs.first?.reading)
+    }
+
+    func testRubySegmentsReconstructsTextAndSpaces() {
+        // wakachi 済みの例文を渡すと、本体を連結すれば分かち書きの文に戻る（スペース保持）。
+        let wakachi = JapaneseReading.wakachi("私は英語を勉強します。")
+        let segs = JapaneseReading.rubySegments(wakachi, maxGrade: 6)
+        XCTAssertEqual(joinedText(segs), wakachi, "本体の連結で元の（分かち書き）文に戻る")
+        XCTAssertTrue(segs.contains { $0.reading != nil }, "漢字語にふりがなが付く")
+    }
+
+    func testRubySegmentsOverGradeInSentenceNoFurigana() {
+        // 小1: 蔵書 は未習 → かな(ぞうしょ)・ふりがな無し。複合語は割らない。
+        let wakachi = JapaneseReading.wakachi("彼は蔵書をふやした。")
+        let segs = JapaneseReading.rubySegments(wakachi, maxGrade: 1)
+        let joined = joinedText(segs)
+        XCTAssertTrue(joined.contains("ぞうしょ"), "未習複合語はかなで一語: \(joined)")
+        XCTAssertFalse(joined.contains("蔵書"), "未習漢字は残さない: \(joined)")
+        // 蔵書 由来のかたまりにふりがなは無い。
+        XCTAssertFalse(segs.contains { $0.text.contains("ぞうしょ") && $0.reading != nil })
     }
 }
