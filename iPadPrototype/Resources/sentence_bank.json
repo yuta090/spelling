@@ -4810,5 +4810,1312 @@
       "my",
       "team"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "study",
+      "hard",
+      "tonight"
+    ],
+    "en" : "I will study hard tonight",
+    "gradeBand" : 3,
+    "grammar" : "willGoingTo",
+    "id" : "D7AC3C16-4504-548E-A09F-129281A2709B",
+    "ja" : "今夜は しっかり 勉強するよ",
+    "sourceID" : "d-plan-1",
+    "tokens" : [
+      "I",
+      "will",
+      "study",
+      "hard",
+      "tonight"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "visit",
+      "grandma"
+    ],
+    "en" : "We are going to visit our grandma",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "982BA26C-15B6-52C0-9BF6-9FFEBFAB73E0",
+    "ja" : "ぼくたちは おばあちゃんの家に 行く予定だよ",
+    "sourceID" : "d-plan-2",
+    "tokens" : [
+      "We",
+      "are",
+      "going",
+      "to",
+      "visit",
+      "our",
+      "grandma"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "join",
+      "soccer",
+      "team"
+    ],
+    "en" : "Sora will join the soccer team",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "625928CE-5D7B-55BF-B6EB-BCD063C71006",
+    "ja" : "ソラは サッカーチームに 入るよ",
+    "sourceID" : "d-plan-3",
+    "tokens" : [
+      "Sora",
+      "will",
+      "join",
+      "the",
+      "soccer",
+      "team"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "go",
+      "buy",
+      "new",
+      "book"
+    ],
+    "en" : "Mei is going to buy a new book",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "D4A61428-5469-5158-90EE-E46DB73308DE",
+    "ja" : "メイは 新しい 本を 買う予定だよ",
+    "sourceID" : "d-plan-4",
+    "tokens" : [
+      "Mei",
+      "is",
+      "going",
+      "to",
+      "buy",
+      "a",
+      "new",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "call",
+      "dinner"
+    ],
+    "en" : "I will call you after dinner",
+    "gradeBand" : 3,
+    "grammar" : "willGoingTo",
+    "id" : "AB604A6A-6FE5-5A4B-B264-B1AE58A3497E",
+    "ja" : "夕食のあとに 電話するね",
+    "sourceID" : "d-plan-5",
+    "tokens" : [
+      "I",
+      "will",
+      "call",
+      "you",
+      "after",
+      "dinner"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "clean",
+      "park"
+    ],
+    "en" : "We are going to clean the park",
+    "gradeBand" : 2,
+    "grammar" : "willGoingTo",
+    "id" : "23063FA6-3338-5D95-A86C-1B0E367B163C",
+    "ja" : "私たちは 公園を そうじする予定だよ",
+    "sourceID" : "d-plan-6",
+    "tokens" : [
+      "We",
+      "are",
+      "going",
+      "to",
+      "clean",
+      "the",
+      "park"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "practice",
+      "english",
+      "tomorrow"
+    ],
+    "en" : "They will practice English tomorrow",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "16E6981D-2ED8-59C8-B8C2-E294E7593C15",
+    "ja" : "みんなで 明日 英語を 練習するよ",
+    "sourceID" : "d-plan-7",
+    "tokens" : [
+      "They",
+      "will",
+      "practice",
+      "English",
+      "tomorrow"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "bake",
+      "some",
+      "cookies"
+    ],
+    "en" : "I am going to bake some cookies",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "B66CEA08-DD3E-52A4-B817-2D9B2B2738F4",
+    "ja" : "クッキーを 焼く予定なんだ",
+    "sourceID" : "d-plan-8",
+    "tokens" : [
+      "I",
+      "am",
+      "going",
+      "to",
+      "bake",
+      "some",
+      "cookies"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "show",
+      "new",
+      "robot"
+    ],
+    "en" : "Sora will show us his new robot",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "9793635C-2B5D-5953-80FC-969EAE88FB4E",
+    "ja" : "ソラが 新しい ロボットを 見せてくれるよ",
+    "sourceID" : "d-plan-9",
+    "tokens" : [
+      "Sora",
+      "will",
+      "show",
+      "us",
+      "his",
+      "new",
+      "robot"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "meet",
+      "station"
+    ],
+    "en" : "We will meet at the station",
+    "gradeBand" : 2,
+    "grammar" : "willGoingTo",
+    "id" : "A3F18650-4412-5B74-B3DC-F89111B9AD96",
+    "ja" : "駅で 待ち合わせするよ",
+    "sourceID" : "d-plan-10",
+    "tokens" : [
+      "We",
+      "will",
+      "meet",
+      "at",
+      "the",
+      "station"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "finish",
+      "homework"
+    ],
+    "en" : "I have to finish my homework",
+    "gradeBand" : 5,
+    "grammar" : "haveToNeedTo",
+    "id" : "3D3B0E7E-5BA0-5FB2-BDE6-5268E00EA253",
+    "ja" : "宿題を 終わらせなきゃ",
+    "sourceID" : "d-must-1",
+    "tokens" : [
+      "I",
+      "have",
+      "to",
+      "finish",
+      "my",
+      "homework"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "need",
+      "leave",
+      "right",
+      "now"
+    ],
+    "en" : "We need to leave right now",
+    "gradeBand" : 1,
+    "grammar" : "haveToNeedTo",
+    "id" : "4A3CBE88-2A3B-5B0F-A174-57A8DAD50E4A",
+    "ja" : "今すぐ 出発する ひつようがあるよ",
+    "sourceID" : "d-must-2",
+    "tokens" : [
+      "We",
+      "need",
+      "to",
+      "leave",
+      "right",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "wake",
+      "early"
+    ],
+    "en" : "Sora has to wake up early",
+    "gradeBand" : 5,
+    "grammar" : "haveToNeedTo",
+    "id" : "526662E4-B609-5DC4-A8A5-E26461191010",
+    "ja" : "ソラは 早起きしなきゃいけないんだ",
+    "sourceID" : "d-must-3",
+    "tokens" : [
+      "Sora",
+      "has",
+      "to",
+      "wake",
+      "up",
+      "early"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "need",
+      "drink",
+      "more",
+      "water"
+    ],
+    "en" : "Mei needs to drink more water",
+    "gradeBand" : 5,
+    "grammar" : "haveToNeedTo",
+    "id" : "945EC2F6-4C4C-58EA-99AE-5ED0FE4FDD09",
+    "ja" : "メイは もっと 水を 飲む ひつようがあるよ",
+    "sourceID" : "d-must-4",
+    "tokens" : [
+      "Mei",
+      "needs",
+      "to",
+      "drink",
+      "more",
+      "water"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "wear",
+      "jacket",
+      "today"
+    ],
+    "en" : "You have to wear a jacket today",
+    "gradeBand" : 5,
+    "grammar" : "haveToNeedTo",
+    "id" : "C2217C33-CAC7-59C4-8589-89A0D626CAEA",
+    "ja" : "今日は 上着を 着なきゃダメだよ",
+    "sourceID" : "d-must-5",
+    "tokens" : [
+      "You",
+      "have",
+      "to",
+      "wear",
+      "a",
+      "jacket",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "need",
+      "save",
+      "energy",
+      "home"
+    ],
+    "en" : "We need to save energy at home",
+    "gradeBand" : 2,
+    "grammar" : "haveToNeedTo",
+    "id" : "CACD55A6-AB46-5869-8A58-084127AD2520",
+    "ja" : "家で 節電する ひつようがあるね",
+    "sourceID" : "d-must-6",
+    "tokens" : [
+      "We",
+      "need",
+      "to",
+      "save",
+      "energy",
+      "at",
+      "home"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "return",
+      "library",
+      "book"
+    ],
+    "en" : "I have to return this library book",
+    "gradeBand" : 3,
+    "grammar" : "haveToNeedTo",
+    "id" : "7B5A262E-38A4-5D03-B05C-E4699F0F413A",
+    "ja" : "この 図書館の本を 返さなきゃ",
+    "sourceID" : "d-must-7",
+    "tokens" : [
+      "I",
+      "have",
+      "to",
+      "return",
+      "this",
+      "library",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "need",
+      "see",
+      "vet"
+    ],
+    "en" : "The cat needs to see a vet",
+    "gradeBand" : 5,
+    "grammar" : "haveToNeedTo",
+    "id" : "C0ED6E44-03A4-58F1-B4D8-0DD1B6EF7F1C",
+    "ja" : "ねこを じゅういさんに 連れて行く ひつようがあるよ",
+    "sourceID" : "d-must-8",
+    "tokens" : [
+      "The",
+      "cat",
+      "needs",
+      "to",
+      "see",
+      "a",
+      "vet"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "follow",
+      "rule"
+    ],
+    "en" : "You have to follow the rules",
+    "gradeBand" : 1,
+    "grammar" : "haveToNeedTo",
+    "id" : "4DD2D127-156E-5219-9676-8E36F5854166",
+    "ja" : "ルールを 守らなきゃいけないよ",
+    "sourceID" : "d-must-9",
+    "tokens" : [
+      "You",
+      "have",
+      "to",
+      "follow",
+      "the",
+      "rules"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "need",
+      "buy",
+      "some",
+      "milk"
+    ],
+    "en" : "We need to buy some milk",
+    "gradeBand" : 4,
+    "grammar" : "haveToNeedTo",
+    "id" : "DFD84B8E-5E1F-52C8-A59B-3EDF94DE557F",
+    "ja" : "牛乳を 買う ひつようがあるね",
+    "sourceID" : "d-must-10",
+    "tokens" : [
+      "We",
+      "need",
+      "to",
+      "buy",
+      "some",
+      "milk"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "kyoto",
+      "once"
+    ],
+    "en" : "I have been to Kyoto once",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "B46A8685-2642-5AD8-A99C-73D63905DB73",
+    "ja" : "京都に 一度 行ったことがあるよ",
+    "sourceID" : "d-exp-1",
+    "tokens" : [
+      "I",
+      "have",
+      "been",
+      "to",
+      "Kyoto",
+      "once"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ever",
+      "eat",
+      "natto"
+    ],
+    "en" : "Have you ever eaten natto",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "CD849713-86E9-5EAF-BB9D-A38E0E76A641",
+    "ja" : "なっとうを 食べたこと ある？",
+    "sourceID" : "d-exp-2",
+    "tokens" : [
+      "Have",
+      "you",
+      "ever",
+      "eaten",
+      "natto"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "already",
+      "finish",
+      "project"
+    ],
+    "en" : "Sora has already finished his project",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "4EFE7789-E46B-52CD-9835-D7034719865A",
+    "ja" : "ソラは もう 課題を 終わらせたよ",
+    "sourceID" : "d-exp-3",
+    "tokens" : [
+      "Sora",
+      "has",
+      "already",
+      "finished",
+      "his",
+      "project"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "see",
+      "movie",
+      "twice"
+    ],
+    "en" : "Mei has seen that movie twice",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "9B61F1DE-83F9-5920-9861-B605FDCE9497",
+    "ja" : "メイは その映画を 2回 見たことがあるよ",
+    "sourceID" : "d-exp-4",
+    "tokens" : [
+      "Mei",
+      "has",
+      "seen",
+      "that",
+      "movie",
+      "twice"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "live",
+      "five",
+      "year"
+    ],
+    "en" : "We have lived here for five years",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "FB467097-496D-5D6D-9AEC-A54831317F94",
+    "ja" : "ぼくたちは ここに 5年間 住んでいるよ",
+    "sourceID" : "d-exp-5",
+    "tokens" : [
+      "We",
+      "have",
+      "lived",
+      "here",
+      "for",
+      "five",
+      "years"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "never",
+      "try",
+      "mountain",
+      "climb"
+    ],
+    "en" : "I have never tried mountain climbing",
+    "gradeBand" : 3,
+    "grammar" : "presentPerfect",
+    "id" : "F7607214-D39D-5401-85B1-B90CA372813C",
+    "ja" : "山登りは 一度も したことがないな",
+    "sourceID" : "d-exp-6",
+    "tokens" : [
+      "I",
+      "have",
+      "never",
+      "tried",
+      "mountain",
+      "climbing"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "fly",
+      "away",
+      "yet"
+    ],
+    "en" : "Has the bird flown away yet",
+    "gradeBand" : 3,
+    "grammar" : "presentPerfect",
+    "id" : "23E194E0-E5A5-5C42-A53C-485EE5C3322C",
+    "ja" : "鳥は もう 飛んで行っちゃった？",
+    "sourceID" : "d-exp-7",
+    "tokens" : [
+      "Has",
+      "the",
+      "bird",
+      "flown",
+      "away",
+      "yet"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "climb",
+      "mt",
+      "fuji"
+    ],
+    "en" : "They have climbed Mt Fuji before",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "EF11F7A7-C300-5AF2-89D2-8D197AB43871",
+    "ja" : "あの子たちは 前に 富士山に 登ったことがあるよ",
+    "sourceID" : "d-exp-8",
+    "tokens" : [
+      "They",
+      "have",
+      "climbed",
+      "Mt",
+      "Fuji",
+      "before"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "know",
+      "sora",
+      "since",
+      "kindergarten"
+    ],
+    "en" : "I have known Sora since kindergarten",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "50335160-FEBD-577D-AF73-282A8A8B5F01",
+    "ja" : "ようちえんのときから ソラを 知っているよ",
+    "sourceID" : "d-exp-9",
+    "tokens" : [
+      "I",
+      "have",
+      "known",
+      "Sora",
+      "since",
+      "kindergarten"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "write",
+      "thank",
+      "letter"
+    ],
+    "en" : "Have you written your thank you letter",
+    "gradeBand" : 1,
+    "grammar" : "presentPerfect",
+    "id" : "9896D7BE-3B31-5D34-9207-4EF82DF3CB33",
+    "ja" : "お礼の手紙は もう 書いた？",
+    "sourceID" : "d-exp-10",
+    "tokens" : [
+      "Have",
+      "you",
+      "written",
+      "your",
+      "thank",
+      "you",
+      "letter"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "drink",
+      "more",
+      "water"
+    ],
+    "en" : "You should drink more water",
+    "gradeBand" : 2,
+    "grammar" : "shouldModal",
+    "id" : "8B7DAAD9-B218-596D-9B79-B2BFAE7E1FF3",
+    "ja" : "もっと 水を 飲んだほうがいいよ",
+    "sourceID" : "d-advice-1",
+    "tokens" : [
+      "You",
+      "should",
+      "drink",
+      "more",
+      "water"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "help",
+      "each",
+      "other"
+    ],
+    "en" : "We should help each other",
+    "gradeBand" : 1,
+    "grammar" : "shouldModal",
+    "id" : "7756A38C-4AF3-5F99-96BC-DE8976FF60B7",
+    "ja" : "おたがいに 助け合ったほうがいいね",
+    "sourceID" : "d-advice-2",
+    "tokens" : [
+      "We",
+      "should",
+      "help",
+      "each",
+      "other"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "take",
+      "short",
+      "break"
+    ],
+    "en" : "Sora should take a short break",
+    "gradeBand" : 5,
+    "grammar" : "shouldModal",
+    "id" : "1AF27339-CAA9-5F69-9E30-073BAF45F220",
+    "ja" : "ソラは 少し 休んだほうがいいよ",
+    "sourceID" : "d-advice-3",
+    "tokens" : [
+      "Sora",
+      "should",
+      "take",
+      "a",
+      "short",
+      "break"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "apologize",
+      "friend"
+    ],
+    "en" : "Mei should apologize to her friend",
+    "gradeBand" : 5,
+    "grammar" : "shouldModal",
+    "id" : "1B582678-29FC-5537-B4CC-FDB906572134",
+    "ja" : "メイは 友達に あやまったほうがいいよ",
+    "sourceID" : "d-advice-4",
+    "tokens" : [
+      "Mei",
+      "should",
+      "apologize",
+      "to",
+      "her",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "brush",
+      "tooth",
+      "twice",
+      "daily"
+    ],
+    "en" : "You should brush your teeth twice daily",
+    "gradeBand" : 5,
+    "grammar" : "shouldModal",
+    "id" : "49DC5CBB-7BC3-53D2-BED6-4C6DBFA4A240",
+    "ja" : "1日に 2回 歯を みがいたほうがいいよ",
+    "sourceID" : "d-advice-5",
+    "tokens" : [
+      "You",
+      "should",
+      "brush",
+      "your",
+      "teeth",
+      "twice",
+      "daily"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "protect",
+      "wild",
+      "animal"
+    ],
+    "en" : "We should protect wild animals",
+    "gradeBand" : 4,
+    "grammar" : "shouldModal",
+    "id" : "DA2F6EBB-C0DE-5C36-BD13-C5DACFD4464E",
+    "ja" : "野生の 動物たちを 守るべきだよ",
+    "sourceID" : "d-advice-6",
+    "tokens" : [
+      "We",
+      "should",
+      "protect",
+      "wild",
+      "animals"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "skip",
+      "breakfast"
+    ],
+    "en" : "You should not skip breakfast",
+    "gradeBand" : 5,
+    "grammar" : "shouldModal",
+    "id" : "D012CDE7-0BA4-5708-A4B0-50E580C9BB96",
+    "ja" : "朝ごはんを ぬかないほうがいいよ",
+    "sourceID" : "d-advice-7",
+    "tokens" : [
+      "You",
+      "should",
+      "not",
+      "skip",
+      "breakfast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sleep",
+      "early",
+      "tonight"
+    ],
+    "en" : "We should sleep early tonight",
+    "gradeBand" : 3,
+    "grammar" : "shouldModal",
+    "id" : "32EA000A-5C20-5640-97BE-1BC33E7E8AEF",
+    "ja" : "今夜は 早く ねたほうがいいよ",
+    "sourceID" : "d-advice-8",
+    "tokens" : [
+      "We",
+      "should",
+      "sleep",
+      "early",
+      "tonight"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "double",
+      "check",
+      "answer"
+    ],
+    "en" : "You should double check your answer",
+    "gradeBand" : 3,
+    "grammar" : "shouldModal",
+    "id" : "913404BB-D51A-5F4C-9996-FA9C4605DDBA",
+    "ja" : "答えを もう一度 確認したほうがいいよ",
+    "sourceID" : "d-advice-9",
+    "tokens" : [
+      "You",
+      "should",
+      "double",
+      "check",
+      "your",
+      "answer"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "listen",
+      "teacher"
+    ],
+    "en" : "They should listen to the teacher",
+    "gradeBand" : 2,
+    "grammar" : "shouldModal",
+    "id" : "A2451E36-E851-5E5A-8B91-FDBF86F0946C",
+    "ja" : "先生の言うことを 聞いたほうがいいよ",
+    "sourceID" : "d-advice-10",
+    "tokens" : [
+      "They",
+      "should",
+      "listen",
+      "to",
+      "the",
+      "teacher"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "watch",
+      "fireworks",
+      "last",
+      "summer"
+    ],
+    "en" : "We watched fireworks last summer",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "86C41BCD-AB0C-5FD1-9CA6-1C703CB3136F",
+    "ja" : "去年の夏に 花火を 見たよ",
+    "sourceID" : "d-event-1",
+    "tokens" : [
+      "We",
+      "watched",
+      "fireworks",
+      "last",
+      "summer"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "school",
+      "festival",
+      "fall"
+    ],
+    "en" : "Our school festival is in fall",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "CBDDAE02-3DDA-5C36-AC88-D5994E615F52",
+    "ja" : "ぼくたちの 学校の 文化祭は 秋にあるよ",
+    "sourceID" : "d-event-2",
+    "tokens" : [
+      "Our",
+      "school",
+      "festival",
+      "is",
+      "in",
+      "fall"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "win",
+      "speech",
+      "contest",
+      "yesterday"
+    ],
+    "en" : "Sora won the speech contest yesterday",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "09E9AE9C-2AF5-543F-AE00-F94912DD3794",
+    "ja" : "ソラは 昨日 スピーチコンテストで 優勝したよ",
+    "sourceID" : "d-event-3",
+    "tokens" : [
+      "Sora",
+      "won",
+      "the",
+      "speech",
+      "contest",
+      "yesterday"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mei",
+      "enjoy",
+      "sport",
+      "day",
+      "last",
+      "week"
+    ],
+    "en" : "Mei enjoyed the sports day last week",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "6AA6FB2E-662A-5EF5-88BB-13A763EEFBCB",
+    "ja" : "メイは 先週の 運動会を 楽しんだよ",
+    "sourceID" : "d-event-4",
+    "tokens" : [
+      "Mei",
+      "enjoyed",
+      "the",
+      "sports",
+      "day",
+      "last",
+      "week"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "visit",
+      "shrine",
+      "every",
+      "new",
+      "year"
+    ],
+    "en" : "We visit a shrine every New Year",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "82060D56-C693-5F04-A519-9923BC3A313A",
+    "ja" : "毎年 お正月に 神社へ 行くよ",
+    "sourceID" : "d-event-5",
+    "tokens" : [
+      "We",
+      "visit",
+      "a",
+      "shrine",
+      "every",
+      "New",
+      "Year"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "student",
+      "clean",
+      "classrooms",
+      "school"
+    ],
+    "en" : "Students clean their classrooms after school",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "99BCC99D-6498-5E78-98E1-6FE1263D532D",
+    "ja" : "生徒たちは 放課後に 教室を そうじするよ",
+    "sourceID" : "d-event-6",
+    "tokens" : [
+      "Students",
+      "clean",
+      "their",
+      "classrooms",
+      "after",
+      "school"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "chorus",
+      "contest",
+      "take",
+      "place",
+      "winter"
+    ],
+    "en" : "The chorus contest takes place in winter",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "FB6E8407-456C-5E29-8F91-E0DF2A1D4837",
+    "ja" : "合唱コンクールは 冬に 行われるよ",
+    "sourceID" : "d-event-7",
+    "tokens" : [
+      "The",
+      "chorus",
+      "contest",
+      "takes",
+      "place",
+      "in",
+      "winter"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "plant",
+      "cherry",
+      "tree",
+      "last",
+      "spring"
+    ],
+    "en" : "We planted cherry trees last spring",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "C8AD6C91-B788-5EA9-AD5C-19EDA305BC7A",
+    "ja" : "去年の春に サクラの木を 植えたよ",
+    "sourceID" : "d-event-8",
+    "tokens" : [
+      "We",
+      "planted",
+      "cherry",
+      "trees",
+      "last",
+      "spring"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sora",
+      "buy",
+      "gift",
+      "market"
+    ],
+    "en" : "Sora bought a gift at the market",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "A9932679-A1E9-575A-8210-71843C17E797",
+    "ja" : "ソラは 市場で プレゼントを 買ったよ",
+    "sourceID" : "d-event-9",
+    "tokens" : [
+      "Sora",
+      "bought",
+      "a",
+      "gift",
+      "at",
+      "the",
+      "market"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "family",
+      "go",
+      "camp",
+      "during",
+      "summer",
+      "vacation"
+    ],
+    "en" : "Our family went camping during summer vacation",
+    "gradeBand" : 5,
+    "grammar" : "pastSimple",
+    "id" : "B78E73EC-0CB1-5D0A-A28E-AFF11155472C",
+    "ja" : "夏休み中に 家族で キャンプに行ったよ",
+    "sourceID" : "d-event-10",
+    "tokens" : [
+      "Our",
+      "family",
+      "went",
+      "camping",
+      "during",
+      "summer",
+      "vacation"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "many",
+      "people",
+      "use",
+      "train",
+      "japan"
+    ],
+    "en" : "Many people use trains in Japan",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "BDB9CB08-8F2E-5748-AF98-5743D188A000",
+    "ja" : "日本では 多くの人が 電車を 使うよ",
+    "sourceID" : "d-world-1",
+    "tokens" : [
+      "Many",
+      "people",
+      "use",
+      "trains",
+      "in",
+      "Japan"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "river",
+      "keep",
+      "clean"
+    ],
+    "en" : "Rivers should be kept clean",
+    "gradeBand" : 3,
+    "grammar" : "passiveVoice",
+    "id" : "FDE3A163-D07E-5E73-9F80-3560BDF819E8",
+    "ja" : "川は きれいに 保たれるべきだよ",
+    "sourceID" : "d-world-2",
+    "tokens" : [
+      "Rivers",
+      "should",
+      "be",
+      "kept",
+      "clean"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "english",
+      "spoken",
+      "many",
+      "country"
+    ],
+    "en" : "English is spoken in many countries",
+    "gradeBand" : 5,
+    "grammar" : "passiveVoice",
+    "id" : "767C50BF-1DE7-53E7-B1E6-4727547B1E7A",
+    "ja" : "英語は 多くの国で 話されているよ",
+    "sourceID" : "d-world-3",
+    "tokens" : [
+      "English",
+      "is",
+      "spoken",
+      "in",
+      "many",
+      "countries"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "paper",
+      "make",
+      "wood"
+    ],
+    "en" : "Paper is made from wood",
+    "gradeBand" : 4,
+    "grammar" : "passiveVoice",
+    "id" : "E877B932-1D66-5765-AF81-23A9D083CE92",
+    "ja" : "紙は 木から 作られているよ",
+    "sourceID" : "d-world-4",
+    "tokens" : [
+      "Paper",
+      "is",
+      "made",
+      "from",
+      "wood"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "wild",
+      "animal",
+      "protect",
+      "law"
+    ],
+    "en" : "Wild animals are protected by laws",
+    "gradeBand" : 4,
+    "grammar" : "passiveVoice",
+    "id" : "DD1F5785-0938-5177-9E7D-0E68D68F261A",
+    "ja" : "野生の動物は 法律で 守られているよ",
+    "sourceID" : "d-world-5",
+    "tokens" : [
+      "Wild",
+      "animals",
+      "are",
+      "protected",
+      "by",
+      "laws"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "food",
+      "wasted"
+    ],
+    "en" : "Food should not be wasted",
+    "gradeBand" : 5,
+    "grammar" : "passiveVoice",
+    "id" : "9BD0F884-2588-564E-AA33-A43D1BF70E17",
+    "ja" : "食べ物を むだにしては いけないよ",
+    "sourceID" : "d-world-6",
+    "tokens" : [
+      "Food",
+      "should",
+      "not",
+      "be",
+      "wasted"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "plastic",
+      "bottle",
+      "recycled",
+      "new",
+      "product"
+    ],
+    "en" : "Plastic bottles are recycled into new products",
+    "gradeBand" : 5,
+    "grammar" : "passiveVoice",
+    "id" : "582DB28C-B54A-5EF2-B35C-8E5D35047FF2",
+    "ja" : "ペットボトルは 新しい製品に リサイクルされるよ",
+    "sourceID" : "d-world-7",
+    "tokens" : [
+      "Plastic",
+      "bottles",
+      "are",
+      "recycled",
+      "into",
+      "new",
+      "products"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bicycles",
+      "widely",
+      "us",
+      "city"
+    ],
+    "en" : "Bicycles are widely used in this city",
+    "gradeBand" : 5,
+    "grammar" : "passiveVoice",
+    "id" : "426EE627-CF24-524A-BF6E-A21A5CDF40A9",
+    "ja" : "自転車は この街で 広く 使われているよ",
+    "sourceID" : "d-world-8",
+    "tokens" : [
+      "Bicycles",
+      "are",
+      "widely",
+      "used",
+      "in",
+      "this",
+      "city"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "solar",
+      "energy",
+      "collect",
+      "sunny",
+      "day"
+    ],
+    "en" : "Solar energy is collected on sunny days",
+    "gradeBand" : 5,
+    "grammar" : "passiveVoice",
+    "id" : "3ED1CD45-E0B9-5D97-8735-D5E7079D4921",
+    "ja" : "太陽エネルギーは 晴れた日に 集められるよ",
+    "sourceID" : "d-world-9",
+    "tokens" : [
+      "Solar",
+      "energy",
+      "is",
+      "collected",
+      "on",
+      "sunny",
+      "days"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "kind",
+      "word",
+      "bring",
+      "happiness",
+      "everyone"
+    ],
+    "en" : "Kind words bring happiness to everyone",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "2D3D3C1F-5CC4-5F36-8B2A-D243E3DA5084",
+    "ja" : "親切な言葉は みんなに 幸せをもたらすよ",
+    "sourceID" : "d-world-10",
+    "tokens" : [
+      "Kind",
+      "words",
+      "bring",
+      "happiness",
+      "to",
+      "everyone"
+    ]
   }
 ]
