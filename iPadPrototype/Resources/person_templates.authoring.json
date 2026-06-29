@@ -5671,5 +5671,1860 @@
       "team."
     ],
     "fallbackJa": "わたしは 自分の チームが ほこらしいよ。"
+  },
+  {
+    "id": "d-plan-1",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "study",
+      "hard",
+      "tonight"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "will",
+      "study",
+      "hard",
+      "tonight."
+    ],
+    "ja": "今夜は しっかり 勉強するよ",
+    "fallbackEn": [
+      "I",
+      "will",
+      "study",
+      "hard",
+      "tonight."
+    ],
+    "fallbackJa": "今夜は しっかり 勉強するよ"
+  },
+  {
+    "id": "d-plan-2",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "go",
+      "visit",
+      "grandma"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "are",
+      "going",
+      "to",
+      "visit",
+      "our",
+      "grandma."
+    ],
+    "ja": "ぼくたちは おばあちゃんの家に 行く予定だよ",
+    "fallbackEn": [
+      "We",
+      "are",
+      "going",
+      "to",
+      "visit",
+      "our",
+      "grandma."
+    ],
+    "fallbackJa": "ぼくたちは おばあちゃんの家に 行く予定だよ"
+  },
+  {
+    "id": "d-plan-3",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "join",
+      "soccer",
+      "team"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "will",
+      "join",
+      "the",
+      "soccer",
+      "team."
+    ],
+    "ja": "ソラは サッカーチームに 入るよ",
+    "fallbackEn": [
+      "Sora",
+      "will",
+      "join",
+      "the",
+      "soccer",
+      "team."
+    ],
+    "fallbackJa": "ソラは サッカーチームに 入るよ"
+  },
+  {
+    "id": "d-plan-4",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "go",
+      "buy",
+      "new",
+      "book"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "is",
+      "going",
+      "to",
+      "buy",
+      "a",
+      "new",
+      "book."
+    ],
+    "ja": "メイは 新しい 本を 買う予定だよ",
+    "fallbackEn": [
+      "Mei",
+      "is",
+      "going",
+      "to",
+      "buy",
+      "a",
+      "new",
+      "book."
+    ],
+    "fallbackJa": "メイは 新しい 本を 買う予定だよ"
+  },
+  {
+    "id": "d-plan-5",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "call",
+      "dinner"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "will",
+      "call",
+      "you",
+      "after",
+      "dinner."
+    ],
+    "ja": "夕食のあとに 電話するね",
+    "fallbackEn": [
+      "I",
+      "will",
+      "call",
+      "you",
+      "after",
+      "dinner."
+    ],
+    "fallbackJa": "夕食のあとに 電話するね"
+  },
+  {
+    "id": "d-plan-6",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "go",
+      "clean",
+      "park"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "are",
+      "going",
+      "to",
+      "clean",
+      "the",
+      "park."
+    ],
+    "ja": "私たちは 公園を そうじする予定だよ",
+    "fallbackEn": [
+      "We",
+      "are",
+      "going",
+      "to",
+      "clean",
+      "the",
+      "park."
+    ],
+    "fallbackJa": "私たちは 公園を そうじする予定だよ"
+  },
+  {
+    "id": "d-plan-7",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "practice",
+      "English",
+      "tomorrow"
+    ],
+    "slots": [],
+    "en": [
+      "They",
+      "will",
+      "practice",
+      "English",
+      "tomorrow."
+    ],
+    "ja": "みんなで 明日 英語を 練習するよ",
+    "fallbackEn": [
+      "They",
+      "will",
+      "practice",
+      "English",
+      "tomorrow."
+    ],
+    "fallbackJa": "みんなで 明日 英語を 練習するよ"
+  },
+  {
+    "id": "d-plan-8",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "go",
+      "bake",
+      "cookie"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "going",
+      "to",
+      "bake",
+      "some",
+      "cookies."
+    ],
+    "ja": "クッキーを 焼く予定なんだ",
+    "fallbackEn": [
+      "I",
+      "am",
+      "going",
+      "to",
+      "bake",
+      "some",
+      "cookies."
+    ],
+    "fallbackJa": "クッキーを 焼く予定なんだ"
+  },
+  {
+    "id": "d-plan-9",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "show",
+      "new",
+      "robot"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "will",
+      "show",
+      "us",
+      "his",
+      "new",
+      "robot."
+    ],
+    "ja": "ソラが 新しい ロボットを 見せてくれるよ",
+    "fallbackEn": [
+      "Sora",
+      "will",
+      "show",
+      "us",
+      "his",
+      "new",
+      "robot."
+    ],
+    "fallbackJa": "ソラが 新しい ロボットを 見せてくれるよ"
+  },
+  {
+    "id": "d-plan-10",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "meet",
+      "station"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "will",
+      "meet",
+      "at",
+      "the",
+      "station."
+    ],
+    "ja": "駅で 待ち合わせするよ",
+    "fallbackEn": [
+      "We",
+      "will",
+      "meet",
+      "at",
+      "the",
+      "station."
+    ],
+    "fallbackJa": "駅で 待ち合わせするよ"
+  },
+  {
+    "id": "d-must-1",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "finish",
+      "homework"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "to",
+      "finish",
+      "my",
+      "homework."
+    ],
+    "ja": "宿題を 終わらせなきゃ",
+    "fallbackEn": [
+      "I",
+      "have",
+      "to",
+      "finish",
+      "my",
+      "homework."
+    ],
+    "fallbackJa": "宿題を 終わらせなきゃ"
+  },
+  {
+    "id": "d-must-2",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "need",
+      "leave",
+      "right",
+      "now"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "need",
+      "to",
+      "leave",
+      "right",
+      "now."
+    ],
+    "ja": "今すぐ 出発する ひつようがあるよ",
+    "fallbackEn": [
+      "We",
+      "need",
+      "to",
+      "leave",
+      "right",
+      "now."
+    ],
+    "fallbackJa": "今すぐ 出発する ひつようがあるよ"
+  },
+  {
+    "id": "d-must-3",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "wake",
+      "up",
+      "early"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "has",
+      "to",
+      "wake",
+      "up",
+      "early."
+    ],
+    "ja": "ソラは 早起きしなきゃいけないんだ",
+    "fallbackEn": [
+      "Sora",
+      "has",
+      "to",
+      "wake",
+      "up",
+      "early."
+    ],
+    "fallbackJa": "ソラは 早起きしなきゃいけないんだ"
+  },
+  {
+    "id": "d-must-4",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "need",
+      "drink",
+      "more",
+      "water"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "needs",
+      "to",
+      "drink",
+      "more",
+      "water."
+    ],
+    "ja": "メイは もっと 水を 飲む ひつようがあるよ",
+    "fallbackEn": [
+      "Mei",
+      "needs",
+      "to",
+      "drink",
+      "more",
+      "water."
+    ],
+    "fallbackJa": "メイは もっと 水を 飲む ひつようがあるよ"
+  },
+  {
+    "id": "d-must-5",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "wear",
+      "jacket",
+      "today"
+    ],
+    "slots": [],
+    "en": [
+      "You",
+      "have",
+      "to",
+      "wear",
+      "a",
+      "jacket",
+      "today."
+    ],
+    "ja": "今日は 上着を 着なきゃダメだよ",
+    "fallbackEn": [
+      "You",
+      "have",
+      "to",
+      "wear",
+      "a",
+      "jacket",
+      "today."
+    ],
+    "fallbackJa": "今日は 上着を 着なきゃダメだよ"
+  },
+  {
+    "id": "d-must-6",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "need",
+      "save",
+      "energy",
+      "home"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "need",
+      "to",
+      "save",
+      "energy",
+      "at",
+      "home."
+    ],
+    "ja": "家で 節電する ひつようがあるね",
+    "fallbackEn": [
+      "We",
+      "need",
+      "to",
+      "save",
+      "energy",
+      "at",
+      "home."
+    ],
+    "fallbackJa": "家で 節電する ひつようがあるね"
+  },
+  {
+    "id": "d-must-7",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "return",
+      "library",
+      "book"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "to",
+      "return",
+      "this",
+      "library",
+      "book."
+    ],
+    "ja": "この 図書館の本を 返さなきゃ",
+    "fallbackEn": [
+      "I",
+      "have",
+      "to",
+      "return",
+      "this",
+      "library",
+      "book."
+    ],
+    "fallbackJa": "この 図書館の本を 返さなきゃ"
+  },
+  {
+    "id": "d-must-8",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "cat",
+      "need",
+      "see",
+      "vet"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "needs",
+      "to",
+      "see",
+      "a",
+      "vet."
+    ],
+    "ja": "ねこを じゅういさんに 連れて行く ひつようがあるよ",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "needs",
+      "to",
+      "see",
+      "a",
+      "vet."
+    ],
+    "fallbackJa": "ねこを じゅういさんに 連れて行く ひつようがあるよ"
+  },
+  {
+    "id": "d-must-9",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "follow",
+      "rule"
+    ],
+    "slots": [],
+    "en": [
+      "You",
+      "have",
+      "to",
+      "follow",
+      "the",
+      "rules."
+    ],
+    "ja": "ルールを 守らなきゃいけないよ",
+    "fallbackEn": [
+      "You",
+      "have",
+      "to",
+      "follow",
+      "the",
+      "rules."
+    ],
+    "fallbackJa": "ルールを 守らなきゃいけないよ"
+  },
+  {
+    "id": "d-must-10",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "need",
+      "buy",
+      "milk"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "need",
+      "to",
+      "buy",
+      "some",
+      "milk."
+    ],
+    "ja": "牛乳を 買う ひつようがあるね",
+    "fallbackEn": [
+      "We",
+      "need",
+      "to",
+      "buy",
+      "some",
+      "milk."
+    ],
+    "fallbackJa": "牛乳を 買う ひつようがあるね"
+  },
+  {
+    "id": "d-exp-1",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "be",
+      "Kyoto",
+      "once"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "been",
+      "to",
+      "Kyoto",
+      "once."
+    ],
+    "ja": "京都に 一度 行ったことがあるよ",
+    "fallbackEn": [
+      "I",
+      "have",
+      "been",
+      "to",
+      "Kyoto",
+      "once."
+    ],
+    "fallbackJa": "京都に 一度 行ったことがあるよ"
+  },
+  {
+    "id": "d-exp-2",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "ever",
+      "eat",
+      "natto"
+    ],
+    "slots": [],
+    "en": [
+      "Have",
+      "you",
+      "ever",
+      "eaten",
+      "natto?"
+    ],
+    "ja": "なっとうを 食べたこと ある？",
+    "fallbackEn": [
+      "Have",
+      "you",
+      "ever",
+      "eaten",
+      "natto?"
+    ],
+    "fallbackJa": "なっとうを 食べたこと ある？"
+  },
+  {
+    "id": "d-exp-3",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "already",
+      "finish",
+      "project"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "has",
+      "already",
+      "finished",
+      "his",
+      "project."
+    ],
+    "ja": "ソラは もう 課題を 終わらせたよ",
+    "fallbackEn": [
+      "Sora",
+      "has",
+      "already",
+      "finished",
+      "his",
+      "project."
+    ],
+    "fallbackJa": "ソラは もう 課題を 終わらせたよ"
+  },
+  {
+    "id": "d-exp-4",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "see",
+      "movie",
+      "twice"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "has",
+      "seen",
+      "that",
+      "movie",
+      "twice."
+    ],
+    "ja": "メイは その映画を 2回 見たことがあるよ",
+    "fallbackEn": [
+      "Mei",
+      "has",
+      "seen",
+      "that",
+      "movie",
+      "twice."
+    ],
+    "fallbackJa": "メイは その映画を 2回 見たことがあるよ"
+  },
+  {
+    "id": "d-exp-5",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "live",
+      "five",
+      "year"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "have",
+      "lived",
+      "here",
+      "for",
+      "five",
+      "years."
+    ],
+    "ja": "ぼくたちは ここに 5年間 住んでいるよ",
+    "fallbackEn": [
+      "We",
+      "have",
+      "lived",
+      "here",
+      "for",
+      "five",
+      "years."
+    ],
+    "fallbackJa": "ぼくたちは ここに 5年間 住んでいるよ"
+  },
+  {
+    "id": "d-exp-6",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "never",
+      "try",
+      "mountain",
+      "climbing"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "never",
+      "tried",
+      "mountain",
+      "climbing."
+    ],
+    "ja": "山登りは 一度も したことがないな",
+    "fallbackEn": [
+      "I",
+      "have",
+      "never",
+      "tried",
+      "mountain",
+      "climbing."
+    ],
+    "fallbackJa": "山登りは 一度も したことがないな"
+  },
+  {
+    "id": "d-exp-7",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "bird",
+      "fly",
+      "away",
+      "yet"
+    ],
+    "slots": [],
+    "en": [
+      "Has",
+      "the",
+      "bird",
+      "flown",
+      "away",
+      "yet?"
+    ],
+    "ja": "鳥は もう 飛んで行っちゃった？",
+    "fallbackEn": [
+      "Has",
+      "the",
+      "bird",
+      "flown",
+      "away",
+      "yet?"
+    ],
+    "fallbackJa": "鳥は もう 飛んで行っちゃった？"
+  },
+  {
+    "id": "d-exp-8",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "climb",
+      "Mt.",
+      "Fuji",
+      "before"
+    ],
+    "slots": [],
+    "en": [
+      "They",
+      "have",
+      "climbed",
+      "Mt.",
+      "Fuji",
+      "before."
+    ],
+    "ja": "あの子たちは 前に 富士山に 登ったことがあるよ",
+    "fallbackEn": [
+      "They",
+      "have",
+      "climbed",
+      "Mt.",
+      "Fuji",
+      "before."
+    ],
+    "fallbackJa": "あの子たちは 前に 富士山に 登ったことがあるよ"
+  },
+  {
+    "id": "d-exp-9",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "know",
+      "Sora",
+      "kindergarten"
+    ],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "known",
+      "Sora",
+      "since",
+      "kindergarten."
+    ],
+    "ja": "ようちえんのときから ソラを 知っているよ",
+    "fallbackEn": [
+      "I",
+      "have",
+      "known",
+      "Sora",
+      "since",
+      "kindergarten."
+    ],
+    "fallbackJa": "ようちえんのときから ソラを 知っているよ"
+  },
+  {
+    "id": "d-exp-10",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "write",
+      "thank",
+      "letter"
+    ],
+    "slots": [],
+    "en": [
+      "Have",
+      "you",
+      "written",
+      "your",
+      "thank",
+      "you",
+      "letter?"
+    ],
+    "ja": "お礼の手紙は もう 書いた？",
+    "fallbackEn": [
+      "Have",
+      "you",
+      "written",
+      "your",
+      "thank",
+      "you",
+      "letter?"
+    ],
+    "fallbackJa": "お礼の手紙は もう 書いた？"
+  },
+  {
+    "id": "d-advice-1",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "drink",
+      "more",
+      "water"
+    ],
+    "slots": [],
+    "en": [
+      "You",
+      "should",
+      "drink",
+      "more",
+      "water."
+    ],
+    "ja": "もっと 水を 飲んだほうがいいよ",
+    "fallbackEn": [
+      "You",
+      "should",
+      "drink",
+      "more",
+      "water."
+    ],
+    "fallbackJa": "もっと 水を 飲んだほうがいいよ"
+  },
+  {
+    "id": "d-advice-2",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "help",
+      "each",
+      "other"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "should",
+      "help",
+      "each",
+      "other."
+    ],
+    "ja": "おたがいに 助け合ったほうがいいね",
+    "fallbackEn": [
+      "We",
+      "should",
+      "help",
+      "each",
+      "other."
+    ],
+    "fallbackJa": "おたがいに 助け合ったほうがいいね"
+  },
+  {
+    "id": "d-advice-3",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "take",
+      "short",
+      "break"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "should",
+      "take",
+      "a",
+      "short",
+      "break."
+    ],
+    "ja": "ソラは 少し 休んだほうがいいよ",
+    "fallbackEn": [
+      "Sora",
+      "should",
+      "take",
+      "a",
+      "short",
+      "break."
+    ],
+    "fallbackJa": "ソラは 少し 休んだほうがいいよ"
+  },
+  {
+    "id": "d-advice-4",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "apologize",
+      "friend"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "should",
+      "apologize",
+      "to",
+      "her",
+      "friend."
+    ],
+    "ja": "メイは 友達に あやまったほうがいいよ",
+    "fallbackEn": [
+      "Mei",
+      "should",
+      "apologize",
+      "to",
+      "her",
+      "friend."
+    ],
+    "fallbackJa": "メイは 友達に あやまったほうがいいよ"
+  },
+  {
+    "id": "d-advice-5",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "brush",
+      "tooth",
+      "twice",
+      "daily"
+    ],
+    "slots": [],
+    "en": [
+      "You",
+      "should",
+      "brush",
+      "your",
+      "teeth",
+      "twice",
+      "daily."
+    ],
+    "ja": "1日に 2回 歯を みがいたほうがいいよ",
+    "fallbackEn": [
+      "You",
+      "should",
+      "brush",
+      "your",
+      "teeth",
+      "twice",
+      "daily."
+    ],
+    "fallbackJa": "1日に 2回 歯を みがいたほうがいいよ"
+  },
+  {
+    "id": "d-advice-6",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "protect",
+      "wild",
+      "animal"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "should",
+      "protect",
+      "wild",
+      "animals."
+    ],
+    "ja": "野生の 動物たちを 守るべきだよ",
+    "fallbackEn": [
+      "We",
+      "should",
+      "protect",
+      "wild",
+      "animals."
+    ],
+    "fallbackJa": "野生の 動物たちを 守るべきだよ"
+  },
+  {
+    "id": "d-advice-7",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "skip",
+      "breakfast"
+    ],
+    "slots": [],
+    "en": [
+      "You",
+      "should",
+      "not",
+      "skip",
+      "breakfast."
+    ],
+    "ja": "朝ごはんを ぬかないほうがいいよ",
+    "fallbackEn": [
+      "You",
+      "should",
+      "not",
+      "skip",
+      "breakfast."
+    ],
+    "fallbackJa": "朝ごはんを ぬかないほうがいいよ"
+  },
+  {
+    "id": "d-advice-8",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "sleep",
+      "early",
+      "tonight"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "should",
+      "sleep",
+      "early",
+      "tonight."
+    ],
+    "ja": "今夜は 早く ねたほうがいいよ",
+    "fallbackEn": [
+      "We",
+      "should",
+      "sleep",
+      "early",
+      "tonight."
+    ],
+    "fallbackJa": "今夜は 早く ねたほうがいいよ"
+  },
+  {
+    "id": "d-advice-9",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "double",
+      "check",
+      "answer"
+    ],
+    "slots": [],
+    "en": [
+      "You",
+      "should",
+      "double",
+      "check",
+      "your",
+      "answer."
+    ],
+    "ja": "答えを もう一度 確認したほうがいいよ",
+    "fallbackEn": [
+      "You",
+      "should",
+      "double",
+      "check",
+      "your",
+      "answer."
+    ],
+    "fallbackJa": "答えを もう一度 確認したほうがいいよ"
+  },
+  {
+    "id": "d-advice-10",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "listen",
+      "teacher"
+    ],
+    "slots": [],
+    "en": [
+      "They",
+      "should",
+      "listen",
+      "to",
+      "the",
+      "teacher."
+    ],
+    "ja": "先生の言うことを 聞いたほうがいいよ",
+    "fallbackEn": [
+      "They",
+      "should",
+      "listen",
+      "to",
+      "the",
+      "teacher."
+    ],
+    "fallbackJa": "先生の言うことを 聞いたほうがいいよ"
+  },
+  {
+    "id": "d-event-1",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "watch",
+      "firework",
+      "last",
+      "summer"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "watched",
+      "fireworks",
+      "last",
+      "summer."
+    ],
+    "ja": "去年の夏に 花火を 見たよ",
+    "fallbackEn": [
+      "We",
+      "watched",
+      "fireworks",
+      "last",
+      "summer."
+    ],
+    "fallbackJa": "去年の夏に 花火を 見たよ"
+  },
+  {
+    "id": "d-event-2",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "school",
+      "festival",
+      "fall"
+    ],
+    "slots": [],
+    "en": [
+      "Our",
+      "school",
+      "festival",
+      "is",
+      "in",
+      "fall."
+    ],
+    "ja": "ぼくたちの 学校の 文化祭は 秋にあるよ",
+    "fallbackEn": [
+      "Our",
+      "school",
+      "festival",
+      "is",
+      "in",
+      "fall."
+    ],
+    "fallbackJa": "ぼくたちの 学校の 文化祭は 秋にあるよ"
+  },
+  {
+    "id": "d-event-3",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "win",
+      "speech",
+      "contest",
+      "yesterday"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "won",
+      "the",
+      "speech",
+      "contest",
+      "yesterday."
+    ],
+    "ja": "ソラは 昨日 スピーチコンテストで 優勝したよ",
+    "fallbackEn": [
+      "Sora",
+      "won",
+      "the",
+      "speech",
+      "contest",
+      "yesterday."
+    ],
+    "fallbackJa": "ソラは 昨日 スピーチコンテストで 優勝したよ"
+  },
+  {
+    "id": "d-event-4",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "enjoy",
+      "sport",
+      "day",
+      "last",
+      "week"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "enjoyed",
+      "the",
+      "sports",
+      "day",
+      "last",
+      "week."
+    ],
+    "ja": "メイは 先週の 運動会を 楽しんだよ",
+    "fallbackEn": [
+      "Mei",
+      "enjoyed",
+      "the",
+      "sports",
+      "day",
+      "last",
+      "week."
+    ],
+    "fallbackJa": "メイは 先週の 運動会を 楽しんだよ"
+  },
+  {
+    "id": "d-event-5",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "visit",
+      "shrine",
+      "every",
+      "New",
+      "Year"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "visit",
+      "a",
+      "shrine",
+      "every",
+      "New",
+      "Year."
+    ],
+    "ja": "毎年 お正月に 神社へ 行くよ",
+    "fallbackEn": [
+      "We",
+      "visit",
+      "a",
+      "shrine",
+      "every",
+      "New",
+      "Year."
+    ],
+    "fallbackJa": "毎年 お正月に 神社へ 行くよ"
+  },
+  {
+    "id": "d-event-6",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "student",
+      "clean",
+      "classroom",
+      "school"
+    ],
+    "slots": [],
+    "en": [
+      "Students",
+      "clean",
+      "their",
+      "classrooms",
+      "after",
+      "school."
+    ],
+    "ja": "生徒たちは 放課後に 教室を そうじするよ",
+    "fallbackEn": [
+      "Students",
+      "clean",
+      "their",
+      "classrooms",
+      "after",
+      "school."
+    ],
+    "fallbackJa": "生徒たちは 放課後に 教室を そうじするよ"
+  },
+  {
+    "id": "d-event-7",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "chorus",
+      "contest",
+      "take",
+      "place",
+      "winter"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "chorus",
+      "contest",
+      "takes",
+      "place",
+      "in",
+      "winter."
+    ],
+    "ja": "合唱コンクールは 冬に 行われるよ",
+    "fallbackEn": [
+      "The",
+      "chorus",
+      "contest",
+      "takes",
+      "place",
+      "in",
+      "winter."
+    ],
+    "fallbackJa": "合唱コンクールは 冬に 行われるよ"
+  },
+  {
+    "id": "d-event-8",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "plant",
+      "cherry",
+      "tree",
+      "last",
+      "spring"
+    ],
+    "slots": [],
+    "en": [
+      "We",
+      "planted",
+      "cherry",
+      "trees",
+      "last",
+      "spring."
+    ],
+    "ja": "去年の春に サクラの木を 植えたよ",
+    "fallbackEn": [
+      "We",
+      "planted",
+      "cherry",
+      "trees",
+      "last",
+      "spring."
+    ],
+    "fallbackJa": "去年の春に サクラの木を 植えたよ"
+  },
+  {
+    "id": "d-event-9",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "buy",
+      "gift",
+      "market"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "bought",
+      "a",
+      "gift",
+      "at",
+      "the",
+      "market."
+    ],
+    "ja": "ソラは 市場で プレゼントを 買ったよ",
+    "fallbackEn": [
+      "Sora",
+      "bought",
+      "a",
+      "gift",
+      "at",
+      "the",
+      "market."
+    ],
+    "fallbackJa": "ソラは 市場で プレゼントを 買ったよ"
+  },
+  {
+    "id": "d-event-10",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "family",
+      "go",
+      "camping",
+      "summer",
+      "vacation"
+    ],
+    "slots": [],
+    "en": [
+      "Our",
+      "family",
+      "went",
+      "camping",
+      "during",
+      "summer",
+      "vacation."
+    ],
+    "ja": "夏休み中に 家族で キャンプに行ったよ",
+    "fallbackEn": [
+      "Our",
+      "family",
+      "went",
+      "camping",
+      "during",
+      "summer",
+      "vacation."
+    ],
+    "fallbackJa": "夏休み中に 家族で キャンプに行ったよ"
+  },
+  {
+    "id": "d-world-1",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "many",
+      "people",
+      "use",
+      "train",
+      "Japan"
+    ],
+    "slots": [],
+    "en": [
+      "Many",
+      "people",
+      "use",
+      "trains",
+      "in",
+      "Japan."
+    ],
+    "ja": "日本では 多くの人が 電車を 使うよ",
+    "fallbackEn": [
+      "Many",
+      "people",
+      "use",
+      "trains",
+      "in",
+      "Japan."
+    ],
+    "fallbackJa": "日本では 多くの人が 電車を 使うよ"
+  },
+  {
+    "id": "d-world-2",
+    "category": "daily",
+    "grammar": "passiveVoice",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "river",
+      "keep",
+      "clean"
+    ],
+    "slots": [],
+    "en": [
+      "Rivers",
+      "should",
+      "be",
+      "kept",
+      "clean."
+    ],
+    "ja": "川は きれいに 保たれるべきだよ",
+    "fallbackEn": [
+      "Rivers",
+      "should",
+      "be",
+      "kept",
+      "clean."
+    ],
+    "fallbackJa": "川は きれいに 保たれるべきだよ"
+  },
+  {
+    "id": "d-world-3",
+    "category": "daily",
+    "grammar": "passiveVoice",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "English",
+      "speak",
+      "many",
+      "country"
+    ],
+    "slots": [],
+    "en": [
+      "English",
+      "is",
+      "spoken",
+      "in",
+      "many",
+      "countries."
+    ],
+    "ja": "英語は 多くの国で 話されているよ",
+    "fallbackEn": [
+      "English",
+      "is",
+      "spoken",
+      "in",
+      "many",
+      "countries."
+    ],
+    "fallbackJa": "英語は 多くの国で 話されているよ"
+  },
+  {
+    "id": "d-world-4",
+    "category": "daily",
+    "grammar": "passiveVoice",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "paper",
+      "make",
+      "wood"
+    ],
+    "slots": [],
+    "en": [
+      "Paper",
+      "is",
+      "made",
+      "from",
+      "wood."
+    ],
+    "ja": "紙は 木から 作られているよ",
+    "fallbackEn": [
+      "Paper",
+      "is",
+      "made",
+      "from",
+      "wood."
+    ],
+    "fallbackJa": "紙は 木から 作られているよ"
+  },
+  {
+    "id": "d-world-5",
+    "category": "daily",
+    "grammar": "passiveVoice",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "wild",
+      "animal",
+      "protect",
+      "law"
+    ],
+    "slots": [],
+    "en": [
+      "Wild",
+      "animals",
+      "are",
+      "protected",
+      "by",
+      "laws."
+    ],
+    "ja": "野生の動物は 法律で 守られているよ",
+    "fallbackEn": [
+      "Wild",
+      "animals",
+      "are",
+      "protected",
+      "by",
+      "laws."
+    ],
+    "fallbackJa": "野生の動物は 法律で 守られているよ"
+  },
+  {
+    "id": "d-world-6",
+    "category": "daily",
+    "grammar": "passiveVoice",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "food",
+      "waste"
+    ],
+    "slots": [],
+    "en": [
+      "Food",
+      "should",
+      "not",
+      "be",
+      "wasted."
+    ],
+    "ja": "食べ物を むだにしては いけないよ",
+    "fallbackEn": [
+      "Food",
+      "should",
+      "not",
+      "be",
+      "wasted."
+    ],
+    "fallbackJa": "食べ物を むだにしては いけないよ"
+  },
+  {
+    "id": "d-world-7",
+    "category": "daily",
+    "grammar": "passiveVoice",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "plastic",
+      "bottle",
+      "recycle",
+      "new",
+      "product"
+    ],
+    "slots": [],
+    "en": [
+      "Plastic",
+      "bottles",
+      "are",
+      "recycled",
+      "into",
+      "new",
+      "products."
+    ],
+    "ja": "ペットボトルは 新しい製品に リサイクルされるよ",
+    "fallbackEn": [
+      "Plastic",
+      "bottles",
+      "are",
+      "recycled",
+      "into",
+      "new",
+      "products."
+    ],
+    "fallbackJa": "ペットボトルは 新しい製品に リサイクルされるよ"
+  },
+  {
+    "id": "d-world-8",
+    "category": "daily",
+    "grammar": "passiveVoice",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "bicycle",
+      "widely",
+      "use",
+      "city"
+    ],
+    "slots": [],
+    "en": [
+      "Bicycles",
+      "are",
+      "widely",
+      "used",
+      "in",
+      "this",
+      "city."
+    ],
+    "ja": "自転車は この街で 広く 使われているよ",
+    "fallbackEn": [
+      "Bicycles",
+      "are",
+      "widely",
+      "used",
+      "in",
+      "this",
+      "city."
+    ],
+    "fallbackJa": "自転車は この街で 広く 使われているよ"
+  },
+  {
+    "id": "d-world-9",
+    "category": "daily",
+    "grammar": "passiveVoice",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "solar",
+      "energy",
+      "collect",
+      "sunny",
+      "day"
+    ],
+    "slots": [],
+    "en": [
+      "Solar",
+      "energy",
+      "is",
+      "collected",
+      "on",
+      "sunny",
+      "days."
+    ],
+    "ja": "太陽エネルギーは 晴れた日に 集められるよ",
+    "fallbackEn": [
+      "Solar",
+      "energy",
+      "is",
+      "collected",
+      "on",
+      "sunny",
+      "days."
+    ],
+    "fallbackJa": "太陽エネルギーは 晴れた日に 集められるよ"
+  },
+  {
+    "id": "d-world-10",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "kind",
+      "word",
+      "bring",
+      "happiness",
+      "everyone"
+    ],
+    "slots": [],
+    "en": [
+      "Kind",
+      "words",
+      "bring",
+      "happiness",
+      "to",
+      "everyone."
+    ],
+    "ja": "親切な言葉は みんなに 幸せをもたらすよ",
+    "fallbackEn": [
+      "Kind",
+      "words",
+      "bring",
+      "happiness",
+      "to",
+      "everyone."
+    ],
+    "fallbackJa": "親切な言葉は みんなに 幸せをもたらすよ"
   }
 ]
