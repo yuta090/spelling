@@ -67,6 +67,7 @@ struct StepMapView: View {
     let completedStepIDs: Set<String>
     let selectedStepID: String
     let language: AppLanguage
+    let character: HomeRewardCharacter   // 「いまここ」足元に立つ＝子が今選んでいるなかま
     let onSelect: (String) -> Void
 
     private let theme = StepMapTheme.meadow
@@ -145,11 +146,13 @@ struct StepMapView: View {
                             .id(step.id)
                         }
 
-                        // 「いまここ」足元のアバター
+                        // 「いまここ」足元のアバター（子が今選んでいるなかま）
                         if let cur = currentID, let idx = steps.firstIndex(where: { $0.id == cur }) {
                             let p = cgPoint(nodePoints[idx])
-                            Text("🧒").font(.system(size: 52))
-                                .position(x: p.x - 72, y: p.y + 14)
+                            RewardCharacterAvatar(character: character)
+                                .frame(width: 58, height: 58)
+                                .stepMapLegible()
+                                .position(x: p.x - 74, y: p.y + 8)
                                 .allowsHitTesting(false)
                         }
                     }

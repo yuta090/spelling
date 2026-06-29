@@ -447,6 +447,11 @@ final class AppModel: ObservableObject {
     /// 「アクティブ全語をそのまま練習する」既定選択のときだけ、1日の新規導入上限を適用する。
     /// 明示的な部分選択（復習・フォーカス・リトライ）は `isFullActiveSelection == false` で素通り。
     /// 既習・導入済み語は常に残し、新規候補だけ残り枠ぶんに絞る。
+    ///
+    /// 上限は **いま練習する集合（＝選択中ステップ）の中だけ** で数える（ステップ単位）。
+    /// 登録は無制限・親が学習セットを前もって何個でも用意できる前提なので、別ステップを
+    /// その日に練習しても、新しく登録したステップの練習を巻き添えで止めない。「練習できる
+    /// 単語が1日10」はステップごとに独立して効く（全語横断のグローバル枠にはしない）。
     func dailyCappedPracticeWords(
         _ selected: [SpellingWord],
         isFullActiveSelection: Bool,
@@ -459,9 +464,15 @@ final class AppModel: ObservableObject {
         guard isFullActiveSelection else { return selected }
         let practiced = practicedWordTexts
         let flags = selected.map { isNewWordCandidate($0, practicedTexts: practiced) }
+        // このステップ内で今日すでに新規導入した語数だけを数える（他ステップは無関係）。
+        let introducedTodayInStep = NewWordBudget.introducedCount(
+            firstIntroducedDates: selected.map(\.firstIntroducedAt),
+            today: now,
+            calendar: calendar
+        )
         let keep = NewWordBudget.cappedIndices(
             isNewCandidate: flags,
-            introducedToday: newWordsIntroducedToday(now: now, calendar: calendar)
+            introducedToday: introducedTodayInStep
         )
         return keep.map { selected[$0] }
     }

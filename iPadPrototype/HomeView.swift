@@ -811,7 +811,8 @@ private struct ChildStepPickerSheet: View {
                         steps: orderedSteps,
                         completedStepIDs: completedToday,
                         selectedStepID: model.selectedWordStepID,
-                        language: language
+                        language: language,
+                        character: HomeRewardCharacter.character(id: model.selectedCharacterID)
                     ) { stepID in
                         model.selectedWordStepID = stepID
                         dismiss()
