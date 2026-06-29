@@ -3039,25 +3039,26 @@ private struct ExampleHintView: View {
     }
 
     private var exampleColumn: some View {
-        // 「れいぶん」ラベルは出さない。再生ボタンは英語例文の左に置く。
-        VStack(alignment: .leading, spacing: 4) {
-            if let exampleEN {
-                HStack(alignment: .center, spacing: 8) {
-                    if !exampleEN.isEmpty {
-                        speakButton(exampleEN)
-                    }
+        // 「れいぶん」ラベルは出さない。再生ボタンは英語例文の左に置き、
+        // 訳（解説）は英文の真下にそろえる（再生ボタンの下に潜り込ませない）。
+        HStack(alignment: .top, spacing: 8) {
+            if let exampleEN, !exampleEN.isEmpty {
+                speakButton(exampleEN)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                if let exampleEN {
                     Text(exampleEN)
                         .font(.system(size: style == .compact ? 16 : 18, weight: .semibold, design: .rounded))
                         .foregroundStyle(inkBlue)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-            }
-            if !exampleJASegments.isEmpty {
-                FuriganaText(segments: exampleJASegments,
-                         baseSize: style == .compact ? 13 : 14,
-                         baseWeight: .medium,
-                         design: .default,
-                         color: Color.secondary)
+                if !exampleJASegments.isEmpty {
+                    FuriganaText(segments: exampleJASegments,
+                             baseSize: style == .compact ? 13 : 14,
+                             baseWeight: .medium,
+                             design: .default,
+                             color: Color.secondary)
+                }
             }
         }
     }
