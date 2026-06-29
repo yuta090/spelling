@@ -339,10 +339,10 @@ private struct PuzzleStepView: View {
     var body: some View {
         VStack(spacing: 18) {
             PuzzleFormatBadge(title: format.childTitle)
-            // 文の無い形式（単語リスニング）やキャストの出ない文では帯ごと出さない
+            // 文の無い形式（単語リスニング）や絵の出ない文では帯ごと出さない
             // ＝空のときに余計な縦アキを作らない（VStack の子にしない）。
-            if !castForCurrent.isEmpty {
-                PuzzleCastStrip(cast: castForCurrent)
+            if !visualsForCurrent.isEmpty {
+                PuzzleVisualStrip(visuals: visualsForCurrent)
             }
             content
             Spacer(minLength: 0)
@@ -351,9 +351,19 @@ private struct PuzzleStepView: View {
         .onAppear(perform: setup)
     }
 
-    /// いまの文に登場する常連キャスト（出現順・最大3体）。文が無い形式（単語リスニング）は空。
-    private var castForCurrent: [PuzzleCast] {
-        sentence.map { PuzzleCastResolver.cast(for: $0.item) } ?? []
+    /// いまの文に出す絵（常連キャスト＋キャスト以外の名詞アイコン）を**合計3つまで**で。
+    /// キャストを先に詰め、空き枠があれば名詞の絵ヒントで埋める（はみ出さないよう上限3）。
+    /// 文が無い形式（単語リスニング）は空。
+    private var visualsForCurrent: [PuzzleVisual] {
+        guard let item = sentence?.item else { return [] }
+        let cast = PuzzleCastResolver.cast(for: item)           // 出現順・最大3
+        var visuals: [PuzzleVisual] = cast.map { .cast($0) }
+        let remaining = 3 - visuals.count
+        if remaining > 0 {
+            let objects = PuzzleObjectIconResolver.icons(for: item, limit: remaining)
+            visuals.append(contentsOf: objects.map { .object($0) })
+        }
+        return visuals
     }
 
     // MARK: 形式ごとの出題ボディ
@@ -675,17 +685,30 @@ private extension PuzzleFormat {
 
 // MARK: - 文に出てくるキャストの絵（最大3体）
 
-/// いまの問題の文に登場する常連キャスト（ねこ/いぬ/とり/うさぎ/かめ/きつね/Sora/Mei）を
-/// 円アバターで並べる。判定は Core（`PuzzleCastResolver`）が出現順・最大3体で済ませてあるので、
-/// ここは「並べて・はみ出さないよう体数に応じてサイズと間隔を調整」するだけ。
-private struct PuzzleCastStrip: View {
-    let cast: [PuzzleCast]
+/// いまの問題の文に出す「絵」1つ＝常連キャスト（人/どうぶつ）か、キャスト以外の名詞アイコン。
+/// 判定は Core（`PuzzleCastResolver` / `PuzzleObjectIconResolver`）が出現順・合計3つで済ませる。
+enum PuzzleVisual: Equatable {
+    case cast(PuzzleCast)
+    case object(PuzzleObjectIcon)
 
-    // 呼び出し側が空のとき非表示にするので、ここは1体以上を前提に並べるだけ。
+    var id: String {
+        switch self {
+        case .cast(let c): return "cast-\(c.rawValue)"
+        case .object(let o): return "obj-\(o.systemImage)"
+        }
+    }
+}
+
+/// いまの問題の文に出る絵（キャスト＋名詞アイコン）を横に並べる。判定済みの配列（合計最大3）を
+/// 受け取り、ここは「並べて・はみ出さないよう個数に応じてサイズと間隔を調整」するだけ。
+private struct PuzzleVisualStrip: View {
+    let visuals: [PuzzleVisual]
+
+    // 呼び出し側が空のとき非表示にするので、ここは1個以上を前提に並べるだけ。
     var body: some View {
         HStack(spacing: spacing) {
-            ForEach(cast, id: \.self) { c in
-                RewardCharacterAvatar(character: HomeRewardCharacter.character(id: Self.catalogID(c)))
+            ForEach(visuals, id: \.id) { v in
+                visualView(v)
                     .frame(width: size, height: size)
                     .accessibilityHidden(true)   // 子に評価/専門用語を読み上げない（飾り）
             }
@@ -694,16 +717,25 @@ private struct PuzzleCastStrip: View {
         .transition(.scale.combined(with: .opacity))
     }
 
-    /// 体数で大きさを変える＝1体は主役級に大きく、3体でも横にはみ出さない。
+    @ViewBuilder private func visualView(_ v: PuzzleVisual) -> some View {
+        switch v {
+        case .cast(let c):
+            RewardCharacterAvatar(character: HomeRewardCharacter.character(id: Self.catalogID(c)))
+        case .object(let o):
+            PuzzleObjectBadge(systemImage: o.systemImage)
+        }
+    }
+
+    /// 個数で大きさを変える＝1個は主役級に大きく、3個でも横にはみ出さない。
     private var size: CGFloat {
-        switch cast.count {
+        switch visuals.count {
         case 1: return 96
         case 2: return 78
         default: return 64
         }
     }
 
-    private var spacing: CGFloat { cast.count >= 3 ? 14 : 22 }
+    private var spacing: CGFloat { visuals.count >= 3 ? 14 : 22 }
 
     /// キャスト → なかまカタログID（既存の SwiftUI 描画キャラを再利用）。
     static func catalogID(_ c: PuzzleCast) -> String {
@@ -716,6 +748,29 @@ private struct PuzzleCastStrip: View {
         case .rabbit: return "rabbit"
         case .turtle: return "turtle"
         case .fox: return "fox"
+        }
+    }
+}
+
+/// キャスト以外の名詞の絵ヒント＝やわらかい丸の中に SF Symbol を1つ。
+/// 既存のキャスト円アバターと並んでも浮かないよう、丸ベース＋親しみのある配色にする。
+private struct PuzzleObjectBadge: View {
+    let systemImage: String
+
+    var body: some View {
+        GeometryReader { geo in
+            let side = min(geo.size.width, geo.size.height)
+            ZStack {
+                Circle().fill(Color(red: 0.95, green: 0.97, blue: 1.0))
+                Circle().strokeBorder(Color(red: 0.62, green: 0.78, blue: 0.95), lineWidth: side * 0.045)
+                Image(systemName: systemImage)
+                    .resizable()
+                    .scaledToFit()
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(Color(red: 0.20, green: 0.45, blue: 0.78))
+                    .frame(width: side * 0.5, height: side * 0.5)
+            }
+            .frame(width: side, height: side)
         }
     }
 }
