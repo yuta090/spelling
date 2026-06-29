@@ -3125,7 +3125,8 @@ private struct ExampleHintView: View {
 /// ふりがなが1つも無いときは普通の `Text`（軽い・自然な折返し）にフォールバックする。
 /// ※ 単語プロンプト用の `RubyPromptText`（`漢字[よみ]` マークアップ・漢字単位ルビ）とは別系統。
 ///   こちらは語単位（グループルビ）の `RubySegment` を直接描く・フォントを可変にできる。
-private struct FuriganaText: View {
+// ことばパズルの文法ヒントなど、他画面からも和文ルビ表示に使うため internal にしている。
+struct FuriganaText: View {
     let segments: [JapaneseReading.RubySegment]
     var baseSize: CGFloat
     var baseWeight: Font.Weight = .regular
