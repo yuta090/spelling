@@ -262,6 +262,7 @@ orca,sea,しゃち,Orca,60,orca,#2B2F36,#F2F4F7,#FFFFFF,false,swift;sea;marine;m
 seahorse,sea,たつのおとしご,Seahorse,50,seahorse,#F2A93C,#F7C66B,#C9742A,false,swift;sea;marine;fish
 shrimp,sea,えび,Shrimp,40,shrimp,#F08A6B,#F7C2A8,#C9542E,false,swift;sea;marine;water
 duck,animal,あひる,Duck,40,duck,#F4D24C,#FBE89A,#F2913C,false,swift;animal;bird;water
+bird,animal,とり,Bird,40,bird,#6FB7E8,#DCEEFB,#F2A93C,false,swift;animal;bird;sky
 flamingo,animal,フラミンゴ,Flamingo,60,flamingo,#F299B8,#F7C2D4,#2B2F36,false,swift;animal;bird
 parrot,animal,インコ,Parrot,50,parrot,#3FAE6B,#F2D24C,#E0533B,false,swift;animal;bird;pet
 swan,animal,はくちょう,Swan,50,swan,#F4F4F2,#E3E6EC,#E0833C,false,swift;animal;bird;water

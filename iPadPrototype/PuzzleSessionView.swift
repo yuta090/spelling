@@ -291,11 +291,21 @@ private struct PuzzleStepView: View {
     var body: some View {
         VStack(spacing: 18) {
             PuzzleFormatBadge(title: format.childTitle)
+            // 文の無い形式（単語リスニング）やキャストの出ない文では帯ごと出さない
+            // ＝空のときに余計な縦アキを作らない（VStack の子にしない）。
+            if !castForCurrent.isEmpty {
+                PuzzleCastStrip(cast: castForCurrent)
+            }
             content
             Spacer(minLength: 0)
             if answered { feedback } else { actions }
         }
         .onAppear(perform: setup)
+    }
+
+    /// いまの文に登場する常連キャスト（出現順・最大3体）。文が無い形式（単語リスニング）は空。
+    private var castForCurrent: [PuzzleCast] {
+        sentence.map { PuzzleCastResolver.cast(for: $0.item) } ?? []
     }
 
     // MARK: 形式ごとの出題ボディ
@@ -607,6 +617,53 @@ private extension PuzzleFormat {
         case .wordListening: return "おとを きく"
         case .clozeHandwriting: return "てがき"
         case .composition: return "えいさくぶん"
+        }
+    }
+}
+
+// MARK: - 文に出てくるキャストの絵（最大3体）
+
+/// いまの問題の文に登場する常連キャスト（ねこ/いぬ/とり/うさぎ/かめ/きつね/Sora/Mei）を
+/// 円アバターで並べる。判定は Core（`PuzzleCastResolver`）が出現順・最大3体で済ませてあるので、
+/// ここは「並べて・はみ出さないよう体数に応じてサイズと間隔を調整」するだけ。
+private struct PuzzleCastStrip: View {
+    let cast: [PuzzleCast]
+
+    // 呼び出し側が空のとき非表示にするので、ここは1体以上を前提に並べるだけ。
+    var body: some View {
+        HStack(spacing: spacing) {
+            ForEach(cast, id: \.self) { c in
+                RewardCharacterAvatar(character: HomeRewardCharacter.character(id: Self.catalogID(c)))
+                    .frame(width: size, height: size)
+                    .accessibilityHidden(true)   // 子に評価/専門用語を読み上げない（飾り）
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .transition(.scale.combined(with: .opacity))
+    }
+
+    /// 体数で大きさを変える＝1体は主役級に大きく、3体でも横にはみ出さない。
+    private var size: CGFloat {
+        switch cast.count {
+        case 1: return 96
+        case 2: return 78
+        default: return 64
+        }
+    }
+
+    private var spacing: CGFloat { cast.count >= 3 ? 14 : 22 }
+
+    /// キャスト → なかまカタログID（既存の SwiftUI 描画キャラを再利用）。
+    static func catalogID(_ c: PuzzleCast) -> String {
+        switch c {
+        case .sora: return "kid_sora"
+        case .mei: return "kid_mei"
+        case .cat: return "cat"
+        case .dog: return "dog"
+        case .bird: return "bird"
+        case .rabbit: return "rabbit"
+        case .turtle: return "turtle"
+        case .fox: return "fox"
         }
     }
 }
