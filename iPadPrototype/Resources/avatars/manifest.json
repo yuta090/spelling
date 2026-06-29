@@ -3,13 +3,33 @@
   "canvas": [1024, 1536],
   "zOrder": ["back_hair", "base_body", "bottom", "shoes", "top", "outer", "face", "front_hair", "accessory"],
   "bases": [
-    { "id": "female", "labelJa": "おんなのこ", "file": "base_female.png" }
+    { "id": "female", "labelJa": "おんなのこ", "file": "base_female.png" },
+    { "id": "male", "labelJa": "おとこのこ", "file": "base_male.png" }
   ],
   "parts": [
-    { "id": "hair_short_brown", "slot": "hair", "labelJa": "ショート", "base": "*",
+    { "id": "hair_short_brown", "slot": "hair", "labelJa": "ショート", "base": "female",
       "layers": [ { "file": "hair_short_brown.png", "z": "front_hair" } ] },
-    { "id": "hair_twin_tails", "slot": "hair", "labelJa": "ツインテール", "base": "*",
+    { "id": "hair_twin_tails", "slot": "hair", "labelJa": "ツインテール", "base": "female",
       "layers": [ { "file": "hair_twin_tails.png", "z": "front_hair" } ] },
+    { "id": "hair_bob_black", "slot": "hair", "labelJa": "ボブ", "base": "female",
+      "layers": [ { "file": "hair_bob_black.png", "z": "front_hair" } ] },
+    { "id": "hair_long_brown", "slot": "hair", "labelJa": "ロング", "base": "female",
+      "layers": [ { "file": "hair_long_brown.png", "z": "front_hair" } ] },
+    { "id": "hair_ponytail_orange", "slot": "hair", "labelJa": "ポニーテール", "base": "female",
+      "layers": [ { "file": "hair_ponytail_orange.png", "z": "front_hair" } ] },
+    { "id": "hair_short_blonde", "slot": "hair", "labelJa": "きんぱつショート", "base": "female",
+      "layers": [ { "file": "hair_short_blonde.png", "z": "front_hair" } ] },
+    { "id": "hair_buns_brown", "slot": "hair", "labelJa": "おだんご", "base": "female",
+      "layers": [ { "file": "hair_buns_brown.png", "z": "front_hair" } ] },
+
+    { "id": "hair_m_center_black", "slot": "hair", "labelJa": "センターパート", "base": "male",
+      "layers": [ { "file": "hair_m_center_black.png", "z": "front_hair" } ] },
+    { "id": "hair_m_kmash_brown", "slot": "hair", "labelJa": "マッシュ", "base": "male",
+      "layers": [ { "file": "hair_m_kmash_brown.png", "z": "front_hair" } ] },
+    { "id": "hair_m_twoblock_black", "slot": "hair", "labelJa": "ツーブロック", "base": "male",
+      "layers": [ { "file": "hair_m_twoblock_black.png", "z": "front_hair" } ] },
+    { "id": "hair_m_wolf_brown", "slot": "hair", "labelJa": "ウルフ", "base": "male",
+      "layers": [ { "file": "hair_m_wolf_brown.png", "z": "front_hair" } ] },
 
     { "id": "top_red_tee", "slot": "top", "labelJa": "あかT", "base": "*",
       "layers": [ { "file": "top_red_tee.png", "z": "top" } ] },

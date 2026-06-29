@@ -42,14 +42,30 @@
   },
 
   "base_landmarks": {
-    "_doc": "base_female.png から実測した基準座標(origin top-left, canvas 1024x1536)。パーツ生成・配置・QAの基準にする。2026-06-28 新ベース再生成にあわせて測り直し。",
-    "skull_top_y": 34,
-    "eyes_center_y": 388,
-    "eyebrow_y": 295,
-    "foot_center_x": { "left": 434, "right": 584 },
-    "foot_width_px": 94,
-    "sole_y": 1489,
-    "ankle_top_y": 1350
+    "_doc": "base_female.png(再フレーム後)の基準座標(origin top-left, canvas 1024x1536)。2026-06-29 頭上余白のため _reframe.py で全素材を縮小+下げ(S=0.85, 中心x=509固定, skull 35->170)。頭頂に約170pxの余白=ボリュームある髪が描ける。座標はこの新フレーム基準。",
+    "skull_top_y": 170,
+    "headroom_above_skull_px": 170,
+    "eyes_center_y": 470,
+    "eyebrow_y": 391,
+    "foot_center_x": { "left": 445, "right": 573 },
+    "foot_width_px": 80,
+    "sole_y": 1405,
+    "ankle_top_y": 1288,
+    "_arms_doc": "腕は肩から斜め下外へ開き、手は左右端。袖↔手の整合に使う(再フレーム後)。",
+    "shoulder_y": 629,
+    "shoulder_x": { "left": 408, "right": 612 },
+    "wrist": { "left": [306, 892], "right": [716, 892] },
+    "hand_center": { "left": [272, 935], "right": [750, 935] },
+    "hand_tip_x": { "left": 256, "right": 763 },
+    "hands_y_range": [905, 975],
+    "_lower_doc": "腰/股/太もも。ボトムスの被覆幅と脚口位置に使う(再フレーム後)。",
+    "waist_y": 863,
+    "waist_x": { "left": 408, "right": 612 },
+    "hip_widest_y": 948,
+    "hip_x": { "left": 384, "right": 635 },
+    "crotch_y": 990,
+    "thigh_x_below_crotch": { "left": [385, 510], "right": [510, 634] },
+    "underwear_grey": { "_doc": "base に焼き込まれたグレー肌着。トップス/ボトムスはこれを完全に覆う。", "shorts_hip_x": [384, 635], "shorts_bottom_y": 982, "tank_top_y": 629 }
   },
 
   "hair_rules": {
@@ -63,6 +79,14 @@
     "_doc": "靴パーツの整列ルール。結合1レイヤーでも左右独立に足へスナップする。",
     "align": "靴ペアをマゼンタの隙間でL/R分割→各靴の中心を foot_center_x(L434/R584)へ平行移動、ソールを sole_y(1489)へ。_shoe_align.py 参照。",
     "fit": "靴幅は foot_width(≈94)より少し広く、collarは ankle_top_y(≈1350前後)まで上げて足首の隙間を消す。"
+  },
+
+  "garment_rules": {
+    "_doc": "トップス/ボトムスの必須チェックポイント(2026-06-29 追加)。ユーザー指摘『袖と手の出る位置が合わない』『パンツが細く下着が見える/脚位置が不正』への対策。生成プロンプトに必ず反映し、合成QAで担保する。",
+    "_coord_note": "座標は base_landmarks(再フレーム後)が正典。以下は現フレームの値。",
+    "sleeve_hand_match": "袖は肩(shoulder_y≈629, x408/612)から腕の対角に沿って下ろし、袖口は手首(wrist L[306,892]/R[716,892])付近で止める。手(hand_center L[272,935]/R[750,935])は袖口の先から自然に出る。半袖にするなら袖口は上腕に直角(腕の対角に垂直)で乗せ、前腕〜手は素肌で出す。袖口が腕の外にはみ出す/手と高さがズレる/腕の途中で水平に切れる=NG。",
+    "bottom_covers_underwear": "ボトムスは base のグレー肌着ショーツ(hip_x[384,635], bottom_y≈982)を **左右・下とも完全に隠す**。腰幅は最低でも hip_x をはみ出して覆う(目安 x374〜645, 各側+10px以上)。合成後にグレー肌着が1pxでも覗いたらNG=幅/丈を広げて再生成。",
+    "bottom_leg_openings": "脚口は太もも(thigh_x_below_crotch 左[385,510]/右[510,634])に合わせ、左右の脚がそれぞれの脚口から出る。股(crotch_y≈990)に切れ込み。脚口が太ももとズレる/内股がふさがって股が無い=NG。"
   },
 
   "tech": {
@@ -81,7 +105,8 @@
     "foreground_color_rule": "前景アートは純マゼンタ近傍(#FF00FF から距離 bg_seed_threshold=40 以内)の色を使わない。通常のピンク(#FF69B4等)はOK。#FF00FFは背景専用。",
     "app_layer_export": "アプリ(SwiftUI LayeredAvatarView)へ渡す各レイヤー資産は **フルキャンバス(canvas=1024x1536)の透過PNG**で書き出す(位置はピクセルに焼き込み済み)。manifest.jsonの offset/scale はアプリ側では **中心基準の微調整ナッジ(既定 offset=0 / scale=1.0)** であって bbox由来のtop-left配置ではない。crop_with_offset で作る切り抜き+offsetは python 内部合成用。**アプリ出力としてcropped PNGは使わない**(LayeredAvatarViewが二重シフトするため)。manifest の各 layer は offset/scale を **省略可**(Core の AvatarLayer が decodeIfPresent で 0/0/1 を補う・テスト済)。",
     "ship_residue_gate": "同梱(Resources/avatars/)に出す前に、全PNGを機械スキャンして **マゼンタ/紫の残り=0** を必ず確認する(目視だけに頼らない)。判定: 不透明画素のうち magenta=(R>180&G<90&B>180) を0、purple=(R>110&B>130&G<R-40&G<B-40) を~0(<0.05%)。base body の白背景は『境界連結の near-white(>244)をフラッド除去→1px erode』で透過化(内側の白=目のハイライト等は保持)。2026-06-28 v1 で全7枚クリア。",
-    "base_white_removal": "base は白背景生成→ ndimage.label で境界連結の near-white(全ch>244)だけを背景として alpha=0、MinFilter(3)で1px収縮(白フチ除去)。前景内部の白(目ハイライト/靴/淡色服)は保持される。"
+    "base_white_removal": "base は白背景生成→ ndimage.label で境界連結の near-white(全ch>244)だけを背景として alpha=0、MinFilter(3)で1px収縮(白フチ除去)。前景内部の白(目ハイライト/靴/淡色服)は保持される。",
+    "app_preview": "QAは _app_preview.py を使う。アプリ(LayeredAvatarView)と同じ layers.z_order でフルキャンバス合成し、実機と同じ見た目のPNG(out/preview_*.png)を出力。`python3 _app_preview.py --open` で macOS Preview で開ける。出力=preview_outfits(女/男フル装備)/preview_hair_grid_female/preview_hair_grid_male(全髪×両base)/preview_base_female/male。素材はSHIP(同梱)優先で解決。"
   },
 
   "v1_pilot": {
