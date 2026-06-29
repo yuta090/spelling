@@ -525,6 +525,12 @@ struct TestSettings: Equatable, Codable, Sendable {
     var importAttachJapanese: Bool = true
     /// 日本語訳に漢字（ふりがな付き）を使うか。false ならひらがな・カタカナのみ。
     var importUseKanji: Bool = false
+    /// ことばパズルのプールに「おもしろ問題（ユーモア）」を混ぜるか（初期ON）。
+    /// ContentPolicy.enabledGenres に humor を入れるかを決める（spec §7 親トグル）。
+    var humorEnabled: Bool = true
+    /// 問題を解いている最中のヒント（？ボタン）を出すか（初期ON）。
+    /// ヒントUI（フェーズ③C）が参照する。
+    var hintsEnabled: Bool = true
 
     enum CodingKeys: String, CodingKey {
         case appLanguage
@@ -539,6 +545,8 @@ struct TestSettings: Equatable, Codable, Sendable {
         case lowConfidence
         case importAttachJapanese
         case importUseKanji
+        case humorEnabled
+        case hintsEnabled
     }
 
     init() {}
@@ -557,6 +565,8 @@ struct TestSettings: Equatable, Codable, Sendable {
         lowConfidence = try container.decodeIfPresent(Float.self, forKey: .lowConfidence) ?? 0.35
         importAttachJapanese = try container.decodeIfPresent(Bool.self, forKey: .importAttachJapanese) ?? true
         importUseKanji = try container.decodeIfPresent(Bool.self, forKey: .importUseKanji) ?? false
+        humorEnabled = try container.decodeIfPresent(Bool.self, forKey: .humorEnabled) ?? true
+        hintsEnabled = try container.decodeIfPresent(Bool.self, forKey: .hintsEnabled) ?? true
     }
 }
 

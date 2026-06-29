@@ -266,6 +266,13 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(selectedGrade, key: selectedGradeKey) }
     }
 
+    /// 子の学年＋親トグルから決まる「出題プールの絞り込み制約」（Core・spec §10）。
+    /// ことばパズルのプール組み立て入口で適用する。学年未選択は入門(a)扱いで安全側。
+    var contentPolicy: ContentPolicy {
+        let tier = GradeLevel(rawValue: selectedGrade)?.tier.contentTier ?? .a
+        return ContentPolicy.standard(tier: tier, humorEnabled: settings.humorEnabled)
+    }
+
     /// 例文パーソナライズの登場人物（本人＋友達）。親が親ゲートの奥で登録。
     /// 未成年実名のため **v1 はローカル保存のみ**（Supabase 同期しない・解析に送らない）。
     /// 仕様: docs/personalized-sentences-spec-2026-06-28.md

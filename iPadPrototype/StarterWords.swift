@@ -1,4 +1,5 @@
 import Foundation
+import SpellingSyncCore
 
 /// 学年（小1〜中3）。初回オンボーディングで聞き、レベルに合う初期単語のシードに使う。
 /// ⚠️ 子に「レベル/順位」を見せる意図はない。聞くのは「なんねんせい？」という事実だけで、
@@ -46,6 +47,16 @@ enum GradeLevel: String, CaseIterable, Identifiable, Codable, Sendable {
 /// 初期単語の難易度ティア。
 enum StarterTier {
     case a, b, c, d
+
+    /// 出題制約の段階（Core）へ写像。値は 1:1（StarterTier はアプリ専用なので Core 用に橋渡しする）。
+    var contentTier: ContentTier {
+        switch self {
+        case .a: return .a
+        case .b: return .b
+        case .c: return .c
+        case .d: return .d
+        }
+    }
 }
 
 /// 学年に応じた「初期単語の厳選セット」。
