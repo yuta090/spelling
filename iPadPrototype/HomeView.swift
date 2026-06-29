@@ -2118,6 +2118,66 @@ enum HomeRewardCharacterCategory: String, CaseIterable, Identifiable {
     }
 }
 
+/// 子のショップ用「なかま」ジャンル束。16カテゴリは子には多すぎるので近いものを束ね、
+/// 8ジャンルに圧縮して横スクロールのチップで切り替える。
+/// （子＝やる人：アイコン＋ふりがな・単一選択・1タップ。専門用語やレベルは出さない）
+enum HomeBuddyGroup: String, CaseIterable, Identifiable {
+    case animals
+    case sea
+    case vehicles
+    case food
+    case people
+    case town
+    case space
+    case play
+
+    var id: String { rawValue }
+
+    /// チップ先頭に出す絵文字アイコン（「文字で説明しない」ための見た目記号）。
+    var icon: String {
+        switch self {
+        case .animals: return "🐾"
+        case .sea: return "🐟"
+        case .vehicles: return "🚗"
+        case .food: return "🍰"
+        case .people: return "🙂"
+        case .town: return "🏯"
+        case .space: return "🚀"
+        case .play: return "🎵"
+        }
+    }
+
+    func title(language: AppLanguage) -> String {
+        switch self {
+        case .animals: return language.text(japanese: "どうぶつ", english: "Animals")
+        case .sea: return language.text(japanese: "うみ", english: "Sea")
+        case .vehicles: return language.text(japanese: "のりもの", english: "Vehicles")
+        case .food: return language.text(japanese: "たべもの", english: "Food")
+        case .people: return language.text(japanese: "ひと", english: "People")
+        case .town: return language.text(japanese: "まち・せかい", english: "Places")
+        case .space: return language.text(japanese: "うちゅう・ふしぎ", english: "Space & Fantasy")
+        case .play: return language.text(japanese: "あそび・おと", english: "Play & Music")
+        }
+    }
+}
+
+extension HomeRewardCharacterCategory {
+    /// 子のショップで束ねるジャンル。新カテゴリを足したらここで束ね先を必ず割り当てる
+    /// （switch のため未割り当てはコンパイルエラー → なかまが絞り込みから迷子にならない）。
+    var buddyGroup: HomeBuddyGroup {
+        switch self {
+        case .starter, .animal, .insect, .dinosaur: return .animals
+        case .sea: return .sea
+        case .vehicle: return .vehicles
+        case .food: return .food
+        case .people, .cosme: return .people
+        case .building, .landmark, .japan: return .town
+        case .space, .fantasy: return .space
+        case .sports, .instruments: return .play
+        }
+    }
+}
+
 enum HomeRewardCharacterStyle {
     case bear
     case cat
@@ -5343,6 +5403,8 @@ private struct CharacterPickerSheet: View {
     @State private var tab: RewardPickerTab = .buddy
     // 下にスクロールしてインラインのタブが画面外へ出たら、モーダル上部に固定タブを出す。
     @State private var showStickyTab = false
+    // 子のショップ：なかまをジャンルで絞る（nil = ぜんぶ）。横スクロールのチップで単一選択。
+    @State private var selectedBuddyGroup: HomeBuddyGroup?
 
     private let columns = [
         GridItem(.adaptive(minimum: 96, maximum: 122), spacing: 8)
@@ -5368,6 +5430,55 @@ private struct CharacterPickerSheet: View {
         case .background:
             return language.text(japanese: "コインをつかって、はいけいをかえられます。", english: "Spend coins to change the background.")
         }
+    }
+
+    // カタログに1体以上いるジャンルだけを宣言順で出す（空ジャンルのチップは出さない）。
+    private var availableBuddyGroups: [HomeBuddyGroup] {
+        let present = Set(HomeRewardCharacter.catalog.map { $0.category.buddyGroup })
+        return HomeBuddyGroup.allCases.filter { present.contains($0) }
+    }
+
+    // 選択中ジャンルで絞ったなかま（nil なら全部）。
+    private var filteredCharacters: [HomeRewardCharacter] {
+        guard let group = selectedBuddyGroup else { return HomeRewardCharacter.catalog }
+        return HomeRewardCharacter.catalog.filter { $0.category.buddyGroup == group }
+    }
+
+    // ジャンル切り替えチップ（子＝やる人：アイコン＋ふりがな・単一選択・1タップ＋即フィードバック）。
+    private var buddyCategoryChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                buddyChip(title: language.text(japanese: "ぜんぶ", english: "All"),
+                          icon: "⭐️",
+                          isSelected: selectedBuddyGroup == nil) { selectedBuddyGroup = nil }
+                ForEach(availableBuddyGroups) { group in
+                    buddyChip(title: group.title(language: language),
+                              icon: group.icon,
+                              isSelected: selectedBuddyGroup == group) { selectedBuddyGroup = group }
+                }
+            }
+            .padding(.vertical, 2)
+            .padding(.horizontal, 2)
+        }
+    }
+
+    private func buddyChip(title: String, icon: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                Text(icon)
+                Text(title)
+                    .font(.system(size: 15, weight: .heavy, design: .rounded))
+            }
+            .padding(.horizontal, 14).padding(.vertical, 9)
+            .background(
+                isSelected ? Color(red: 0.10, green: 0.22, blue: 0.42) : Color.white.opacity(0.86),
+                in: Capsule()
+            )
+            .foregroundStyle(isSelected ? Color.white : Color(red: 0.10, green: 0.22, blue: 0.42))
+            .shadow(color: .black.opacity(0.06), radius: 3, x: 0, y: 1)
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
     }
 
     // なかま/はいけい 切り替え。インラインと固定バーの両方で使い回す。
@@ -5425,19 +5536,22 @@ private struct CharacterPickerSheet: View {
 
                             switch tab {
                             case .buddy:
-                                LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-                                    ForEach(HomeRewardCharacter.catalog) { character in
-                                        CharacterPickerCard(
-                                            character: character,
-                                            isSelected: model.selectedCharacterID == character.id,
-                                            isUnlocked: model.unlockedCharacterIDs.contains(character.id),
-                                            coinBalance: model.rewardCoins,
-                                            language: language
-                                        ) {
-                                            if model.unlockedCharacterIDs.contains(character.id) {
-                                                model.selectCharacter(id: character.id)
-                                            } else {
-                                                model.unlockCharacter(id: character.id, cost: character.price)
+                                VStack(alignment: .leading, spacing: 12) {
+                                    buddyCategoryChips
+                                    LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                                        ForEach(filteredCharacters) { character in
+                                            CharacterPickerCard(
+                                                character: character,
+                                                isSelected: model.selectedCharacterID == character.id,
+                                                isUnlocked: model.unlockedCharacterIDs.contains(character.id),
+                                                coinBalance: model.rewardCoins,
+                                                language: language
+                                            ) {
+                                                if model.unlockedCharacterIDs.contains(character.id) {
+                                                    model.selectCharacter(id: character.id)
+                                                } else {
+                                                    model.unlockCharacter(id: character.id, cost: character.price)
+                                                }
                                             }
                                         }
                                     }
