@@ -266,6 +266,13 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(selectedGrade, key: selectedGradeKey) }
     }
 
+    /// 子に見せる和訳で許す「漢字配当学年」(0…6)。1学年前ルール（小1→0＝ひらがな）。
+    /// 学年未選択のときは安全側でひらがな（0）にする。例文・意味ヒントの漢字/かな出し分けに使う。
+    var childMaxKanjiGrade: Int {
+        guard let grade = GradeLevel(rawValue: selectedGrade) else { return 0 }
+        return KanjiLevelGate.maxGrade(forSchoolGrade: grade.schoolGrade)
+    }
+
     /// 例文パーソナライズの登場人物（本人＋友達）。親が親ゲートの奥で登録。
     /// 未成年実名のため **v1 はローカル保存のみ**（Supabase 同期しない・解析に送らない）。
     /// 仕様: docs/personalized-sentences-spec-2026-06-28.md

@@ -31,6 +31,22 @@ enum GradeLevel: String, CaseIterable, Identifiable, Codable, Sendable {
         }
     }
 
+    /// 学年を 1…9 の整数に直す（小1=1…小6=6／中1=7…中3=9）。
+    /// `KanjiLevelGate.maxGrade(forSchoolGrade:)` に渡して和訳で許す漢字配当学年を決める。
+    var schoolGrade: Int {
+        switch self {
+        case .e1: return 1
+        case .e2: return 2
+        case .e3: return 3
+        case .e4: return 4
+        case .e5: return 5
+        case .e6: return 6
+        case .j1: return 7
+        case .j2: return 8
+        case .j3: return 9
+        }
+    }
+
     /// 難易度ティア。日本の学年は英語頻度バンドと 1:1 で対応しないため、
     /// 「無理なく成功できる」ことを優先したゆるいマップにしている（あとで調整可）。
     var tier: StarterTier {
