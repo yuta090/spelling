@@ -150,4 +150,35 @@ final class StepMapLayoutTests: XCTestCase {
         XCTAssertFalse(p.allCleared)      // 0/0 を「全部できた」にしない
         XCTAssertEqual(p.fraction, 0, accuracy: 0.001)
     }
+
+    // MARK: - 縦／横向きのレイアウト調整値
+
+    func testMetricsSelectsByOrientation() {
+        XCTAssertEqual(StepMapLayout.metrics(isLandscape: false), StepMapLayout.portraitMetrics)
+        XCTAssertEqual(StepMapLayout.metrics(isLandscape: true), StepMapLayout.landscapeMetrics)
+    }
+
+    func testLandscapeMetricsAreTighterThanPortrait() {
+        let p = StepMapLayout.portraitMetrics
+        let l = StepMapLayout.landscapeMetrics
+        // 横向きは縦の高さが乏しいので間隔・余白を詰める。
+        XCTAssertLessThan(l.spacing, p.spacing)
+        XCTAssertLessThan(l.groundPad, p.groundPad)
+        XCTAssertLessThan(l.skyPad, p.skyPad)
+        // ジグザグは内側へ寄せる（端で切れないように）。
+        XCTAssertGreaterThan(l.leftFrac, p.leftFrac)
+        XCTAssertLessThan(l.rightFrac, p.rightFrac)
+        // 左右は中央(0.5)を挟んで対称気味・leftFrac < rightFrac は維持。
+        XCTAssertLessThan(l.leftFrac, l.rightFrac)
+    }
+
+    func testLandscapeMetricsReduceContentHeight() {
+        // 同じステップ数なら横向きの方が地図全体が低い（横画面に収まりやすい）。
+        let n = 6
+        let p = StepMapLayout.portraitMetrics
+        let l = StepMapLayout.landscapeMetrics
+        let hP = StepMapLayout.contentHeight(count: n, spacing: p.spacing, groundPad: p.groundPad, skyPad: p.skyPad)
+        let hL = StepMapLayout.contentHeight(count: n, spacing: l.spacing, groundPad: l.groundPad, skyPad: l.skyPad)
+        XCTAssertLessThan(hL, hP)
+    }
 }

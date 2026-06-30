@@ -161,4 +161,37 @@ public enum StepMapLayout {
         pts.append(Point(x: width * 0.5, y: skyPad - 110))
         return pts
     }
+
+    // MARK: - 縦／横向きのレイアウト調整値
+
+    /// マップ描画の調整値（ノード間隔・上下余白・ジグザグの左右割合）。
+    /// 縦向き(portrait)と横向き(landscape)で値を切り替えるための束。
+    public struct Metrics: Equatable, Sendable {
+        public let spacing: Double
+        public let groundPad: Double
+        public let skyPad: Double
+        public let leftFrac: Double
+        public let rightFrac: Double
+        public init(spacing: Double, groundPad: Double, skyPad: Double, leftFrac: Double, rightFrac: Double) {
+            self.spacing = spacing
+            self.groundPad = groundPad
+            self.skyPad = skyPad
+            self.leftFrac = leftFrac
+            self.rightFrac = rightFrac
+        }
+    }
+
+    /// 縦向き（従来値）。1画面に縦の高さがあるので間隔を広く・ジグザグも大きく取る。
+    public static let portraitMetrics = Metrics(
+        spacing: 190, groundPad: 240, skyPad: 320, leftFrac: 0.34, rightFrac: 0.66)
+
+    /// 横向き。縦の高さが乏しいので間隔を詰め、横幅が広いぶんジグザグは内側へ寄せて
+    /// ノードのラベルが画面端で切れないようにする（上下余白も薄く）。
+    public static let landscapeMetrics = Metrics(
+        spacing: 150, groundPad: 170, skyPad: 230, leftFrac: 0.40, rightFrac: 0.60)
+
+    /// 向きに応じた調整値。`isLandscape == true`（横長）で詰めた値を返す。
+    public static func metrics(isLandscape: Bool) -> Metrics {
+        isLandscape ? landscapeMetrics : portraitMetrics
+    }
 }

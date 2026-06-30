@@ -29,35 +29,35 @@ private struct StepMapProp: Identifiable {
     var opacity: Double = 1
 }
 
+// Core の SwiftUI 非依存 RGB を Color へ。
+private extension Color {
+    init(_ rgb: ThemeRGB) { self.init(red: rgb.r, green: rgb.g, blue: rgb.b) }
+}
+
 private struct StepMapTheme {
     let skyStops: [Gradient.Stop]
     let ground: Color
     let path: Color
+    let accent: Color
+    let accentForeground: Color   // accent 上の文字/アイコン色（淡色テーマで白が読めないのを防ぐ）
     let goalEmoji: String
     let props: [StepMapProp]
 
-    // 草原（小1相当の世界）。コース制を入れるときはここを差し替え可能にする。
-    static let meadow = StepMapTheme(
-        skyStops: [
-            .init(color: Color(red: 0.66, green: 0.85, blue: 0.98), location: 0.00),
-            .init(color: Color(red: 0.80, green: 0.92, blue: 1.00), location: 0.40),
-            .init(color: Color(red: 0.86, green: 0.96, blue: 0.84), location: 0.80),
-            .init(color: Color(red: 0.74, green: 0.90, blue: 0.66), location: 1.00),
-        ],
-        ground: Color(red: 0.62, green: 0.85, blue: 0.58),
-        path: .white,
-        goalEmoji: "🎈",
-        props: [
-            StepMapProp(emoji: "☁️", xFrac: 0.78, yFrac: 0.10, size: 60, opacity: 0.95),
-            StepMapProp(emoji: "🌈", xFrac: 0.30, yFrac: 0.08, size: 56),
-            StepMapProp(emoji: "🦋", xFrac: 0.42, yFrac: 0.22, size: 30),
-            StepMapProp(emoji: "☁️", xFrac: 0.20, yFrac: 0.30, size: 52, opacity: 0.9),
-            StepMapProp(emoji: "🐝", xFrac: 0.72, yFrac: 0.40, size: 26),
-            StepMapProp(emoji: "🐤", xFrac: 0.30, yFrac: 0.55, size: 30),
-            StepMapProp(emoji: "🌳", xFrac: 0.84, yFrac: 0.72, size: 46),
-            StepMapProp(emoji: "🌻", xFrac: 0.16, yFrac: 0.80, size: 34),
-            StepMapProp(emoji: "🌷", xFrac: 0.78, yFrac: 0.90, size: 30),
-        ])
+    // Core `WorldTheme`（コースID で引いたテーマ）→ 描画用に変換する。
+    // 配色・飾り・ゴール・アクセントを丸ごとコースの世界観に差し替える。
+    init(_ w: WorldTheme) {
+        skyStops = w.skyStops.map { .init(color: Color($0.color), location: $0.location) }
+        ground = Color(w.ground)
+        path = Color(w.path)
+        accent = Color(w.accent)
+        accentForeground = Color(w.accentForeground)
+        goalEmoji = w.goalEmoji
+        props = w.props.map {
+            StepMapProp(emoji: $0.emoji,
+                        xFrac: CGFloat($0.xFrac), yFrac: CGFloat($0.yFrac),
+                        size: CGFloat($0.size), opacity: $0.opacity)
+        }
+    }
 }
 
 // MARK: - マップ本体
@@ -68,10 +68,12 @@ struct StepMapView: View {
     let selectedStepID: String
     let language: AppLanguage
     let character: HomeRewardCharacter   // 「いまここ」足元に立つ＝子が今選んでいるなかま
+    let courseID: String                 // アクティブコースID（"grade-3"/"eiken-g5"/"personal" …）でテーマを引く
     let onSelect: (String) -> Void
 
-    private let theme = StepMapTheme.meadow
-    private let accent = Color(red: 0.16, green: 0.42, blue: 0.84)
+    // コースID由来のテーマ（未知IDは Core 側で既定＝草原にフォールバック）。
+    private var theme: StepMapTheme { StepMapTheme(WorldTheme.theme(forCourseID: courseID)) }
+    private var accent: Color { theme.accent }
 
     @State private var pulse = false
     // タップ後すぐ閉じず、選んだステップへ「ついた」演出を見せてから閉じる。
@@ -81,11 +83,6 @@ struct StepMapView: View {
     // 演出途中で「とじる」やスワイプで閉じられたら、遅延中の確定/きらっとを取り消す（取り残し防止）。
     @State private var popWork: DispatchWorkItem?
     @State private var commitWork: DispatchWorkItem?
-
-    // レイアウト定数（縦向き想定。横向き最適化は別タスク）。
-    private let spacing: Double = 190
-    private let groundPad: Double = 240
-    private let skyPad: Double = 320
 
     private var orderedIDs: [String] { steps.map(\.id) }
 
@@ -108,12 +105,14 @@ struct StepMapView: View {
         GeometryReader { geo in
             let w = Double(geo.size.width)
             let n = steps.count
+            // 横向き（横長）ではノード間隔・上下余白を詰め、ジグザグを内側へ寄せる（Core が値を持つ）。
+            let m = StepMapLayout.metrics(isLandscape: geo.size.width > geo.size.height)
             // ステップが少なくても空がシートを満たすよう、最低でもビューポート高さは確保する。
             // 座標は下（地面）基準なので、高さを足したぶんは上（空）が広がるだけでノード位置は崩れない。
-            let layoutH = StepMapLayout.contentHeight(count: n, spacing: spacing, groundPad: groundPad, skyPad: skyPad)
+            let layoutH = StepMapLayout.contentHeight(count: n, spacing: m.spacing, groundPad: m.groundPad, skyPad: m.skyPad)
             let contentH = max(layoutH, Double(geo.size.height))
-            let nodePoints = StepMapLayout.nodePoints(count: n, width: w, contentHeight: contentH, spacing: spacing, groundPad: groundPad)
-            let pathPts = StepMapLayout.pathPoints(nodePoints: nodePoints, width: w, contentHeight: contentH, skyPad: skyPad)
+            let nodePoints = StepMapLayout.nodePoints(count: n, width: w, contentHeight: contentH, spacing: m.spacing, groundPad: m.groundPad, leftFrac: m.leftFrac, rightFrac: m.rightFrac)
+            let pathPts = StepMapLayout.pathPoints(nodePoints: nodePoints, width: w, contentHeight: contentH, skyPad: m.skyPad, leftFrac: m.leftFrac)
 
             ScrollViewReader { proxy in
                 ScrollView(showsIndicators: false) {
@@ -122,7 +121,7 @@ struct StepMapView: View {
                             .frame(width: CGFloat(w), height: CGFloat(contentH))
 
                         // 地面は背景レイヤー（ノードより先に描く＝ノードのラベルを覆わない）。
-                        ground(width: w, contentHeight: contentH)
+                        ground(width: w, contentHeight: contentH, leftFrac: m.leftFrac)
 
                         decorations(width: w, height: contentH)
 
@@ -137,7 +136,7 @@ struct StepMapView: View {
                                 .font(.system(size: 15, weight: .heavy, design: .rounded))
                                 .foregroundStyle(.white).stepMapLegible()
                         }
-                        .position(x: CGFloat(w) * 0.5, y: CGFloat(skyPad) - 140)
+                        .position(x: CGFloat(w) * 0.5, y: CGFloat(m.skyPad) - 140)
 
                         // ノード
                         ForEach(Array(steps.enumerated()), id: \.element.id) { idx, step in
@@ -151,6 +150,7 @@ struct StepMapView: View {
                                     count: step.words.count,
                                     state: nodeStates[idx],
                                     accent: accent,
+                                    accentForeground: theme.accentForeground,
                                     pulse: pulse,
                                     language: language
                                 )
@@ -232,8 +232,10 @@ struct StepMapView: View {
     private func cgPoint(_ p: StepMapLayout.Point) -> CGPoint { CGPoint(x: p.x, y: p.y) }
 
     private func decorations(width w: Double, height: Double) -> some View {
+        // theme は計算プロパティで毎回作り直すため StepMapProp.id(UUID) は安定しない。
+        // 配置スロットは固定なので enumerated の index を安定IDにして無駄な再生成/ちらつきを防ぐ。
         ZStack {
-            ForEach(theme.props) { prop in
+            ForEach(Array(theme.props.enumerated()), id: \.offset) { _, prop in
                 Text(prop.emoji)
                     .font(.system(size: prop.size))
                     .opacity(prop.opacity)
@@ -243,15 +245,16 @@ struct StepMapView: View {
         .allowsHitTesting(false)
     }
 
-    private func ground(width w: Double, contentHeight: Double) -> some View {
+    private func ground(width w: Double, contentHeight: Double, leftFrac: Double) -> some View {
         ZStack {
             Ellipse().fill(theme.ground)
                 .frame(width: CGFloat(w) * 1.4, height: 300)
                 .position(x: CGFloat(w) * 0.5, y: CGFloat(contentHeight) - 20)
+            // 「スタート」は一番下のノード（index 0 = leftFrac）と道のアンカーに合わせて置く。
             Text(language.text(japanese: "スタート", english: "Start"))
                 .font(.system(size: 15, weight: .heavy, design: .rounded))
                 .foregroundStyle(StepMapPalette.navy.opacity(0.75))
-                .position(x: CGFloat(w) * 0.34, y: CGFloat(contentHeight) - 28)
+                .position(x: CGFloat(w) * CGFloat(leftFrac), y: CGFloat(contentHeight) - 28)
         }
         .allowsHitTesting(false)
     }
@@ -264,6 +267,7 @@ private struct StepNodeView: View {
     let count: Int
     let state: StepMapLayout.NodeState
     let accent: Color
+    let accentForeground: Color
     let pulse: Bool
     let language: AppLanguage
 
@@ -297,14 +301,14 @@ private struct StepNodeView: View {
             ZStack {
                 Circle().fill(.white).frame(width: 118, height: 118).shadow(color: accent.opacity(0.45), radius: 18, y: 8)
                 Circle().fill(accent).frame(width: 102, height: 102)
-                Image(systemName: "star.fill").font(.system(size: 46, weight: .black)).foregroundStyle(.white)
+                Image(systemName: "star.fill").font(.system(size: 46, weight: .black)).foregroundStyle(accentForeground)
                 Circle().stroke(accent.opacity(0.5), lineWidth: 5).frame(width: 132, height: 132)
                     .scaleEffect(pulse ? 1.12 : 0.96).opacity(pulse ? 0.2 : 0.7)
                 Text("✨").font(.system(size: 26)).offset(x: 48, y: -46)
             }
             VStack(spacing: 3) {
                 Text(language.text(japanese: "いまここ", english: "You're here"))
-                    .font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(.white)
+                    .font(.system(size: 15, weight: .heavy, design: .rounded)).foregroundStyle(accentForeground)
                     .padding(.vertical, 4).padding(.horizontal, 12).background(accent, in: Capsule())
                 Text(title).font(.system(size: 24, weight: .heavy, design: .rounded)).foregroundStyle(.white).stepMapLegible()
                 countPill
