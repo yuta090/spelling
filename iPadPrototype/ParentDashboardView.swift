@@ -6663,8 +6663,8 @@ private struct CourseSettingsControls: View {
             .fixedSize(horizontal: false, vertical: true)
 
             allowedCourseGroup(
-                title: language.text(japanese: "うちのれんしゅう", english: "Personal"),
-                courses: [CourseDirectory.personal]
+                title: language.text(japanese: "きほん", english: "Basics"),
+                courses: [CourseDirectory.personal, CourseDirectory.dolch]
             )
             allowedCourseGroup(
                 title: language.text(japanese: "学年", english: "Grade"),
