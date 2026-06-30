@@ -14,6 +14,10 @@ struct HomeView: View {
     @State private var showingResults = false
     @State private var showingWordPreview = false
     @State private var showingPuzzle = false
+    /// 満点クリアした瞬間の「あたらしいクイズがでた！」アンロック演出を出しているか（単語セットごとに1回）。
+    @State private var showingUnlockCelebration = false
+    /// アンロック演出の「あそぶ」が押されたか。演出 cover が閉じてからパズルを開くための保留フラグ。
+    @State private var pendingPuzzleAfterUnlock = false
     /// パズルを開いた瞬間の「この回に完了できる回数」。提示中は model 追従で揺れないよう固定する
     /// （完了→model更新でcoverが再評価されても、この回の許可数は開いた時点のまま保つ）。
     @State private var puzzleAllowanceSnapshot = 0
@@ -140,6 +144,8 @@ struct HomeView: View {
                             canPractice: !selectedPracticeWords.isEmpty,
                             canTest: !model.nextTestWords.isEmpty,
                             canSwitchSteps: model.wordSteps.count > 1,
+                            // 満点クリア済みなら、このステップは自由（パズル）に自動切替＝パズルが主役。
+                            isStepCleared: model.selectedStepFocus == .freePlayUnlocked,
                             hasFinishedPracticeRound: hasFinishedCurrentPracticeRound,
                             hasPracticeResume: activePracticeResumeState != nil,
                             remainingPracticeCount: activePracticeRemainingCount,
@@ -254,6 +260,24 @@ struct HomeView: View {
                     onCompleted: { model.recordPuzzleCompletion() }
                 )
             }
+            // 満点クリアした瞬間の「あたらしいクイズがでた！」アンロック演出（単語セットごとに1回だけ）。
+            // 「あそぶ」は演出 cover が完全に閉じてから（onDismiss）パズルを開く＝cover 二重提示を避ける。
+            .fullScreenCover(isPresented: $showingUnlockCelebration, onDismiss: {
+                if pendingPuzzleAfterUnlock {
+                    pendingPuzzleAfterUnlock = false
+                    tryOpenPuzzle()
+                }
+            }) {
+                StepUnlockCelebrationView(
+                    character: selectedCharacter,
+                    language: language,
+                    onPlay: {
+                        pendingPuzzleAfterUnlock = true
+                        showingUnlockCelebration = false
+                    },
+                    onLater: { showingUnlockCelebration = false }
+                )
+            }
             // 無料プランで今日のことばパズルを遊びきった時の、やさしい「またあした」案内。
             .sheet(isPresented: $showingPuzzleLimit) {
                 PuzzleDailyLimitSheet(language: language)
@@ -280,6 +304,15 @@ struct HomeView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
         }
+        // テスト等から戻って満点クリアが成立した瞬間に、アンロック演出を1回だけ出す。
+        .onChange(of: model.shouldCelebrateSelectedStepUnlock) { shouldCelebrate in
+            if shouldCelebrate { triggerUnlockCelebrationIfNeeded() }
+        }
+        // セッションや各シート/カバーが閉じてホームがアイドルに戻った瞬間に、保留中の演出を出す
+        // （activeMode だけでなく全提示の解除を1つの監視で拾う）。
+        .onChange(of: canPresentUnlockCelebration) { canPresent in
+            if canPresent { triggerUnlockCelebrationIfNeeded() }
+        }
         .onAppear {
             schedulePracticeSelectionSync()
             // キャラヒントは初回起動の1回だけ。次回からは出さない（毎回起動では出さない）。
@@ -287,6 +320,8 @@ struct HomeView: View {
                 showCharHint = true
                 model.hasShownHomeCharacterHint = true
             }
+            // 既にクリア済みで未演出（前セッションで満点になった等）ならここでも1回出す。
+            triggerUnlockCelebrationIfNeeded()
             // 連続ログイン報酬（本日初回のみ）。UIテストではオーバーレイのノイズを避けて出さない。
             if !didCheckLogin && !UITestSupport.isActive {
                 didCheckLogin = true
@@ -331,6 +366,36 @@ struct HomeView: View {
         } else {
             showingPuzzleLimit = true
         }
+    }
+
+    /// アンロック演出を出してよいのは、ホームが前面でアイドル（セッションも全シート/カバーも閉）な時だけ。
+    /// テスト/練習セッション中（activeMode != nil）や他の提示中には割り込まない
+    /// （満点はテスト中に成立しうるので、その場では出さずアイドルに戻ってから出す）。
+    /// ここに全提示フラグを並べるのは、提示中に演出を出して cover 提示が無視され一度きりを消費するのを防ぐため。
+    private var canPresentUnlockCelebration: Bool {
+        activeMode == nil
+            && !showingUnlockCelebration
+            && !showingPuzzle
+            && !showingPuzzleLimit
+            && !showingParent
+            && !showingParentGate
+            && !showingResults
+            && !showingWordPreview
+            && !showingCharacterPicker
+            && !showingStepPicker
+            && !showingPracticeRetryPicker
+    }
+
+    /// 満点クリア済みかつ未演出で、ホームがアイドルなら、アンロック演出を1回だけ出す。
+    /// 出せない時は記録せず保留＝条件が整ってから（activeMode が nil に戻る等）改めて出す。
+    /// 演出済みを先に記録してから提示し、再評価で二重に出ないようにする。
+    /// UIテストではオーバーレイのノイズを避けて出さない。
+    private func triggerUnlockCelebrationIfNeeded() {
+        guard !UITestSupport.isActive else { return }
+        guard canPresentUnlockCelebration else { return }
+        guard model.shouldCelebrateSelectedStepUnlock else { return }
+        model.markSelectedStepUnlockCelebrated()
+        showingUnlockCelebration = true
     }
 
     private func startPractice() {
@@ -548,6 +613,8 @@ private struct ChildMissionPanel: View {
     var canPractice: Bool
     var canTest: Bool
     var canSwitchSteps: Bool
+    /// このステップを満点クリア済みか。true なら主役をことばパズル（自由）に切り替える。
+    var isStepCleared: Bool = false
     var hasFinishedPracticeRound: Bool
     var hasPracticeResume: Bool
     var remainingPracticeCount: Int?
@@ -565,6 +632,10 @@ private struct ChildMissionPanel: View {
     @State private var hintPulse = false
 
     private var missionText: String {
+        // 満点クリア済み＝このステップは「クリア！」表示。あそびに誘う（やらされ感を出さない）。
+        if isStepCleared {
+            return language.text(japanese: "クリア！ あそぼう", english: "Cleared! Let's play")
+        }
         if hasFinishedPracticeRound {
             return isReviewPractice
                 ? language.text(japanese: "もういちど ふくしゅう", english: "Review again")
@@ -595,7 +666,16 @@ private struct ChildMissionPanel: View {
         return Double(progress.clearedCount) / Double(progress.totalWords)
     }
 
+    /// 満点クリア済みステップで主役にする「ことばパズル」ボタンの色（小ボタンと同じオレンジ）。
+    private var puzzlePrimaryTint: Color {
+        Color(red: 0.96, green: 0.62, blue: 0.10)
+    }
+
     private var primaryButtonTitle: String {
+        // 満点クリア後は主役をパズル（自由）へ。練習は小ボタン「れんしゅう」に降りる。
+        if isStepCleared {
+            return language.text(japanese: "あたらしいクイズ！", english: "New Quiz!")
+        }
         if hasFinishedPracticeRound {
             return isReviewPractice
                 ? language.text(japanese: "えらんで ふくしゅう", english: "Choose Review")
@@ -612,6 +692,9 @@ private struct ChildMissionPanel: View {
     }
 
     private var primaryButtonIcon: String {
+        if isStepCleared {
+            return "sparkles"
+        }
         if hasFinishedPracticeRound {
             return "arrow.clockwise"
         }
@@ -619,7 +702,9 @@ private struct ChildMissionPanel: View {
     }
 
     private var isPrimaryButtonDisabled: Bool {
-        !canPractice
+        // パズルはいつでも遊べる（クリア条件にしない）ので、クリア後の主役パズルは常に有効。
+        if isStepCleared { return false }
+        return !canPractice
     }
 
     private var testButtonTitle: String {
@@ -627,7 +712,7 @@ private struct ChildMissionPanel: View {
     }
 
     private var primaryButtonTint: Color {
-        Color(red: 0.16, green: 0.42, blue: 0.84)
+        isStepCleared ? puzzlePrimaryTint : Color(red: 0.16, green: 0.42, blue: 0.84)
     }
 
     var body: some View {
@@ -707,7 +792,8 @@ private struct ChildMissionPanel: View {
                     english: "Today \(progress.clearedCount) of \(progress.totalWords)"
                 ))
 
-            Button(action: startPractice) {
+            // クリア後は主役＝パズル（showPuzzle）、未クリアは主役＝練習（startPractice）。
+            Button(action: isStepCleared ? showPuzzle : startPractice) {
                 Label(
                     primaryButtonTitle,
                     systemImage: primaryButtonIcon
@@ -740,13 +826,25 @@ private struct ChildMissionPanel: View {
                     action: startTest
                 )
 
-                MissionSmallButton(
-                    title: language.text(japanese: "ことばパズル", english: "Puzzle"),
-                    systemImage: "puzzlepiece.fill",
-                    tint: Color(red: 0.96, green: 0.62, blue: 0.10),
-                    disabled: false,
-                    action: showPuzzle
-                )
+                // クリア後は主役がパズルに移るので、この枠は「もういちど れんしゅう」に入れ替える
+                // （練習はいつでも戻れる＝ロックしない）。未クリアは従来どおり「ことばパズル」。
+                if isStepCleared {
+                    MissionSmallButton(
+                        title: language.text(japanese: "れんしゅう", english: "Practice"),
+                        systemImage: "pencil",
+                        tint: Color(red: 0.16, green: 0.42, blue: 0.84),
+                        disabled: !canPractice,
+                        action: startPractice
+                    )
+                } else {
+                    MissionSmallButton(
+                        title: language.text(japanese: "ことばパズル", english: "Puzzle"),
+                        systemImage: "puzzlepiece.fill",
+                        tint: Color(red: 0.96, green: 0.62, blue: 0.10),
+                        disabled: false,
+                        action: showPuzzle
+                    )
+                }
             }
         }
         .padding(24)
@@ -847,6 +945,81 @@ private struct PuzzleDailyLimitSheet: View {
         .padding(.horizontal, 32)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .presentationDetents([.medium])
+    }
+}
+
+/// 満点クリアの瞬間に出す「あたらしいクイズがでた！」アンロック演出。
+/// 子に評価/専門用語を見せず、解放されて嬉しい体験にする。あそんでもよし、やめてもよし（クリア条件ではない）。
+private struct StepUnlockCelebrationView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    var character: HomeRewardCharacter
+    var language: AppLanguage
+    var onPlay: () -> Void
+    var onLater: () -> Void
+
+    @State private var pop = false
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(red: 1.0, green: 0.97, blue: 0.86), Color(red: 1.0, green: 0.90, blue: 0.74)],
+                startPoint: .top, endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 18) {
+                Spacer(minLength: 0)
+
+                Text("✨")
+                    .font(.system(size: 64))
+                    .scaleEffect(pop ? 1.0 : 0.6)
+                    .opacity(pop ? 1 : 0)
+
+                RewardCharacterAvatar(character: character)
+                    .frame(width: 132, height: 132)
+                    .scaleEffect(pop ? 1.0 : 0.8)
+
+                Text(language.text(japanese: "クリア！", english: "Cleared!"))
+                    .font(.system(size: 40, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.96, green: 0.55, blue: 0.06))
+
+                Text(language.text(japanese: "あたらしいクイズが でたよ！",
+                                   english: "A new quiz appeared!"))
+                    .font(.system(size: 26, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Color(red: 0.20, green: 0.30, blue: 0.50))
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer(minLength: 0)
+
+                Button(action: onPlay) {
+                    Label(language.text(japanese: "あそぶ", english: "Play"), systemImage: "puzzlepiece.fill")
+                        .font(.system(size: 26, weight: .heavy, design: .rounded))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: 320)
+                        .padding(.vertical, 16)
+                        .background(Color(red: 0.96, green: 0.62, blue: 0.10), in: RoundedRectangle(cornerRadius: 20))
+                }
+                .buttonStyle(.plain)
+                .tapFeedback(scale: 0.92, bounce: true)
+
+                Button(action: onLater) {
+                    Text(language.text(japanese: "あとで", english: "Later"))
+                        .font(.system(size: 19, weight: .bold, design: .rounded))
+                        .foregroundStyle(.secondary)
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: 320)
+                }
+                .buttonStyle(.plain)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 32)
+        }
+        .onAppear {
+            guard !reduceMotion else { pop = true; return }
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) { pop = true }
+        }
     }
 }
 

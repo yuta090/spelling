@@ -292,6 +292,12 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(hasShownHomeCharacterHint, key: hasShownHomeCharacterHintKey) }
     }
 
+    /// 満点クリア後の「あたらしいクイズがでた！」アンロック演出を、各ステップ（単語セット署名）ごとに
+    /// 1回だけ出すための記録。クリア判定そのものではない（クリア＝満点ゲートが唯一の基準）。
+    @Published var stepUnlockCelebration: StepUnlockCelebration {
+        didSet { persistenceStore.save(stepUnlockCelebration, key: stepUnlockCelebrationKey) }
+    }
+
     /// 子どものニックネーム（任意）。ホームの呼びかけや将来のプロファイル表示名に使う。
     @Published var childName: String {
         didSet { persistenceStore.save(childName, key: childNameKey) }
@@ -364,6 +370,7 @@ final class AppModel: ObservableObject {
     private let spellingReviewSeededKey = "spellingTrainer.spellingReviewSeeded"
     private let hasCompletedOnboardingKey = "spellingTrainer.hasCompletedOnboarding"
     private let hasShownHomeCharacterHintKey = "spellingTrainer.hasShownHomeCharacterHint"
+    private let stepUnlockCelebrationKey = "spellingTrainer.stepUnlockCelebration"
     private let childNameKey = "spellingTrainer.childName"
     private let selectedGradeKey = "spellingTrainer.selectedGrade"
     private let castKey = "spellingTrainer.cast"
@@ -421,6 +428,7 @@ final class AppModel: ObservableObject {
         spellingReviewSeeded = persistenceStore.load(Bool.self, key: spellingReviewSeededKey) ?? false
         hasCompletedOnboarding = persistenceStore.load(Bool.self, key: hasCompletedOnboardingKey) ?? false
         hasShownHomeCharacterHint = persistenceStore.load(Bool.self, key: hasShownHomeCharacterHintKey) ?? false
+        stepUnlockCelebration = persistenceStore.load(StepUnlockCelebration.self, key: stepUnlockCelebrationKey) ?? StepUnlockCelebration()
         childName = persistenceStore.load(String.self, key: childNameKey) ?? ""
         selectedGrade = persistenceStore.load(String.self, key: selectedGradeKey) ?? ""
         cast = persistenceStore.load(Cast.self, key: castKey) ?? Cast()
@@ -837,6 +845,42 @@ final class AppModel: ObservableObject {
     /// 過去ぶんも含めて判定するので、いちど満点にすれば次の追加が解放される。
     func childStepIsMastered(_ step: WordStep) -> Bool {
         hasPerfectRun(for: step.words, in: attempts)
+    }
+
+    // MARK: - 必須→満点→パズル(自由)の自動フロー（docs/age-tiered-generation-spec-2026-06-29.md §2）
+
+    /// いま選んでいるステップを満点でクリア済みか（親/子どちらのステップでも判定）。
+    /// 単語を足す/入れ替えると新セットの満点は無いので自動で未クリアに戻る（再ロック）。
+    var selectedStepIsMastered: Bool {
+        guard let step = selectedWordStep else { return false }
+        return hasPerfectRun(for: step.words, in: attempts)
+    }
+
+    /// いま選んでいるステップの焦点（必須をやる段階 / 満点後の自由＝パズル解放）。
+    var selectedStepFocus: StepFocus {
+        StepFocusResolver.focus(isMastered: selectedStepIsMastered)
+    }
+
+    /// いま選んでいるステップの (stepID, 単語構成) 署名。アンロック演出を単語セット単位で1回だけにするキー。
+    /// 単語の安定IDは現状 `SpellingWord.id`（永続化される UUID）を使う。
+    var selectedStepSignature: StepSignature? {
+        guard let step = selectedWordStep else { return nil }
+        return RequiredCompletionSignature.make(stepID: step.id,
+                                                wordStableIDs: step.words.map { $0.id.uuidString })
+    }
+
+    /// いま「あたらしいクイズがでた！」のアンロック演出を出すべきか（満点になった瞬間に1回だけ）。
+    var shouldCelebrateSelectedStepUnlock: Bool {
+        guard let signature = selectedStepSignature else { return false }
+        return StepFocusResolver.shouldCelebrateUnlock(signature: signature,
+                                                       isMastered: selectedStepIsMastered,
+                                                       celebration: stepUnlockCelebration)
+    }
+
+    /// いま選んでいるステップのアンロック演出を「出した」と記録する（以後その単語セットでは出さない）。
+    func markSelectedStepUnlockCelebrated() {
+        guard let signature = selectedStepSignature else { return }
+        stepUnlockCelebration.markCelebrated(signature)
     }
 
     // MARK: - words 同期（サイドカー方式 / SpellingSyncCore）
