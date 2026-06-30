@@ -49,9 +49,15 @@ struct HomeView: View {
     }
 
     private var selectedPracticeWords: [SpellingWord] {
-        let selected = model.activeWords.filter { selectedPracticeWordIDs.contains($0.id) }
-        // 1日の新規導入上限は「既定（アクティブ全語）選択」のときだけ適用する。
-        // 復習・フォーカス・リトライの明示選択は対象外（等価判定では誤爆するためソースをフラグで持つ）。
+        var selected = model.activeWords.filter { selectedPracticeWordIDs.contains($0.id) }
+        // 既定（アクティブ全語）選択のときだけ、マスター済み語を練習ドリルから外す。
+        // ＝既習語の再ドリルで飽きさせない。テスト/仕上げには出る／テストでミスしたら既存SRSで練習に復帰。
+        // 明示選択（復習・フォーカス・リトライ）は親/子の意思なので抑制しない。
+        if isDefaultPracticeSelection {
+            let suppressed = model.practiceSuppressedTexts
+            selected = selected.filter { !suppressed.contains(normalize($0.text)) }
+        }
+        // 1日の新規導入上限も既定選択のときだけ適用する。
         return model.dailyCappedPracticeWords(selected, isFullActiveSelection: isDefaultPracticeSelection)
     }
 
@@ -1033,10 +1039,12 @@ private struct ChildStepPickerSheet: View {
         model.wordSteps
     }
 
-    // 今日ぶんを終えたステップ＝マップ上で「できた（緑チェック）」になる。
-    private var completedToday: Set<String> {
-        Set(orderedSteps.filter { model.todayProgress(for: $0).isComplete }.map(\.id))
+    // 「できた（緑チェック）」＝満点を一度取ったら固定の永続完了（日付をまたいでも残る）。
+    private var completedStepIDs: Set<String> {
+        model.completedStepIDs
     }
+
+    private var activeCourse: Course { model.activeCourse }
 
     var body: some View {
         NavigationStack {
@@ -1052,7 +1060,7 @@ private struct ChildStepPickerSheet: View {
                 } else {
                     StepMapView(
                         steps: orderedSteps,
-                        completedStepIDs: completedToday,
+                        completedStepIDs: completedStepIDs,
                         selectedStepID: model.selectedWordStepID,
                         language: language,
                         character: HomeRewardCharacter.character(id: model.selectedCharacterID)
@@ -1075,6 +1083,51 @@ private struct ChildStepPickerSheet: View {
                     .font(.headline.weight(.bold))
                     .tapFeedback()
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    courseMenu
+                }
+            }
+        }
+    }
+
+    /// コースチップ（右上）。学年／英検の2軸＋うちのれんしゅう。子には級/学年ラベルを出さず emoji＋やさしい名前。
+    private var courseMenu: some View {
+        Menu {
+            Section(language.text(japanese: "がくねん", english: "Grade")) {
+                ForEach(CourseDirectory.grades) { course in
+                    courseButton(course)
+                }
+            }
+            Section(language.text(japanese: "えいけん", english: "Eiken")) {
+                ForEach(CourseDirectory.eiken) { course in
+                    courseButton(course)
+                }
+            }
+            Section {
+                courseButton(CourseDirectory.personal)
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text(activeCourse.emoji)
+                Text(activeCourse.childTitle)
+                    .font(.subheadline.weight(.bold))
+                Image(systemName: "chevron.down")
+                    .font(.caption2.weight(.bold))
+            }
+            .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+        }
+        .tapFeedback()
+    }
+
+    @ViewBuilder
+    private func courseButton(_ course: Course) -> some View {
+        Button {
+            model.selectCourse(course.id)
+        } label: {
+            if model.selectedCourseID == course.id {
+                Label("\(course.emoji) \(course.childTitle)", systemImage: "checkmark")
+            } else {
+                Text("\(course.emoji) \(course.childTitle)")
             }
         }
     }

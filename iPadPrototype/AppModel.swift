@@ -108,6 +108,30 @@ final class WordBank: @unchecked Sendable {
         }
         return output
     }
+
+    /// コース生成用：訳ありの leveled 語を**全件**頻度順で返す（rank での範囲スライスは Core `CourseCatalog` 側）。
+    /// 決定論のため NULL rank は除外し `(ngsl_rank, word)` で並べる。
+    func rankedLeveledRows() -> [LeveledRow] {
+        guard let db else { return [] }
+        let sql = """
+        SELECT l.word, g.ja, l.ngsl_rank FROM level l \
+        JOIN gloss g ON g.word = l.word \
+        WHERE l.ngsl_rank IS NOT NULL ORDER BY l.ngsl_rank, l.word
+        """
+        var stmt: OpaquePointer?
+        defer { sqlite3_finalize(stmt) }
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { return [] }
+        var output: [LeveledRow] = []
+        while sqlite3_step(stmt) == SQLITE_ROW {
+            let word = sqlite3_column_text(stmt, 0).map { String(cString: $0) } ?? ""
+            let ja = sqlite3_column_text(stmt, 1).map { String(cString: $0) } ?? ""
+            let rank = Int(sqlite3_column_int(stmt, 2))
+            if !word.isEmpty, !ja.isEmpty {
+                output.append(LeveledRow(word: word, gloss: ja, ngslRank: rank))
+            }
+        }
+        return output
+    }
 }
 
 @MainActor
@@ -137,8 +161,34 @@ final class AppModel: ObservableObject {
         didSet { saveSettings() }
     }
 
-    @Published var selectedWordStepID: String {
-        didSet { saveSelectedWordStepID() }
+    /// 選択中のコース（personal / grade-N / eiken-xx）。学年×英検の2軸＋自分のトラック。
+    @Published var selectedCourseID: String {
+        didSet { persistenceStore.save(selectedCourseID, key: selectedCourseIDKey) }
+    }
+
+    /// コースごとに「選択中ステップ」を別々に覚える（コース切替で地図とステップが入れ替わる）。
+    @Published private var selectedStepIDByCourse: [String: String] {
+        didSet { persistenceStore.save(selectedStepIDByCourse, key: selectedStepIDByCourseKey) }
+    }
+
+    /// アクティブコースに対する選択ステップID（既存呼出は無改修・computed で dict に橋渡し）。
+    /// 見つからない場合の最終フォールバックは `selectedWordStep`（wordSteps.last）が担う。
+    var selectedWordStepID: String {
+        get { selectedStepIDByCourse[selectedCourseID] ?? "" }
+        set { selectedStepIDByCourse[selectedCourseID] = newValue }
+    }
+
+    /// 利用可能コースから現在のコースを解決（不明は personal）。
+    var activeCourse: Course {
+        CourseDirectory.course(id: selectedCourseID) ?? CourseDirectory.personal
+    }
+
+    /// 仮想コース（学年/英検）のステップ供給（wordbank から合成・読み取り専用・キャッシュ）。
+    private let courseProvider = CourseProvider()
+
+    /// 永続「できた」（満点を一度取ったら固定）。stepID にコースIDが埋まるのでコース別タプル不要。
+    @Published private var requiredCompletion: RequiredCompletion {
+        didSet { persistenceStore.save(requiredCompletion, key: requiredCompletionKey) }
     }
 
     @Published var rewardCoins: Int {
@@ -343,7 +393,10 @@ final class AppModel: ObservableObject {
     private let practiceSamplesKey = "spellingTrainer.practiceSamples"
     private let schoolTestResultsKey = "spellingTrainer.schoolTestResults"
     private let settingsKey = "spellingTrainer.settings"
-    private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"
+    private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"   // 旧（personal 単一トラック）→ 移行元
+    private let selectedCourseIDKey = "spellingTrainer.selectedCourseID"
+    private let selectedStepIDByCourseKey = "spellingTrainer.selectedStepIDByCourse"
+    private let requiredCompletionKey = "spellingTrainer.requiredCompletion"
     /// 旧コイン単位の残高キー（×10 移行前）。**二度と書き換えない**＝再倍化を防ぐ不変の移行元。
     private let legacyRewardCoinsKey = "spellingTrainer.rewardCoins"
     /// 新コイン単位（×10）の残高キー。これが存在すれば移行済み。以後の入出金はすべてここへ保存する。
@@ -395,7 +448,20 @@ final class AppModel: ObservableObject {
         practiceSamples = persistenceStore.load([PracticeSample].self, key: practiceSamplesKey) ?? []
         schoolTestResults = persistenceStore.load([SchoolTestResult].self, key: schoolTestResultsKey) ?? []
         settings = persistenceStore.load(TestSettings.self, key: settingsKey) ?? TestSettings()
-        selectedWordStepID = persistenceStore.load(String.self, key: selectedWordStepIDKey) ?? Self.defaultWordStepID(for: loadedWords)
+        // コース選択状態（学年×英検2軸＋personal）。コース別に「選択中ステップ」を覚える。
+        selectedCourseID = persistenceStore.load(String.self, key: selectedCourseIDKey) ?? CourseDirectory.personal.id
+        if let loadedCourseStepMap = persistenceStore.load([String: String].self, key: selectedStepIDByCourseKey) {
+            selectedStepIDByCourse = loadedCourseStepMap
+        } else {
+            // 旧 single-track の選択を personal トラックへ移行（1回限り）。
+            let legacyStepID = persistenceStore.load(String.self, key: selectedWordStepIDKey)
+                ?? Self.defaultWordStepID(for: loadedWords)
+            let migrated = ["personal": legacyStepID]
+            selectedStepIDByCourse = migrated
+            // didSet は init 中に発火しないため、移行値を明示的に永続化する（self 参照を避けローカルで保存）。
+            persistenceStore.save(migrated, key: selectedStepIDByCourseKey)
+        }
+        requiredCompletion = persistenceStore.load(RequiredCompletion.self, key: requiredCompletionKey) ?? RequiredCompletion()
         // コイン単位 ×10 リリースの一回限り移行（純粋ロジックは CoinScaleMigration、判定/保存はここ）。
         // v2 キーがあればそれを使い、無ければ旧キー残高 ×10 で確定する。旧キーは不変なので、
         // v2 保存前にプロセスが落ちても次回また同じ値を再計算するだけで再倍化しない（冪等・クラッシュ安全）。
@@ -448,8 +514,13 @@ final class AppModel: ObservableObject {
         seedSpellingReviewIfNeeded()
     }
 
+    /// アクティブコースに応じてステップ供給元を切り替える（personal は既存導出・無改修／
+    /// 学年・英検は wordbank から合成した仮想ステップ＝非永続）。
     var wordSteps: [WordStep] {
-        Self.makeWordSteps(from: words)
+        switch activeCourse.kind {
+        case .personal:      return Self.makeWordSteps(from: words)
+        case .grade, .eiken: return courseProvider.steps(for: activeCourse)
+        }
     }
 
     var selectedWordStep: WordStep? {
@@ -458,6 +529,101 @@ final class AppModel: ObservableObject {
 
     var activeWords: [SpellingWord] {
         selectedWordStep?.words ?? words
+    }
+
+    // MARK: - personal トラック専用アクセサ
+    //  親/子の単語“管理”（編集・子追加ゲート・学校テスト・親の復習送り）は、子が今どのコースを開いていても
+    //  常に自分の単語（personal）を対象にする。学習者(ホーム/マップ/練習)はコース別の `wordSteps` を見る。
+    //  この2つを混ぜないことで「コース選択が管理側に漏れる」回帰を防ぐ（codex レビュー指摘）。
+
+    /// personal トラックのステップ（自分の登録語から導出・コース選択に非依存）。
+    var personalWordSteps: [WordStep] {
+        Self.makeWordSteps(from: words)
+    }
+
+    /// personal トラックの選択ステップID（dict["personal"] を直接指す・アクティブコースに非依存）。
+    var personalSelectedWordStepID: String {
+        get { selectedStepIDByCourse["personal"] ?? "" }
+        set { selectedStepIDByCourse["personal"] = newValue }
+    }
+
+    /// personal トラックの選択ステップ（親管理が見る“いまのステップ”）。
+    var personalSelectedWordStep: WordStep? {
+        personalWordSteps.first { $0.id == personalSelectedWordStepID } ?? personalWordSteps.last
+    }
+
+    /// コースを切り替える。未選択コースは先頭ステップを既定にして“いまここ”が定まるようにする。
+    func selectCourse(_ id: String) {
+        selectedCourseID = id
+        if (selectedStepIDByCourse[id] ?? "").isEmpty, let first = wordSteps.first {
+            selectedStepIDByCourse[id] = first.id
+        }
+    }
+
+    // MARK: - 永続「できた」（満点を一度取ったら固定）
+
+    /// ステップの (stepID＋語構成) 署名（永続完了キー）。
+    func completionSignature(for step: WordStep) -> StepSignature {
+        RequiredCompletionSignature.make(stepID: step.id, wordStableIDs: step.words.map(\.id.uuidString))
+    }
+
+    /// 現在コースで「ずっとできた」ステップID集合（冒険マップの緑チェック／ホームのサマリが読む）。
+    var completedStepIDs: Set<String> {
+        Set(wordSteps.filter { requiredCompletion.isCleared(completionSignature(for: $0)) }.map(\.id))
+    }
+
+    // MARK: - 練習抑制（マスター済みは練習で出さない／テストには出す／ミスで復帰）
+    //  既存の missed/review 基盤（attempts の最新クリア＋ReviewQueue）だけから算出。新ストアは持たない。
+
+    private var latestAttemptByText: [String: SpellingAttempt] {
+        var latest: [String: SpellingAttempt] = [:]
+        for a in attempts {
+            let key = normalize(a.word)
+            guard !key.isEmpty else { continue }
+            if let existing = latest[key], existing.date >= a.date { continue }
+            latest[key] = a
+        }
+        return latest
+    }
+
+    /// 最新 attempt がクリア（ノーミス正解）の語テキスト。
+    private var latestClearedTexts: Set<String> {
+        Set(latestAttemptByText.filter { isCleared($0.value) }.keys)
+    }
+
+    /// 復習中（未マスター）の語テキスト。review state の id を既知語(personal＋現コース)で text へ写像。
+    private var activeReviewTexts: Set<String> {
+        guard !spellingReviewStates.isEmpty else { return [] }
+        var idToText: [UUID: String] = [:]
+        for w in words { idToText[w.id] = normalize(w.text) }
+        for step in wordSteps { for w in step.words { idToText[w.id] = normalize(w.text) } }
+        var out = Set<String>()
+        for state in spellingReviewStates where !ReviewQueue.isMastered(state, currentStep: spellingReviewStep) {
+            if let text = idToText[state.id], !text.isEmpty { out.insert(text) }
+        }
+        return out
+    }
+
+    /// 練習から外す語テキスト＝「最新クリア かつ 未解決でない かつ 復習アクティブでない」（codex Architect の真理値表）。
+    /// app のミスは latestClearedTexts から自動的に外れる（最新がミス）。学校テスト未解決の加味は将来拡張。
+    var practiceSuppressedTexts: Set<String> {
+        PracticeSelection.suppressedPracticeKeys(
+            latestClearedTexts: latestClearedTexts,
+            unresolvedTexts: [],
+            activeReviewTexts: activeReviewTexts
+        )
+    }
+
+    /// 練習ドリル用の語（抑制を除く）。テスト/完了判定は従来どおり全語のまま。
+    func practiceWords(for step: WordStep) -> [SpellingWord] {
+        PracticeSelection.practiceWords(step.words, suppressed: practiceSuppressedTexts,
+                                        keyOf: { normalize($0.text) })
+    }
+
+    var practiceWordsForSelectedStep: [SpellingWord] {
+        let base = selectedWordStep?.words ?? words
+        return PracticeSelection.practiceWords(base, suppressed: practiceSuppressedTexts,
+                                               keyOf: { normalize($0.text) })
     }
 
     var totalLearnedWordCount: Int {
@@ -594,7 +760,7 @@ final class AppModel: ObservableObject {
     }
 
     var reviewWords: [SpellingWord] {
-        uniqueWords(wordSteps.flatMap { unresolvedReviewWords(for: $0) })
+        uniqueWords(personalWordSteps.flatMap { unresolvedReviewWords(for: $0) })
     }
 
     var selectedReviewWords: [SpellingWord] {
@@ -838,7 +1004,7 @@ final class AppModel: ObservableObject {
 
     /// 今いちばん新しいこどものたんごステップ。
     var latestChildStep: WordStep? {
-        wordSteps.last { $0.isChildStep }
+        personalWordSteps.last { $0.isChildStep }
     }
 
     /// そのこどもステップを満点（1セッション一発全正解）でクリアしたか。
@@ -1036,7 +1202,7 @@ final class AppModel: ObservableObject {
 
         words = updatedParentWords + childWords
         if addedNewWords {
-            selectedWordStepID = Self.defaultWordStepID(for: words)
+            personalSelectedWordStepID = Self.defaultWordStepID(for: words)
         }
     }
 
@@ -1164,7 +1330,7 @@ final class AppModel: ObservableObject {
 
         let untouchedWords = words.filter { !wordBelongs($0, to: step, calendar: calendar) }
         words = untouchedWords + replacementWords
-        selectedWordStepID = step.id
+        personalSelectedWordStepID = step.id
         return replacementWords.count
     }
 
@@ -1197,7 +1363,7 @@ final class AppModel: ObservableObject {
             words = updatedWords
         }
         if addedCount > 0 {
-            selectedWordStepID = stepID
+            personalSelectedWordStepID = stepID
         }
 
         return (addedCount, 0)
@@ -1335,7 +1501,7 @@ final class AppModel: ObservableObject {
     }
 
     private func schoolTestResultTitle(_ title: String, matchesStepID stepID: String) -> Bool {
-        guard let step = wordSteps.first(where: { $0.id == stepID }) else {
+        guard let step = personalWordSteps.first(where: { $0.id == stepID }) else {
             return false
         }
         return [
@@ -1345,7 +1511,9 @@ final class AppModel: ObservableObject {
     }
 
     func sendReviewWordsToHome(_ wordIDs: Set<UUID>, stepID: String) {
-        selectedWordStepID = stepID
+        // 復習語は自分の単語（personal）。子が別コースを開いていても personal の該当ステップを見せる。
+        selectedCourseID = CourseDirectory.personal.id
+        personalSelectedWordStepID = stepID
         homeReviewWordIDs = wordIDs
     }
 
@@ -1450,10 +1618,6 @@ final class AppModel: ObservableObject {
         persistenceStore.save(settings, key: settingsKey)
     }
 
-    private func saveSelectedWordStepID() {
-        persistenceStore.save(selectedWordStepID, key: selectedWordStepIDKey)
-    }
-
     private func saveRewardCoins() {
         persistenceStore.save(max(rewardCoins, 0), key: rewardCoinsKey)
     }
@@ -1555,6 +1719,15 @@ final class AppModel: ObservableObject {
         }
         spellingReviewStates = ReviewQueue.pruneMastered(spellingReviewStates, currentStep: spellingReviewStep)
         spellingReviewStep += 1
+
+        // 永続「できた」：選択中ステップが満点(perfect run)に達したら固定する（コース横断・stepID名前空間で一意）。
+        // テスト=全語が対象なので、練習(抑制で語が減る)では満点に届かず＝完了は“仕上げテスト”基準のまま。
+        if let step = selectedWordStep, hasPerfectRun(for: step.words, in: attempts) {
+            let signature = completionSignature(for: step)
+            if !requiredCompletion.isCleared(signature) {
+                requiredCompletion.markCleared(signature)
+            }
+        }
 
         // 運用テレメトリ: 1セッション1件の要約（低カーディナリティのみ。
         // 単語・氏名・手書き・自由入力・生の数値は送らない＝バケットだけ）。
