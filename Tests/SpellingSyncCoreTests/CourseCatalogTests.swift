@@ -211,6 +211,29 @@ final class CourseCatalogTests: XCTestCase {
         XCTAssertEqual(out, [W(text: "Dog")])
     }
 
+    // 再ドリル許可：一部抑制なら抑制を除いた残りを返す（通常の飽き防止と同じ）。
+    func testPracticeWordsAllowingRedrillPartialSuppressionExcludes() {
+        let words = ["cat", "dog", "sun"]
+        let out = PracticeSelection.practiceWordsAllowingRedrill(words, suppressed: ["cat"], keyOf: { $0 })
+        XCTAssertEqual(out, ["dog", "sun"])
+    }
+
+    // 再ドリル許可：全部抑制（全語マスター済み）で空になるなら、練習を“できなく”しないよう全語に戻す。
+    func testPracticeWordsAllowingRedrillAllSuppressedFallsBackToFull() {
+        let words = ["cat", "dog", "sun"]
+        let out = PracticeSelection.practiceWordsAllowingRedrill(words,
+                                                                 suppressed: ["cat", "dog", "sun"],
+                                                                 keyOf: { $0 })
+        XCTAssertEqual(out, words)
+    }
+
+    // 再ドリル許可：元が空（ステップに語が無い）なら空のまま（「たんごがない」は維持）。
+    func testPracticeWordsAllowingRedrillEmptyInputStaysEmpty() {
+        let words: [String] = []
+        let out = PracticeSelection.practiceWordsAllowingRedrill(words, suppressed: ["cat"], keyOf: { $0 })
+        XCTAssertTrue(out.isEmpty)
+    }
+
     // 抑制キー：既存シグナル(最新クリア/未解決/復習アクティブ)から算出（codex Architect の真理値表）。
     func testSuppressedPracticeKeysTruthTable() {
         // 各ケースの語を1つずつ。

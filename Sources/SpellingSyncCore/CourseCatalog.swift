@@ -193,6 +193,17 @@ public enum PracticeSelection {
         stepWords.filter { !suppressed.contains(keyOf($0)) }
     }
 
+    /// 練習ドリル用（既定選択向け）：抑制集合の語を除く。ただし**全部抑制されて空になる場合は
+    /// 元の集合をそのまま返す**＝ステップ全語が既習（マスター済み）でも練習を“できなく”しない。
+    /// （ホームのメイン大ボタンは常に練習。全抑制で空→無効化＝「練習できない」を防ぐ再ドリル許可。）
+    /// 元が空（ステップに語が無い）なら空のまま返す。
+    public static func practiceWordsAllowingRedrill<W>(_ stepWords: [W],
+                                                       suppressed: Set<String>,
+                                                       keyOf: (W) -> String) -> [W] {
+        let filtered = stepWords.filter { !suppressed.contains(keyOf($0)) }
+        return filtered.isEmpty ? stepWords : filtered
+    }
+
     /// 練習から外す語キー（正規化テキスト）を**既存シグナルだけ**から決定論的に算出する。
     /// 新しい永続ストアは作らず、既存の missed/review 基盤（`ReviewQueue`）と二重管理しない。
     ///
