@@ -2530,6 +2530,26 @@ enum HomeRewardCharacterStyle {
     case banana
     case taiyaki
     case cookie
+    // あそび・おと(play)
+    case mic
+    case tambourine
+    case maracas
+    case recorder
+    case musicNote
+    case skateboard
+    case bowlingPin
+    // うみ(sea)
+    case urchin
+    case seaTurtle
+    case squid
+    case sunfish
+    case seashell
+    // たべもの(food)
+    case orange
+    case grapes
+    case dango
+    case pizza
+    case candy
     /// 画像ベースの「なかま」。SwiftUI 描画ではなく Assets の WebP(Data Set) を表示する。
     /// 画像は character.id から `nakama_<id>` という NSDataAsset 名で引く。
     case imageAsset
@@ -5558,6 +5578,226 @@ struct HomeRewardCharacter: Identifiable {
             primary: Color(red: 0.8510, green: 0.6588, blue: 0.4196),
             secondary: Color(red: 0.9098, green: 0.7882, blue: 0.6039),
             accent: Color(red: 0.4196, green: 0.2902, blue: 0.1647)
+        ),
+        HomeRewardCharacter(
+            id: "mic",
+            category: .instruments,
+            japaneseName: "マイク",
+            englishName: "Microphone",
+            price: 50,
+            style: .mic,
+            primary: Color(red: 0.7882, green: 0.8118, blue: 0.8471),
+            secondary: Color(red: 0.6039, green: 0.6392, blue: 0.6980),
+            accent: Color(red: 0.2235, green: 0.2549, blue: 0.3137)
+        ),
+        HomeRewardCharacter(
+            id: "tambourine",
+            category: .instruments,
+            japaneseName: "タンバリン",
+            englishName: "Tambourine",
+            price: 50,
+            style: .tambourine,
+            primary: Color(red: 0.8510, green: 0.6431, blue: 0.2549),
+            secondary: Color(red: 0.9569, green: 0.8980, blue: 0.7608),
+            accent: Color(red: 0.7529, green: 0.5098, blue: 0.0588)
+        ),
+        HomeRewardCharacter(
+            id: "maracas",
+            category: .instruments,
+            japaneseName: "マラカス",
+            englishName: "Maracas",
+            price: 40,
+            style: .maracas,
+            primary: Color(red: 0.9098, green: 0.3961, blue: 0.3059),
+            secondary: Color(red: 0.9647, green: 0.7804, blue: 0.2667),
+            accent: Color(red: 0.5412, green: 0.3529, blue: 0.1686)
+        ),
+        HomeRewardCharacter(
+            id: "recorder",
+            category: .instruments,
+            japaneseName: "リコーダー",
+            englishName: "Recorder",
+            price: 40,
+            style: .recorder,
+            primary: Color(red: 0.9373, green: 0.8902, blue: 0.7843),
+            secondary: Color(red: 0.7882, green: 0.6392, blue: 0.4157),
+            accent: Color(red: 0.3569, green: 0.2745, blue: 0.1961)
+        ),
+        HomeRewardCharacter(
+            id: "note",
+            category: .instruments,
+            japaneseName: "おんぷ",
+            englishName: "Music Note",
+            price: 50,
+            style: .musicNote,
+            primary: Color(red: 0.4235, green: 0.3882, blue: 0.8471),
+            secondary: Color(red: 0.6549, green: 0.6275, blue: 0.9333),
+            accent: Color(red: 0.2353, green: 0.2078, blue: 0.4980)
+        ),
+        HomeRewardCharacter(
+            id: "skateboard",
+            category: .sports,
+            japaneseName: "スケボー",
+            englishName: "Skateboard",
+            price: 50,
+            style: .skateboard,
+            primary: Color(red: 0.9098, green: 0.3961, blue: 0.3059),
+            secondary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            accent: Color(red: 0.1804, green: 0.2039, blue: 0.2510)
+        ),
+        HomeRewardCharacter(
+            id: "bowling",
+            category: .sports,
+            japaneseName: "ボウリング",
+            englishName: "Bowling",
+            price: 50,
+            style: .bowlingPin,
+            primary: Color(red: 0.9569, green: 0.9451, blue: 0.9255),
+            secondary: Color(red: 0.8863, green: 0.2314, blue: 0.2314),
+            accent: Color(red: 0.1804, green: 0.2039, blue: 0.2510)
+        ),
+        HomeRewardCharacter(
+            id: "sax",
+            category: .instruments,
+            japaneseName: "サックス",
+            englishName: "Saxophone",
+            price: 60,
+            style: .imageAsset,
+            primary: Color(red: 0.8392, green: 0.6431, blue: 0.2275),
+            secondary: Color(red: 0.9412, green: 0.8235, blue: 0.4784),
+            accent: Color(red: 0.5412, green: 0.3529, blue: 0.1686)
+        ),
+        HomeRewardCharacter(
+            id: "urchin",
+            category: .sea,
+            japaneseName: "ウニ",
+            englishName: "Sea Urchin",
+            price: 50,
+            style: .urchin,
+            primary: Color(red: 0.3569, green: 0.2941, blue: 0.5412),
+            secondary: Color(red: 0.4941, green: 0.4196, blue: 0.7098),
+            accent: Color(red: 0.2275, green: 0.1843, blue: 0.3608)
+        ),
+        HomeRewardCharacter(
+            id: "sea_turtle",
+            category: .sea,
+            japaneseName: "うみがめ",
+            englishName: "Sea Turtle",
+            price: 60,
+            style: .seaTurtle,
+            primary: Color(red: 0.3098, green: 0.6588, blue: 0.4196),
+            secondary: Color(red: 0.5608, green: 0.8275, blue: 0.6275),
+            accent: Color(red: 0.1843, green: 0.4196, blue: 0.2627)
+        ),
+        HomeRewardCharacter(
+            id: "squid",
+            category: .sea,
+            japaneseName: "いか",
+            englishName: "Squid",
+            price: 50,
+            style: .squid,
+            primary: Color(red: 0.8980, green: 0.5608, blue: 0.6902),
+            secondary: Color(red: 0.9647, green: 0.7647, blue: 0.8392),
+            accent: Color(red: 0.7216, green: 0.3608, blue: 0.5098)
+        ),
+        HomeRewardCharacter(
+            id: "sunfish",
+            category: .sea,
+            japaneseName: "まんぼう",
+            englishName: "Sunfish",
+            price: 50,
+            style: .sunfish,
+            primary: Color(red: 0.6039, green: 0.6549, blue: 0.7098),
+            secondary: Color(red: 0.7647, green: 0.8039, blue: 0.8471),
+            accent: Color(red: 0.3686, green: 0.4196, blue: 0.4784)
+        ),
+        HomeRewardCharacter(
+            id: "seashell",
+            category: .sea,
+            japaneseName: "かいがら",
+            englishName: "Seashell",
+            price: 40,
+            style: .seashell,
+            primary: Color(red: 0.9569, green: 0.7216, blue: 0.7686),
+            secondary: Color(red: 0.9843, green: 0.8667, blue: 0.8902),
+            accent: Color(red: 0.8510, green: 0.5098, blue: 0.5961)
+        ),
+        HomeRewardCharacter(
+            id: "clownfish",
+            category: .sea,
+            japaneseName: "クマノミ",
+            englishName: "Clownfish",
+            price: 60,
+            style: .imageAsset,
+            primary: Color(red: 0.9412, green: 0.5098, blue: 0.1804),
+            secondary: Color(red: 1.0000, green: 1.0000, blue: 1.0000),
+            accent: Color(red: 0.1804, green: 0.1647, blue: 0.1569)
+        ),
+        HomeRewardCharacter(
+            id: "orange",
+            category: .food,
+            japaneseName: "みかん",
+            englishName: "Orange",
+            price: 40,
+            style: .orange,
+            primary: Color(red: 0.9529, green: 0.6039, blue: 0.1686),
+            secondary: Color(red: 0.3098, green: 0.6588, blue: 0.4196),
+            accent: Color(red: 0.7882, green: 0.4549, blue: 0.0588)
+        ),
+        HomeRewardCharacter(
+            id: "grapes",
+            category: .food,
+            japaneseName: "ぶどう",
+            englishName: "Grapes",
+            price: 50,
+            style: .grapes,
+            primary: Color(red: 0.4941, green: 0.3412, blue: 0.7608),
+            secondary: Color(red: 0.3098, green: 0.6588, blue: 0.4196),
+            accent: Color(red: 0.3686, green: 0.2314, blue: 0.6196)
+        ),
+        HomeRewardCharacter(
+            id: "dango",
+            category: .food,
+            japaneseName: "だんご",
+            englishName: "Dango",
+            price: 50,
+            style: .dango,
+            primary: Color(red: 0.9569, green: 0.9451, blue: 0.9255),
+            secondary: Color(red: 0.9569, green: 0.7216, blue: 0.7686),
+            accent: Color(red: 0.6627, green: 0.8157, blue: 0.5569)
+        ),
+        HomeRewardCharacter(
+            id: "pizza",
+            category: .food,
+            japaneseName: "ピザ",
+            englishName: "Pizza",
+            price: 60,
+            style: .pizza,
+            primary: Color(red: 0.9490, green: 0.7569, blue: 0.3059),
+            secondary: Color(red: 0.8863, green: 0.2314, blue: 0.2314),
+            accent: Color(red: 0.7882, green: 0.5412, blue: 0.2275)
+        ),
+        HomeRewardCharacter(
+            id: "candy",
+            category: .food,
+            japaneseName: "キャンディ",
+            englishName: "Candy",
+            price: 40,
+            style: .candy,
+            primary: Color(red: 0.9490, green: 0.3765, blue: 0.4784),
+            secondary: Color(red: 0.9843, green: 0.8275, blue: 0.4196),
+            accent: Color(red: 0.8863, green: 0.2314, blue: 0.2314)
+        ),
+        HomeRewardCharacter(
+            id: "ramen",
+            category: .food,
+            japaneseName: "ラーメン",
+            englishName: "Ramen",
+            price: 60,
+            style: .imageAsset,
+            primary: Color(red: 0.8510, green: 0.5490, blue: 0.2275),
+            secondary: Color(red: 0.9569, green: 0.8902, blue: 0.7608),
+            accent: Color(red: 0.5412, green: 0.2941, blue: 0.1686)
         )
     ]
     // CATALOG-GENERATED-END
@@ -6518,6 +6758,40 @@ struct RewardCharacterAvatar: View {
                 TaiyakiCharacterFace(character: character)
             case .cookie:
                 CookieCharacterFace(character: character)
+            case .mic:
+                MicCharacterView(character: character)
+            case .tambourine:
+                TambourineCharacterView(character: character)
+            case .maracas:
+                MaracasCharacterView(character: character)
+            case .recorder:
+                RecorderCharacterView(character: character)
+            case .musicNote:
+                MusicNoteCharacterView(character: character)
+            case .skateboard:
+                SkateboardCharacterView(character: character)
+            case .bowlingPin:
+                BowlingPinCharacterView(character: character)
+            case .urchin:
+                UrchinCharacterFace(character: character)
+            case .seaTurtle:
+                SeaTurtleCharacterFace(character: character)
+            case .squid:
+                SquidCharacterFace(character: character)
+            case .sunfish:
+                SunfishCharacterFace(character: character)
+            case .seashell:
+                SeashellCharacterFace(character: character)
+            case .orange:
+                OrangeCharacterFace(character: character)
+            case .grapes:
+                GrapesCharacterFace(character: character)
+            case .dango:
+                DangoCharacterFace(character: character)
+            case .pizza:
+                PizzaCharacterFace(character: character)
+            case .candy:
+                CandyCharacterFace(character: character)
             case .imageAsset:
                 NakamaImageView(character: character)
             }
@@ -9772,6 +10046,302 @@ private struct CookieCharacterFace: View {
             SmileArc().stroke(.black.opacity(0.5), style: StrokeStyle(lineWidth: 2.2, lineCap: .round))
                 .frame(width: 18, height: 8).offset(y: 16)
         }
+    }
+}
+
+// MARK: - あそび・おと (play: 楽器・スポーツ) ※顔なしの道具
+
+private struct MicCharacterView: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.accent).frame(width: 16, height: 46).offset(y: 22)
+            Capsule().fill(character.secondary).frame(width: 22, height: 10).offset(y: 44)
+            ZStack {
+                ForEach(0..<3) { i in
+                    Capsule().fill(character.secondary).frame(width: 40, height: 3).offset(y: CGFloat(-9 + i * 9))
+                }
+            }.frame(width: 46, height: 46).mask(Circle().frame(width: 46, height: 46)).offset(y: -18)
+            Circle().stroke(character.secondary, lineWidth: 2).frame(width: 46, height: 46).offset(y: -18)
+        }
+    }
+}
+
+private struct TambourineCharacterView: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Circle().fill(character.secondary).frame(width: 56, height: 56)
+            Circle().stroke(character.primary, lineWidth: 9).frame(width: 62, height: 62)
+            ForEach(0..<8) { i in
+                Circle().fill(character.accent).frame(width: 12, height: 12)
+                    .offset(y: -31).rotationEffect(.degrees(Double(i) * 45))
+            }
+        }
+    }
+}
+
+private struct MaracasCharacterView: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Group {
+                Capsule().fill(character.accent).frame(width: 9, height: 40).offset(y: 22)
+                Circle().fill(character.primary).frame(width: 38, height: 38).offset(y: -10)
+                Circle().fill(character.secondary).frame(width: 7, height: 7).offset(x: -6, y: -14)
+                Circle().fill(character.secondary).frame(width: 7, height: 7).offset(x: 8, y: -6)
+            }.rotationEffect(.degrees(-18)).offset(x: -16)
+            Group {
+                Capsule().fill(character.accent).frame(width: 9, height: 40).offset(y: 22)
+                Circle().fill(character.primary).frame(width: 38, height: 38).offset(y: -10)
+                Circle().fill(character.secondary).frame(width: 7, height: 7).offset(x: 6, y: -14)
+                Circle().fill(character.secondary).frame(width: 7, height: 7).offset(x: -8, y: -6)
+            }.rotationEffect(.degrees(18)).offset(x: 16)
+        }
+    }
+}
+
+private struct RecorderCharacterView: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.primary).frame(width: 18, height: 84)
+            Capsule().fill(character.secondary).frame(width: 18, height: 16).offset(y: -38)
+            RoundedRectangle(cornerRadius: 1).fill(character.accent).frame(width: 6, height: 5).offset(y: -22)
+            ForEach(0..<5) { i in
+                Circle().fill(character.accent).frame(width: 7, height: 7).offset(y: CGFloat(-6 + i * 12))
+            }
+        }
+    }
+}
+
+private struct MusicNoteCharacterView: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Rectangle().fill(character.primary).frame(width: 6, height: 58).offset(x: 16, y: -8)
+            Path { p in
+                p.move(to: CGPoint(x: 0, y: 0))
+                p.addQuadCurve(to: CGPoint(x: 18, y: 32), control: CGPoint(x: 26, y: 8))
+                p.addQuadCurve(to: CGPoint(x: 3, y: 14), control: CGPoint(x: 13, y: 22))
+                p.closeSubpath()
+            }.fill(character.primary).frame(width: 24, height: 32).offset(x: 26, y: -34)
+            Ellipse().fill(character.primary).frame(width: 30, height: 22).rotationEffect(.degrees(-20)).offset(x: -2, y: 22)
+            Circle().fill(character.secondary).frame(width: 8, height: 8).offset(x: -7, y: 18)
+        }
+    }
+}
+
+private struct SkateboardCharacterView: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.accent).frame(width: 4, height: 9).offset(x: -26, y: 11)
+            Capsule().fill(character.accent).frame(width: 4, height: 9).offset(x: 28, y: 6)
+            Circle().fill(character.accent).frame(width: 15, height: 15).offset(x: -26, y: 18)
+            Circle().fill(character.accent).frame(width: 15, height: 15).offset(x: 28, y: 13)
+            Capsule().fill(character.primary).frame(width: 88, height: 16).rotationEffect(.degrees(-7))
+            Capsule().fill(character.secondary).frame(width: 70, height: 5).rotationEffect(.degrees(-7)).offset(y: -3)
+        }
+    }
+}
+
+private struct BowlingPinCharacterView: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Circle().fill(character.accent).frame(width: 40, height: 40).offset(x: -24, y: 18)
+            Circle().fill(.white.opacity(0.3)).frame(width: 9, height: 9).offset(x: -32, y: 9)
+            Ellipse().fill(character.primary).frame(width: 34, height: 46).offset(x: 16, y: 16)
+            RoundedRectangle(cornerRadius: 8).fill(character.primary).frame(width: 16, height: 30).offset(x: 16, y: -8)
+            Circle().fill(character.primary).frame(width: 18, height: 18).offset(x: 16, y: -26)
+            Capsule().fill(character.secondary).frame(width: 18, height: 4).offset(x: 16, y: -16)
+            Capsule().fill(character.secondary).frame(width: 22, height: 4).offset(x: 16, y: -9)
+        }
+    }
+}
+
+// MARK: - うみ (sea: いきもの)
+
+private struct UrchinCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            ForEach(0..<16) { i in
+                Capsule().fill(character.accent).frame(width: 5, height: 30)
+                    .offset(y: -26).rotationEffect(.degrees(Double(i) * 22.5))
+            }
+            Circle().fill(character.primary).frame(width: 50, height: 50)
+            Circle().fill(character.secondary.opacity(0.5)).frame(width: 32, height: 32).offset(x: -4, y: -4)
+            CharacterEyes(color: .white).offset(y: -2)
+            SmileArc().stroke(.white.opacity(0.85), style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .frame(width: 12, height: 7).offset(y: 10)
+        }
+    }
+}
+
+private struct SeaTurtleCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Ellipse().fill(character.secondary).frame(width: 22, height: 14).rotationEffect(.degrees(30)).offset(x: -26, y: -6)
+            Ellipse().fill(character.secondary).frame(width: 22, height: 14).rotationEffect(.degrees(-30)).offset(x: 26, y: -6)
+            Ellipse().fill(character.secondary).frame(width: 18, height: 12).rotationEffect(.degrees(-30)).offset(x: -22, y: 22)
+            Ellipse().fill(character.secondary).frame(width: 18, height: 12).rotationEffect(.degrees(30)).offset(x: 22, y: 22)
+            Circle().fill(character.secondary).frame(width: 24, height: 24).offset(y: -28)
+            HStack(spacing: 8) {
+                Circle().fill(.black.opacity(0.7)).frame(width: 4, height: 4)
+                Circle().fill(.black.opacity(0.7)).frame(width: 4, height: 4)
+            }.offset(y: -30)
+            Ellipse().fill(character.primary).frame(width: 64, height: 50).offset(y: 4)
+            Circle().stroke(character.accent, lineWidth: 2.5).frame(width: 20, height: 20).offset(y: 2)
+            Circle().stroke(character.accent.opacity(0.8), lineWidth: 2).frame(width: 12, height: 12).offset(x: -18, y: -2)
+            Circle().stroke(character.accent.opacity(0.8), lineWidth: 2).frame(width: 12, height: 12).offset(x: 18, y: -2)
+            Circle().stroke(character.accent.opacity(0.8), lineWidth: 2).frame(width: 12, height: 12).offset(x: -12, y: 18)
+            Circle().stroke(character.accent.opacity(0.8), lineWidth: 2).frame(width: 12, height: 12).offset(x: 12, y: 18)
+        }
+    }
+}
+
+private struct SquidCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            ForEach(0..<4) { i in
+                Capsule().fill(character.primary).frame(width: 7, height: 26).offset(x: CGFloat(-18 + i * 12), y: 30)
+            }
+            Capsule().fill(character.primary).frame(width: 6, height: 38).rotationEffect(.degrees(-16)).offset(x: -26, y: 30)
+            Capsule().fill(character.primary).frame(width: 6, height: 38).rotationEffect(.degrees(16)).offset(x: 26, y: 30)
+            Triangle().fill(character.secondary).frame(width: 26, height: 20).rotationEffect(.degrees(-32)).offset(x: -22, y: -34)
+            Triangle().fill(character.secondary).frame(width: 26, height: 20).rotationEffect(.degrees(32)).offset(x: 22, y: -34)
+            Capsule().fill(character.primary).frame(width: 46, height: 72).offset(y: -6)
+            Triangle().fill(character.primary).frame(width: 40, height: 24).offset(y: -38)
+            CuteFace(eyeColor: .white, mouthColor: .white.opacity(0.8), eyeY: -6, mouthY: 8)
+        }
+    }
+}
+
+private struct SunfishCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.secondary).frame(width: 30, height: 36).offset(y: -34)
+            Triangle().fill(character.secondary).frame(width: 30, height: 36).rotationEffect(.degrees(180)).offset(y: 34)
+            Ellipse().fill(character.secondary).frame(width: 18, height: 40).offset(x: 32, y: 4)
+            Circle().fill(character.primary).frame(width: 64, height: 64).offset(x: -4)
+            Circle().fill(.white).frame(width: 16, height: 16).offset(x: -16, y: -6)
+            Circle().fill(.black.opacity(0.78)).frame(width: 8, height: 8).offset(x: -18, y: -6)
+            Ellipse().fill(.black.opacity(0.4)).frame(width: 8, height: 6).offset(x: -28, y: 8)
+        }
+    }
+}
+
+private struct SeashellCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            FanShape().fill(character.primary).frame(width: 72, height: 60).offset(y: 6)
+            Path { p in
+                let apex = CGPoint(x: 36, y: 56)
+                for a in [-32.0, -16, 0, 16, 32] {
+                    let rad = (a - 90) * .pi / 180
+                    p.move(to: apex)
+                    p.addLine(to: CGPoint(x: apex.x + 52 * cos(rad), y: apex.y + 52 * sin(rad)))
+                }
+            }.stroke(character.accent.opacity(0.7), lineWidth: 2).frame(width: 72, height: 60).offset(y: 6)
+            Circle().fill(character.secondary).frame(width: 16, height: 16).offset(y: 30)
+            CuteFace(eyeColor: .black.opacity(0.7), mouthColor: .black.opacity(0.45), eyeY: 2, mouthY: 14)
+        }
+    }
+}
+
+// MARK: - たべもの (food)
+
+private struct OrangeCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Circle().fill(character.primary).frame(width: 60, height: 58)
+            Ellipse().fill(character.secondary).frame(width: 20, height: 12).rotationEffect(.degrees(-30)).offset(x: 10, y: -32)
+            Circle().fill(character.accent).frame(width: 8, height: 8).offset(y: -28)
+            Circle().fill(.white.opacity(0.22)).frame(width: 12, height: 8).offset(x: -20, y: 6)
+            Circle().fill(.white.opacity(0.22)).frame(width: 12, height: 8).offset(x: 20, y: 6)
+            CuteFace(eyeY: -2, mouthY: 12)
+        }
+    }
+}
+
+private struct GrapesCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(character.accent).frame(width: 4, height: 14).offset(y: -34)
+            Ellipse().fill(character.secondary).frame(width: 22, height: 14).rotationEffect(.degrees(-20)).offset(x: 12, y: -34)
+            Circle().fill(character.primary).frame(width: 22, height: 22).offset(x: -18, y: -10)
+            Circle().fill(character.primary).frame(width: 22, height: 22).offset(x: 0, y: -12)
+            Circle().fill(character.primary).frame(width: 22, height: 22).offset(x: 18, y: -10)
+            Circle().fill(character.primary).frame(width: 22, height: 22).offset(x: -9, y: 6)
+            Circle().fill(character.primary).frame(width: 22, height: 22).offset(x: 9, y: 6)
+            Circle().fill(character.primary).frame(width: 22, height: 22).offset(x: 0, y: 22)
+            Circle().fill(.white.opacity(0.25)).frame(width: 7, height: 7).offset(x: -22, y: -14)
+            CuteFace(eyeColor: .white, mouthColor: .white.opacity(0.85), eyeY: 0, mouthY: 12).offset(y: -2)
+        }
+    }
+}
+
+private struct DangoCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Capsule().fill(.black.opacity(0.32)).frame(width: 6, height: 92).rotationEffect(.degrees(45))
+            Circle().fill(character.accent).frame(width: 34, height: 34).offset(x: -22, y: 22)
+            Circle().fill(character.secondary).frame(width: 34, height: 34).offset(x: 0, y: 0)
+            Circle().fill(character.primary).frame(width: 34, height: 34).offset(x: 22, y: -22)
+            Circle().fill(.white.opacity(0.3)).frame(width: 8, height: 8).offset(x: 16, y: -30)
+            CuteFace(eyeY: -2, mouthY: 8)
+        }
+    }
+}
+
+private struct PizzaCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.accent).frame(width: 64, height: 64).rotationEffect(.degrees(180)).offset(y: -4)
+            Triangle().fill(character.primary).frame(width: 54, height: 54).rotationEffect(.degrees(180)).offset(y: -8)
+            Capsule().fill(character.accent).frame(width: 64, height: 12).offset(y: -30)
+            Circle().fill(character.secondary).frame(width: 11, height: 11).offset(x: -12, y: -16)
+            Circle().fill(character.secondary).frame(width: 11, height: 11).offset(x: 12, y: -16)
+            Circle().fill(character.secondary).frame(width: 11, height: 11).offset(x: 0, y: 2)
+            CuteFace(eyeColor: .black.opacity(0.7), mouthColor: .black.opacity(0.5), eyeY: -22, mouthY: -10)
+        }
+    }
+}
+
+private struct CandyCharacterFace: View {
+    var character: HomeRewardCharacter
+    var body: some View {
+        ZStack {
+            Triangle().fill(character.secondary).frame(width: 26, height: 30).rotationEffect(.degrees(-90)).offset(x: -30, y: 0)
+            Triangle().fill(character.secondary).frame(width: 26, height: 30).rotationEffect(.degrees(90)).offset(x: 30, y: 0)
+            Circle().fill(character.primary).frame(width: 48, height: 48)
+            Circle().stroke(.white.opacity(0.8), lineWidth: 3).frame(width: 26, height: 26)
+            Circle().stroke(.white.opacity(0.55), lineWidth: 3).frame(width: 14, height: 14)
+            CuteFace(eyeColor: .white, mouthColor: .white.opacity(0.85), eyeY: -2, mouthY: 10)
+        }
+    }
+}
+
+/// 帆立貝のような扇形(底に蝶番、上に向かって広がる)。SeashellCharacterFace 用。
+private struct FanShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var p = Path()
+        p.move(to: CGPoint(x: rect.midX, y: rect.maxY))
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.minY + rect.height * 0.35))
+        p.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.minY + rect.height * 0.35),
+                       control: CGPoint(x: rect.midX, y: rect.minY - rect.height * 0.15))
+        p.closeSubpath()
+        return p
     }
 }
 
