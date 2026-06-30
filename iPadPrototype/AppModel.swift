@@ -178,6 +178,21 @@ final class AppModel: ObservableObject {
         set { selectedStepIDByCourse[selectedCourseID] = newValue }
     }
 
+    /// 子が自分でコースを切り替えてよいか。**既定はロック（親が決める）**。
+    /// 親が設定で ON にしたときだけ、子は全コースを自分で選べる（gating は `CourseAccess`）。
+    @Published var childCanSwitchCourses: Bool {
+        didSet { persistenceStore.save(childCanSwitchCourses, key: childCanSwitchCoursesKey) }
+    }
+
+    /// 子の画面で選べるコースID（ロック時は現在コースのみ＝切替不可）。純ロジックは `CourseAccess`。
+    var childSelectableCourseIDs: [String] {
+        CourseAccess.childSelectableCourseIDs(
+            allCourseIDs: CourseDirectory.all.map(\.id),
+            activeCourseID: selectedCourseID,
+            childCanSwitch: childCanSwitchCourses
+        )
+    }
+
     /// 利用可能コースから現在のコースを解決（不明は personal）。
     var activeCourse: Course {
         CourseDirectory.course(id: selectedCourseID) ?? CourseDirectory.personal
@@ -396,6 +411,7 @@ final class AppModel: ObservableObject {
     private let selectedWordStepIDKey = "spellingTrainer.selectedWordStepID"   // 旧（personal 単一トラック）→ 移行元
     private let selectedCourseIDKey = "spellingTrainer.selectedCourseID"
     private let selectedStepIDByCourseKey = "spellingTrainer.selectedStepIDByCourse"
+    private let childCanSwitchCoursesKey = "spellingTrainer.childCanSwitchCourses"
     private let requiredCompletionKey = "spellingTrainer.requiredCompletion"
     /// 旧コイン単位の残高キー（×10 移行前）。**二度と書き換えない**＝再倍化を防ぐ不変の移行元。
     private let legacyRewardCoinsKey = "spellingTrainer.rewardCoins"
@@ -461,6 +477,8 @@ final class AppModel: ObservableObject {
             // didSet は init 中に発火しないため、移行値を明示的に永続化する（self 参照を避けローカルで保存）。
             persistenceStore.save(migrated, key: selectedStepIDByCourseKey)
         }
+        // 子のコース切替は既定でロック（親が決める）。親が設定で ON にしたときだけ解放。
+        childCanSwitchCourses = persistenceStore.load(Bool.self, key: childCanSwitchCoursesKey) ?? false
         requiredCompletion = persistenceStore.load(RequiredCompletion.self, key: requiredCompletionKey) ?? RequiredCompletion()
         // コイン単位 ×10 リリースの一回限り移行（純粋ロジックは CoinScaleMigration、判定/保存はここ）。
         // v2 キーがあればそれを使い、無ければ旧キー残高 ×10 で確定する。旧キーは不変なので、

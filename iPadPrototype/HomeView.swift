@@ -1091,43 +1091,59 @@ private struct ChildStepPickerSheet: View {
     }
 
     /// コースチップ（右上）。学年／英検の2軸＋うちのれんしゅう。子には級/学年ラベルを出さず emoji＋やさしい名前。
+    /// 親が「子にも選ばせる」を OFF にしている間はメニューを出さず、いまのコース名を静的に見せるだけ（切替不可）。
+    @ViewBuilder
     private var courseMenu: some View {
-        Menu {
-            Section(language.text(japanese: "がくねん", english: "Grade")) {
-                ForEach(CourseDirectory.grades) { course in
-                    courseButton(course)
+        if model.childCanSwitchCourses {
+            Menu {
+                Section(language.text(japanese: "がくねん", english: "Grade")) {
+                    ForEach(CourseDirectory.grades) { course in
+                        courseButton(course)
+                    }
                 }
-            }
-            Section(language.text(japanese: "えいけん", english: "Eiken")) {
-                ForEach(CourseDirectory.eiken) { course in
-                    courseButton(course)
+                Section(language.text(japanese: "えいけん", english: "Eiken")) {
+                    ForEach(CourseDirectory.eiken) { course in
+                        courseButton(course)
+                    }
                 }
+                Section {
+                    courseButton(CourseDirectory.personal)
+                }
+            } label: {
+                courseChipLabel(showsChevron: true)
             }
-            Section {
-                courseButton(CourseDirectory.personal)
-            }
-        } label: {
-            HStack(spacing: 4) {
-                Text(activeCourse.emoji)
-                Text(activeCourse.childTitle)
-                    .font(.subheadline.weight(.bold))
+            .tapFeedback()
+        } else {
+            // ロック中：いまのコースだけ静かに表示（タップしても切り替わらない）。
+            courseChipLabel(showsChevron: false)
+        }
+    }
+
+    private func courseChipLabel(showsChevron: Bool) -> some View {
+        HStack(spacing: 4) {
+            Text(activeCourse.emoji)
+            Text(activeCourse.childTitle)
+                .font(.subheadline.weight(.bold))
+            if showsChevron {
                 Image(systemName: "chevron.down")
                     .font(.caption2.weight(.bold))
             }
-            .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
         }
-        .tapFeedback()
+        .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
     }
 
     @ViewBuilder
     private func courseButton(_ course: Course) -> some View {
-        Button {
-            model.selectCourse(course.id)
-        } label: {
-            if model.selectedCourseID == course.id {
-                Label("\(course.emoji) \(course.childTitle)", systemImage: "checkmark")
-            } else {
-                Text("\(course.emoji) \(course.childTitle)")
+        // ロック時は現在コースのみ選択可（CourseAccess ポリシー）。許可時は全コース。
+        if model.childSelectableCourseIDs.contains(course.id) {
+            Button {
+                model.selectCourse(course.id)
+            } label: {
+                if model.selectedCourseID == course.id {
+                    Label("\(course.emoji) \(course.childTitle)", systemImage: "checkmark")
+                } else {
+                    Text("\(course.emoji) \(course.childTitle)")
+                }
             }
         }
     }
