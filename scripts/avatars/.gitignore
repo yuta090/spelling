@@ -2,3 +2,10 @@
 out/
 .env
 __pycache__/
+
+# 収集した参考画像(著作権/容量)はコミットしない。構成と .md/.csv だけ管理する。
+refs/**/*.jpg
+refs/**/*.jpeg
+refs/**/*.png
+refs/**/*.webp
+refs/**/*.gif
