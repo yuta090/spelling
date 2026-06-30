@@ -41,6 +41,7 @@
 		FACE0000000000000000CE13 /* SentenceBankBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE14 /* SentenceBankBundle.swift */; };
 		FACE0000000000000000CE15 /* sentence_bank.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE16 /* sentence_bank.json */; };
 		FACE0000000000000000CE20 /* PuzzleKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE21 /* PuzzleKit.swift */; };
+		FACE0000000000000000FF01 /* TapBurstView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000FF02 /* TapBurstView.swift */; };
 		FACE0000000000000000CE22 /* PuzzleSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE23 /* PuzzleSessionView.swift */; };
 		FACE0000000000000000CF01 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF02 /* SupabaseConfig.swift */; };
 		FACE0000000000000000CF03 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF04 /* SupabaseService.swift */; };
@@ -108,6 +109,7 @@
 		FACE0000000000000000CE14 /* SentenceBankBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceBankBundle.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE16 /* sentence_bank.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/sentence_bank.json; sourceTree = "<group>"; };
 		FACE0000000000000000CE21 /* PuzzleKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleKit.swift; sourceTree = "<group>"; };
+		FACE0000000000000000FF02 /* TapBurstView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapBurstView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE23 /* PuzzleSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleSessionView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF02 /* SupabaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfig.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF04 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				FACE0000000000000000DD02 /* AvatarDressUpView.swift */,
 				FACE0000000000000000CE04 /* ClozeChoiceView.swift */,
 				FACE0000000000000000CE21 /* PuzzleKit.swift */,
+				FACE0000000000000000FF02 /* TapBurstView.swift */,
 				FACE0000000000000000CF21 /* StepMapView.swift */,
 				FACE0000000000000000CE23 /* PuzzleSessionView.swift */,
 				FACE0000000000000000CE0C /* WordListeningView.swift */,
@@ -368,6 +371,7 @@
 				FACE0000000000000000DD01 /* AvatarDressUpView.swift in Sources */,
 				FACE0000000000000000CE03 /* ClozeChoiceView.swift in Sources */,
 				FACE0000000000000000CE20 /* PuzzleKit.swift in Sources */,
+				FACE0000000000000000FF01 /* TapBurstView.swift in Sources */,
 				FACE0000000000000000CF20 /* StepMapView.swift in Sources */,
 				FACE0000000000000000CE22 /* PuzzleSessionView.swift in Sources */,
 				FACE0000000000000000CE0B /* WordListeningView.swift in Sources */,

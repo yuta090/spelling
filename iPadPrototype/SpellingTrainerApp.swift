@@ -1,4 +1,5 @@
 import SwiftUI
+import SpellingSyncCore
 
 @main
 struct SpellingTrainerApp: App {
@@ -96,14 +97,24 @@ private struct RootView: View {
     }
 }
 
+/// ボタンの「押し心地」。押すと縮んで少し沈み（物理ボタンが押し込まれる感じ）、
+/// 離すとバネで戻る。深さ・沈み量は Core の純ロジック `PressFeel` が決め、
+/// ここはアニメーションのカーブとジェスチャ検出だけを担う。
+/// iPad はハプティクスが効かないので「押し心地」は視覚で表現する。
 private struct TapFeedbackModifier: ViewModifier {
-    var pressedScale: CGFloat = 0.965
-    var bounce: Bool = false
+    /// 押し込みの深さ（主要CTA=primary は深く、一般タップ=subtle は控えめ）。
+    var depth: PressFeel.Depth = .subtle
+    /// 離すときに 1.0 を行き過ぎてプルッと戻すオーバーシュート（主要CTA向け）。
+    var overshoot: Bool = false
+    /// 押下スケールの明示上書き（指定時のみ PressFeel の縮みより優先）。
+    var pressedScaleOverride: CGFloat?
 
     private let hitSlop: CGFloat = 10
     @State private var isPressed = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    // 無効化されたボタンは押し込まない（押下は ButtonStyle.isPressed ではなく独自ジェスチャ駆動のため）。
+    @Environment(\.isEnabled) private var isEnabled
 
-    @ViewBuilder
     func body(content: Content) -> some View {
         let expanded = content
             .padding(.horizontal, hitSlop)
@@ -112,34 +123,50 @@ private struct TapFeedbackModifier: ViewModifier {
             .padding(.horizontal, -hitSlop)
             .padding(.vertical, -hitSlop)
 
-        if bounce {
-            expanded
-                .scaleEffect(isPressed ? pressedScale : 1)
-                // 押し込みは素早く、離すと低ダンピングのバネで 1.0 を行き過ぎてプルルンと戻る
-                .animation(
-                    isPressed
-                        ? .easeOut(duration: 0.10)
-                        : .spring(response: 0.32, dampingFraction: 0.40),
-                    value: isPressed
-                )
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { _ in
-                            if !isPressed { isPressed = true }
-                        }
-                        .onEnded { _ in
-                            isPressed = false
-                        }
-                )
-        } else {
-            expanded
-        }
+        let feel = PressFeel.state(pressed: isPressed, depth: depth, reduceMotion: reduceMotion)
+        // override は押下中かつモーション低減OFFのときだけ縮みに反映する。
+        let scale = (isPressed && !reduceMotion)
+            ? (pressedScaleOverride ?? CGFloat(feel.scale))
+            : CGFloat(feel.scale)
+
+        return expanded
+            .scaleEffect(scale)
+            .offset(y: CGFloat(feel.yOffset))
+            .animation(pressAnimation, value: isPressed)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        if isEnabled, !isPressed { isPressed = true }
+                    }
+                    .onEnded { _ in
+                        isPressed = false
+                    }
+            )
+    }
+
+    private var pressAnimation: Animation {
+        // モーション低減時はスナップ（アニメさせない）。
+        if reduceMotion { return .linear(duration: 0) }
+        // 押し込みは素早く。
+        if isPressed { return .easeOut(duration: 0.10) }
+        // 離す: 主要CTAは低ダンピングでプルルン、一般タップは素直なバネ。
+        return overshoot
+            ? .spring(response: 0.32, dampingFraction: 0.40)
+            : .spring(response: 0.26, dampingFraction: 0.70)
     }
 }
 
 extension View {
-    func tapFeedback(scale: CGFloat = 0.965, bounce: Bool = false) -> some View {
-        modifier(TapFeedbackModifier(pressedScale: scale, bounce: bounce))
+    /// 押し心地を付与する。
+    /// - Parameters:
+    ///   - scale: 押下スケールの明示上書き（省略時は深さに応じた既定値）。
+    ///   - bounce: 主要CTA向け。深く沈み、離すとオーバーシュートで戻る。
+    func tapFeedback(scale: CGFloat? = nil, bounce: Bool = false) -> some View {
+        modifier(TapFeedbackModifier(
+            depth: bounce ? .primary : .subtle,
+            overshoot: bounce,
+            pressedScaleOverride: scale
+        ))
     }
 }
 

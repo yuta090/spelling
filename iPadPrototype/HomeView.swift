@@ -649,6 +649,7 @@ private struct ChildMissionPanel: View {
     var startTest: () -> Void
 
     @State private var hintPulse = false
+    @State private var ctaBurst = 0
 
     private var missionText: String {
         // 満点クリア済み＝このステップは「クリア！」表示。あそびに誘う（やらされ感を出さない）。
@@ -843,7 +844,10 @@ private struct ChildMissionPanel: View {
                 ))
 
             // クリア後は主役＝パズル（showPuzzle）、未クリアは主役＝練習（startPractice）。
-            Button(action: isStepCleared ? showPuzzle : startPractice) {
+            Button {
+                ctaBurst += 1
+                if isStepCleared { showPuzzle() } else { startPractice() }
+            } label: {
                 Label(
                     primaryButtonTitle,
                     systemImage: primaryButtonIcon
@@ -856,6 +860,7 @@ private struct ChildMissionPanel: View {
             .buttonStyle(.borderedProminent)
             .contentShape(RoundedRectangle(cornerRadius: 8))
             .tapFeedback(scale: 0.92, bounce: true)
+            .tapBurst(trigger: ctaBurst, reach: 1.4)
             .tint(primaryButtonTint)
             .disabled(isPrimaryButtonDisabled)
 
