@@ -6615,14 +6615,98 @@ private struct CourseSettingsControls: View {
             .tint(ParentPalette.primary)
 
             Text(model.childCanSwitchCourses
-                 ? language.text(japanese: "子のステップ画面でコースを自由に切り替えられます。",
-                                 english: "The child can freely switch courses on their step screen.")
+                 ? language.text(japanese: "子のステップ画面でコースを切り替えられます。下で選んだコースだけにしぼれます。",
+                                 english: "The child can switch courses on their step screen. Limit them with the checklist below.")
                  : language.text(japanese: "オフのあいだは、子はコースを切り替えられません（親が決めたコースだけ）。",
                                  english: "While off, the child can't switch courses (only the one you chose)."))
             .font(.caption2.weight(.semibold))
             .foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)
+
+            if model.childCanSwitchCourses {
+                allowedCourseChecklist
+            }
         }
+    }
+
+    /// 「子に選ばせるコース」のチェックリスト（許可サブセット）。
+    /// 何も選ばない（空集合）= ぜんぶ許可。1つ以上選ぶと、その集合（＋現在コース）だけに絞られる。
+    @ViewBuilder
+    private var allowedCourseChecklist: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(language.text(japanese: "子に選ばせるコース", english: "Courses the child can pick"))
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(ParentPalette.primary)
+                Spacer()
+                if !model.allowedCourseIDs.isEmpty {
+                    Button {
+                        model.allowedCourseIDs = []
+                    } label: {
+                        Text(language.text(japanese: "ぜんぶにする", english: "Allow all"))
+                            .font(.caption2.weight(.bold))
+                    }
+                    .tint(ParentPalette.primary)
+                }
+            }
+
+            Text(model.allowedCourseIDs.isEmpty
+                 ? language.text(japanese: "なにも選んでいないので、いまはぜんぶのコースを選べます。",
+                                 english: "Nothing selected — the child can pick any course.")
+                 : language.text(japanese: "選んだコースだけにしぼっています（いま練習中のコースはいつでも選べます）。",
+                                 english: "Limited to the checked courses (the current course is always available)."))
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+
+            allowedCourseGroup(
+                title: language.text(japanese: "うちのれんしゅう", english: "Personal"),
+                courses: [CourseDirectory.personal]
+            )
+            allowedCourseGroup(
+                title: language.text(japanese: "学年", english: "Grade"),
+                courses: CourseDirectory.grades
+            )
+            allowedCourseGroup(
+                title: language.text(japanese: "英検", english: "Eiken"),
+                courses: CourseDirectory.eiken
+            )
+        }
+        .padding(10)
+        .background(ParentPalette.surfaceRaised)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    @ViewBuilder
+    private func allowedCourseGroup(title: String, courses: [Course]) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.secondary)
+            ForEach(courses) { course in
+                allowedCourseToggleRow(course)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func allowedCourseToggleRow(_ course: Course) -> some View {
+        // 空集合は「ぜんぶ許可」なので、未選択でもチェックは付けない（明示的に選んだものだけ ON 表示）。
+        let isChecked = model.allowedCourseIDs.contains(course.id)
+        Button {
+            model.toggleAllowedCourse(course.id)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: isChecked ? "checkmark.square.fill" : "square")
+                    .foregroundStyle(isChecked ? ParentPalette.primary : Color.secondary)
+                Text("\(course.emoji) \(course.parentTitle)")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                Spacer()
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
