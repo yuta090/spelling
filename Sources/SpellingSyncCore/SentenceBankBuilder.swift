@@ -199,9 +199,11 @@ public enum SentenceBankBuilder {
             .filter { !$0.isEmpty }
     }
 
-    private static let edgePunctuation = CharacterSet(charactersIn: ".,!?;:\"'`()[]{}…—–-‚„“”‘’«»")
+    static let edgePunctuation = CharacterSet(charactersIn: ".,!?;:\"'`()[]{}…—–-‚„“”‘’«»")
 
-    private static func stripEdgePunctuation(_ raw: String) -> String {
+    /// 語の前後にある句読点・記号だけを落とす（語中のアポストロフィ等は残す: I'm / don't）。
+    /// トークナイズと答え合わせ表示（`SentenceFeedback.orderHint`）で記号の扱いを揃えるため共有する。
+    static func stripEdgePunctuation(_ raw: String) -> String {
         var s = Substring(raw)
         while let f = s.unicodeScalars.first, edgePunctuation.contains(f) { s = s.dropFirst() }
         while let l = s.unicodeScalars.last, edgePunctuation.contains(l) { s = s.dropLast() }

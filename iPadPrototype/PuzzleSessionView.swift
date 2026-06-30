@@ -562,7 +562,11 @@ private struct PuzzleStepView: View {
         VStack(spacing: 12) {
             PuzzleVerdictLabel(isCorrect: isCorrect)
             // 「えらんだの／せいかい」は選択肢ボタン自身が色＋✓✗で伝えるので、ここでは文字を重ねない。
-            if let hint = grammarHint { grammarHintBlock(hint) }   // なぜ違うか（文法のミニ解説）
+            if !isCorrect, format == .wordOrdering {
+                orderingExplanationBlock   // 正解の構文＋意味＋ならびかた（文法タグは出さない）
+            } else if let hint = grammarHint {
+                grammarHintBlock(hint)     // cloze系の「なぜ違うか」（文法のミニ解説）
+            }
             if canListenBack {
                 PuzzleListenButton(title: format == .wordListening ? "もういちど きく" : "きいてみる") {
                     listenBack()
@@ -575,16 +579,54 @@ private struct PuzzleStepView: View {
         }
     }
 
-    /// 不正解のとき「なぜ違うか」を文の文法タグから出す（cloze/ぶんづくり）。
+    /// 不正解のとき「なぜ違うか」を文の文法タグから出す（cloze系のみ）。
+    /// ぶんづくり（並べ替え）は語順が難所で文法タグとズレるため、ここではなく
+    /// `orderingExplanationBlock`（正解構文＋ならびかた）で出す。
     /// 文法タグの無い文や単語リスニングは nil（無理に説明を作らない＝事前作成の固定文だけ使う）。
     private var grammarHint: (title: String, detail: String)? {
         guard !isCorrect else { return nil }
         switch format {
-        case .wordOrdering, .clozeChoice, .listeningCloze:
+        case .clozeChoice, .listeningCloze:
             guard let g = sentence?.item.grammar else { return nil }
             return (g.titleJa, g.explanationJa)
-        case .wordListening, .clozeHandwriting, .composition:
+        case .wordOrdering, .wordListening, .clozeHandwriting, .composition:
             return nil
+        }
+    }
+
+    /// ぶんづくりの不正解時に「正しい構文」を見せるブロック。
+    /// 文法タグ（語順とズレやすく誤りも混じる）ではなく、正解文＋意味＋ならびかたヒントで
+    /// 「こう並べるんだ」を直接伝える。ならびかたは正解そのものから機械的に導く（Core純関数）。
+    @ViewBuilder private var orderingExplanationBlock: some View {
+        if let ex = orderingExercise {
+            let correct = ex.answer.joined(separator: " ")
+            VStack(spacing: 6) {
+                Text("せいかいは…")
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundStyle(PuzzleTheme.ink.opacity(0.6))
+                Text(correct)
+                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .foregroundStyle(PuzzleTheme.ink)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let ja = sentence?.item.ja, !ja.isEmpty {
+                    FuriganaText(
+                        segments: JapaneseReading.rubySegments(ja, maxGrade: maxKanjiGrade),
+                        baseSize: 15, baseWeight: .medium, design: .rounded,
+                        color: PuzzleTheme.ink.opacity(0.75)
+                    )
+                }
+                if let hint = SentenceFeedback.orderHint(ex.answer) {
+                    Text(hint)
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundStyle(PuzzleTheme.accent)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 14).padding(.vertical, 10)
+            .background(RoundedRectangle(cornerRadius: 14).fill(PuzzleTheme.accent.opacity(0.10)))
         }
     }
 
