@@ -2,7 +2,14 @@ import XCTest
 @testable import SpellingSyncCore
 
 final class DailyPlayLimiterTests: XCTestCase {
-    private let cal = Calendar(identifier: .gregorian)
+    // fixture の日付は Asia/Tokyo で作る（下記 day(...)）。比較カレンダーの TZ を未指定にすると
+    // マシン TZ 依存になり、UTC ランナー(CI)では JST の朝/夜の時刻が UTC で前日に倒れて
+    // 「日付ロールオーバー」判定がずれてテストが落ちる。fixture と同じ TZ に固定して決定論にする。
+    private let cal: Calendar = {
+        var c = Calendar(identifier: .gregorian)
+        c.timeZone = TimeZone(identifier: "Asia/Tokyo")!
+        return c
+    }()
     private let limiter = DailyPlayLimiter(dailyLimit: 2)
 
     private func day(_ y: Int, _ m: Int, _ d: Int, _ h: Int = 12) -> Date {
