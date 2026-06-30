@@ -135,7 +135,7 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             NavigationStack {
-            ZStack(alignment: .bottom) {
+            ZStack(alignment: .top) {
                 HomeBackground(themeID: model.selectedBackgroundID)
 
                 VStack(spacing: 20) {
@@ -185,16 +185,20 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .padding(.horizontal, 36)
                 .padding(.bottom, 28)
-            }
-            // ヘッダー（ホーム名＋結果/設定アイコン）は常に上部に固定する。
-            // 下のミッション内容が背の高い状態（持ち越し復習・テスト結果・再開など）でも、
-            // bottom 揃えの本文がはみ出してヘッダーを画面外へ押し上げ＝見切れ/タップ不能に
-            // なるのを防ぐ（iPad mini 縦などの狭い高さ対策）。safeAreaInset で高さを確保する。
-            .safeAreaInset(edge: .top, spacing: 0) {
+
+                // ヘッダー（ホーム名＋結果/設定アイコン）は常に上部に固定する。
+                // 本文と同じ ZStack(alignment: .top) 内に「上揃えレイヤー」として最後に重ねる。
+                // こうすると下のミッション内容が背の高い状態（持ち越し復習・テスト結果・再開など）
+                // でもヘッダーを押し出せない＝見切れ/タップ不能を防ぐ。
+                // 以前は .safeAreaInset(edge: .top) で高さを確保していたが、ナビバー非表示
+                // ＋背景の .ignoresSafeArea() と相まって、上部セーフエリアが 0 の機種
+                // （iPad Pro 11" フルスクリーン縦など）でヘッダーが丸ごと消える不具合が出たため、
+                // 重ね方式へ変更（ZStack はセーフエリアを尊重するのでヘッダーはステータスバー直下に出る）。
                 header
                     .padding(.horizontal, 36)
                     .padding(.top, 24)
                     .padding(.bottom, 20)
+                    .frame(maxWidth: .infinity, alignment: .top)
             }
             .navigationDestination(isPresented: Binding(
                 get: { activeMode != nil },
