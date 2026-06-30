@@ -6515,8 +6515,8 @@ private struct TestSettingsPanel: View {
 
             SettingBlock(title: language.text(japanese: "クレジット", english: "Credits")) {
                 Text(language.text(
-                    japanese: "例文: Tanaka Corpus（CC BY 2.0 FR）\n英和辞書: EJDict-hand（パブリックドメイン）",
-                    english: "Examples: Tanaka Corpus (CC BY 2.0 FR)\nEN–JA dictionary: EJDict-hand (Public Domain)"
+                    japanese: "例文: Tanaka Corpus（CC BY 2.0 FR）\n英和辞書: EJDict-hand（パブリックドメイン）\n品詞: Moby Part-of-Speech（パブリックドメイン）",
+                    english: "Examples: Tanaka Corpus (CC BY 2.0 FR)\nEN–JA dictionary: EJDict-hand (Public Domain)\nParts of speech: Moby Part-of-Speech (Public Domain)"
                 ))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
