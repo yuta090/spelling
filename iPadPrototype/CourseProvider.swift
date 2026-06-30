@@ -8,6 +8,7 @@ import SpellingSyncCore
 final class CourseProvider {
     private let wordBank: WordBank
     private var rowsCache: [LeveledRow]?
+    private var dolchRowsCache: [DolchRow]?
     private var stepsCache: [String: [WordStep]] = [:]
 
     /// 合成語の登録日時（固定＝決定論。順序は `WordStep.number` で制御するので実値は表示用のみ）。
@@ -22,6 +23,13 @@ final class CourseProvider {
         return r
     }
 
+    private func dolchRows() -> [DolchRow] {
+        if let dolchRowsCache { return dolchRowsCache }
+        let r = wordBank.dolchRows()
+        dolchRowsCache = r
+        return r
+    }
+
     /// コースのステップ（合成）。`.personal` は空（呼び出し側が `makeWordSteps` を使う）。
     func steps(for course: Course) -> [WordStep] {
         if let cached = stepsCache[course.id] { return cached }
@@ -33,6 +41,8 @@ final class CourseProvider {
             built = CourseCatalog.buildSteps(rows: rows(), schoolGrade: g)
         case .eiken(let lv):
             built = CourseCatalog.buildSteps(rows: rows(), eiken: lv)
+        case .dolch:
+            built = CourseCatalog.buildDolchSteps(rows: dolchRows())
         }
         let steps = built.map { cs in
             let words = cs.words.map { cw in

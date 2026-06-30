@@ -21,6 +21,14 @@ enum CourseDirectory {
         emoji: "🏠", accent: "#7C9CF5"
     )
 
+    /// Dolch サイトワード（基礎語）コース。最初に固める一番やさしい土台。
+    /// 子には級/学年ラベルを出さない＝childTitle はやさしい名前。
+    static let dolch = Course(
+        id: CourseCatalog.dolchCourseID, kind: .dolch,
+        parentTitle: "きほんコース（サイトワード）", childTitle: "きほんのことば",
+        emoji: "🔤", accent: "#F2994A"
+    )
+
     static let grades: [Course] = (1...9).map { g in
         let w = gradeWorld(g)
         return Course(
@@ -40,7 +48,7 @@ enum CourseDirectory {
         )
     }
 
-    static let all: [Course] = [personal] + grades + eiken
+    static let all: [Course] = [personal, dolch] + grades + eiken
 
     static func course(id: String) -> Course? { all.first { $0.id == id } }
 

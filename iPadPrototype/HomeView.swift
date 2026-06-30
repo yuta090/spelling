@@ -1107,7 +1107,8 @@ private struct ChildStepPickerSheet: View {
                         completedStepIDs: completedStepIDs,
                         selectedStepID: model.selectedWordStepID,
                         language: language,
-                        character: HomeRewardCharacter.character(id: model.selectedCharacterID)
+                        character: HomeRewardCharacter.character(id: model.selectedCharacterID),
+                        courseID: activeCourse.id
                     ) { stepID in
                         model.selectedWordStepID = stepID
                         dismiss()
@@ -1140,6 +1141,9 @@ private struct ChildStepPickerSheet: View {
     private var courseMenu: some View {
         if model.childCanSwitchCourses {
             Menu {
+                Section(language.text(japanese: "きほん", english: "Basics")) {
+                    courseButton(CourseDirectory.dolch)
+                }
                 Section(language.text(japanese: "がくねん", english: "Grade")) {
                     ForEach(CourseDirectory.grades) { course in
                         courseButton(course)

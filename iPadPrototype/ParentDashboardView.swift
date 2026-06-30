@@ -6569,6 +6569,9 @@ private struct CourseSettingsControls: View {
                 Section(language.text(japanese: "うちのれんしゅう", english: "Personal")) {
                     courseRow(CourseDirectory.personal)
                 }
+                Section(language.text(japanese: "きほん", english: "Basics")) {
+                    courseRow(CourseDirectory.dolch)
+                }
                 Section(language.text(japanese: "学年", english: "Grade")) {
                     ForEach(CourseDirectory.grades) { courseRow($0) }
                 }
