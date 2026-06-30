@@ -134,8 +134,6 @@ struct HomeView: View {
                 HomeBackground(themeID: model.selectedBackgroundID)
 
                 VStack(spacing: 20) {
-                    header
-
                     Spacer(minLength: 22)
 
                     VStack(spacing: 12) {
@@ -179,9 +177,19 @@ struct HomeView: View {
 
                     Spacer(minLength: 100)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .padding(.horizontal, 36)
-                .padding(.top, 24)
                 .padding(.bottom, 28)
+            }
+            // ヘッダー（ホーム名＋結果/設定アイコン）は常に上部に固定する。
+            // 下のミッション内容が背の高い状態（持ち越し復習・テスト結果・再開など）でも、
+            // bottom 揃えの本文がはみ出してヘッダーを画面外へ押し上げ＝見切れ/タップ不能に
+            // なるのを防ぐ（iPad mini 縦などの狭い高さ対策）。safeAreaInset で高さを確保する。
+            .safeAreaInset(edge: .top, spacing: 0) {
+                header
+                    .padding(.horizontal, 36)
+                    .padding(.top, 24)
+                    .padding(.bottom, 20)
             }
             .navigationDestination(isPresented: Binding(
                 get: { activeMode != nil },
