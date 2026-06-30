@@ -54,6 +54,29 @@ final class WordBank: @unchecked Sendable {
         return nil
     }
 
+    /// 英単語の英語の主品詞（"noun" / "verb" / "adjective"）。
+    /// おぼえる練習で英文フレーム（I like ___ / I can ___ / It is ___）を選ぶのに使う。
+    /// 同梱の `pos` テーブル（Moby PD 由来）に無い語（約6%）は nil ＝意味のみ4択へフォールバック。
+    func partOfSpeech(for word: String) -> String? {
+        // 非ASCII英字（アクセント・記号）を含む語は弾く。normalize は a-z だけ残すため、
+        // "naïve" → "nave" のように**別語へ衝突**して誤った品詞/フレームを引くのを防ぐ。
+        let lowered = word.lowercased()
+        guard lowered.allSatisfy({ $0 == "-" || $0 == " " || ($0.isASCII && $0.isLetter) }) else { return nil }
+        let key = normalize(word)
+        guard !key.isEmpty, let db else { return nil }
+        var stmt: OpaquePointer?
+        defer { sqlite3_finalize(stmt) }
+        guard sqlite3_prepare_v2(db, "SELECT pos FROM pos WHERE word = ? LIMIT 1", -1, &stmt, nil) == SQLITE_OK else {
+            return nil
+        }
+        sqlite3_bind_text(stmt, 1, key, -1, Self.transient)
+        if sqlite3_step(stmt) == SQLITE_ROW, let c = sqlite3_column_text(stmt, 0) {
+            let value = String(cString: c)
+            return value.isEmpty ? nil : value
+        }
+        return nil
+    }
+
     /// 英単語を含む例文（英＋日）。短い順。
     func examples(for word: String, limit: Int = 3) -> [WordExample] {
         let key = normalize(word)

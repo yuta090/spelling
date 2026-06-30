@@ -190,32 +190,42 @@ struct HomeView: View {
             )) {
                 if let mode = activeMode {
                 let resumeState = mode == .practice ? activePracticeResumeState : nil
-                SpellingSessionView(
-                    mode: mode,
-                    words: sessionWords(for: mode),
-                    resumeState: resumeState,
-                    onPracticeProgressChange: { state in
-                        practiceResumeState = state
-                    },
-                    onPracticeCompleted: {
-                        finishCurrentPracticeRound()
-                    },
-                    onPracticeStartTest: {
-                        practiceResumeState = nil
-                        activeMode = nil
-                        DispatchQueue.main.async {
-                            activeMode = .test
-                        }
-                    },
-                    onPracticeRetryWords: { words in
-                        startPracticeAgain(words: words)
-                    },
-                    onRequestClose: {
-                        iris.cover(animated: !reduceMotion) {
-                            activeMode = nil
-                        }
-                    }
-                )
+                let onProgress: (PracticeSessionResumeState?) -> Void = { state in
+                    practiceResumeState = state
+                }
+                let onCompleted = { finishCurrentPracticeRound() }
+                let onStartTest = {
+                    practiceResumeState = nil
+                    activeMode = nil
+                    DispatchQueue.main.async { activeMode = .test }
+                }
+                let onRetry: ([String]) -> Void = { words in startPracticeAgain(words: words) }
+                let onClose = {
+                    iris.cover(animated: !reduceMotion) { activeMode = nil }
+                }
+                if mode == .practice {
+                    // 必須は「おぼえる練習（手書きの前・タップで選ぶ）」→ 手書きテスト の順で出す。
+                    PracticeFlowView(
+                        words: sessionWords(for: mode),
+                        resumeState: resumeState,
+                        onPracticeProgressChange: onProgress,
+                        onPracticeCompleted: onCompleted,
+                        onPracticeStartTest: onStartTest,
+                        onPracticeRetryWords: onRetry,
+                        onRequestClose: onClose
+                    )
+                } else {
+                    SpellingSessionView(
+                        mode: mode,
+                        words: sessionWords(for: mode),
+                        resumeState: resumeState,
+                        onPracticeProgressChange: onProgress,
+                        onPracticeCompleted: onCompleted,
+                        onPracticeStartTest: onStartTest,
+                        onPracticeRetryWords: onRetry,
+                        onRequestClose: onClose
+                    )
+                }
                 }
             }
             .fullScreenCover(isPresented: $showingParent) {
