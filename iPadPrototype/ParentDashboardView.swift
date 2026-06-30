@@ -6282,6 +6282,10 @@ private struct TestSettingsPanel: View {
                 }
             }
 
+            SettingBlock(title: language.text(japanese: "コース（れんしゅうする内容）", english: "Course")) {
+                CourseSettingsControls(language: language)
+            }
+
             SettingBlock(title: language.text(japanese: "初回設定", english: "First-time Setup")) {
                 Button(role: .destructive) {
                     showingOnboardingResetConfirm = true
@@ -6549,6 +6553,89 @@ private struct TestSettingsPanel: View {
             }
         }
         #endif
+    }
+}
+
+/// コース設定（親）：いま練習するコースを選ぶ＋「子にも自分でえらばせる」トグル。
+/// 既定はロック（親が決める）。子の切替可否は `AppModel.childCanSwitchCourses` / `CourseAccess` が握る。
+private struct CourseSettingsControls: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            // 親がコースを選ぶ（親には級/学年ラベルを出してよい＝parentTitle）。
+            Menu {
+                Section(language.text(japanese: "うちのれんしゅう", english: "Personal")) {
+                    courseRow(CourseDirectory.personal)
+                }
+                Section(language.text(japanese: "学年", english: "Grade")) {
+                    ForEach(CourseDirectory.grades) { courseRow($0) }
+                }
+                Section(language.text(japanese: "英検", english: "Eiken")) {
+                    ForEach(CourseDirectory.eiken) { courseRow($0) }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Text(model.activeCourse.emoji)
+                    Text(model.activeCourse.parentTitle)
+                        .font(.subheadline.weight(.bold))
+                    Spacer()
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption.weight(.bold))
+                }
+                .foregroundStyle(ParentPalette.primary)
+                .padding(.vertical, 9)
+                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(ParentPalette.surfaceRaised)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
+                )
+            }
+            .tint(ParentPalette.primary)
+
+            Text(language.text(
+                japanese: "学校のテストがある場合は「うちのれんしゅう」に取り込み、ない場合は学年・英検コースをそのまま練習させられます。",
+                english: "Import school tests into Personal, or use a Grade/Eiken course when there's no weekly test."
+            ))
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+
+            Toggle(isOn: $model.childCanSwitchCourses) {
+                Label(
+                    language.text(japanese: "子にも自分でえらばせる", english: "Let the child switch courses"),
+                    systemImage: "hand.tap.fill"
+                )
+                .font(.subheadline.weight(.bold))
+            }
+            .tint(ParentPalette.primary)
+
+            Text(model.childCanSwitchCourses
+                 ? language.text(japanese: "子のステップ画面でコースを自由に切り替えられます。",
+                                 english: "The child can freely switch courses on their step screen.")
+                 : language.text(japanese: "オフのあいだは、子はコースを切り替えられません（親が決めたコースだけ）。",
+                                 english: "While off, the child can't switch courses (only the one you chose)."))
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    @ViewBuilder
+    private func courseRow(_ course: Course) -> some View {
+        Button {
+            model.selectCourse(course.id)
+        } label: {
+            if model.selectedCourseID == course.id {
+                Label("\(course.emoji) \(course.parentTitle)", systemImage: "checkmark")
+            } else {
+                Text("\(course.emoji) \(course.parentTitle)")
+            }
+        }
     }
 }
 
