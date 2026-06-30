@@ -582,41 +582,52 @@ struct HomeView: View {
     }
 
     private var header: some View {
+        // タイトルは1行で自動縮小（折り返さない）。長い名前/大きい文字サイズでも
+        // 右の「結果」「設定」アイコンを押し出さない（iPad mini 縦などの狭幅で消えるのを防ぐ）。
         HStack(spacing: 14) {
             Label(homeTitle, systemImage: "house.fill")
                 .font(.headline.weight(.bold))
                 .foregroundStyle(Color(red: 0.10, green: 0.32, blue: 0.74))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .truncationMode(.tail)
+                .layoutPriority(0)
 
-            Spacer()
+            Spacer(minLength: 8)
 
-            Button {
-                showingResults = true
-            } label: {
-                Image(systemName: "chart.bar.xaxis")
-                    .font(.title2.weight(.bold))
-                    .frame(width: 44, height: 44)
-            }
-            .buttonStyle(HomeIconButtonStyle())
-            .tapFeedback(scale: 0.88, bounce: true)
-            .accessibilityLabel(language.text(japanese: "結果", english: "Results"))
-
-            Button {
-                #if DEBUG
-                if UITestSupport.isActive {
-                    showingParent = true   // UIテストは親ゲートをバイパスして親メニューを開く
-                    return
+            // アイコン群は固定サイズで必ず表示（タイトルに優先して場所を確保）。
+            HStack(spacing: 14) {
+                Button {
+                    showingResults = true
+                } label: {
+                    Image(systemName: "chart.bar.xaxis")
+                        .font(.title2.weight(.bold))
+                        .frame(width: 44, height: 44)
                 }
-                #endif
-                showingParentGate = true
-            } label: {
-                Image(systemName: "gearshape.fill")
-                    .font(.title2.weight(.bold))
-                    .frame(width: 44, height: 44)
+                .buttonStyle(HomeIconButtonStyle())
+                .tapFeedback(scale: 0.88, bounce: true)
+                .accessibilityLabel(language.text(japanese: "結果", english: "Results"))
+
+                Button {
+                    #if DEBUG
+                    if UITestSupport.isActive {
+                        showingParent = true   // UIテストは親ゲートをバイパスして親メニューを開く
+                        return
+                    }
+                    #endif
+                    showingParentGate = true
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                        .font(.title2.weight(.bold))
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(HomeIconButtonStyle())
+                .accessibilityIdentifier("home.parentButton")
+                .tapFeedback(scale: 0.88, bounce: true)
+                .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
             }
-            .buttonStyle(HomeIconButtonStyle())
-            .accessibilityIdentifier("home.parentButton")
-            .tapFeedback(scale: 0.88, bounce: true)
-            .accessibilityLabel(language.text(japanese: "保護者メニュー", english: "Parent menu"))
+            .fixedSize()
+            .layoutPriority(1)
         }
     }
 }
