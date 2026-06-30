@@ -22,9 +22,22 @@ create table if not exists public.ocr_bench_samples (
   -- ↓ 人があとで埋める（ラベル）
   ground_truth  text,                        -- 実際に書かれた文字（NULL=未ラベル）
   legible       boolean,                     -- 人が読めるか（NULL=未ラベル / 判読不能サンプルは false）
+  neatness      smallint,                    -- 字の丁寧さの人手ラベル 1〜4（NULL=未ラベル / 任意）。
+                                             -- 綴り正誤とは独立。モデルの neatness 判定の人手一致を測る用。
+  constraint ocr_bench_samples_neatness_range
+    check (neatness is null or neatness between 1 and 4),
 
   created_at    timestamptz not null default now()
 );
+
+-- 既存テーブルへの後付け（create table if not exists は既存テーブルを変更しないため、再実行で安全に列追加）。
+alter table public.ocr_bench_samples
+  add column if not exists neatness smallint;
+do $$ begin
+  alter table public.ocr_bench_samples
+    add constraint ocr_bench_samples_neatness_range
+    check (neatness is null or neatness between 1 and 4);
+exception when duplicate_object then null; end $$;
 
 -- 未ラベルを探しやすく
 create index if not exists ocr_bench_samples_unlabeled
@@ -59,3 +72,5 @@ create policy "authenticated can upload ocr-bench"
 --   正しく書けた  -> ground_truth == target
 --   スペルミス    -> 例) target='because', ground_truth='becuase'
 --   判読不能      -> legible=false, ground_truth は意図/最良推定（捏造検出用）
+--   丁寧さ        -> neatness 1〜4（任意）。綴り正誤と無関係に「字の整い」だけで付ける。
+--                    1=読みにくい 2=ふつう 3=きれい 4=お手本級。モデルの neatness 判定の人手一致を測る用。
