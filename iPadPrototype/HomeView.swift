@@ -10296,8 +10296,11 @@ private struct SeashellCharacterFace: View {
             FanShape().fill(character.primary).frame(width: 72, height: 60).offset(y: 6)
             Path { p in
                 let apex = CGPoint(x: 36, y: 56)
-                for a in [-32.0, -16, 0, 16, 32] {
-                    let rad = (a - 90) * .pi / 180
+                // 角度は明示的に Double 固定（無指定だと新SDKの Float16 版 cos/sin と
+                // 曖昧になり、コンパイラによっては型推論が破綻するため）。
+                let angles: [Double] = [-32, -16, 0, 16, 32]
+                for a in angles {
+                    let rad = (a - 90) * Double.pi / 180
                     p.move(to: apex)
                     p.addLine(to: CGPoint(x: apex.x + 52 * cos(rad), y: apex.y + 52 * sin(rad)))
                 }
