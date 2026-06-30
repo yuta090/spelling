@@ -86,8 +86,13 @@ struct PuzzlePrimaryButton: View {
     var tint: Color = PuzzleTheme.accent
     let action: () -> Void
 
+    @State private var burst = 0
+
     var body: some View {
-        Button(action: action) {
+        Button {
+            burst += 1
+            action()
+        } label: {
             Text(title)
                 .font(.system(size: 26, weight: .heavy, design: .rounded))
                 .foregroundStyle(.white)
@@ -106,6 +111,7 @@ struct PuzzlePrimaryButton: View {
         }
         .buttonStyle(.plain)
         .tapFeedback(bounce: true)
+        .tapBurst(trigger: burst, reach: 1.25)
     }
 }
 
@@ -166,10 +172,12 @@ struct PuzzleListenButton: View {
     /// 「押してね」と気づけるよう、待機中はゆっくり脈打つ。
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var pulse = false
+    @State private var burst = 0
 
     var body: some View {
         Button {
             PuzzleTheme.haptic()
+            burst += 1
             action()
         } label: {
             Label(title, systemImage: "speaker.wave.2.fill")
@@ -185,6 +193,7 @@ struct PuzzleListenButton: View {
         }
         .buttonStyle(.plain)
         .tapFeedback(bounce: true)
+        .tapBurst(trigger: burst, reach: 0.9)
         .onAppear {
             guard !reduceMotion else { return }
             withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
@@ -214,6 +223,7 @@ struct PuzzleOptionButton: View {
     @State private var shake: CGFloat = 0
     @State private var pop: CGFloat = 1
     @State private var shine: CGFloat = -1.3   // -1.3=画面外左, 1.3=画面外右（キラッの位置）
+    @State private var burst = 0
 
     private var interactive: Bool { result == .idle }
 
@@ -221,6 +231,7 @@ struct PuzzleOptionButton: View {
         Button {
             guard interactive else { return }
             PuzzleTheme.haptic()
+            burst += 1                     // 選んだ瞬間に軽く星がはじける（タップの手応え）
             action()
         } label: {
             HStack(spacing: 10) {
@@ -251,6 +262,7 @@ struct PuzzleOptionButton: View {
         }
         .buttonStyle(.plain)
         .tapFeedback(bounce: interactive)
+        .tapBurst(trigger: burst, reach: 0.75)
         .allowsHitTesting(interactive)   // 回答後は無反応の当たり判定を消す（VoiceOver/Switch対策）
         .task(id: result) { animate(for: result) }
     }

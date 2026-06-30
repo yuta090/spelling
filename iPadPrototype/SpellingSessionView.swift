@@ -2807,7 +2807,8 @@ private struct SessionControlButton: View {
         }
         .buttonStyle(.plain)
         .contentShape(RoundedRectangle(cornerRadius: 8))
-        .tapFeedback()
+        // 主要CTA（つぎへ／おわる／こたえる）は深く押し込む物理感、パス等は控えめ。
+        .tapFeedback(bounce: style != .secondary)
         .scaleEffect(tapEffectStyle.scale(active: tapEffectActive, reduceMotion: reduceMotion))
         .rotationEffect(.degrees(tapEffectStyle.rotation(active: tapEffectActive, reduceMotion: reduceMotion)))
         .offset(y: tapEffectStyle.yOffset(active: tapEffectActive, reduceMotion: reduceMotion))
