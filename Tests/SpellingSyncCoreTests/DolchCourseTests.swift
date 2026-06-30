@@ -107,12 +107,18 @@ final class DolchCourseTests: XCTestCase {
         ]
         let a = CourseCatalog.buildDolchSteps(rows: input, stepSize: 4)
         let b = CourseCatalog.buildDolchSteps(rows: input.reversed(), stepSize: 4)
-        let c = CourseCatalog.buildDolchSteps(rows: [input[3], input[0]] + input, stepSize: 4)
-        XCTAssertEqual(a, b)
-        // c は重複入り（順序の安定だけ確認：rank相当=帯順×語が単調）。
-        let cTexts = c.flatMap { $0.words.map(\.text) }
-        XCTAssertEqual(cTexts, cTexts)  // 例外なく組める＝決定論で破綻しない
+        XCTAssertEqual(a, b)              // 入力順を反転しても同一＝決定論
         XCTAssertFalse(a.isEmpty)
+
+        // 重複入りでも入力順非依存で決定論（重複は除かれず安定順で並ぶ）。
+        let cInput = [input[3], input[0]] + input          // sit,up を先頭に重複追加
+        let c1 = CourseCatalog.buildDolchSteps(rows: cInput, stepSize: 4)
+        let c2 = CourseCatalog.buildDolchSteps(rows: cInput.reversed(), stepSize: 4)
+        XCTAssertEqual(c1, c2)                              // 重複があっても入力順非依存で同一
+        let c1Texts = c1.flatMap { $0.words.map(\.text) }
+        XCTAssertEqual(c1Texts.count, cInput.count)         // 重複は除かれない（全語が残る）
+        // 同一帯内はアルファベット順（pre-K 帯の red < up < up を確認）。
+        XCTAssertEqual(c1Texts.prefix(3).map { $0 }, ["red", "up", "up"])
     }
 
     // MARK: - 端
