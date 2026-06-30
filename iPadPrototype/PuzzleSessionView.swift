@@ -245,17 +245,7 @@ struct PuzzleSessionView: View {
     }
 
     private var progressBar: some View {
-        HStack(spacing: 6) {
-            ForEach(schedule.indices, id: \.self) { i in
-                Circle()
-                    .fill(i == stepIndex ? PuzzleTheme.accent : PuzzleTheme.slotStroke.opacity(0.5))
-                    .frame(width: 8, height: 8)
-            }
-            Spacer()
-            Text("\(stepIndex + 1) / \(schedule.count)")
-                .font(.system(size: 13, weight: .bold, design: .rounded))
-                .foregroundStyle(.secondary)
-        }
+        PuzzleProgressBar(total: schedule.count, current: stepIndex)
     }
 
     private func advance() {
@@ -278,10 +268,11 @@ struct PuzzleSessionView: View {
         VStack(spacing: 24) {
             Spacer(minLength: 0)
             Image(systemName: "party.popper.fill")
-                .font(.system(size: 72, weight: .bold))
+                .font(.system(size: 80, weight: .bold))
                 .foregroundStyle(PuzzleTheme.accent)
+                .overlay { PuzzleCelebration(pieces: 18, radius: 170) }
             Text("クリア！")
-                .font(.system(size: 34, weight: .heavy, design: .rounded))
+                .font(.system(size: 38, weight: .heavy, design: .rounded))
                 .foregroundStyle(PuzzleTheme.ink)
             VStack(spacing: 12) {
                 if canReplay {
@@ -422,11 +413,12 @@ private struct PuzzleStepView: View {
             }
         } label: {
             Text(tile.text)
-                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .font(.system(size: 23, weight: .heavy, design: .rounded))
                 .foregroundStyle(PuzzleTheme.ink)
-                .padding(.horizontal, 14).padding(.vertical, 10)
-                .background(RoundedRectangle(cornerRadius: 12).fill(PuzzleTheme.tileFill))
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(PuzzleTheme.tileStroke, lineWidth: 2))
+                .padding(.horizontal, 16).padding(.vertical, 12)
+                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(PuzzleTheme.tileFill)
+                    .shadow(color: PuzzleTheme.ink.opacity(0.10), radius: 5, x: 0, y: 3))
+                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(PuzzleTheme.tileStroke, lineWidth: 2.5))
         }
         .buttonStyle(.plain)
         .tapFeedback(bounce: true)
@@ -449,18 +441,29 @@ private struct PuzzleStepView: View {
         if let ex = clozeExercise {
             promptJa
             Text(clozeSentence(ex, filled: answered ? ex.answer : nil))
-                .font(.system(size: 26, weight: .bold, design: .rounded))
+                .font(.system(size: 27, weight: .heavy, design: .rounded))
                 .foregroundStyle(PuzzleTheme.ink)
                 .multilineTextAlignment(.center)
-                .padding(.vertical, 4)
-            if !answered {
-                VStack(spacing: 10) {
-                    ForEach(ex.options, id: \.self) { option in
-                        PuzzleOptionButton(text: option) { gradeCloze(ex, selected: option) }
+                .puzzleCard()
+                .overlay { if answered, isCorrect { PuzzleCelebration() } }
+            // 回答後も選択肢は残し、自分の選択＝緑✓/赤✗・正解の開示で「手触り」を出す。
+            VStack(spacing: 12) {
+                ForEach(ex.options, id: \.self) { option in
+                    PuzzleOptionButton(text: option,
+                                       result: optionResult(option, answer: ex.answer)) {
+                        gradeCloze(ex, selected: option)
                     }
                 }
             }
         }
+    }
+
+    /// 回答後の各選択肢の見た目状態（自分の選択・正解の開示・関係なし）。未回答は .idle。
+    private func optionResult(_ option: String, answer: String) -> PuzzleOptionResult {
+        guard answered else { return .idle }
+        if option == selected { return isCorrect ? .correctChosen : .wrongChosen }
+        if option == answer { return .revealCorrect }
+        return .dimmed
     }
 
     private func clozeSentence(_ ex: ClozeChoiceExercise, filled: String?) -> String {
@@ -473,6 +476,7 @@ private struct PuzzleStepView: View {
         selected = option
         isCorrect = ClozeChoiceGrader.grade(selected: option, answer: ex.answer).isCorrect
         answered = true
+        if isCorrect { PuzzleTheme.notify(.success) }   // 正解の手触り（脳汁）
         // きいてあなうめは答え合わせの「あと」に英語を読む（設問中は無音）。
         if format == .listeningCloze, soundOn { speech.speak(ex.displayTokens.joined(separator: " "), language: "en-US") }
     }
@@ -495,28 +499,28 @@ private struct PuzzleStepView: View {
                     speech.speak(word, language: "en-US")
                 } label: {
                     Image(systemName: "speaker.wave.3.fill")
-                        .font(.system(size: 52, weight: .bold))
+                        .font(.system(size: 54, weight: .bold))
                         .foregroundStyle(.white)
-                        .frame(width: 130, height: 130)
-                        .background(Circle().fill(PuzzleTheme.accent))
+                        .frame(width: 138, height: 138)
+                        .background(Circle().fill(PuzzleTheme.buttonGradient(PuzzleTheme.accent))
+                            .shadow(color: PuzzleTheme.accent.opacity(0.4), radius: 12, x: 0, y: 7))
+                        .overlay(Circle().stroke(.white.opacity(0.35), lineWidth: 2))
                 }
                 .buttonStyle(.plain)
                 .tapFeedback(bounce: true)
                 .accessibilityLabel("もういちど きく")
+                .overlay { if answered, isCorrect { PuzzleCelebration() } }
             }
-            if answered {
-                Text(ex.answer)
-                    .font(.system(size: 32, weight: .heavy, design: .rounded))
-                    .foregroundStyle(isCorrect ? PuzzleTheme.correct : PuzzleTheme.ink)
-            } else {
-                VStack(spacing: 10) {
-                    ForEach(ex.options, id: \.self) { option in
-                        PuzzleOptionButton(text: option) {
-                            guard !answered else { return }   // 連打で二重採点しない
-                            selected = option
-                            isCorrect = WordListeningGrader.grade(selected: option, answer: ex.answer).isCorrect
-                            answered = true
-                        }
+            // 回答後も選択肢を残し、緑✓/赤✗・正解の開示で結果を伝える（別の大文字表示はやめる）。
+            VStack(spacing: 12) {
+                ForEach(ex.options, id: \.self) { option in
+                    PuzzleOptionButton(text: option,
+                                       result: optionResult(option, answer: ex.answer)) {
+                        guard !answered else { return }   // 連打で二重採点しない
+                        selected = option
+                        isCorrect = WordListeningGrader.grade(selected: option, answer: ex.answer).isCorrect
+                        answered = true
+                        if isCorrect { PuzzleTheme.notify(.success) }   // 正解の手触り（脳汁）
                     }
                 }
             }
@@ -548,6 +552,7 @@ private struct PuzzleStepView: View {
                 guard ready, let ex = orderingExercise else { return }
                 isCorrect = WordOrderingGrader.grade(submitted: placed.map(\.text), answer: ex.answer).isCorrect
                 answered = true
+                if isCorrect { PuzzleTheme.notify(.success) }   // 正解の手触り（脳汁）
             }
             .disabled(!ready)
         }
@@ -556,11 +561,7 @@ private struct PuzzleStepView: View {
     @ViewBuilder private var feedback: some View {
         VStack(spacing: 12) {
             PuzzleVerdictLabel(isCorrect: isCorrect)
-            if !isCorrect, let selected, let answer = correctAnswerText {
-                Text("えらんだの：\(selected) ／ せいかいは：\(answer)")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.secondary)
-            }
+            // 「えらんだの／せいかい」は選択肢ボタン自身が色＋✓✗で伝えるので、ここでは文字を重ねない。
             if let hint = grammarHint { grammarHintBlock(hint) }   // なぜ違うか（文法のミニ解説）
             if canListenBack {
                 PuzzleListenButton(title: format == .wordListening ? "もういちど きく" : "きいてみる") {
@@ -606,15 +607,6 @@ private struct PuzzleStepView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 14).padding(.vertical, 10)
         .background(RoundedRectangle(cornerRadius: 14).fill(PuzzleTheme.accent.opacity(0.10)))
-    }
-
-    /// 選択系のみ「えらんだの／せいかい」を出す（並べ替えは語の集合なので出さない）。
-    private var correctAnswerText: String? {
-        switch format {
-        case .clozeChoice, .listeningCloze: return clozeExercise?.answer
-        case .wordListening: return listeningExercise?.answer
-        default: return nil
-        }
     }
 
     /// 答え合わせ後に英語を聞き返せるか（音ありのとき）。
