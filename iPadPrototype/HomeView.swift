@@ -11037,10 +11037,10 @@ private struct MeadowScene: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            DriftingCloud(width: 150, height: 62, opacity: 0.78,
-                          baseX: -330, baseY: -560, period: 46, amplitude: 26)
-            DriftingCloud(width: 120, height: 54, opacity: 0.68,
-                          baseX: 320, baseY: -550, period: 58, amplitude: 20, phase: 0.5)
+            DriftingCloud(width: 156, height: 64, opacity: 0.82,
+                          x: 0.22, topInset: 78, period: 24, amplitude: 96)
+            DriftingCloud(width: 124, height: 56, opacity: 0.70,
+                          x: 0.80, topInset: 124, period: 30, amplitude: 74, phase: 0.5)
 
             Hills()
                 .fill(theme.groundPrimary)
@@ -11073,12 +11073,14 @@ private struct SunsetScene: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            GlowingSun(color: theme.accent, size: 130, baseShadow: 40, offsetY: -300)
+            SkyElement(x: 0.5, topInset: 96) {
+                GlowingSun(color: theme.accent, size: 130, baseShadow: 40)
+            }
 
             DriftingCloud(width: 150, height: 60, opacity: 0.42,
-                          baseX: -300, baseY: -480, period: 52, amplitude: 24)
+                          x: 0.20, topInset: 132, period: 26, amplitude: 88)
             DriftingCloud(width: 120, height: 50, opacity: 0.34,
-                          baseX: 320, baseY: -520, period: 64, amplitude: 18, phase: 0.5)
+                          x: 0.82, topInset: 92, period: 32, amplitude: 70, phase: 0.5)
 
             Hills()
                 .fill(theme.groundSecondary.opacity(0.85))
@@ -11100,10 +11102,11 @@ private struct NightScene: View {
         ZStack(alignment: .bottom) {
             ScatteredStars(color: theme.accent, twinkles: true)
 
-            CrescentMoonView(color: theme.accent)
-                .frame(width: 78, height: 78)
-                .shadow(color: theme.accent.opacity(0.5), radius: 18)
-                .offset(x: 280, y: -520)
+            SkyElement(x: 0.82, topInset: 100, bob: 14, bobPeriod: 16) {
+                CrescentMoonView(color: theme.accent)
+                    .frame(width: 78, height: 78)
+                    .shadow(color: theme.accent.opacity(0.5), radius: 18)
+            }
 
             Hills()
                 .fill(theme.groundSecondary)
@@ -11123,10 +11126,12 @@ private struct BeachScene: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            GlowingSun(color: theme.accent, size: 96, baseShadow: 28, offsetX: -250, offsetY: -520)
+            SkyElement(x: 0.20, topInset: 100) {
+                GlowingSun(color: theme.accent, size: 96, baseShadow: 28)
+            }
 
             DriftingCloud(width: 140, height: 56, opacity: 0.78,
-                          baseX: 300, baseY: -540, period: 50, amplitude: 22)
+                          x: 0.76, topInset: 88, period: 26, amplitude: 84)
 
             Hills()
                 .fill(theme.groundSecondary)
@@ -11149,7 +11154,7 @@ private struct SnowScene: View {
             ScatteredStars(color: .white.opacity(0.92), count: 16, asDots: true, twinkles: true)
 
             DriftingCloud(width: 150, height: 60, opacity: 0.86,
-                          baseX: -300, baseY: -540, period: 56, amplitude: 22)
+                          x: 0.26, topInset: 84, period: 28, amplitude: 80)
 
             Hills()
                 .fill(theme.groundSecondary)
@@ -11179,79 +11184,115 @@ private struct SpaceScene: View {
             ScatteredStars(color: .white, count: 20, asDots: true, twinkles: true)
 
             // Ringed planet
-            ZStack {
-                Ellipse()
-                    .stroke(theme.accent.opacity(0.8), lineWidth: 6)
-                    .frame(width: 150, height: 54)
-                    .rotationEffect(.degrees(-18))
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [theme.groundPrimary, theme.groundSecondary],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+            SkyElement(x: 0.78, topInset: 112, bob: 16, bobPeriod: 18) {
+                ZStack {
+                    Ellipse()
+                        .stroke(theme.accent.opacity(0.8), lineWidth: 6)
+                        .frame(width: 150, height: 54)
+                        .rotationEffect(.degrees(-18))
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [theme.groundPrimary, theme.groundSecondary],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .frame(width: 96, height: 96)
+                        .frame(width: 96, height: 96)
+                }
             }
-            .offset(x: 250, y: -470)
 
-            Circle()
-                .fill(.white.opacity(0.9))
-                .frame(width: 46, height: 46)
-                .offset(x: -280, y: -540)
+            SkyElement(x: 0.20, topInset: 78, bob: 11, bobPeriod: 13, phase: 0.5) {
+                Circle()
+                    .fill(.white.opacity(0.9))
+                    .frame(width: 46, height: 46)
+            }
         }
     }
 }
 
-/// 横にゆっくり往復する雲。動きの量は `BackgroundMotion.driftOffset`（Core・テスト済）に委譲し、
-/// View は時刻を渡して描くだけ。reduce-motion 時は静止（基準位置のまま）。
+/// 空の装飾（太陽・月・惑星）を「画面上端から固定距離(pt)の空のバンド」に置く。
+/// 縦位置を高さ比にすると、メインパネルが画面中央付近（伸びる Spacer 制御）に来る端末・向きで
+/// パネル背後に回り込む恐れがあるため、縦は上端からの固定 inset、横だけ画面幅比にする。
+/// `bob` を与えるとゆっくり上下に漂う（量は `BackgroundMotion.driftOffset`・Core）。reduce-motion 時は静止。
+private struct SkyElement<Content: View>: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    var x: CGFloat            // 中心の横位置（0=左端 … 1=右端）
+    var topInset: CGFloat     // 画面上端から中心までの距離(pt)。端末高さに依らず上部の空に固定。
+    var bob: CGFloat = 0      // 上下のゆらぎ幅（pt）。0 なら静止配置のみ。
+    var bobPeriod: Double = 14
+    var phase: Double = 0
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        GeometryReader { geo in
+            TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion || bob == 0)) { context in
+                let dy = (reduceMotion || bob == 0) ? 0 : BackgroundMotion.driftOffset(
+                    time: context.date.timeIntervalSinceReferenceDate,
+                    period: bobPeriod, amplitude: Double(bob), phase: phase)
+                content.position(x: geo.size.width * x, y: topInset + CGFloat(dy))
+            }
+        }
+        .ignoresSafeArea()
+    }
+}
+
+/// 横にゆっくり往復する雲。横位置は画面幅比、縦は上端からの固定 inset(pt)＝上部の空に固定する
+/// （高さ比だと端末差でパネル背後に回り込むため）。横ゆれ量は `BackgroundMotion.driftOffset`（Core・テスト済）。
+/// reduce-motion 時は静止（基準位置のまま）。
 private struct DriftingCloud: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var width: CGFloat
     var height: CGFloat
     var opacity: Double
-    var baseX: CGFloat
-    var baseY: CGFloat
+    var x: CGFloat           // 中心の横位置（画面幅比）
+    var topInset: CGFloat    // 画面上端から中心までの距離(pt, 上部の空)
     var period: Double
     var amplitude: CGFloat
     var phase: Double = 0
 
     var body: some View {
-        // 動きが遅い背景なので 20fps に間引く（120Hz 更新は無駄＝電力/発熱）。
-        TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion)) { context in
-            let dx = reduceMotion ? 0 : BackgroundMotion.driftOffset(
-                time: context.date.timeIntervalSinceReferenceDate,
-                period: period, amplitude: Double(amplitude), phase: phase)
-            Cloud()
-                .fill(.white.opacity(opacity))
-                .frame(width: width, height: height)
-                .offset(x: baseX + CGFloat(dx), y: baseY)
+        GeometryReader { geo in
+            // 動きが遅い背景なので 20fps に間引く（120Hz 更新は無駄＝電力/発熱）。
+            TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion)) { context in
+                let dx = reduceMotion ? 0 : BackgroundMotion.driftOffset(
+                    time: context.date.timeIntervalSinceReferenceDate,
+                    period: period, amplitude: Double(amplitude), phase: phase)
+                Cloud()
+                    .fill(.white.opacity(opacity))
+                    .frame(width: width, height: height)
+                    .position(x: geo.size.width * x + CGFloat(dx), y: topInset)
+            }
         }
+        .ignoresSafeArea()
     }
 }
 
-/// じんわり脈動する太陽。明るさ・グロー半径・わずかな拡縮を `BackgroundMotion.twinkle`（Core）で駆動。
+/// じんわり脈動する太陽。明るさ・グロー半径・拡縮を `BackgroundMotion.twinkle`（Core）で、
+/// ゆっくりした横移動を `driftOffset` で駆動。位置は外側の `SkyElement` が決める。
 /// reduce-motion 時は静止（常時最大）。
 private struct GlowingSun: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var color: Color
     var size: CGFloat
     var baseShadow: CGFloat
-    var offsetX: CGFloat = 0
-    var offsetY: CGFloat
-    var period: Double = 5
+    var period: Double = 4
+    var driftPeriod: Double = 24
+    var driftAmplitude: CGFloat = 26
 
     var body: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion)) { context in
+            let t = context.date.timeIntervalSinceReferenceDate
             let pulse = reduceMotion ? 1 : BackgroundMotion.twinkle(
-                time: context.date.timeIntervalSinceReferenceDate, seed: 0, period: period, floor: 0.7)
+                time: t, seed: 0, period: period, floor: 0.45)
+            let dx = reduceMotion ? 0 : BackgroundMotion.driftOffset(
+                time: t, period: driftPeriod, amplitude: Double(driftAmplitude))
             Circle()
                 .fill(color)
                 .frame(width: size, height: size)
-                .shadow(color: color.opacity(0.55), radius: baseShadow * pulse)
-                .scaleEffect(0.97 + 0.03 * pulse)
-                .offset(x: offsetX, y: offsetY)
+                .shadow(color: color.opacity(0.6), radius: baseShadow * (0.6 + 0.7 * pulse))
+                .scaleEffect(0.9 + 0.14 * pulse)
+                .offset(x: CGFloat(dx))
         }
     }
 }
@@ -11390,8 +11431,10 @@ private struct ScatteredStars: View {
                 ZStack(alignment: .topLeading) {
                     ForEach(0..<min(count, Self.layout.count), id: \.self) { i in
                         let item = Self.layout[i]
-                        let brightness = (twinkles && !reduceMotion)
-                            ? BackgroundMotion.twinkle(time: time, seed: i, period: 3.6, floor: 0.45)
+                        // 瞬きは上部の空だけ（中央〜下はパネル/キャラ周りなので静かに保つ）。
+                        let twinkleHere = twinkles && !reduceMotion && item.y <= 0.30
+                        let brightness = twinkleHere
+                            ? BackgroundMotion.twinkle(time: time, seed: i, period: 2.4, floor: 0.22)
                             : 1
                         Group {
                             if asDots {
