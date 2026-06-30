@@ -30,9 +30,6 @@ struct HomeView: View {
     @State private var loginReward: CoinRewards.LoginOutcome?
     @State private var didCheckLogin = false
     @State private var showingStepPicker = false
-    /// ステップを選んだら、そのまま「おぼえる練習→手書き」を自動起動するための保留フラグ。
-    /// シートの onDismiss で拾い、選択語の同期を確定させてから起動する。
-    @State private var pendingAutoStartPractice = false
     @State private var showingPracticeRetryPicker = false
     @State private var selectedPracticeWordIDs = Set<UUID>()
     #if DEBUG
@@ -316,11 +313,8 @@ struct HomeView: View {
                     .presentationContentInteraction(.scrolls)
                     .presentationDragIndicator(.visible)
             }
-            .sheet(isPresented: $showingStepPicker, onDismiss: handleStepPickerDismiss) {
-                ChildStepPickerSheet(language: language, onChooseStep: {
-                    // ステップを選んだら、シートが閉じたあと自動で練習へ進む。
-                    pendingAutoStartPractice = true
-                })
+            .sheet(isPresented: $showingStepPicker) {
+                ChildStepPickerSheet(language: language)
                     .environmentObject(model)
                     .presentationDetents([.large])
             }
@@ -418,20 +412,6 @@ struct HomeView: View {
         guard model.shouldCelebrateSelectedStepUnlock else { return }
         model.markSelectedStepUnlockCelebrated()
         showingUnlockCelebration = true
-    }
-
-    /// ステップ選択シートが閉じた直後に呼ばれる。ステップを「選んだ」場合だけ、
-    /// そのまま「おぼえる練習→手書き」を自動起動する（「とじる」やコース切替では起動しない）。
-    private func handleStepPickerDismiss() {
-        let shouldStart = pendingAutoStartPractice
-        pendingAutoStartPractice = false
-        guard shouldStart else { return }
-        // 選んだステップの語が activeWords→練習選択へ反映されてから起動する。
-        // （selectedWordStepID 変更による同期は非同期なので、ここで明示的に確定させてから出す。）
-        DispatchQueue.main.async {
-            syncPracticeSelectionIfNeeded()
-            startPractice()
-        }
     }
 
     private func startPractice() {
@@ -1063,8 +1043,6 @@ private struct ChildStepPickerSheet: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
     var language: AppLanguage
-    /// ステップを「選んだ」瞬間の合図（自動で練習へ進むため）。「とじる」では呼ばれない。
-    var onChooseStep: () -> Void = {}
 
     // 昇順（[0]=下=スタート/ステップ1）。マップは下から上へ登る。
     private var orderedSteps: [WordStep] {
@@ -1098,7 +1076,6 @@ private struct ChildStepPickerSheet: View {
                         character: HomeRewardCharacter.character(id: model.selectedCharacterID)
                     ) { stepID in
                         model.selectedWordStepID = stepID
-                        onChooseStep()
                         dismiss()
                     }
                     .ignoresSafeArea(edges: .bottom)
