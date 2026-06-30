@@ -54,8 +54,13 @@ struct HomeView: View {
         // ＝既習語の再ドリルで飽きさせない。テスト/仕上げには出る／テストでミスしたら既存SRSで練習に復帰。
         // 明示選択（復習・フォーカス・リトライ）は親/子の意思なので抑制しない。
         if isDefaultPracticeSelection {
-            let suppressed = model.practiceSuppressedTexts
-            selected = selected.filter { !suppressed.contains(normalize($0.text)) }
+            // 既習語は既定ドリルから外す（飽き防止）。ただし全部マスター済みで空になる場合は
+            // 練習を“できなく”しない（メインの大ボタンが無効化する）よう全語に戻して再ドリル可能にする。
+            selected = PracticeSelection.practiceWordsAllowingRedrill(
+                selected,
+                suppressed: model.practiceSuppressedTexts,
+                keyOf: { normalize($0.text) }
+            )
         }
         // 1日の新規導入上限も既定選択のときだけ適用する。
         return model.dailyCappedPracticeWords(selected, isFullActiveSelection: isDefaultPracticeSelection)
@@ -149,7 +154,7 @@ struct HomeView: View {
                             canTest: !model.nextTestWords.isEmpty,
                             canSwitchSteps: model.wordSteps.count > 1,
                             stepProgress: model.courseStepProgress,
-                            // 満点クリア済みなら、このステップは自由（パズル）に自動切替＝パズルが主役。
+                            // 満点クリア済みか。true なら小ボタンの「ことばパズル」が解放される（メインは常に練習）。
                             isStepCleared: model.selectedStepFocus == .freePlayUnlocked,
                             hasFinishedPracticeRound: hasFinishedCurrentPracticeRound,
                             hasPracticeResume: activePracticeResumeState != nil,
@@ -651,7 +656,7 @@ private struct ChildMissionPanel: View {
     var canSwitchSteps: Bool
     /// コース全体のステップ完了サマリ（できた Xこ / Yこ）。
     var stepProgress: StepMapLayout.Progress
-    /// このステップを満点クリア済みか。true なら主役をことばパズル（自由）に切り替える。
+    /// このステップを満点クリア済みか。true なら小ボタンの「ことばパズル」を解放する（メインは常に練習）。
     var isStepCleared: Bool = false
     var hasFinishedPracticeRound: Bool
     var hasPracticeResume: Bool
@@ -671,10 +676,8 @@ private struct ChildMissionPanel: View {
     @State private var ctaBurst = 0
 
     private var missionText: String {
-        // 満点クリア済み＝このステップは「クリア！」表示。あそびに誘う（やらされ感を出さない）。
-        if isStepCleared {
-            return language.text(japanese: "クリア！ あそぼう", english: "Cleared! Let's play")
-        }
+        // メインの大ボタンは常に「れんしゅう」。満点で解放されるのは小ボタンの「ことばパズル」だけ
+        // （メインを乗っ取らない）ので、ここでもクリア後に専用メッセージへ切り替えない。
         if hasFinishedPracticeRound {
             return isReviewPractice
                 ? language.text(japanese: "もういちど ふくしゅう", english: "Review again")
@@ -705,16 +708,8 @@ private struct ChildMissionPanel: View {
         return Double(progress.clearedCount) / Double(progress.totalWords)
     }
 
-    /// 満点クリア済みステップで主役にする「ことばパズル」ボタンの色（小ボタンと同じオレンジ）。
-    private var puzzlePrimaryTint: Color {
-        Color(red: 0.96, green: 0.62, blue: 0.10)
-    }
-
     private var primaryButtonTitle: String {
-        // 満点クリア後は主役をパズル（自由）へ。練習は小ボタン「れんしゅう」に降りる。
-        if isStepCleared {
-            return language.text(japanese: "あたらしいクイズ！", english: "New Quiz!")
-        }
+        // メインは常に練習。満点で解放されるのは小ボタンの「ことばパズル」だけ。
         if hasFinishedPracticeRound {
             return isReviewPractice
                 ? language.text(japanese: "えらんで ふくしゅう", english: "Choose Review")
@@ -731,9 +726,6 @@ private struct ChildMissionPanel: View {
     }
 
     private var primaryButtonIcon: String {
-        if isStepCleared {
-            return "sparkles"
-        }
         if hasFinishedPracticeRound {
             return "arrow.clockwise"
         }
@@ -741,9 +733,8 @@ private struct ChildMissionPanel: View {
     }
 
     private var isPrimaryButtonDisabled: Bool {
-        // パズルはいつでも遊べる（クリア条件にしない）ので、クリア後の主役パズルは常に有効。
-        if isStepCleared { return false }
-        return !canPractice
+        // メインは常に練習。練習できる単語が無ければ無効。
+        !canPractice
     }
 
     private var testButtonTitle: String {
@@ -751,7 +742,8 @@ private struct ChildMissionPanel: View {
     }
 
     private var primaryButtonTint: Color {
-        isStepCleared ? puzzlePrimaryTint : Color(red: 0.16, green: 0.42, blue: 0.84)
+        // メインは常に練習なので色も固定（青）。
+        Color(red: 0.16, green: 0.42, blue: 0.84)
     }
 
     /// コース全体の達成サマリ（できた Xこ / Yこ）。コース名は出さず数だけ（やる人＝子に見せる達成感）。
@@ -862,10 +854,10 @@ private struct ChildMissionPanel: View {
                     english: "Today \(progress.clearedCount) of \(progress.totalWords)"
                 ))
 
-            // クリア後は主役＝パズル（showPuzzle）、未クリアは主役＝練習（startPractice）。
+            // メインの大ボタンは常に練習（はじめる）。満点で解放されるのは小ボタンの「ことばパズル」だけ。
             Button {
                 ctaBurst += 1
-                if isStepCleared { showPuzzle() } else { startPractice() }
+                startPractice()
             } label: {
                 Label(
                     primaryButtonTitle,
@@ -900,25 +892,17 @@ private struct ChildMissionPanel: View {
                     action: startTest
                 )
 
-                // クリア後は主役がパズルに移るので、この枠は「もういちど れんしゅう」に入れ替える
-                // （練習はいつでも戻れる＝ロックしない）。未クリアは従来どおり「ことばパズル」。
-                if isStepCleared {
-                    MissionSmallButton(
-                        title: language.text(japanese: "れんしゅう", english: "Practice"),
-                        systemImage: "pencil",
-                        tint: Color(red: 0.16, green: 0.42, blue: 0.84),
-                        disabled: !canPractice,
-                        action: startPractice
-                    )
-                } else {
-                    MissionSmallButton(
-                        title: language.text(japanese: "ことばパズル", english: "Puzzle"),
-                        systemImage: "puzzlepiece.fill",
-                        tint: Color(red: 0.96, green: 0.62, blue: 0.10),
-                        disabled: false,
-                        action: showPuzzle
-                    )
-                }
+                // 「ことばパズル」は満点クリアで解放される“ごほうび”。クリア前はロック（満点を取ると
+                // 「あたらしいクイズがでた！」演出とともに自由に遊べる）。メインの練習は乗っ取らない。
+                MissionSmallButton(
+                    title: isStepCleared
+                        ? language.text(japanese: "ことばパズル", english: "Puzzle")
+                        : language.text(japanese: "パズル（まんてんで）", english: "Puzzle (perfect)"),
+                    systemImage: isStepCleared ? "puzzlepiece.fill" : "lock.fill",
+                    tint: Color(red: 0.96, green: 0.62, blue: 0.10),
+                    disabled: !isStepCleared,
+                    action: showPuzzle
+                )
             }
         }
         .padding(24)
