@@ -28,15 +28,19 @@ public enum SentenceBankBuilder {
         public var source: String
         /// 安定 sourceID（教材＝authoring 由来）。built 文へそのまま通す。nil＝未指定（後方互換）。
         public var sourceID: String?
+        /// ジャンル（useful/humor/story）。built 文へそのまま通す。nil＝未指定（useful 相当・後方互換）。
+        public var genre: Genre?
 
         public init(en: String, ja: String, grammar: GrammarPoint? = nil,
-                    declaredBand: Int? = nil, source: String, sourceID: String? = nil) {
+                    declaredBand: Int? = nil, source: String, sourceID: String? = nil,
+                    genre: Genre? = nil) {
             self.en = en
             self.ja = ja
             self.grammar = grammar
             self.declaredBand = declaredBand
             self.source = source
             self.sourceID = sourceID
+            self.genre = genre
         }
     }
 
@@ -177,7 +181,8 @@ public enum SentenceBankBuilder {
                 gradeBand: maxBand,
                 contentLemmas: lemmas,
                 grammar: c.grammar,
-                sourceID: c.sourceID
+                sourceID: c.sourceID,
+                genre: c.genre
             ))
         }
 

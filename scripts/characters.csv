@@ -271,3 +271,23 @@ dragonfly,insect,とんぼ,Dragonfly,40,dragonfly,#3FA8C2,#BFE6F0,#2E6B8C,false,
 banana,food,バナナ,Banana,40,banana,#F4D24C,#FBE89A,#8A6A3A,false,swift;food;fruit;sweet
 taiyaki,food,たいやき,Taiyaki,50,taiyaki,#D99A4C,#E8C48A,#8A5A2A,false,swift;food;sweet;dessert;japan
 cookie,food,クッキー,Cookie,40,cookie,#D9A86B,#E8C99A,#6B4A2A,false,swift;food;sweet;dessert
+mic,instruments,マイク,Microphone,50,mic,#C9CFD8,#9AA3B2,#394150,false,swift;music;instrument;vocal
+tambourine,instruments,タンバリン,Tambourine,50,tambourine,#D9A441,#F4E5C2,#C0820F,false,swift;music;instrument;percussion
+maracas,instruments,マラカス,Maracas,40,maracas,#E8654E,#F6C744,#8A5A2B,false,swift;music;instrument;percussion
+recorder,instruments,リコーダー,Recorder,40,recorder,#EFE3C8,#C9A36A,#5B4632,false,swift;music;instrument;wind
+note,instruments,おんぷ,Music Note,50,musicNote,#6C63D8,#A7A0EE,#3C357F,false,swift;music;note;symbol
+skateboard,sports,スケボー,Skateboard,50,skateboard,#E8654E,#F2C14E,#2E3440,false,swift;sports;street;wheels
+bowling,sports,ボウリング,Bowling,50,bowlingPin,#F4F1EC,#E23B3B,#2E3440,false,swift;sports;ball;pin
+sax,instruments,サックス,Saxophone,60,imageAsset,#D6A43A,#F0D27A,#8A5A2B,false,webp;music;instrument;brass
+urchin,sea,ウニ,Sea Urchin,50,urchin,#5B4B8A,#7E6BB5,#3A2F5C,false,swift;sea;marine;spiky
+sea_turtle,sea,うみがめ,Sea Turtle,60,seaTurtle,#4FA86B,#8FD3A0,#2F6B43,false,swift;sea;marine;reptile
+squid,sea,いか,Squid,50,squid,#E58FB0,#F6C3D6,#B85C82,false,swift;sea;marine;cephalopod
+sunfish,sea,まんぼう,Sunfish,50,sunfish,#9AA7B5,#C3CDD8,#5E6B7A,false,swift;sea;marine;fish
+seashell,sea,かいがら,Seashell,40,seashell,#F4B8C4,#FBDDE3,#D98298,false,swift;sea;marine;shell
+clownfish,sea,クマノミ,Clownfish,60,imageAsset,#F0822E,#FFFFFF,#2E2A28,false,webp;sea;marine;fish
+orange,food,みかん,Orange,40,orange,#F39A2B,#4FA86B,#C9740F,false,swift;food;fruit;citrus
+grapes,food,ぶどう,Grapes,50,grapes,#7E57C2,#4FA86B,#5E3B9E,false,swift;food;fruit;bunch
+dango,food,だんご,Dango,50,dango,#F4F1EC,#F4B8C4,#A9D08E,false,swift;food;sweet;japanese
+pizza,food,ピザ,Pizza,60,pizza,#F2C14E,#E23B3B,#C98A3A,false,swift;food;meal;italian
+candy,food,キャンディ,Candy,40,candy,#F2607A,#FBD36B,#E23B3B,false,swift;food;sweet;wrapped
+ramen,food,ラーメン,Ramen,60,imageAsset,#D98C3A,#F4E3C2,#8A4B2B,false,webp;food;meal;japanese;noodle

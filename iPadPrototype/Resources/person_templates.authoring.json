@@ -7526,5 +7526,902 @@
       "everyone."
     ],
     "fallbackJa": "親切な言葉は みんなに 幸せをもたらすよ"
+  },
+  {
+    "id": "h-a-1",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "dog",
+      "wear",
+      "hat"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "dog",
+      "wears",
+      "hats."
+    ],
+    "ja": "いぬが ぼうしを かぶるよ",
+    "fallbackEn": [
+      "A",
+      "dog",
+      "wears",
+      "hats."
+    ],
+    "fallbackJa": "いぬが ぼうしを かぶるよ"
+  },
+  {
+    "id": "h-a-2",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "cat",
+      "brush",
+      "tooth"
+    ],
+    "slots": [],
+    "en": [
+      "Cats",
+      "brush",
+      "their",
+      "teeth."
+    ],
+    "ja": "ねこが はを みがくよ",
+    "fallbackEn": [
+      "Cats",
+      "brush",
+      "their",
+      "teeth."
+    ],
+    "fallbackJa": "ねこが はを みがくよ"
+  },
+  {
+    "id": "h-a-3",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "bird",
+      "cook",
+      "hot",
+      "dog"
+    ],
+    "slots": [],
+    "en": [
+      "Birds",
+      "cook",
+      "hot",
+      "dogs."
+    ],
+    "ja": "とりが ホットドッグを つくるよ",
+    "fallbackEn": [
+      "Birds",
+      "cook",
+      "hot",
+      "dogs."
+    ],
+    "fallbackJa": "とりが ホットドッグを つくるよ"
+  },
+  {
+    "id": "h-a-4",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "eat",
+      "ten",
+      "carrot"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "eats",
+      "ten",
+      "carrots."
+    ],
+    "ja": "ソラが にんじんを じゅっぽん たべるよ",
+    "fallbackEn": [
+      "Sora",
+      "eats",
+      "ten",
+      "carrots."
+    ],
+    "fallbackJa": "ソラが にんじんを じゅっぽん たべるよ"
+  },
+  {
+    "id": "h-a-5",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "rabbit",
+      "drive",
+      "car"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "rabbit",
+      "drives",
+      "cars."
+    ],
+    "ja": "うさぎが くるまを うんてん するよ",
+    "fallbackEn": [
+      "A",
+      "rabbit",
+      "drives",
+      "cars."
+    ],
+    "fallbackJa": "うさぎが くるまを うんてん するよ"
+  },
+  {
+    "id": "h-a-6",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "turtle",
+      "dance",
+      "table"
+    ],
+    "slots": [],
+    "en": [
+      "Turtles",
+      "dance",
+      "on",
+      "tables."
+    ],
+    "ja": "かめが テーブルの うえで おどるよ",
+    "fallbackEn": [
+      "Turtles",
+      "dance",
+      "on",
+      "tables."
+    ],
+    "fallbackJa": "かめが テーブルの うえで おどるよ"
+  },
+  {
+    "id": "h-a-7",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "sing",
+      "pig"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "sings",
+      "to",
+      "pigs."
+    ],
+    "ja": "メイが ぶたに うたを うたうよ",
+    "fallbackEn": [
+      "Mei",
+      "sings",
+      "to",
+      "pigs."
+    ],
+    "fallbackJa": "メイが ぶたに うたを うたうよ"
+  },
+  {
+    "id": "h-a-8",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "fox",
+      "sleep",
+      "shoe"
+    ],
+    "slots": [],
+    "en": [
+      "Foxes",
+      "sleep",
+      "in",
+      "shoes."
+    ],
+    "ja": "きつねが くつの なかで ねむるよ",
+    "fallbackEn": [
+      "Foxes",
+      "sleep",
+      "in",
+      "shoes."
+    ],
+    "fallbackJa": "きつねが くつの なかで ねむるよ"
+  },
+  {
+    "id": "h-b-1",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "cat",
+      "read"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "is",
+      "reading",
+      "a",
+      "book."
+    ],
+    "ja": "ねこが 本を 読んでいるよ",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "is",
+      "reading",
+      "a",
+      "book."
+    ],
+    "fallbackJa": "ねこが 本を 読んでいるよ"
+  },
+  {
+    "id": "h-b-2",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "dog",
+      "draw",
+      "fish"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "dog",
+      "is",
+      "drawing",
+      "a",
+      "fish."
+    ],
+    "ja": "犬が さかなの 絵を かいているよ",
+    "fallbackEn": [
+      "A",
+      "dog",
+      "is",
+      "drawing",
+      "a",
+      "fish."
+    ],
+    "fallbackJa": "犬が さかなの 絵を かいているよ"
+  },
+  {
+    "id": "h-b-3",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "turtle",
+      "run",
+      "very",
+      "fast"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "turtle",
+      "runs",
+      "very",
+      "fast."
+    ],
+    "ja": "かめが とても はやく 走るよ",
+    "fallbackEn": [
+      "The",
+      "turtle",
+      "runs",
+      "very",
+      "fast."
+    ],
+    "fallbackJa": "かめが とても はやく 走るよ"
+  },
+  {
+    "id": "h-b-4",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "rabbit",
+      "eat",
+      "pizza"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "rabbit",
+      "is",
+      "eating",
+      "pizza."
+    ],
+    "ja": "うさぎが ピザを 食べているよ",
+    "fallbackEn": [
+      "A",
+      "rabbit",
+      "is",
+      "eating",
+      "pizza."
+    ],
+    "fallbackJa": "うさぎが ピザを 食べているよ"
+  },
+  {
+    "id": "h-b-5",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "pig",
+      "fly",
+      "sky"
+    ],
+    "slots": [],
+    "en": [
+      "Pigs",
+      "fly",
+      "in",
+      "the",
+      "sky."
+    ],
+    "ja": "ぶたが 空を とぶよ",
+    "fallbackEn": [
+      "Pigs",
+      "fly",
+      "in",
+      "the",
+      "sky."
+    ],
+    "fallbackJa": "ぶたが 空を とぶよ"
+  },
+  {
+    "id": "h-b-6",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "talk",
+      "flower"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "is",
+      "talking",
+      "to",
+      "flowers."
+    ],
+    "ja": "メイが 花と 話しているよ",
+    "fallbackEn": [
+      "Mei",
+      "is",
+      "talking",
+      "to",
+      "flowers."
+    ],
+    "fallbackJa": "メイが 花と 話しているよ"
+  },
+  {
+    "id": "h-b-7",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "bird",
+      "drink",
+      "milk"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "bird",
+      "is",
+      "drinking",
+      "milk."
+    ],
+    "ja": "とりが 牛にゅうを のんでいるよ",
+    "fallbackEn": [
+      "The",
+      "bird",
+      "is",
+      "drinking",
+      "milk."
+    ],
+    "fallbackJa": "とりが 牛にゅうを のんでいるよ"
+  },
+  {
+    "id": "h-b-8",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "wear",
+      "blue",
+      "shoe"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "is",
+      "wearing",
+      "blue",
+      "shoes."
+    ],
+    "ja": "ソラが 青い くつを はいているよ",
+    "fallbackEn": [
+      "Sora",
+      "is",
+      "wearing",
+      "blue",
+      "shoes."
+    ],
+    "fallbackJa": "ソラが 青い くつを はいているよ"
+  },
+  {
+    "id": "h-c-1",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "rabbit",
+      "sing",
+      "song"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "rabbit",
+      "sang",
+      "a",
+      "song."
+    ],
+    "ja": "うさぎが 歌を 歌ったよ",
+    "fallbackEn": [
+      "The",
+      "rabbit",
+      "sang",
+      "a",
+      "song."
+    ],
+    "fallbackJa": "うさぎが 歌を 歌ったよ"
+  },
+  {
+    "id": "h-c-2",
+    "category": "daily",
+    "grammar": "canModal",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "turtle",
+      "play",
+      "tennis"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "turtle",
+      "can",
+      "play",
+      "tennis."
+    ],
+    "ja": "かめは テニスができるよ",
+    "fallbackEn": [
+      "A",
+      "turtle",
+      "can",
+      "play",
+      "tennis."
+    ],
+    "fallbackJa": "かめは テニスができるよ"
+  },
+  {
+    "id": "h-c-3",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "dog",
+      "big",
+      "car"
+    ],
+    "slots": [],
+    "en": [
+      "This",
+      "dog",
+      "is",
+      "bigger",
+      "than",
+      "a",
+      "car."
+    ],
+    "ja": "この 犬は 車より 大きいよ",
+    "fallbackEn": [
+      "This",
+      "dog",
+      "is",
+      "bigger",
+      "than",
+      "a",
+      "car."
+    ],
+    "fallbackJa": "この 犬は 車より 大きいよ"
+  },
+  {
+    "id": "h-c-4",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "fox",
+      "swim",
+      "warm",
+      "tea"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "fox",
+      "swam",
+      "in",
+      "warm",
+      "tea."
+    ],
+    "ja": "きつねが 温かい お茶の中で 泳いだよ",
+    "fallbackEn": [
+      "The",
+      "fox",
+      "swam",
+      "in",
+      "warm",
+      "tea."
+    ],
+    "fallbackJa": "きつねが 温かい お茶の中で 泳いだよ"
+  },
+  {
+    "id": "h-c-5",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "make",
+      "giant",
+      "cake"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "made",
+      "a",
+      "giant",
+      "cake."
+    ],
+    "ja": "ソラが とても大きな ケーキを 作ったよ",
+    "fallbackEn": [
+      "Sora",
+      "made",
+      "a",
+      "giant",
+      "cake."
+    ],
+    "fallbackJa": "ソラが とても大きな ケーキを 作ったよ"
+  },
+  {
+    "id": "h-c-6",
+    "category": "daily",
+    "grammar": "canModal",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "fly",
+      "bird"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "can",
+      "fly",
+      "like",
+      "a",
+      "bird."
+    ],
+    "ja": "メイは 鳥のように 飛べるよ",
+    "fallbackEn": [
+      "Mei",
+      "can",
+      "fly",
+      "like",
+      "a",
+      "bird."
+    ],
+    "fallbackJa": "メイは 鳥のように 飛べるよ"
+  },
+  {
+    "id": "h-c-7",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "cat",
+      "run",
+      "fast",
+      "car"
+    ],
+    "slots": [],
+    "en": [
+      "This",
+      "cat",
+      "runs",
+      "faster",
+      "than",
+      "cars."
+    ],
+    "ja": "この ねこは 車より 速く 走るよ",
+    "fallbackEn": [
+      "This",
+      "cat",
+      "runs",
+      "faster",
+      "than",
+      "cars."
+    ],
+    "fallbackJa": "この ねこは 車より 速く 走るよ"
+  },
+  {
+    "id": "h-c-8",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "dog",
+      "wash",
+      "own",
+      "face"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "dog",
+      "washed",
+      "its",
+      "own",
+      "face."
+    ],
+    "ja": "犬が 自分の 顔を あらったよ",
+    "fallbackEn": [
+      "A",
+      "dog",
+      "washed",
+      "its",
+      "own",
+      "face."
+    ],
+    "fallbackJa": "犬が 自分の 顔を あらったよ"
+  },
+  {
+    "id": "h-d-1",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "rabbit",
+      "walk",
+      "water"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "rabbit",
+      "will",
+      "walk",
+      "on",
+      "water."
+    ],
+    "ja": "うさぎが これから 水の上を 歩くよ",
+    "fallbackEn": [
+      "The",
+      "rabbit",
+      "will",
+      "walk",
+      "on",
+      "water."
+    ],
+    "fallbackJa": "うさぎが これから 水の上を 歩くよ"
+  },
+  {
+    "id": "h-d-2",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "dog",
+      "eat",
+      "homework"
+    ],
+    "slots": [],
+    "en": [
+      "My",
+      "dog",
+      "has",
+      "eaten",
+      "my",
+      "homework."
+    ],
+    "ja": "うちの 犬が 宿題を 食べてしまったよ",
+    "fallbackEn": [
+      "My",
+      "dog",
+      "has",
+      "eaten",
+      "my",
+      "homework."
+    ],
+    "fallbackJa": "うちの 犬が 宿題を 食べてしまったよ"
+  },
+  {
+    "id": "h-d-3",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Mei",
+      "catch",
+      "wind"
+    ],
+    "slots": [],
+    "en": [
+      "Mei",
+      "is",
+      "going",
+      "to",
+      "catch",
+      "the",
+      "wind."
+    ],
+    "ja": "メイは 風を つかまえるつもりだよ",
+    "fallbackEn": [
+      "Mei",
+      "is",
+      "going",
+      "to",
+      "catch",
+      "the",
+      "wind."
+    ],
+    "fallbackJa": "メイは 風を つかまえるつもりだよ"
+  },
+  {
+    "id": "h-d-4",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "bird",
+      "paint",
+      "nice",
+      "picture"
+    ],
+    "slots": [],
+    "en": [
+      "A",
+      "bird",
+      "has",
+      "painted",
+      "a",
+      "nice",
+      "picture."
+    ],
+    "ja": "とりが すてきな 絵を かき終えたよ",
+    "fallbackEn": [
+      "A",
+      "bird",
+      "has",
+      "painted",
+      "a",
+      "nice",
+      "picture."
+    ],
+    "fallbackJa": "とりが すてきな 絵を かき終えたよ"
+  },
+  {
+    "id": "h-d-5",
+    "category": "daily",
+    "grammar": "willGoingTo",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "cat",
+      "sleep",
+      "teacup"
+    ],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "will",
+      "sleep",
+      "in",
+      "a",
+      "teacup."
+    ],
+    "ja": "ねこが これから ティーカップの中で ねむるよ",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "will",
+      "sleep",
+      "in",
+      "a",
+      "teacup."
+    ],
+    "fallbackJa": "ねこが これから ティーカップの中で ねむるよ"
+  },
+  {
+    "id": "h-d-6",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "genre": "humor",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "Sora",
+      "find",
+      "talk",
+      "tree"
+    ],
+    "slots": [],
+    "en": [
+      "Sora",
+      "has",
+      "found",
+      "a",
+      "talking",
+      "tree."
+    ],
+    "ja": "ソラが しゃべる 木を 見つけたよ",
+    "fallbackEn": [
+      "Sora",
+      "has",
+      "found",
+      "a",
+      "talking",
+      "tree."
+    ],
+    "fallbackJa": "ソラが しゃべる 木を 見つけたよ"
   }
 ]

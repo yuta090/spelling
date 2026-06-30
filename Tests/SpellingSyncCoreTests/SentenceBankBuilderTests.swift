@@ -50,6 +50,24 @@ final class SentenceBankBuilderTests: XCTestCase {
         XCTAssertNil(r.accepted.first?.sourceID)
     }
 
+    // genre は候補から built 文へそのまま通る（humor トグルの素）。
+    func testBuildCarriesGenre() {
+        let c = SentenceBankBuilder.Candidate(
+            en: "The cat reads a book", ja: "ねこが 本を 読むよ", grammar: .presentSimple,
+            declaredBand: 1, source: "curated", sourceID: "humor-cat-reads", genre: .humor)
+        let r = SentenceBankBuilder.build(candidates: [c], band: band,
+                                          targetBand: 3, grammarCeiling: .applied)
+        XCTAssertEqual(r.accepted.first?.genre, .humor)
+    }
+
+    // genre 未指定の候補は nil のまま（既定＝useful 相当・後方互換）。
+    func testBuildGenreDefaultsNil() {
+        let r = SentenceBankBuilder.build(
+            candidates: [cand("She likes apples", "和訳", grammar: .presentSimple)],
+            band: band, targetBand: 3, grammarCeiling: .applied)
+        XCTAssertNil(r.accepted.first?.genre)
+    }
+
     // gradeBand は内容語の最大（bigger→big=2）。
     func testGradeBandIsMaxOfContentWords() {
         let r = SentenceBankBuilder.build(
