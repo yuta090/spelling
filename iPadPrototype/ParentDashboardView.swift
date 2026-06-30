@@ -884,17 +884,11 @@ private struct ParentSectionSwitcher: View {
     var language: AppLanguage
 
     var body: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: 10) {
-                sectionButtons
-            }
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    sectionButtons
-                }
-                .padding(.vertical, 1)
-            }
+        // タブは固定幅。1行に収まらない狭い画面（iPad mini など）では横スクロールではなく
+        // 複数行に折り返して全タブ（特に右端の「設定」）が常に見えるようにする。
+        // 横スクロール＋showsIndicators:false だと右端タブが画面外に隠れて到達不能に見えるため。
+        PuzzleFlowLayout(spacing: 10) {
+            sectionButtons
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
