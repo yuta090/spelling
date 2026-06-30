@@ -90,18 +90,26 @@ struct ParentDashboardView: View {
         case .grading:
             ParentGradingPanel(language: language)
         case .words:
-            if width >= 900 {
-                HStack(alignment: .top, spacing: 14) {
-                    ParentWordStepPanel(language: language)
-                        .frame(width: min(max(width * 0.34, 330), 430), alignment: .top)
-
-                    ParentWordListPanel(language: language)
-                        .frame(maxWidth: .infinity, alignment: .top)
+            // 「何を練習するか」＝コース選択を先頭に置き、その下に「うちのれんしゅう」の単語登録を常時出す。
+            // コースは旧「レベル」の発展形＝単語“管理”の一部なので、設定ではなくこのタブに集約する（CLAUDE.md 親側方針）。
+            VStack(spacing: 14) {
+                SettingBlock(title: language.text(japanese: "コース（れんしゅうする内容）", english: "Course")) {
+                    CourseSettingsControls(language: language)
                 }
-            } else {
-                VStack(spacing: 14) {
-                    ParentWordStepPanel(language: language)
-                    ParentWordListPanel(language: language)
+
+                if width >= 900 {
+                    HStack(alignment: .top, spacing: 14) {
+                        ParentWordStepPanel(language: language)
+                            .frame(width: min(max(width * 0.34, 330), 430), alignment: .top)
+
+                        ParentWordListPanel(language: language)
+                            .frame(maxWidth: .infinity, alignment: .top)
+                    }
+                } else {
+                    VStack(spacing: 14) {
+                        ParentWordStepPanel(language: language)
+                        ParentWordListPanel(language: language)
+                    }
                 }
             }
         case .records:
@@ -822,7 +830,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
         case .grading:
             return language.text(japanese: "採点", english: "Grade")
         case .words:
-            return language.text(japanese: "単語登録", english: "Words")
+            return language.text(japanese: "コース・単語", english: "Course & Words")
         case .records:
             return language.text(japanese: "結果を見る", english: "Results")
         case .cast:
@@ -839,7 +847,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
         case .grading:
             return language.text(japanese: "大きく見てOK", english: "Review clearly")
         case .words:
-            return language.text(japanese: "ステップを準備", english: "Prepare steps")
+            return language.text(japanese: "コースと単語", english: "Course & words")
         case .records:
             return language.text(japanese: "学校とアプリ", english: "School & app")
         case .cast:
@@ -856,7 +864,7 @@ private enum ParentSection: String, CaseIterable, Identifiable {
         case .grading:
             return "checkmark.seal.fill"
         case .words:
-            return "text.book.closed.fill"
+            return "books.vertical.fill"
         case .records:
             return "chart.bar.xaxis"
         case .cast:
@@ -1923,7 +1931,7 @@ private struct ParentStepRecordCard: View {
             return ParentStepRecordPrimaryAction(
                 eyebrow: language.text(japanese: "状態", english: "Status"),
                 title: language.text(japanese: "単語がありません", english: "No words"),
-                message: language.text(japanese: "単語登録からこのステップに単語を入れます。", english: "Add words to this step from word registration."),
+                message: language.text(japanese: "「コース・単語」からこのステップに単語を入れます。", english: "Add words to this step from the Course & Words tab."),
                 buttonTitle: nil,
                 systemImage: "minus.circle.fill",
                 tint: ParentPalette.neutral,
@@ -6282,10 +6290,6 @@ private struct TestSettingsPanel: View {
                 }
             }
 
-            SettingBlock(title: language.text(japanese: "コース（れんしゅうする内容）", english: "Course")) {
-                CourseSettingsControls(language: language)
-            }
-
             SettingBlock(title: language.text(japanese: "初回設定", english: "First-time Setup")) {
                 Button(role: .destructive) {
                     showingOnboardingResetConfirm = true
@@ -6562,6 +6566,9 @@ private struct CourseSettingsControls: View {
     @EnvironmentObject private var model: AppModel
     var language: AppLanguage
 
+    // 「子にも選ばせる」などそうそう変えない項目は折りたたんで奥に隠す（既定は閉じる）。
+    @State private var showAdvanced = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             // 親がコースを選ぶ（親には級/学年ラベルを出してよい＝parentTitle）。
@@ -6608,27 +6615,53 @@ private struct CourseSettingsControls: View {
             .foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)
 
-            Toggle(isOn: $model.childCanSwitchCourses) {
-                Label(
-                    language.text(japanese: "子にも自分でえらばせる", english: "Let the child switch courses"),
-                    systemImage: "hand.tap.fill"
-                )
-                .font(.subheadline.weight(.bold))
+            // 詳細設定（そうそう変えない）：子にも切り替えさせるか＋許可コース。既定は折りたたみ。
+            DisclosureGroup(isExpanded: $showAdvanced) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Toggle(isOn: $model.childCanSwitchCourses) {
+                        Label(
+                            language.text(japanese: "子にも自分でえらばせる", english: "Let the child switch courses"),
+                            systemImage: "hand.tap.fill"
+                        )
+                        .font(.subheadline.weight(.bold))
+                    }
+                    .tint(ParentPalette.primary)
+
+                    Text(model.childCanSwitchCourses
+                         ? language.text(japanese: "子のステップ画面でコースを切り替えられます。下で選んだコースだけにしぼれます。",
+                                         english: "The child can switch courses on their step screen. Limit them with the checklist below.")
+                         : language.text(japanese: "オフのあいだは、子はコースを切り替えられません（親が決めたコースだけ）。",
+                                         english: "While off, the child can't switch courses (only the one you chose)."))
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                    if model.childCanSwitchCourses {
+                        allowedCourseChecklist
+                    }
+                }
+                .padding(.top, 6)
+            } label: {
+                HStack(spacing: 8) {
+                    Label(
+                        language.text(japanese: "詳細設定（子に選ばせる）", english: "Advanced (let child switch)"),
+                        systemImage: "gearshape"
+                    )
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(ParentPalette.primary)
+
+                    // 折りたたんでいても「子に選ばせる」が ON なら気づけるよう、状態バッジを出す。
+                    if model.childCanSwitchCourses {
+                        Text(language.text(japanese: "オン", english: "On"))
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 2)
+                            .background(ParentPalette.primary, in: Capsule())
+                    }
+                }
             }
             .tint(ParentPalette.primary)
-
-            Text(model.childCanSwitchCourses
-                 ? language.text(japanese: "子のステップ画面でコースを切り替えられます。下で選んだコースだけにしぼれます。",
-                                 english: "The child can switch courses on their step screen. Limit them with the checklist below.")
-                 : language.text(japanese: "オフのあいだは、子はコースを切り替えられません（親が決めたコースだけ）。",
-                                 english: "While off, the child can't switch courses (only the one you chose)."))
-            .font(.caption2.weight(.semibold))
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
-
-            if model.childCanSwitchCourses {
-                allowedCourseChecklist
-            }
         }
     }
 
