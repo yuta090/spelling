@@ -56,6 +56,8 @@
 		FACE0000000000000000CF15 /* ParentGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF16 /* ParentGateView.swift */; };
 		FACE0000000000000000CF17 /* AccountSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF18 /* AccountSyncView.swift */; };
 		FACE0000000000000000CF19 /* StarterWords.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF1A /* StarterWords.swift */; };
+		FACE0000000000000000D001 /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000D002 /* Course.swift */; };
+		FACE0000000000000000D003 /* CourseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000D004 /* CourseProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -119,6 +121,8 @@
 		FACE0000000000000000CF16 /* ParentGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentGateView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF18 /* AccountSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSyncView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF1A /* StarterWords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarterWords.swift; sourceTree = "<group>"; };
+		FACE0000000000000000D002 /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
+		FACE0000000000000000D004 /* CourseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseProvider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +205,8 @@
 				FACE0000000000000000CF16 /* ParentGateView.swift */,
 				FACE0000000000000000CF18 /* AccountSyncView.swift */,
 				FACE0000000000000000CF1A /* StarterWords.swift */,
+				FACE0000000000000000D002 /* Course.swift */,
+				FACE0000000000000000D004 /* CourseProvider.swift */,
 			);
 			path = iPadPrototype;
 			sourceTree = "<group>";
@@ -374,6 +380,8 @@
 				FACE0000000000000000CF15 /* ParentGateView.swift in Sources */,
 				FACE0000000000000000CF17 /* AccountSyncView.swift in Sources */,
 				FACE0000000000000000CF19 /* StarterWords.swift in Sources */,
+				FACE0000000000000000D001 /* Course.swift in Sources */,
+				FACE0000000000000000D003 /* CourseProvider.swift in Sources */,
 				0A1001082D00000100000001 /* AppModel.swift in Sources */,
 				0A1001092D00000100000001 /* HomeView.swift in Sources */,
 				0A10010A2D00000100000001 /* SpellingSessionView.swift in Sources */,

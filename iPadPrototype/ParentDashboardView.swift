@@ -956,7 +956,7 @@ private struct ParentCurrentStepCard: View {
     var language: AppLanguage
 
     var body: some View {
-        let step = model.selectedWordStep
+        let step = model.personalSelectedWordStep
 
         HStack(spacing: 12) {
             Image(systemName: "rectangle.stack.fill")
@@ -988,7 +988,7 @@ private struct ParentCurrentStepCard: View {
             .background(ParentPalette.primarySoft)
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
-            if !model.wordSteps.isEmpty {
+            if !model.personalWordSteps.isEmpty {
                 Button {
                     showingStepChooser = true
                 } label: {
@@ -1010,9 +1010,9 @@ private struct ParentCurrentStepCard: View {
             ParentStepChooserSheet(
                 title: language.text(japanese: "ステップを選ぶ", english: "Choose Step"),
                 language: language,
-                selectedStepID: model.selectedWordStepID
+                selectedStepID: model.personalSelectedWordStepID
             ) { step in
-                model.selectedWordStepID = step.id
+                model.personalSelectedWordStepID = step.id
             }
             .environmentObject(model)
             .presentationDetents([.large])
@@ -1030,7 +1030,7 @@ private struct ParentStepChooserSheet: View {
     var onSelect: (WordStep) -> Void
 
     private var orderedSteps: [WordStep] {
-        Array(model.wordSteps.reversed())
+        Array(model.personalWordSteps.reversed())
     }
 
     private var filteredSteps: [WordStep] {
@@ -1377,11 +1377,11 @@ private struct ParentRecordsWorkspace: View {
     var language: AppLanguage
 
     private var orderedSteps: [WordStep] {
-        Array(model.wordSteps.reversed())
+        Array(model.personalWordSteps.reversed())
     }
 
     private var selectedStep: WordStep? {
-        model.selectedWordStep ?? orderedSteps.first
+        model.personalSelectedWordStep ?? orderedSteps.first
     }
 
     private var otherSteps: [WordStep] {
@@ -1868,12 +1868,12 @@ private struct ParentStepRecordCard: View {
 
     private var reviewWordsAreOnHome: Bool {
         !reviewWordIDs.isEmpty
-            && model.selectedWordStepID == step.id
+            && model.personalSelectedWordStepID == step.id
             && model.homeReviewWordIDs == reviewWordIDs
     }
 
     private var isSelectedStep: Bool {
-        step.id == model.selectedWordStepID
+        step.id == model.personalSelectedWordStepID
     }
 
     private var cardTitle: String {
@@ -2027,7 +2027,7 @@ private struct ParentStepRecordCard: View {
 
                 if !isSelectedStep {
                     Button {
-                        model.selectedWordStepID = step.id
+                        model.personalSelectedWordStepID = step.id
                     } label: {
                         Label(language.text(japanese: "選ぶ", english: "Select"), systemImage: "cursorarrow.rays")
                     }
@@ -2657,7 +2657,7 @@ private struct SchoolTestResultPanel: View {
     }
 
     private var selectedStep: WordStep? {
-        model.wordSteps.first { $0.id == selectedStepID }
+        model.personalWordSteps.first { $0.id == selectedStepID }
     }
 
     private var canSave: Bool {
@@ -2681,7 +2681,7 @@ private struct SchoolTestResultPanel: View {
                     .datePickerStyle(.compact)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                    if !model.wordSteps.isEmpty {
+                    if !model.personalWordSteps.isEmpty {
                         Button {
                             showingStepChooser = true
                         } label: {
@@ -2845,7 +2845,7 @@ private struct SchoolTestResultPanel: View {
 
     private func prepareDefaultsIfNeeded() {
         if selectedStepID.isEmpty {
-            selectedStepID = model.selectedWordStep?.id ?? model.wordSteps.last?.id ?? ""
+            selectedStepID = model.personalSelectedWordStep?.id ?? model.personalWordSteps.last?.id ?? ""
         }
         if total <= 0 {
             applyDefaultTotal()
@@ -3334,7 +3334,7 @@ private struct ParentWordStepPanel: View {
     var language: AppLanguage
 
     private var orderedSteps: [WordStep] {
-        Array(model.wordSteps.reversed())
+        Array(model.personalWordSteps.reversed())
     }
 
     var body: some View {
@@ -3368,7 +3368,7 @@ private struct ParentWordStepPanel: View {
 
                     Spacer()
 
-                    Text("\(model.wordSteps.count)")
+                    Text("\(model.personalWordSteps.count)")
                         .font(.title3.monospacedDigit().weight(.heavy))
                         .foregroundStyle(ParentPalette.primary)
                         .padding(.vertical, 7)
@@ -4414,7 +4414,7 @@ private struct ParentWordListPanel: View {
     var language: AppLanguage
 
     private var selectedStep: WordStep? {
-        model.selectedWordStep
+        model.personalSelectedWordStep
     }
 
     private var demoWordListText: String {
@@ -4588,7 +4588,7 @@ private struct ParentWordListPanel: View {
         .onAppear {
             reloadSelectedStep()
         }
-        .onValueChange(of: model.selectedWordStepID) { _ in
+        .onValueChange(of: model.personalSelectedWordStepID) { _ in
             reloadSelectedStep()
         }
         .fullScreenCover(isPresented: $showingWordCamera) {
@@ -5426,7 +5426,7 @@ private struct ParentAllWordsSheet: View {
     var language: AppLanguage
 
     private var steps: [WordStep] {
-        Array(model.wordSteps.reversed())
+        Array(model.personalWordSteps.reversed())
     }
 
     var body: some View {

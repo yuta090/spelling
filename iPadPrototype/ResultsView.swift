@@ -12,8 +12,9 @@ struct ResultsView: View {
         model.todaysAttempts.count
     }
 
+    // 学習者の結果画面は「いま開いているコースの今のステップ」の見直し語を出す（親の personal 集計とは別）。
     private var reviewList: [SpellingWord] {
-        model.reviewWords
+        model.selectedReviewWords
     }
 
     var body: some View {
@@ -148,7 +149,7 @@ private struct EffortCard: View {
         ResultCard(title: language.text(japanese: "がんばりポイント", english: "Effort Points"), systemImage: "star.fill") {
             VStack(spacing: 12) {
                 ResultValueRow(title: language.text(japanese: "正解した単語", english: "Correct words"), value: "\(model.todaysCorrectCount)")
-                ResultValueRow(title: language.text(japanese: "もう一度やる単語", english: "Try again"), value: "\(model.reviewWords.count)")
+                ResultValueRow(title: language.text(japanese: "もう一度やる単語", english: "Try again"), value: "\(model.selectedReviewWords.count)")
             }
         }
     }
