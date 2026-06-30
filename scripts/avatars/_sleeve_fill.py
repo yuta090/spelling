@@ -18,8 +18,8 @@ from scipy import ndimage as ndi
 
 # うで(袖)帯。胴/裾/フードを避け、肩下〜手首だけを対象にする。
 ARM_BANDS = [(230, 470), (560, 800)]
-ARM_Y = (620, 915)
-MAX_GROW_PX = 10  # この距離内の隙間だけ埋める(袖を新規に生やさない安全弁)
+ARM_Y = (620, 888)  # 手(y≈888+)は塗らない=カフが手に被らないよう前腕までに限定
+MAX_GROW_PX = 16  # この距離内の隙間だけ埋める(スナッグ袖の縁スリバーを閉じる/袖を新規に生やさない安全弁)
 
 
 def skin_mask(base_rgba: np.ndarray) -> np.ndarray:
