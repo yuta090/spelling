@@ -66,6 +66,9 @@ VALID_STYLES = {
     "duck", "flamingo", "parrot", "swan",
     "snail", "dragonfly",
     "banana", "taiyaki", "cookie",
+    "mic", "tambourine", "maracas", "recorder", "musicNote", "skateboard", "bowlingPin",
+    "urchin", "seaTurtle", "squid", "sunfish", "seashell",
+    "orange", "grapes", "dango", "pizza", "candy",
     # 画像ベースの「なかま」共通スタイル。画像は id から nakama_<id>(WebP DataSet) で引く。
     "imageAsset",
 }
