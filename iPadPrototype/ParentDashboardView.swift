@@ -4032,10 +4032,17 @@ private struct ParentNewStepSheet: View {
     @StateObject private var scanProgress = ScanProgressModel()
     @State private var statusMessage: String?
     @State private var statusSucceeded = false
+    @State private var linkToCourse = false
     var language: AppLanguage
 
     private var entries: [WordListEntry] {
         parseWordListEntries(from: rawWords)
+    }
+
+    /// いま合成コース（学年/英検/きほん）を見ているなら、そのコースへ紐付け可能。personal は対象外。
+    private var linkableCourse: Course? {
+        let c = model.activeCourse
+        return c.kind == .personal ? nil : c
     }
 
     private var demoWordListText: String {
@@ -4162,6 +4169,10 @@ private struct ParentNewStepSheet: View {
 
                         ImportJapaneseOptionsView(language: language, draftText: $rawWords)
 
+                        if let linkCourse = linkableCourse {
+                            courseLinkToggle(course: linkCourse)
+                        }
+
                         HStack {
                             Button {
                                 startCameraImport()
@@ -4228,8 +4239,49 @@ private struct ParentNewStepSheet: View {
         }
     }
 
+    /// 「いまのコースの途中に出す」紐付けスイッチ。合成コースを見ているときだけ表示。
+    @ViewBuilder
+    private func courseLinkToggle(course: Course) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Toggle(isOn: $linkToCourse) {
+                Label(
+                    language.text(
+                        japanese: "「\(course.parentTitle)」のれんしゅうに、すぐ次として出す",
+                        english: "Show next in “\(course.parentTitle)”"
+                    ),
+                    systemImage: "arrow.turn.down.right"
+                )
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(ParentPalette.ink)
+            }
+            .tint(ParentPalette.primary)
+
+            Text(language.text(
+                japanese: "保管は「うちのれんしゅう」のまま。コースは切り替えず、いまの階段の途中（子のすぐ次）に出します。学校テスト向け。",
+                english: "Stored in your own words; inserted into the current course right after where the child is — no course switch."
+            ))
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+        }
+        .padding(12)
+        .background(ParentPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(ParentPalette.primary.opacity(0.14), lineWidth: 1)
+        )
+    }
+
     private func saveStep() {
-        let result = model.addWordsToStep(from: rawWords, registeredAt: stepDate)
+        // 紐付けONなら、いまのコースの「子のすぐ次」アンカーを解決して相乗りで登録する。
+        let course = linkToCourse ? linkableCourse : nil
+        let linkedCourseID = course?.id
+        let linkedBeforeStepID = course.map { model.linkAnchorBeforeStepID(for: $0) } ?? nil
+
+        let result = model.addWordsToStep(
+            from: rawWords, registeredAt: stepDate,
+            linkedCourseID: linkedCourseID, linkedBeforeStepID: linkedBeforeStepID
+        )
         if result.added > 0 || result.updated > 0 {
             dismiss()
             return
@@ -4425,6 +4477,60 @@ private struct ParentWordListPanel: View {
         model.personalSelectedWordStep
     }
 
+    /// このステップ（=1バッチ）が合成コースへ紐付いていれば、その表示先コース。
+    private func linkedCourse(for step: WordStep) -> Course? {
+        guard let id = step.words.compactMap({ $0.linkedCourseID }).first else { return nil }
+        return CourseDirectory.course(id: id)
+    }
+
+    /// 「このコースに表示中」バッジ＋表示解除。子側にはコース名・レベルを出さない（親一覧専用）。
+    @ViewBuilder
+    private func courseLinkBadge(step: WordStep, course: Course) -> some View {
+        HStack(alignment: .center, spacing: 10) {
+            Image(systemName: "arrow.turn.down.right")
+                .font(.headline.weight(.heavy))
+                .foregroundStyle(ParentPalette.primary)
+                .frame(width: 34, height: 34)
+                .background(ParentPalette.primarySoft)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(language.text(
+                    japanese: "「\(course.parentTitle)」に表示中",
+                    english: "Shown in “\(course.parentTitle)”"
+                ))
+                .font(.subheadline.weight(.heavy))
+                .foregroundStyle(ParentPalette.ink)
+
+                Text(language.text(
+                    japanese: "保管はうちのれんしゅう。コースの途中に出ています。",
+                    english: "Stored in your own words; inserted into the course."
+                ))
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 8)
+
+            Button {
+                model.setCourseLink(forStepID: step.id, courseID: nil, beforeStepID: nil)
+            } label: {
+                Label(language.text(japanese: "表示をやめる", english: "Unlink"), systemImage: "xmark.circle.fill")
+                    .font(.subheadline.weight(.bold))
+            }
+            .buttonStyle(.bordered)
+            .tapFeedback()
+            .tint(ParentPalette.primary)
+        }
+        .padding(12)
+        .background(ParentPalette.primarySoft.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(ParentPalette.primary.opacity(0.2), lineWidth: 1)
+        )
+    }
+
     private var demoWordListText: String {
         """
         cat | ねこ
@@ -4447,6 +4553,10 @@ private struct ParentWordListPanel: View {
             systemImage: "list.bullet.rectangle"
         ) {
             if let step = selectedStep {
+                if let course = linkedCourse(for: step) {
+                    courseLinkBadge(step: step, course: course)
+                }
+
                 HStack(alignment: .center, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(language.text(
