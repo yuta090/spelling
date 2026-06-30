@@ -31,10 +31,12 @@ public enum EikenLevel: String, CaseIterable, Codable, Hashable, Sendable {
 }
 
 /// コース種別。`.eiken` は spec §5 の拡張軸。`.grade` は学年軸。`.personal` は既存の自分の単語トラック。
+/// `.dolch` は Dolch サイトワード（よく出る基礎語）の土台コース（順序・フィルタは `DolchCourse.swift`）。
 public enum CourseKind: Codable, Hashable, Sendable {
     case personal
     case grade(schoolGrade: Int)   // 1...9（小1…中3）
     case eiken(EikenLevel)
+    case dolch                     // サイトワード（基礎語）コース
 }
 
 // MARK: - 学年帯（英検バンドの学年等分割）

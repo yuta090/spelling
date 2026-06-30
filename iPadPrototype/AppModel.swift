@@ -155,6 +155,30 @@ final class WordBank: @unchecked Sendable {
         }
         return output
     }
+
+    /// Dolch コース生成用：`level.dolch` に値がある語＋訳を返す（帯順・フィルタは Core `buildDolchSteps` 側）。
+    /// 安定のため word 昇順（最終順序は Core が決める）。
+    func dolchRows() -> [DolchRow] {
+        guard let db else { return [] }
+        let sql = """
+        SELECT l.word, g.ja, l.dolch FROM level l \
+        JOIN gloss g ON g.word = l.word \
+        WHERE l.dolch IS NOT NULL AND l.dolch <> '' ORDER BY l.word
+        """
+        var stmt: OpaquePointer?
+        defer { sqlite3_finalize(stmt) }
+        guard sqlite3_prepare_v2(db, sql, -1, &stmt, nil) == SQLITE_OK else { return [] }
+        var output: [DolchRow] = []
+        while sqlite3_step(stmt) == SQLITE_ROW {
+            let word = sqlite3_column_text(stmt, 0).map { String(cString: $0) } ?? ""
+            let ja = sqlite3_column_text(stmt, 1).map { String(cString: $0) } ?? ""
+            let dolch = sqlite3_column_text(stmt, 2).map { String(cString: $0) } ?? ""
+            if !word.isEmpty, !ja.isEmpty, !dolch.isEmpty {
+                output.append(DolchRow(word: word, gloss: ja, dolch: dolch))
+            }
+        }
+        return output
+    }
 }
 
 @MainActor
@@ -559,8 +583,8 @@ final class AppModel: ObservableObject {
     /// 学年・英検は wordbank から合成した仮想ステップ＝非永続）。
     var wordSteps: [WordStep] {
         switch activeCourse.kind {
-        case .personal:      return Self.makeWordSteps(from: words)
-        case .grade, .eiken: return courseProvider.steps(for: activeCourse)
+        case .personal:             return Self.makeWordSteps(from: words)
+        case .grade, .eiken, .dolch: return courseProvider.steps(for: activeCourse)
         }
     }
 
