@@ -150,6 +150,7 @@ struct HomeView: View {
                             canPractice: !selectedPracticeWords.isEmpty,
                             canTest: !model.nextTestWords.isEmpty,
                             canSwitchSteps: model.wordSteps.count > 1,
+                            stepProgress: model.courseStepProgress,
                             // 満点クリア済みなら、このステップは自由（パズル）に自動切替＝パズルが主役。
                             isStepCleared: model.selectedStepFocus == .freePlayUnlocked,
                             hasFinishedPracticeRound: hasFinishedCurrentPracticeRound,
@@ -629,6 +630,8 @@ private struct ChildMissionPanel: View {
     var canPractice: Bool
     var canTest: Bool
     var canSwitchSteps: Bool
+    /// コース全体のステップ完了サマリ（できた Xこ / Yこ）。
+    var stepProgress: StepMapLayout.Progress
     /// このステップを満点クリア済みか。true なら主役をことばパズル（自由）に切り替える。
     var isStepCleared: Bool = false
     var hasFinishedPracticeRound: Bool
@@ -731,6 +734,35 @@ private struct ChildMissionPanel: View {
         isStepCleared ? puzzlePrimaryTint : Color(red: 0.16, green: 0.42, blue: 0.84)
     }
 
+    /// コース全体の達成サマリ（できた Xこ / Yこ）。コース名は出さず数だけ（やる人＝子に見せる達成感）。
+    /// ステップが無い（total==0）ときは出さない。全部できたら金の星＋暖色で祝うが、数(X/Y)は常に出す。
+    @ViewBuilder private var stepProgressBadge: some View {
+        if stepProgress.total > 0 {
+            let allDone = stepProgress.allCleared
+            HStack(spacing: 6) {
+                Image(systemName: allDone ? "star.fill" : "star.leadinghalf.filled")
+                    .font(.subheadline.weight(.heavy))
+                Text(language.text(japanese: "\(stepProgress.cleared)こ できた / \(stepProgress.total)",
+                                   english: "\(stepProgress.cleared) / \(stepProgress.total) done"))
+                    .font(.subheadline.monospacedDigit().weight(.heavy))
+            }
+            .foregroundStyle(allDone
+                ? Color(red: 0.78, green: 0.52, blue: 0.05)      // 全部できた＝金（祝い）
+                : Color(red: 0.18, green: 0.52, blue: 0.22))     // 途中＝緑（できた色）
+            .padding(.vertical, 5)
+            .padding(.horizontal, 11)
+            .background(Capsule().fill(allDone
+                ? Color(red: 1.0, green: 0.95, blue: 0.78)
+                : Color(red: 0.88, green: 0.96, blue: 0.86)))
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(allDone
+                ? language.text(japanese: "ぜんぶできた、\(stepProgress.total)こ",
+                                english: "All \(stepProgress.total) steps done")
+                : language.text(japanese: "\(stepProgress.cleared)こできた、ぜんぶで\(stepProgress.total)こ",
+                                english: "\(stepProgress.cleared) of \(stepProgress.total) steps done"))
+        }
+    }
+
     var body: some View {
         VStack(spacing: 22) {
             HStack(spacing: 22) {
@@ -789,6 +821,8 @@ private struct ChildMissionPanel: View {
                     .tapFeedback(scale: 0.93, bounce: true)
                     .disabled(!canSwitchSteps)
                     .accessibilityLabel(language.text(japanese: "\(stepTitle)を変える", english: "Change \(stepTitle)"))
+
+                    stepProgressBadge
 
                     Text(missionText)
                         .font(.system(size: 48, weight: .heavy, design: .rounded))

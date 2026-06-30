@@ -60,6 +60,39 @@ public enum StepMapLayout {
         }
     }
 
+    // MARK: - コース完了サマリ（できた Xこ / Yこ）
+
+    /// コース全体のステップ完了サマリ（ホームの「Xこ できた / Yこ」表示用）。
+    public struct Progress: Equatable, Sendable {
+        /// このコースで「できた（満点クリア済み）」ステップ数。
+        public let cleared: Int
+        /// このコースのステップ総数。
+        public let total: Int
+
+        public init(cleared: Int, total: Int) {
+            self.cleared = cleared
+            self.total = total
+        }
+
+        /// 全ステップを終えたか（`total == 0` のときは false ＝ 0/0 を「全部できた」にしない）。
+        public var allCleared: Bool { total > 0 && cleared >= total }
+
+        /// 0...1 の割合（`total == 0` のときは 0）。
+        public var fraction: Double { total > 0 ? Double(cleared) / Double(total) : 0 }
+    }
+
+    /// コースのステップID列と「できた」集合から、コース内の完了サマリを作る。
+    ///
+    /// `completed` は全コース横断の集合になり得る（満点は単語共有でコースをまたぐ）ため、
+    /// **`orderedIDs` に含まれるIDだけ**を数える＝このコースの分のみを集計する。
+    /// `orderedIDs` は一意（重複なし）前提なので、`cleared <= total` が常に成り立つ。
+    public static func progress(orderedIDs: [String], completed: Set<String>) -> Progress {
+        let cleared = orderedIDs.reduce(into: 0) { acc, id in
+            if completed.contains(id) { acc += 1 }
+        }
+        return Progress(cleared: cleared, total: orderedIDs.count)
+    }
+
     // MARK: - 座標（データ駆動：ステップ配列→座標）
 
     /// 平面上の点（描画側で `CGPoint` に変換）。

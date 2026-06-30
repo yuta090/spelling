@@ -117,4 +117,37 @@ final class StepMapLayoutTests: XCTestCase {
         XCTAssertEqual(path.last?.x ?? 0, 500, accuracy: 0.001)          // ゴールは中央
         XCTAssertEqual(path.last?.y ?? 0, 320 - 110, accuracy: 0.001)
     }
+
+    // MARK: - コース完了サマリ（できた Xこ / Yこ）
+
+    func testProgressCountsClearedStepsWithinCourse() {
+        let p = StepMapLayout.progress(orderedIDs: ["a", "b", "c", "d"], completed: ["a", "c"])
+        XCTAssertEqual(p.cleared, 2)
+        XCTAssertEqual(p.total, 4)
+        XCTAssertFalse(p.allCleared)
+        XCTAssertEqual(p.fraction, 0.5, accuracy: 0.001)
+    }
+
+    func testProgressIgnoresClearedIDsOutsideCourse() {
+        // 別コースで満点になった stepID（このコースに無い）はこのコースの「できた」に数えない。
+        let p = StepMapLayout.progress(orderedIDs: ["a", "b"], completed: ["a", "x", "y"])
+        XCTAssertEqual(p.cleared, 1)
+        XCTAssertEqual(p.total, 2)
+    }
+
+    func testProgressAllClearedWhenEveryStepDone() {
+        let p = StepMapLayout.progress(orderedIDs: ["a", "b"], completed: ["a", "b"])
+        XCTAssertEqual(p.cleared, 2)
+        XCTAssertEqual(p.total, 2)
+        XCTAssertTrue(p.allCleared)
+        XCTAssertEqual(p.fraction, 1.0, accuracy: 0.001)
+    }
+
+    func testProgressEmptyCourseIsNotAllCleared() {
+        let p = StepMapLayout.progress(orderedIDs: [], completed: ["a"])
+        XCTAssertEqual(p.cleared, 0)
+        XCTAssertEqual(p.total, 0)
+        XCTAssertFalse(p.allCleared)      // 0/0 を「全部できた」にしない
+        XCTAssertEqual(p.fraction, 0, accuracy: 0.001)
+    }
 }

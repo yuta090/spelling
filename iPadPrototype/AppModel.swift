@@ -613,6 +613,11 @@ final class AppModel: ObservableObject {
         Set(wordSteps.filter { requiredCompletion.isCleared(completionSignature(for: $0)) }.map(\.id))
     }
 
+    /// 現在コースのステップ完了サマリ（ホームの「Xこ できた / Yこ」）。
+    var courseStepProgress: StepMapLayout.Progress {
+        StepMapLayout.progress(orderedIDs: wordSteps.map(\.id), completed: completedStepIDs)
+    }
+
     // MARK: - 練習抑制（マスター済みは練習で出さない／テストには出す／ミスで復帰）
     //  既存の missed/review 基盤（attempts の最新クリア＋ReviewQueue）だけから算出。新ストアは持たない。
 
