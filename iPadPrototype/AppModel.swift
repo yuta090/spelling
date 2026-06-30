@@ -231,13 +231,31 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(childCanSwitchCourses, key: childCanSwitchCoursesKey) }
     }
 
+    /// 親が「子に選ばせるコース」を絞り込む許可サブセット。
+    /// **空 = 制限なし（全コース許可）＝既定**。非空 = その集合のみ（＋現在コースは常に選べる）。
+    /// 効くのは `childCanSwitchCourses == true` のときだけ（ロック時は現在コースのみ）。
+    @Published var allowedCourseIDs: Set<String> {
+        didSet { persistenceStore.save(Array(allowedCourseIDs), key: allowedCourseIDsKey) }
+    }
+
     /// 子の画面で選べるコースID（ロック時は現在コースのみ＝切替不可）。純ロジックは `CourseAccess`。
     var childSelectableCourseIDs: [String] {
         CourseAccess.childSelectableCourseIDs(
             allCourseIDs: CourseDirectory.all.map(\.id),
             activeCourseID: selectedCourseID,
-            childCanSwitch: childCanSwitchCourses
+            childCanSwitch: childCanSwitchCourses,
+            allowedCourseIDs: allowedCourseIDs
         )
+    }
+
+    /// 親UI用：許可コースのトグル（含まれていれば外す／無ければ足す）。
+    /// 空集合 = 制限なし（全部許可）の意味なので、UI 側は「何も選ばなければ全部」と案内する。
+    func toggleAllowedCourse(_ id: String) {
+        if allowedCourseIDs.contains(id) {
+            allowedCourseIDs.remove(id)
+        } else {
+            allowedCourseIDs.insert(id)
+        }
     }
 
     /// 利用可能コースから現在のコースを解決（不明は personal）。
@@ -459,6 +477,7 @@ final class AppModel: ObservableObject {
     private let selectedCourseIDKey = "spellingTrainer.selectedCourseID"
     private let selectedStepIDByCourseKey = "spellingTrainer.selectedStepIDByCourse"
     private let childCanSwitchCoursesKey = "spellingTrainer.childCanSwitchCourses"
+    private let allowedCourseIDsKey = "spellingTrainer.allowedCourseIDs"
     private let requiredCompletionKey = "spellingTrainer.requiredCompletion"
     /// 旧コイン単位の残高キー（×10 移行前）。**二度と書き換えない**＝再倍化を防ぐ不変の移行元。
     private let legacyRewardCoinsKey = "spellingTrainer.rewardCoins"
@@ -526,6 +545,8 @@ final class AppModel: ObservableObject {
         }
         // 子のコース切替は既定でロック（親が決める）。親が設定で ON にしたときだけ解放。
         childCanSwitchCourses = persistenceStore.load(Bool.self, key: childCanSwitchCoursesKey) ?? false
+        // 許可サブセット（空 = 制限なし＝全コース許可）。配列で永続化し Set へ復元。
+        allowedCourseIDs = Set(persistenceStore.load([String].self, key: allowedCourseIDsKey) ?? [])
         requiredCompletion = persistenceStore.load(RequiredCompletion.self, key: requiredCompletionKey) ?? RequiredCompletion()
         // コイン単位 ×10 リリースの一回限り移行（純粋ロジックは CoinScaleMigration、判定/保存はここ）。
         // v2 キーがあればそれを使い、無ければ旧キー残高 ×10 で確定する。旧キーは不変なので、
