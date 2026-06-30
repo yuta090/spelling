@@ -17,11 +17,14 @@ final class AnswerExplanationTests: XCTestCase {
         XCTAssertNil(result.detail)
         XCTAssertEqual(result.correctText, "This is a pen.")
         XCTAssertEqual(result.meaningJa, "これはペンです。")
-        XCTAssertEqual(result.headline, GrammarPoint.beVerb.titleJa)
+        XCTAssertNil(result.headline)   // ぶんづくりは文法見出しを出さない
         XCTAssertTrue(result.chips.isEmpty)
     }
 
-    func testIncorrectAnswerWithGrammar() {
+    // ぶんづくりの不正解は「文法タグ」ではなく「正しい並び（構文）」で教える。
+    // 文法タグの解説（detail）と見出し（headline）は語順とズレるため出さず、
+    // 正解文＋意味＋ならびかたヒント（orderHint）を出す。
+    func testIncorrectAnswerShowsOrderHintNotGrammar() {
         let item = SentenceItem(
             en: "This is a pen.",
             ja: "これはペンです。",
@@ -33,10 +36,11 @@ final class AnswerExplanationTests: XCTestCase {
         let result = SentenceFeedback.make(item: item, submitted: ["is", "This", "a", "pen."], grade: grade)
 
         XCTAssertEqual(result.wasCorrect, false)
-        XCTAssertEqual(result.detail, GrammarPoint.beVerb.explanationJa)
-        XCTAssertEqual(result.headline, GrammarPoint.beVerb.titleJa)
+        XCTAssertNil(result.detail)    // 文法タグ解説は出さない
+        XCTAssertNil(result.headline)  // 文法見出しも出さない
         XCTAssertEqual(result.correctText, "This is a pen.")
         XCTAssertEqual(result.meaningJa, "これはペンです。")
+        XCTAssertEqual(result.orderHint, "This → is → a → pen のじゅんばん")
     }
 
     func testIncorrectAnswerWithoutGrammar() {
@@ -55,6 +59,41 @@ final class AnswerExplanationTests: XCTestCase {
         XCTAssertNil(result.detail)
         XCTAssertEqual(result.correctText, "Hello world.")
         XCTAssertEqual(result.meaningJa, "こんにちは世界。")
+        XCTAssertEqual(result.orderHint, "Hello → world のじゅんばん")
+    }
+
+    // 正解時はならびかたヒントを出さない（できたね！＋意味だけ）。
+    func testCorrectAnswerHasNoOrderHint() {
+        let item = SentenceItem(
+            en: "This is a pen.",
+            ja: "これはペンです。",
+            tokens: ["This", "is", "a", "pen."],
+            gradeBand: 1,
+            grammar: .beVerb
+        )
+        let grade = OrderingGrade(isCorrect: true, correctPositions: 4, total: 4)
+        let result = SentenceFeedback.make(item: item, submitted: ["This", "is", "a", "pen."], grade: grade)
+        XCTAssertNil(result.orderHint)
+    }
+
+    // MARK: - orderHint 純関数
+
+    func testOrderHintJoinsWordsWithArrows() {
+        XCTAssertEqual(SentenceFeedback.orderHint(["Yes", "I", "can."]), "Yes → I → can のじゅんばん")
+    }
+
+    func testOrderHintStripsEdgePunctuationButKeepsApostrophe() {
+        XCTAssertEqual(SentenceFeedback.orderHint(["I'm", "happy!"]), "I'm → happy のじゅんばん")
+    }
+
+    func testOrderHintDropsPunctuationOnlyTokens() {
+        XCTAssertEqual(SentenceFeedback.orderHint(["Look", "!", "Run."]), "Look → Run のじゅんばん")
+    }
+
+    func testOrderHintNilForSingleWord() {
+        XCTAssertNil(SentenceFeedback.orderHint(["Run."]))
+        XCTAssertNil(SentenceFeedback.orderHint([]))
+        XCTAssertNil(SentenceFeedback.orderHint([".", "!"]))
     }
 
     func testSingleTokenSentence() {

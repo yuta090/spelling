@@ -51,6 +51,14 @@ struct AnswerExplanationCard: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
+            // ぶんづくりの「ならびかた」ヒント（不正解時のみ）。正しい語順を矢印で示す。
+            if explanation.wasCorrect != true, let hint = explanation.orderHint, !hint.isEmpty {
+                Text(hint)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(AEC.accent)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             if !explanation.chips.isEmpty {
                 CardFlow(spacing: 8) {
                     ForEach(explanation.chips, id: \.self) { chip in
