@@ -19,6 +19,12 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
     /// 1日10語の新規導入予算（`NewWordBudget`）の当日カウントに使う。フェーズ1では追加のみ
     /// （スタンプの配線は次フェーズ）。既存データは nil として読み込まれる。
     var firstIntroducedAt: Date?
+    /// 学校テスト語などを「保管は personal のまま、別コースの階段に表示だけ紐付ける」ための表示属性。
+    /// `linkedCourseID` … 表示先コースID（`Course.id`。合成＝grade/eiken/dolch を想定。nil＝紐付け無し）。
+    /// `linkedBeforeStepID` … そのコースのどの合成ステップ手前に差し込むか（`CourseStep.stepID`。nil＝末尾）。
+    /// 保管は常に personal（`model.words`）。これは「どこに出すか」だけを持つ表示メタで、編集=personal の不変条件は壊さない。
+    var linkedCourseID: String?
+    var linkedBeforeStepID: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -28,9 +34,11 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
         case stepID
         case source
         case firstIntroducedAt
+        case linkedCourseID
+        case linkedBeforeStepID
     }
 
-    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date(), stepID: String? = nil, source: WordSource = .parent, firstIntroducedAt: Date? = nil) {
+    init(id: UUID = UUID(), text: String, promptText: String = "", registeredAt: Date = Date(), stepID: String? = nil, source: WordSource = .parent, firstIntroducedAt: Date? = nil, linkedCourseID: String? = nil, linkedBeforeStepID: String? = nil) {
         self.id = id
         self.text = text
         self.promptText = promptText
@@ -38,6 +46,8 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
         self.stepID = stepID
         self.source = source
         self.firstIntroducedAt = firstIntroducedAt
+        self.linkedCourseID = linkedCourseID
+        self.linkedBeforeStepID = linkedBeforeStepID
     }
 
     init(from decoder: Decoder) throws {
@@ -49,6 +59,8 @@ struct SpellingWord: Identifiable, Equatable, Codable, Sendable {
         stepID = try container.decodeIfPresent(String.self, forKey: .stepID)
         source = try container.decodeIfPresent(WordSource.self, forKey: .source) ?? .parent
         firstIntroducedAt = try container.decodeIfPresent(Date.self, forKey: .firstIntroducedAt)
+        linkedCourseID = try container.decodeIfPresent(String.self, forKey: .linkedCourseID)
+        linkedBeforeStepID = try container.decodeIfPresent(String.self, forKey: .linkedBeforeStepID)
     }
 }
 

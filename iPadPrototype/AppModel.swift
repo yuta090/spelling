@@ -604,9 +604,99 @@ final class AppModel: ObservableObject {
     /// 学年・英検は wordbank から合成した仮想ステップ＝非永続）。
     var wordSteps: [WordStep] {
         switch activeCourse.kind {
-        case .personal:             return Self.makeWordSteps(from: words)
-        case .grade, .eiken, .dolch: return courseProvider.steps(for: activeCourse)
+        case .personal:
+            return Self.makeWordSteps(from: words)
+        case .grade, .eiken, .dolch:
+            let base = courseProvider.steps(for: activeCourse)
+            return Self.composeLinkedSteps(base: base, personalWords: words, courseID: activeCourse.id)
         }
+    }
+
+    /// 合成コースの階段（`base`）に、personal 保管で「このコースへ紐付いた」語を差し込んで materialize する。
+    /// 純ロジック（バッチ化＋forward dedup＋空除去＋番号振り直し）は `SpellingSyncCore.LinkedStepComposer`
+    /// に委譲し、ここは「`WordToken.id` → 実 `SpellingWord` の対応付け」だけを担う薄いグルー。
+    /// 保管は personal のまま動かさない（表示専用）。id ベースで戻すので同じ綴りの別語を取り違えない。
+    static func composeLinkedSteps(base: [WordStep], personalWords: [SpellingWord], courseID: String) -> [WordStep] {
+        let linkedWords = personalWords.filter { $0.linkedCourseID == courseID }
+        guard !linkedWords.isEmpty else { return base }
+
+        // id → 実語（両側）。計画後の materialize はこの id 引きだけで行う。
+        var wordByID: [String: SpellingWord] = [:]
+        var baseByStepID: [String: WordStep] = [:]
+        for step in base {
+            baseByStepID[step.id] = step
+            for w in step.words { wordByID[w.id.uuidString] = w }
+        }
+        for w in linkedWords { wordByID[w.id.uuidString] = w }
+
+        let baseDesc = base.map { step in
+            LinkedStepComposer.BaseStep(
+                stepID: step.id,
+                words: step.words.map { .init(id: $0.id.uuidString, normalized: normalize($0.text)) })
+        }
+        let inputs = linkedWords.map { w in
+            LinkedStepComposer.LinkedWordInput(
+                id: w.id.uuidString, normalized: normalize(w.text),
+                storageStepID: w.stepID, beforeStepID: w.linkedBeforeStepID)
+        }
+        let planned = LinkedStepComposer.plan(base: baseDesc,
+                                              linked: LinkedStepComposer.buildGroups(from: inputs))
+
+        return planned.map { p in
+            switch p.origin {
+            case .synthetic(let stepID):
+                let words = p.words.compactMap { wordByID[$0.id] }
+                return WordStep(id: stepID, number: p.number,
+                                registeredDate: baseByStepID[stepID]?.registeredDate ?? Self.linkedEpoch,
+                                words: words, isChildStep: false, childNumber: nil)
+            case .custom(let storageStepID):
+                let stepID = "\(Self.linkedStepIDPrefix)\(courseID).\(storageStepID)"
+                // 実 personal 語の id（同期キー）は保ちつつ、表示ステップ整合のため stepID だけ揃える。
+                let words = p.words.compactMap { wordByID[$0.id] }.map { w -> SpellingWord in
+                    var w = w; w.stepID = stepID; return w
+                }
+                return WordStep(id: stepID, number: p.number,
+                                registeredDate: words.first?.registeredAt ?? Self.linkedEpoch,
+                                words: words, isChildStep: false, childNumber: nil)
+            }
+        }
+    }
+
+    private static let linkedEpoch = Date(timeIntervalSince1970: 0)
+    /// 紐付け custom ステップの `WordStep.id` 接頭辞（合成ステップIDと区別＝アンカーに使わない）。
+    static let linkedStepIDPrefix = "linked."
+
+    // MARK: - コース紐付け（学校テスト語を「いまのコースの途中」に出す）
+
+    /// いま追加するなら、このコースのどの合成ステップ手前に出すか（=「子の現在地のすぐ次」）。
+    /// 現在地＝**子が実際に見る合成ラダー（既存の紐付けも反映＝完了判定と同じ土俵）**の最初の未クリア
+    /// 「合成」ステップ。その手前に差し込むと子の次にやる階段として出る。custom ステップ（"linked." 接頭）は
+    /// アンカーに使えないので飛ばす。personal コース／全クリア時は nil（末尾フォールバック）。
+    func linkAnchorBeforeStepID(for course: Course) -> String? {
+        guard course.kind != .personal else { return nil }
+        let composed = Self.composeLinkedSteps(
+            base: courseProvider.steps(for: course), personalWords: words, courseID: course.id)
+        for step in composed
+        where !step.id.hasPrefix(Self.linkedStepIDPrefix)
+            && !requiredCompletion.isCleared(completionSignature(for: step)) {
+            return step.id
+        }
+        return nil
+    }
+
+    /// あるpersonalステップ（=1バッチ）の全語を、合成コースへ紐付ける/解除する（表示メタのみ更新）。
+    /// `courseID == nil` で解除。保管（words 自体・stepID）は動かさない。
+    func setCourseLink(forStepID stepID: String, courseID: String?, beforeStepID: String?) {
+        var updated = words
+        var changed = false
+        for i in updated.indices where updated[i].stepID == stepID {
+            if updated[i].linkedCourseID != courseID || updated[i].linkedBeforeStepID != beforeStepID {
+                updated[i].linkedCourseID = courseID
+                updated[i].linkedBeforeStepID = beforeStepID
+                changed = true
+            }
+        }
+        if changed { words = updated }
     }
 
     var selectedWordStep: WordStep? {
@@ -1186,7 +1276,10 @@ final class AppModel: ObservableObject {
                     registeredAt: prior?.registeredAt ?? record.sync.createdAt,
                     stepID: prior?.stepID,                                   // ローカルのステップ割当を保持
                     source: WordSource(rawValue: record.payload.source) ?? .parent,
-                    firstIntroducedAt: prior?.firstIntroducedAt              // 学習リズムのローカル値を保持（同期で消さない）
+                    firstIntroducedAt: prior?.firstIntroducedAt,             // 学習リズムのローカル値を保持（同期で消さない）
+                    // コース紐付け（表示メタ）も同期では消さない。サーバー往復は Phase 4 で配線するまでローカル保持。
+                    linkedCourseID: prior?.linkedCourseID,
+                    linkedBeforeStepID: prior?.linkedBeforeStepID
                 )
             }
         if mapped != words {
@@ -1404,6 +1497,12 @@ final class AppModel: ObservableObject {
         // こども専用ステップを編集する場合は、新しい単語にも .child を付けて区別を保つ。
         let stepSource: WordSource = (step.isChildStep || step.id == Self.childWordStepID) ? .child : .parent
 
+        // このステップ（=1バッチ）がコースへ紐付いていれば、編集で増えた語にも同じ紐付けを継がせて
+        // バッチ全体の一貫性を保つ（一部だけコース非表示になり「表示中」バッジと食い違う事故を防ぐ）。
+        let linkSource = stepWords.first { $0.linkedCourseID != nil }
+        let batchLinkedCourseID = linkSource?.linkedCourseID
+        let batchLinkedBeforeStepID = linkSource?.linkedBeforeStepID
+
         let replacementWords = entries.map { entry in
             let key = normalize(entry.text)
             var word = existingWordsByText[key] ?? SpellingWord(
@@ -1416,6 +1515,8 @@ final class AppModel: ObservableObject {
             word.promptText = entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             word.stepID = explicitStepID
             word.source = stepSource
+            word.linkedCourseID = batchLinkedCourseID
+            word.linkedBeforeStepID = batchLinkedBeforeStepID
             return word
         }
 
@@ -1426,7 +1527,11 @@ final class AppModel: ObservableObject {
     }
 
     @discardableResult
-    func addWordsToStep(from rawText: String, registeredAt: Date = Date()) -> (added: Int, updated: Int) {
+    /// - Parameters:
+    ///   - linkedCourseID/linkedBeforeStepID: 新ステップ（=1バッチ）を合成コースの階段へ「表示だけ」紐付ける
+    ///     表示メタ。保管は常に personal。学校テスト語を「コースを切り替えず途中に出す」用途（→ `wordSteps`）。
+    func addWordsToStep(from rawText: String, registeredAt: Date = Date(),
+                        linkedCourseID: String? = nil, linkedBeforeStepID: String? = nil) -> (added: Int, updated: Int) {
         let entries = parseWordListEntries(from: rawText)
         guard !entries.isEmpty else {
             return (0, 0)
@@ -1446,7 +1551,9 @@ final class AppModel: ObservableObject {
             }
 
             let promptText = entry.promptText?.trimmingCharacters(in: .whitespacesAndNewlines)
-            updatedWords.append(SpellingWord(text: key, promptText: promptText ?? "", registeredAt: storedDate, stepID: stepID))
+            updatedWords.append(SpellingWord(text: key, promptText: promptText ?? "", registeredAt: storedDate,
+                                             stepID: stepID,
+                                             linkedCourseID: linkedCourseID, linkedBeforeStepID: linkedBeforeStepID))
             addedCount += 1
         }
 
