@@ -11056,14 +11056,23 @@ struct HomeBackground: View {
     var body: some View {
         if let imageName = theme.imageName {
             // 利用可能領域いっぱいに敷き、はみ出しは clip する。
-            // frame/clipped が無いと scaledToFill が本来サイズを主張し、シート等の
-            // 「中身に合わせて縮む」コンテナ内でレイアウトを押し広げて崩す（きょうのたんご画面）。
+            // ❗️scaledToFill した画像は「拡大後の巨大な本来サイズ」をレイアウトに主張する。
+            //   これを直接 `.frame(maxWidth:.infinity, maxHeight:.infinity).clipped()` で
+            //   敷くと、`.ignoresSafeArea()` ＋ ホームの ZStack(alignment:.top) と重なった時に
+            //   座標空間が画面外まで広がり、上揃えで重ねたヘッダー（ホーム名＋結果/設定）が
+            //   画面外へ押し出されて iPad 縦向きで丸ごと消え、横向きでも上に詰まって押しにくく
+            //   なる不具合が出た（手描き=procedural テーマでは出るのに画像テーマだけ崩れる、で
+            //   切り分け確定）。
+            //   → サイズを主張しない `Color.clear` を土台にして画像を overlay で流し込み clip する。
+            //     これで画像は外側のレイアウトに一切干渉せず、どのテーマ・向き・端末でも安定する。
             safeAreaBackground(
-                Image(imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
+                Color.clear
+                    .overlay(
+                        Image(imageName)
+                            .resizable()
+                            .scaledToFill()
+                    )
+                    .clipped()
             )
         } else {
             ZStack(alignment: .bottom) {
