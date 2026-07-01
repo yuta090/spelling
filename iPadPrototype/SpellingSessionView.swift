@@ -55,6 +55,13 @@ struct SpellingSessionView: View {
     /// （消す・戻すではリセットしない）。
     @State private var guideSampleOpacity = GuidedWritingCanvas.sampleTextBaseOpacity
 
+    /// 1回書くごとの派手演出（中央のほめ言葉＋キラキラ）。最終回はコイン演出(showingSparkles)側。
+    @State private var showingRoundCheer = false
+    /// いま出しているランダムなほめ言葉（声と中央表示で共有）。
+    @State private var roundCheerMessage = ""
+    /// キャラの相棒のバウンド（書けたびに跳ねる）。
+    @State private var mascotPop = false
+
     /// お手本フェードにかける秒数。
     private let guideFadeDuration: Double = 7
 
@@ -133,17 +140,24 @@ struct SpellingSessionView: View {
         practiceRepeatIndex >= practiceRepetitionCount - 1
     }
 
-    /// 最後のラウンド（なぞり文字をゆっくり消して自分で書かせる回）かどうか。
-    private var isGuideFadeRound: Bool {
-        mode == .practice && capturesPracticeSamples && practiceRepetitionCount > 1 && isLastPracticeRepeat
-    }
-
     /// 単語/ラウンドが変わったときに、お手本フェードを開始（または濃さを戻す）。
     /// 消す・戻す（`canvasResetID` 更新）では呼ばないので、フェードが巻き戻らない。
     private func refreshGuideFade() {
         let base = GuidedWritingCanvas.sampleTextBaseOpacity
-        guideSampleOpacity = base
-        guard isGuideFadeRound else { return }
+        // 「見える階段」：回が進むほどお手本を段階的に薄くする（横の文字で説明しない）。
+        guard mode == .practice, capturesPracticeSamples, practiceRepetitionCount > 1 else {
+            guideSampleOpacity = base
+            return
+        }
+        let progress = PracticeRoundPlanner.progress(
+            round: practiceRepeatIndex,
+            totalRounds: practiceRepetitionCount,
+            baseOpacity: base)
+        withAnimation(.easeInOut(duration: 0.4)) {
+            guideSampleOpacity = progress.guideStartOpacity
+        }
+        // 最後の回は、その薄さからさらに 0 へゆっくり消して“じぶんで書く”に。
+        guard progress.isFinal else { return }
         DispatchQueue.main.async {
             withAnimation(.easeInOut(duration: guideFadeDuration)) {
                 guideSampleOpacity = 0
@@ -399,6 +413,9 @@ struct SpellingSessionView: View {
 
                     if usesCompactPracticeGrid {
                         VStack(spacing: 8) {
+                            if mode == .practice {
+                                practiceMascot
+                            }
                             compactPracticeHeader
                             // 2列レイアウトでも各単語の下に例文ヒントを出す（どのレイアウトでも表示）。
                             if showsPracticeHint {
@@ -419,14 +436,18 @@ struct SpellingSessionView: View {
                             }
                         }
                     } else {
+                        if mode == .practice {
+                            practiceMascot
+                        }
                         wordHeader
                     }
 
+                    // 「あと何回」を横の文字で説明せず、中央の大きな⭐️で見せる（子は横テキストを読まない）。
                     if capturesPracticeSamples && practiceRepetitionCount > 1 {
-                        PracticeRepeatGuide(
+                        PracticeStarProgress(
+                            filled: practiceRepeatIndex,
                             current: practiceRepeatIndex + 1,
-                            total: practiceRepetitionCount,
-                            language: language
+                            total: practiceRepetitionCount
                         )
                     }
 
@@ -481,6 +502,17 @@ struct SpellingSessionView: View {
                     coinReward: practiceCelebrationCoinReward
                 )
                     .transition(.opacity)
+                    .zIndex(4)
+            }
+
+            // 1回ごとの派手演出（中間の回。最終回はコイン演出の方を出す）。
+            if showingRoundCheer {
+                PracticeRoundCheerOverlay(
+                    seed: sparkleSeed,
+                    style: practiceCelebrationStyle,
+                    message: roundCheerMessage
+                )
+                    .transition(.scale(scale: 0.6).combined(with: .opacity))
                     .zIndex(4)
             }
         }
@@ -615,6 +647,17 @@ struct SpellingSessionView: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color(red: 0.78, green: 0.84, blue: 0.96), lineWidth: 1)
         )
+    }
+
+    /// 練習画面の相棒キャラ。中央上に置き、書けたびに跳ねて応援する（子は横テキストより
+    /// 中央のキャラ・動きに反応する [[child-ignores-horizontal-text]]）。
+    private var practiceMascot: some View {
+        RewardCharacterAvatar(character: HomeRewardCharacter.character(id: model.selectedCharacterID))
+            .frame(width: 84, height: 84)
+            .scaleEffect(mascotPop ? 1.18 : 1.0)
+            .rotationEffect(.degrees(mascotPop ? 6 : 0))
+            .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
+            .accessibilityHidden(true)
     }
 
     private var practiceWordHeader: some View {
@@ -1036,7 +1079,8 @@ struct SpellingSessionView: View {
             return
         }
 
-        guard mode == .practice, capturesPracticeSamples, isLastPracticeRepeat else {
+        // 練習以外（＝復習の中間回など）はそのまま進める。
+        guard mode == .practice, capturesPracticeSamples else {
             moveNext()
             return
         }
@@ -1047,23 +1091,61 @@ struct SpellingSessionView: View {
 
         isAdvancing = true
         savePracticeDrawingIfNeeded()
-        model.awardPracticeCoins()
-        practiceCelebrationCoinReward = AppModel.practiceCoinReward
-        completedPracticeWordCount = practicedWordCountInSession()
+
+        let isFinal = isLastPracticeRepeat
+        // 毎回：スタイルを引き直し、キャラを跳ねさせ、ランダムなほめ言葉を声で。
         practiceCelebrationStyle = PracticeCelebrationStyle.random()
         sparkleSeed += 1
+        bounceMascot()
+        speakRandomPraise()
 
-        withAnimation(.easeOut(duration: 0.16)) {
-            showingSparkles = true
+        if isFinal {
+            // 最後の回＝単語完了：コイン付与＋コイン演出。
+            model.awardPracticeCoins()
+            practiceCelebrationCoinReward = AppModel.practiceCoinReward
+            completedPracticeWordCount = practicedWordCountInSession()
+            withAnimation(.easeOut(duration: 0.16)) {
+                showingSparkles = true
+            }
+        } else {
+            // 中間の回＝コインは出さず、中央に大きくほめ言葉＋キラキラ。
+            withAnimation(.spring(response: 0.28, dampingFraction: 0.6)) {
+                showingRoundCheer = true
+            }
         }
 
+        let dwell: UInt64 = isFinal ? 1_250_000_000 : 780_000_000
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_250_000_000)
+            try? await Task.sleep(nanoseconds: dwell)
             withAnimation(.easeIn(duration: 0.18)) {
                 showingSparkles = false
+                showingRoundCheer = false
             }
             moveNext(saveDrawing: false)
             isAdvancing = false
+        }
+    }
+
+    /// ランダムなほめ言葉を選び、中央表示用に保持しつつ声で読み上げる。
+    private func speakRandomPraise() {
+        let count = language == .japanese ? PracticePraise.japanese.count : PracticePraise.english.count
+        let index = count > 0 ? Int.random(in: 0..<count) : 0
+        let phrase = PracticePraise.phrase(index: index, japanese: language == .japanese)
+        roundCheerMessage = phrase
+        speech.speak(phrase, language: language == .japanese ? "ja-JP" : "en-US",
+                     rate: model.settings.speechRate)
+    }
+
+    /// キャラの相棒を「ぽん！」と跳ねさせる（書けたびの反応）。
+    private func bounceMascot() {
+        withAnimation(.spring(response: 0.24, dampingFraction: 0.42)) {
+            mascotPop = true
+        }
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 340_000_000)
+            withAnimation(.spring(response: 0.42, dampingFraction: 0.7)) {
+                mascotPop = false
+            }
         }
     }
 
@@ -1078,31 +1160,42 @@ struct SpellingSessionView: View {
 
         saveCompactPracticeDrawings()
 
-        if !isLastPracticeRepeat {
-            practiceRepeatIndex += 1
-            publishPracticeProgressIfNeeded()
-            clearCompactPracticeBatch()
-            return
-        }
-
-        let completedWords = compactPracticeWords.count
         isAdvancing = true
-        model.awardPracticeCoins(AppModel.practiceCoinReward * completedWords)
-        practiceCelebrationCoinReward = AppModel.practiceCoinReward * completedWords
-        completedPracticeWordCount = practicedWordCountInSession()
+        let isFinal = isLastPracticeRepeat
+        // 2列レイアウトでも1回書くごとに派手演出：スタイル引き直し・キャラ跳ね・ランダムほめ言葉。
         practiceCelebrationStyle = PracticeCelebrationStyle.random()
         sparkleSeed += 1
+        bounceMascot()
+        speakRandomPraise()
 
-        withAnimation(.easeOut(duration: 0.16)) {
-            showingSparkles = true
+        if isFinal {
+            let completedWords = compactPracticeWords.count
+            model.awardPracticeCoins(AppModel.practiceCoinReward * completedWords)
+            practiceCelebrationCoinReward = AppModel.practiceCoinReward * completedWords
+            completedPracticeWordCount = practicedWordCountInSession()
+            withAnimation(.easeOut(duration: 0.16)) {
+                showingSparkles = true
+            }
+        } else {
+            withAnimation(.spring(response: 0.28, dampingFraction: 0.6)) {
+                showingRoundCheer = true
+            }
         }
 
+        let dwell: UInt64 = isFinal ? 1_050_000_000 : 780_000_000
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_050_000_000)
+            try? await Task.sleep(nanoseconds: dwell)
             withAnimation(.easeIn(duration: 0.18)) {
                 showingSparkles = false
+                showingRoundCheer = false
             }
-            finishCompactPracticeBatch()
+            if isFinal {
+                finishCompactPracticeBatch()
+            } else {
+                practiceRepeatIndex += 1
+                publishPracticeProgressIfNeeded()
+                clearCompactPracticeBatch()
+            }
             isAdvancing = false
         }
     }
@@ -1864,179 +1957,66 @@ private struct CompactPracticeWritingCell: View {
     }
 }
 
-private struct PracticeRepeatGuide: View {
-    var current: Int
+/// 「あと何回」を中央の大きな⭐️だけで見せる（横並びの説明文は使わない）。
+/// できた回＝金の⭐️、いまの回＝ふわっと脈打つ。子は横テキストを読まない [[child-ignores-horizontal-text]]。
+private struct PracticeStarProgress: View {
+    var filled: Int      // すでにできた回数
+    var current: Int     // いまの回（1始まり／脈打たせる）
     var total: Int
-    var language: AppLanguage
-
-    private var remaining: Int {
-        max(total - current, 0)
-    }
+    @State private var pulse = false
 
     var body: some View {
-        HStack(spacing: 18) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(language.text(japanese: "\(current)かいめ", english: "Round \(current)"))
-                    .font(.system(size: 46, weight: .heavy, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(Color(red: 0.14, green: 0.24, blue: 0.42))
-
-                Label(remainingMessage, systemImage: remaining == 0 ? "sparkles" : "pencil.tip")
-                    .font(.title3.weight(.heavy))
-                    .foregroundStyle(remaining == 0 ? Color(red: 0.32, green: 0.55, blue: 0.18) : Color(red: 0.54, green: 0.31, blue: 0.74))
+        HStack(spacing: 16) {
+            ForEach(0..<max(total, 1), id: \.self) { i in
+                let done = i < filled
+                let isCurrent = i == current - 1
+                Image(systemName: done ? "star.fill" : "star")
+                    .font(.system(size: 38, weight: .black))
+                    .foregroundStyle(done
+                        ? Color(red: 1.0, green: 0.78, blue: 0.16)
+                        : Color(red: 0.62, green: 0.66, blue: 0.74).opacity(0.5))
+                    .shadow(color: done ? Color(red: 0.98, green: 0.62, blue: 0.05).opacity(0.35) : .clear,
+                            radius: 6, y: 3)
+                    // 色/塗りの変化(filled)のバネは scaleEffect より上に置き、脈打ち(pulse)と競合させない。
+                    .animation(.spring(response: 0.3, dampingFraction: 0.55), value: filled)
+                    .scaleEffect(isCurrent && pulse ? 1.22 : 1.0)
             }
-            .frame(width: 188, alignment: .leading)
-
-            HStack(spacing: 12) {
-                ForEach(Array(1...max(total, 1)), id: \.self) { step in
-                    PracticeRoundBubble(
-                        step: step,
-                        current: current,
-                        language: language
-                    )
-                }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                pulse = true
             }
-            .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .frame(maxWidth: 760)
-        .padding(.vertical, 16)
-        .padding(.horizontal, 20)
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 1.0, green: 0.93, blue: 0.74),
-                    Color(red: 0.88, green: 0.98, blue: 0.91),
-                    Color(red: 0.92, green: 0.91, blue: 1.0)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: Color(red: 0.40, green: 0.30, blue: 0.62).opacity(0.14), radius: 16, x: 0, y: 8)
-        .shadow(color: .white.opacity(0.78), radius: 1, x: -1, y: -1)
-        .accessibilityLabel(language.text(japanese: "この単語は\(total)回。今は\(current)回目です。", english: "This word has \(total) rounds. Current round \(current)."))
-    }
-
-    private var remainingMessage: String {
-        if remaining == 0 {
-            return language.text(japanese: "このあとチェック", english: "Review next")
-        }
-        return language.text(japanese: "あと \(remaining)かい", english: "\(remaining) left")
+        .accessibilityLabel("\(filled) / \(total)")
     }
 }
 
-private struct PracticeRoundBubble: View {
-    var step: Int
-    var current: Int
-    var language: AppLanguage
-
-    private var isDone: Bool {
-        step < current
-    }
-
-    private var isCurrent: Bool {
-        step == current
-    }
+/// 1回書くごとの派手演出。中央に大きくほめ言葉＋キラキラ（コインは出さない中間の回用）。
+private struct PracticeRoundCheerOverlay: View {
+    var seed: Int
+    var style: PracticeCelebrationStyle
+    var message: String
 
     var body: some View {
-        VStack(spacing: 7) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(background)
-                    .shadow(color: shadowColor, radius: isCurrent ? 10 : 5, x: 0, y: isCurrent ? 6 : 3)
-                    .overlay(alignment: .topTrailing) {
-                        if isCurrent {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundStyle(Color(red: 0.98, green: 0.64, blue: 0.08))
-                                .padding(7)
-                        }
-                    }
-
-                if isDone {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 26, weight: .heavy))
-                        .foregroundStyle(.white)
-                } else {
-                    Text("\(step)")
-                        .font(.system(size: isCurrent ? 30 : 24, weight: .heavy, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundStyle(numberColor)
-                }
-            }
-            .frame(width: isCurrent ? 76 : 62, height: isCurrent ? 58 : 52)
-            .scaleEffect(isCurrent ? 1.04 : 1)
-
-            Text(statusText)
-                .font(.caption.weight(.heavy))
-                .foregroundStyle(statusColor)
+        ZStack {
+            SparkleBurst(seed: seed, variant: style.burstVariant)
+            Text(message)
+                .font(.system(size: 56, weight: .black, design: .rounded))
+                .foregroundStyle(style.tint)
+                .shadow(color: .white.opacity(0.9), radius: 1, x: -1, y: -1)
+                .shadow(color: style.tint.opacity(0.28), radius: 14, y: 6)
+                .padding(.horizontal, 28)
+                .padding(.vertical, 16)
+                .background(.white.opacity(0.82), in: RoundedRectangle(cornerRadius: 22))
+                .minimumScaleFactor(0.6)
                 .lineLimit(1)
         }
-        .animation(.spring(response: 0.24, dampingFraction: 0.72), value: current)
-        .accessibilityLabel(accessibilityText)
-    }
-
-    private var background: LinearGradient {
-        if isDone {
-            return LinearGradient(
-                colors: [Color(red: 0.32, green: 0.70, blue: 0.36), Color(red: 0.18, green: 0.56, blue: 0.34)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
-        if isCurrent {
-            return LinearGradient(
-                colors: [Color(red: 1.0, green: 0.82, blue: 0.22), Color(red: 1.0, green: 0.58, blue: 0.20)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
-        return LinearGradient(
-            colors: [Color.white.opacity(0.94), Color(red: 0.91, green: 0.96, blue: 1.0)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-
-    private var shadowColor: Color {
-        if isCurrent {
-            return Color(red: 0.96, green: 0.47, blue: 0.08).opacity(0.22)
-        }
-        return Color(red: 0.30, green: 0.38, blue: 0.56).opacity(0.10)
-    }
-
-    private var numberColor: Color {
-        isCurrent ? .white : Color(red: 0.22, green: 0.30, blue: 0.48)
-    }
-
-    private var statusText: String {
-        if isDone {
-            return language.text(japanese: "できた", english: "Done")
-        }
-        if isCurrent {
-            return language.text(japanese: "いま", english: "Now")
-        }
-        return language.text(japanese: "つぎ", english: "Next")
-    }
-
-    private var statusColor: Color {
-        if isDone {
-            return Color(red: 0.16, green: 0.46, blue: 0.23)
-        }
-        if isCurrent {
-            return Color(red: 0.76, green: 0.30, blue: 0.06)
-        }
-        return Color(red: 0.38, green: 0.42, blue: 0.58)
-    }
-
-    private var accessibilityText: String {
-        language.text(
-            japanese: "\(step)回目 \(statusText)",
-            english: "Round \(step), \(statusText)"
-        )
+        .allowsHitTesting(false)
     }
 }
+
 
 private enum PracticeCelebrationStyle: CaseIterable {
     case gold
