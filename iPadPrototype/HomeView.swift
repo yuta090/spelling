@@ -10,6 +10,7 @@ struct HomeView: View {
     @State private var activeMode: SessionMode?
     @State private var showingParent = false
     @State private var showingParentGate = false
+    @State private var showingProfileSwitcher = false
     @State private var pendingParentOpen = false
     @State private var showingResults = false
     @State private var showingWordPreview = false
@@ -284,6 +285,10 @@ struct HomeView: View {
                     pendingParentOpen = true
                     showingParentGate = false
                 }
+            }
+            .sheet(isPresented: $showingProfileSwitcher) {
+                ProfileSwitcherSheet(language: language)
+                    .environmentObject(model)
             }
             .sheet(isPresented: $showingResults) {
                 ResultsView()
@@ -621,17 +626,40 @@ struct HomeView: View {
         return language.text(japanese: "\(name)の ホーム", english: "\(name)'s Home")
     }
 
+    /// ホームタイトルのラベル（1行で自動縮小）。切替可能時はこれを Button で包む。
+    private var homeTitleLabel: some View {
+        Label(homeTitle, systemImage: "house.fill")
+            .font(.headline.weight(.bold))
+            .foregroundStyle(Color(red: 0.10, green: 0.32, blue: 0.74))
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+            .truncationMode(.tail)
+    }
+
     private var header: some View {
         // タイトルは1行で自動縮小（折り返さない）。長い名前/大きい文字サイズでも
         // 右の「結果」「設定」アイコンを押し出さない（iPad mini 縦などの狭幅で消えるのを防ぐ）。
         HStack(spacing: 14) {
-            Label(homeTitle, systemImage: "house.fill")
-                .font(.headline.weight(.bold))
-                .foregroundStyle(Color(red: 0.10, green: 0.32, blue: 0.74))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-                .truncationMode(.tail)
+            // 子が2人以上いるときだけ、タイトルを「顔タップで こうたい」の入口にする（1人なら素のラベル）。
+            if model.hasMultipleProfiles {
+                Button {
+                    showingProfileSwitcher = true
+                } label: {
+                    HStack(spacing: 6) {
+                        homeTitleLabel
+                        Image(systemName: "chevron.down.circle.fill")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(Color(red: 0.10, green: 0.32, blue: 0.74).opacity(0.7))
+                    }
+                }
+                .buttonStyle(.plain)
+                .tapFeedback(scale: 0.94, bounce: true)
                 .layoutPriority(0)
+                .accessibilityLabel(language.text(japanese: "こどもを こうたい", english: "Switch child"))
+            } else {
+                homeTitleLabel
+                    .layoutPriority(0)
+            }
 
             Spacer(minLength: 8)
 
@@ -669,6 +697,125 @@ struct HomeView: View {
             .fixedSize()
             .layoutPriority(1)
         }
+    }
+}
+
+/// 子向けの「だれが やる？」切替シート（ヘッダーの名前タップで開く）。
+/// ここは *選ぶ* だけ（doer 操作）。追加・改名・削除の *管理* は親ゲートの奥（保護者メニュー）に置く。
+/// 顔＝アバター資産 or 名前の頭文字＋色。字が読めなくても顔と色で自分を選べるようにする。
+private struct ProfileSwitcherSheet: View {
+    @EnvironmentObject private var model: AppModel
+    let language: AppLanguage
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    Text(language.text(japanese: "だれが やる？", english: "Who's playing?"))
+                        .font(.system(size: 30, weight: .heavy, design: .rounded))
+                        .padding(.top, 12)
+
+                    ForEach(model.profileRegistry.orderedProfiles, id: \.id) { profile in
+                        Button {
+                            // 同じ子なら activateProfile 側で no-op。タップしたら必ず閉じる。
+                            model.activateProfile(profile.id)
+                            dismiss()
+                        } label: {
+                            ProfileSwitchRow(
+                                profile: profile,
+                                isActive: profile.id == model.profileRegistry.activeProfileID,
+                                language: language
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .tapFeedback(scale: 0.96, bounce: true)
+                    }
+                }
+                .padding(20)
+                .frame(maxWidth: 520)
+                .frame(maxWidth: .infinity)
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(language.text(japanese: "とじる", english: "Close")) { dismiss() }
+                        .font(.body.weight(.bold))
+                }
+            }
+        }
+    }
+}
+
+/// 切替シートの1行（顔＋名前＋いま選ばれている印）。子がタップしやすいよう大きめ。
+private struct ProfileSwitchRow: View {
+    let profile: ChildProfile
+    let isActive: Bool
+    let language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 16) {
+            ProfileFaceView(profile: profile)
+                .frame(width: 68, height: 68)
+            Text(profile.displayName.isEmpty
+                 ? language.text(japanese: "（なまえ なし）", english: "(no name)")
+                 : profile.displayName)
+                .font(.title2.weight(.heavy))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Spacer(minLength: 8)
+            if isActive {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.green)
+            }
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity)
+        .background(RoundedRectangle(cornerRadius: 22).fill(Color(.secondarySystemBackground)))
+        .overlay(
+            RoundedRectangle(cornerRadius: 22)
+                .stroke(isActive ? Color.accentColor : Color.clear, lineWidth: 3)
+        )
+    }
+}
+
+/// プロファイルの「顔」。アバター資産があればキャラを、無ければ色つき円＋頭文字で描く。
+private struct ProfileFaceView: View {
+    let profile: ChildProfile
+
+    var body: some View {
+        if !profile.avatarID.isEmpty {
+            RewardCharacterAvatar(character: HomeRewardCharacter.character(id: profile.avatarID))
+        } else {
+            Circle()
+                .fill(Color(profileHex: profile.colorHex) ?? Color.accentColor)
+                .overlay(
+                    Text(initial)
+                        .font(.system(size: 30, weight: .heavy, design: .rounded))
+                        .foregroundStyle(.white)
+                )
+        }
+    }
+
+    /// 名前の頭文字（1文字）。空なら人アイコンの代わりに「?」。
+    private var initial: String {
+        let trimmed = profile.displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "?" : String(trimmed.prefix(1))
+    }
+}
+
+private extension Color {
+    /// `#RRGGBB` / `RRGGBB` を Color へ。不正な文字列は nil（呼び出し側でフォールバック）。
+    init?(profileHex hex: String) {
+        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        if s.hasPrefix("#") { s.removeFirst() }
+        guard s.count == 6, let value = UInt32(s, radix: 16) else { return nil }
+        self.init(
+            red: Double((value >> 16) & 0xFF) / 255.0,
+            green: Double((value >> 8) & 0xFF) / 255.0,
+            blue: Double(value & 0xFF) / 255.0
+        )
     }
 }
 

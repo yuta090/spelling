@@ -309,8 +309,10 @@ final class AppModel: ObservableObject {
     }
 
     /// AI判定の実行パラメータ（モデル/temperature/max_tokens）。ページで編集し送信時に反映。
-    @Published var aiJudgeConfig: AIJudgeConfig {
-        didSet { persistenceStore.save(aiJudgeConfig, key: aiJudgeConfigKey) }
+    /// 宣言時デフォルトは init が `loadChildScopedState()` を呼べるための不変条件（他の子スコープ props と同様）。
+    /// 再ロード中は保存を止める（正規スコープの値を今入れているので保存不要・#196 の規約に合わせる）。
+    @Published var aiJudgeConfig: AIJudgeConfig = .default {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(aiJudgeConfig, key: aiJudgeConfigKey) }
     }
 
     /// 一括判定の進捗（実行中のみ非nil）。UIのボタン無効化・進捗表示に使う。
@@ -753,19 +755,35 @@ final class AppModel: ObservableObject {
         requestSync()
     }
 
-    #if DEBUG
-    /// DEBUG専用：切替配線を手動確認するためのダミー子プロファイルを1人追加する。
-    /// 親向けの追加/改名/削除 UI は Phase 4。ここは開発用の最小導線（プロダクトUIには出さない）。
-    func debugAddTestProfile() {
-        guard profileScopedStore != nil else { return }   // フォールバック時は台帳を持たない
-        // 同期サイクル進行中は人数を増やさない（in-flight push が2人以上でサーバ到達する窓を作らない）。
-        guard !isSyncCycleInFlight else { return }
-        let number = profileRegistry.profiles.count + 1
-        let profile = ChildProfile(displayName: "テスト\(number)", createdAt: Date())
+    /// ホームに子の切替導線（顔タップ）を出してよいか＝子が2人以上いるか。1人のときは出さない（迷子UIを作らない）。
+    var hasMultipleProfiles: Bool { profileRegistry.profiles.count >= 2 }
+
+    /// 子プロファイルを1人追加する（親の「こどもを ふやす」用）。アクティブは変えない。作成した子の id を返す。
+    /// 名前は前後空白を除いて保存（空も許容＝あとで改名できる）。
+    /// 同期サイクル進行中は追加しない（in-flight push が2人以上でサーバ到達する窓を作らない・設計§6／`isSyncSafeForActiveProfile`）。
+    @discardableResult
+    func addProfile(displayName: String) -> UUID? {
+        guard profileScopedStore != nil else { return nil }   // フォールバック時は台帳を持たない
+        guard !isSyncCycleInFlight else { return nil }
+        let profile = ChildProfile(
+            displayName: displayName.trimmingCharacters(in: .whitespacesAndNewlines),
+            createdAt: Date()
+        )
         profileRegistry = profileRegistry.adding(profile)
         persistRegistry()
+        return profile.id
     }
-    #endif
+
+    /// 子プロファイルを改名する（親の管理用）。アクティブ／非アクティブどちらでも可。空白のみは無視。
+    /// 名前は `ChildProfile.displayName`（＝`childName` の SSOT）を更新するだけで、切替は伴わない。
+    func renameProfile(_ id: UUID, to newName: String) {
+        let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let updated = profileRegistry.renaming(id, to: trimmed)
+        guard updated != profileRegistry else { return }
+        profileRegistry = updated
+        persistRegistry()
+    }
 
     /// アクティブコースに応じてステップ供給元を切り替える（personal は既存導出・無改修／
     /// 学年・英検は wordbank から合成した仮想ステップ＝非永続）。
