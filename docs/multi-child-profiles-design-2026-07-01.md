@@ -237,6 +237,18 @@ final class ProfileScopedStore: UserDataStore {  // @unchecked Sendable
 - **`childName` → `ChildProfile.displayName` の単一 SSOT 化 → Phase 3/4**（改名/ランチャー UI が出る時。今は移行時に displayName を childName から一度シードし、childName は子スコープキーとして継続）。
 - 同期のプロファイル別本対応（cursor/sidecar/tombstone）→ Phase 5。
 
+### Phase 3 実装状況（2026-07-02・codex Code Reviewer = APPROVE）
+**配線のみ（正式なランチャー/親管理 UI は Phase 3後半/4。切替の見え方＝2人目を作る導線が無いと不可視のため、まず土台配線を先行）**:
+- **init のロード本体を `loadChildScopedState()` へ抽出**し init/切替で共用。子スコープ @Published に宣言時デフォルトを与えて二相初期化（init はグローバル系＝entitlement/debug を直接ロード→ `loadChildScopedState()` → 派生修復/シードの順）。
+- **`isReloadingProfile` ガード**を子スコープ全 didSet に張り、再ロード中は保存・派生修復・同期要求を止める（移行の明示 `save` は didSet 外なので継続＝新スコープの初期値は永続化される）。**新プロファイルの既定語は明示 save して `word.id` を安定化**（レビュー指摘・Critical。UUID が毎回変わるとステップ署名/クリア/復習が壊れる）。
+- **`activateProfile(_:)`**（原子的・作り直さない）: 保留 sync キャンセル → ガード ON → 台帳 `activating`＋`persistRegistry`＋`scoped.setActiveProfileID` → `loadChildScopedState` → ガード OFF 後に修復/シード/`requestSync`。フォールバック/同一/未知IDは no-op。`focusedPracticeWordIDs` は切替でクリア。
+- **`childName` → `profileRegistry.activeProfile.displayName` の SSOT 化**（computed。`$` バインディング未使用を確認済＝View 非破壊。書込は `renaming`＋`persistRegistry`）。旧 `childName` キーは廃止。
+- **同期の交差汚染を完全クローズ**（設計指摘①の Phase 3 分・6ラウンドのレビューで詰め）: `isSyncSafeForActiveProfile`（`profiles.count<=1`）を **唯一の安全不変条件**として `syncWords` 入口・`applyMergedWords`・`WordSyncCoordinator.runOneCycle` の3境界（開始/pull後/push後）で確認。さらに **`syncCycleDepth` カウンタ**で「サイクル進行中は人数を増やせない」を保証（in-flight push が2人以上でサーバ到達する窓を消す。Bool だと重複 `syncWords` の defer で早期クリアされるためカウンタ）。プロファイル別 cursor/sidecar/tombstone の本対応は Phase 5。
+- DEBUG 限定の切替導線（親デバッグ節に人数表示＋切替ボタン＋`debugAddTestProfile`）。手動確認用。
+- 検証: `xcodebuild` BUILD SUCCEEDED＋Core 893 green（Core ロジック不変・app 本体は XCTest 無のためビルド＋レビュー＋手動）。
+
+**Phase 3 でも未対応（延期）**: 正式な子ランチャー（顔ピッカー・Netflix式）＋親ゲート管理（追加/改名/削除/並べ替え/アバター）→ Phase 3後半/4。同期のプロファイル別本対応 → Phase 5。課金 → Phase 6（Apple）。
+
 ---
 
 ## 10. テスト観点（Core・TDD）

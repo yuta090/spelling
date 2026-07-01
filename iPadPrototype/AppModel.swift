@@ -183,8 +183,11 @@ final class WordBank: @unchecked Sendable {
 
 @MainActor
 final class AppModel: ObservableObject {
-    @Published var words: [SpellingWord] {
+    @Published var words: [SpellingWord] = [] {
         didSet {
+            // プロファイル再ロード中は didSet を止める（派生修復・同期要求が「間違ったプロファイルで」
+            // 発火するのを防ぐ。設計§4・レビュー指摘④）。値は loadChildScopedState が正規スコープから入れる。
+            guard !isReloadingProfile else { return }
             saveWords()
             ensureSelectedWordStepStillExists()
             // 単語編集後の自動同期（同期由来の反映では起こさない）。
@@ -192,30 +195,30 @@ final class AppModel: ObservableObject {
         }
     }
 
-    @Published var attempts: [SpellingAttempt] {
-        didSet { saveAttempts() }
+    @Published var attempts: [SpellingAttempt] = [] {
+        didSet { guard !isReloadingProfile else { return }; saveAttempts() }
     }
 
-    @Published var practiceSamples: [PracticeSample] {
-        didSet { savePracticeSamples() }
+    @Published var practiceSamples: [PracticeSample] = [] {
+        didSet { guard !isReloadingProfile else { return }; savePracticeSamples() }
     }
 
-    @Published var schoolTestResults: [SchoolTestResult] {
-        didSet { saveSchoolTestResults() }
+    @Published var schoolTestResults: [SchoolTestResult] = [] {
+        didSet { guard !isReloadingProfile else { return }; saveSchoolTestResults() }
     }
 
-    @Published var settings: TestSettings {
-        didSet { saveSettings() }
+    @Published var settings: TestSettings = TestSettings() {
+        didSet { guard !isReloadingProfile else { return }; saveSettings() }
     }
 
     /// 選択中のコース（personal / grade-N / eiken-xx）。学年×英検の2軸＋自分のトラック。
-    @Published var selectedCourseID: String {
-        didSet { persistenceStore.save(selectedCourseID, key: selectedCourseIDKey) }
+    @Published var selectedCourseID: String = "" {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(selectedCourseID, key: selectedCourseIDKey) }
     }
 
     /// コースごとに「選択中ステップ」を別々に覚える（コース切替で地図とステップが入れ替わる）。
-    @Published private var selectedStepIDByCourse: [String: String] {
-        didSet { persistenceStore.save(selectedStepIDByCourse, key: selectedStepIDByCourseKey) }
+    @Published private var selectedStepIDByCourse: [String: String] = [:] {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(selectedStepIDByCourse, key: selectedStepIDByCourseKey) }
     }
 
     /// アクティブコースに対する選択ステップID（既存呼出は無改修・computed で dict に橋渡し）。
@@ -227,15 +230,15 @@ final class AppModel: ObservableObject {
 
     /// 子が自分でコースを切り替えてよいか。**既定はロック（親が決める）**。
     /// 親が設定で ON にしたときだけ、子は全コースを自分で選べる（gating は `CourseAccess`）。
-    @Published var childCanSwitchCourses: Bool {
-        didSet { persistenceStore.save(childCanSwitchCourses, key: childCanSwitchCoursesKey) }
+    @Published var childCanSwitchCourses: Bool = false {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(childCanSwitchCourses, key: childCanSwitchCoursesKey) }
     }
 
     /// 親が「子に選ばせるコース」を絞り込む許可サブセット。
     /// **空 = 制限なし（全コース許可）＝既定**。非空 = その集合のみ（＋現在コースは常に選べる）。
     /// 効くのは `childCanSwitchCourses == true` のときだけ（ロック時は現在コースのみ）。
-    @Published var allowedCourseIDs: Set<String> {
-        didSet { persistenceStore.save(Array(allowedCourseIDs), key: allowedCourseIDsKey) }
+    @Published var allowedCourseIDs: Set<String> = [] {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(Array(allowedCourseIDs), key: allowedCourseIDsKey) }
     }
 
     /// 子の画面で選べるコースID（ロック時は現在コースのみ＝切替不可）。純ロジックは `CourseAccess`。
@@ -267,12 +270,12 @@ final class AppModel: ObservableObject {
     private let courseProvider = CourseProvider()
 
     /// 永続「できた」（満点を一度取ったら固定）。stepID にコースIDが埋まるのでコース別タプル不要。
-    @Published private var requiredCompletion: RequiredCompletion {
-        didSet { persistenceStore.save(requiredCompletion, key: requiredCompletionKey) }
+    @Published private var requiredCompletion: RequiredCompletion = RequiredCompletion() {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(requiredCompletion, key: requiredCompletionKey) }
     }
 
-    @Published var rewardCoins: Int {
-        didSet { saveRewardCoins() }
+    @Published var rewardCoins: Int = 0 {
+        didSet { guard !isReloadingProfile else { return }; saveRewardCoins() }
     }
 
     /// 課金（保護者プラン）が有効か。`StoreManager` が StoreKit2 から駆動する（`applyEntitlement`）。
@@ -301,8 +304,8 @@ final class AppModel: ObservableObject {
     }
 
     /// AI判定の比較レコード（最新が末尾）。デバッグページで親採点風に表示する。
-    @Published var aiJudgments: [AIJudgmentRecord] {
-        didSet { persistenceStore.save(aiJudgments, key: aiJudgmentsKey) }
+    @Published var aiJudgments: [AIJudgmentRecord] = [] {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(aiJudgments, key: aiJudgmentsKey) }
     }
 
     /// AI判定の実行パラメータ（モデル/temperature/max_tokens）。ページで編集し送信時に反映。
@@ -325,27 +328,27 @@ final class AppModel: ObservableObject {
     }
 
     /// 連続ログイン日数（スタンプ）。
-    @Published var loginStreak: Int {
-        didSet { persistenceStore.save(loginStreak, key: loginStreakKey) }
+    @Published var loginStreak: Int = 0 {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(loginStreak, key: loginStreakKey) }
     }
 
     /// 最後にログイン報酬を付与した日。
-    @Published var lastLoginDay: Date? {
-        didSet { persistenceStore.save(lastLoginDay, key: lastLoginDayKey) }
+    @Published var lastLoginDay: Date? = nil {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(lastLoginDay, key: lastLoginDayKey) }
     }
 
     /// 最後にテスト満点ボーナスを付与した日（1日1回の判定に使う）。
-    @Published var lastPerfectBonusDay: Date? {
-        didSet { persistenceStore.save(lastPerfectBonusDay, key: lastPerfectBonusDayKey) }
+    @Published var lastPerfectBonusDay: Date? = nil {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(lastPerfectBonusDay, key: lastPerfectBonusDayKey) }
     }
 
     /// ことばパズルを最後に「完了」した日（無料プランの1日2回ゲートの日替わり判定に使う）。
-    @Published var puzzleLastPlayedDay: Date? {
-        didSet { persistenceStore.save(puzzleLastPlayedDay, key: puzzleLastPlayedDayKey) }
+    @Published var puzzleLastPlayedDay: Date? = nil {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(puzzleLastPlayedDay, key: puzzleLastPlayedDayKey) }
     }
     /// その日にことばパズルを完了した回数。日付が変わると `DailyPlayLimiter` が 0 扱いにする。
-    @Published var puzzlePlaysToday: Int {
-        didSet { persistenceStore.save(puzzlePlaysToday, key: puzzlePlaysTodayKey) }
+    @Published var puzzlePlaysToday: Int = 0 {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(puzzlePlaysToday, key: puzzlePlaysTodayKey) }
     }
 
     /// 無料プランのことばパズル1日上限（完了＝1回）。プレミアム/デバッグ解放は別枠で無制限にする。
@@ -375,88 +378,96 @@ final class AppModel: ObservableObject {
         puzzlePlaysToday = result.count
     }
 
-    @Published var selectedCharacterID: String {
-        didSet { saveSelectedCharacterID() }
+    @Published var selectedCharacterID: String = "" {
+        didSet { guard !isReloadingProfile else { return }; saveSelectedCharacterID() }
     }
 
-    @Published var unlockedCharacterIDs: Set<String> {
-        didSet { saveUnlockedCharacterIDs() }
+    @Published var unlockedCharacterIDs: Set<String> = [] {
+        didSet { guard !isReloadingProfile else { return }; saveUnlockedCharacterIDs() }
     }
 
-    @Published var selectedBackgroundID: String {
-        didSet { saveSelectedBackgroundID() }
+    @Published var selectedBackgroundID: String = "" {
+        didSet { guard !isReloadingProfile else { return }; saveSelectedBackgroundID() }
     }
 
-    @Published var unlockedBackgroundIDs: Set<String> {
-        didSet { saveUnlockedBackgroundIDs() }
+    @Published var unlockedBackgroundIDs: Set<String> = [] {
+        didSet { guard !isReloadingProfile else { return }; saveUnlockedBackgroundIDs() }
     }
 
-    @Published var homeReviewWordIDs: Set<UUID> {
-        didSet { saveHomeReviewWordIDs() }
+    @Published var homeReviewWordIDs: Set<UUID> = [] {
+        didSet { guard !isReloadingProfile else { return }; saveHomeReviewWordIDs() }
     }
 
     /// アプリ前面滞在時間の日別バケット（"yyyy-MM-dd" → 秒）。保護者「ようす」タブの利用時間表示用。
     /// 純粋操作は `SpellingSyncCore.UsageLog`。古い日は記録時にプルーンして保存量を抑える。
-    @Published var usageLog: [String: Int] {
-        didSet { persistenceStore.save(usageLog, key: usageLogKey) }
+    @Published var usageLog: [String: Int] = [:] {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(usageLog, key: usageLogKey) }
     }
 
     /// 文づくり（文法クイズ）の復習キュー。間違えた文を「1度正解で即消す」のではなく、
     /// 今後のラウンドに少数（+1〜2問）ずつ追加問題として混ぜ、数回の正解で段階的に卒業させる。
     /// 純粋ロジックは `SpellingSyncCore.ReviewQueue`。`id` は `SentenceItem.id`。
     /// スペル側の復習（attempt 由来の導出型）とは別キューで独立管理する（活動ごとに分離）。
-    @Published var grammarReviewStates: [ReviewItemState] {
-        didSet { saveGrammarReviewStates() }
+    @Published var grammarReviewStates: [ReviewItemState] = [] {
+        didSet { guard !isReloadingProfile else { return }; saveGrammarReviewStates() }
     }
 
     /// 文法クイズの単調増加ステップ番号（再出題間隔の「刻み」）。1ラウンド完了ごとに +1。
-    @Published var grammarReviewStep: Int {
-        didSet { saveGrammarReviewStep() }
+    @Published var grammarReviewStep: Int = 0 {
+        didSet { guard !isReloadingProfile else { return }; saveGrammarReviewStep() }
     }
 
     /// スペルテストの復習キュー（`id` は `SpellingWord.id`）。間違えた語を「1回正解で即消す」のではなく、
     /// 今後のテストに少数（最大2語）ずつ追加問題として混ぜ、数回の正解で段階的に卒業させる。
     /// 親向けの「見直しが必要な単語」表示（attempt 由来の導出型 = `unresolvedReviewWords`/`reviewWords`/
     /// `homeReviewWordIDs`）はこれとは別物として残す（子の練習スケジューリング専用）。純粋ロジックは `ReviewQueue`。
-    @Published var spellingReviewStates: [ReviewItemState] {
-        didSet { saveSpellingReviewStates() }
+    @Published var spellingReviewStates: [ReviewItemState] = [] {
+        didSet { guard !isReloadingProfile else { return }; saveSpellingReviewStates() }
     }
 
     /// スペルテストの単調増加ステップ番号（再出題間隔の「刻み」）。1テストセッション完了ごとに +1。
-    @Published var spellingReviewStep: Int {
-        didSet { saveSpellingReviewStep() }
+    @Published var spellingReviewStep: Int = 0 {
+        didSet { guard !isReloadingProfile else { return }; saveSpellingReviewStep() }
     }
 
     /// 既存の未クリア語を復習キューへ一度だけ移行（シード）したか。
-    @Published var spellingReviewSeeded: Bool {
-        didSet { persistenceStore.save(spellingReviewSeeded, key: spellingReviewSeededKey) }
+    @Published var spellingReviewSeeded: Bool = false {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(spellingReviewSeeded, key: spellingReviewSeededKey) }
     }
 
     /// 初回オンボーディング完了フラグ。false の間だけ初回フローを出す。
-    @Published var hasCompletedOnboarding: Bool {
-        didSet { persistenceStore.save(hasCompletedOnboarding, key: hasCompletedOnboardingKey) }
+    @Published var hasCompletedOnboarding: Bool = false {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(hasCompletedOnboarding, key: hasCompletedOnboardingKey) }
     }
 
     /// ホームの「タップで きせかえ」ヒントを既に1回出したか。初回起動の1セッションだけ出して以後は出さない。
-    @Published var hasShownHomeCharacterHint: Bool {
-        didSet { persistenceStore.save(hasShownHomeCharacterHint, key: hasShownHomeCharacterHintKey) }
+    @Published var hasShownHomeCharacterHint: Bool = false {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(hasShownHomeCharacterHint, key: hasShownHomeCharacterHintKey) }
     }
 
     /// 満点クリア後の「あたらしいクイズがでた！」アンロック演出を、各ステップ（単語セット署名）ごとに
     /// 1回だけ出すための記録。クリア判定そのものではない（クリア＝満点ゲートが唯一の基準）。
-    @Published var stepUnlockCelebration: StepUnlockCelebration {
-        didSet { persistenceStore.save(stepUnlockCelebration, key: stepUnlockCelebrationKey) }
+    @Published var stepUnlockCelebration: StepUnlockCelebration = StepUnlockCelebration() {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(stepUnlockCelebration, key: stepUnlockCelebrationKey) }
     }
 
     /// 子どものニックネーム（任意）。ホームの呼びかけや将来のプロファイル表示名に使う。
-    @Published var childName: String {
-        didSet { persistenceStore.save(childName, key: childNameKey) }
+    /// **単一の真実（SSOT）は `profileRegistry.activeProfile.displayName`**（設計§3/§6・レビュー指摘⑥）。
+    /// 旧 `spellingTrainer.childName` キーは Phase 2 の移行元として displayName に写した後は書かない
+    /// （二重ソース化を防ぐ）。書き込みは Registry の改名として反映し、その場で台帳を永続化する。
+    var childName: String {
+        get { profileRegistry.activeProfile.displayName }
+        set {
+            guard newValue != profileRegistry.activeProfile.displayName else { return }
+            profileRegistry = profileRegistry.renaming(profileRegistry.activeProfileID, to: newValue)
+            persistRegistry()
+        }
     }
 
     /// 選んだ学年（`GradeLevel.rawValue`、未選択は空）。オンボーディングで学年コースを選ぶ根拠、
     /// および漢字ゲート（`childMaxKanjiGrade`）／出題ティアの判断に使う。
-    @Published var selectedGrade: String {
-        didSet { persistenceStore.save(selectedGrade, key: selectedGradeKey) }
+    @Published var selectedGrade: String = "" {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(selectedGrade, key: selectedGradeKey) }
     }
 
     /// 子に見せる和訳で許す「漢字配当学年」(0…6)。1学年前ルール（小1→0＝ひらがな）。
@@ -483,8 +494,8 @@ final class AppModel: ObservableObject {
     /// 例文パーソナライズの登場人物（本人＋友達）。親が親ゲートの奥で登録。
     /// 未成年実名のため **v1 はローカル保存のみ**（Supabase 同期しない・解析に送らない）。
     /// 仕様: docs/personalized-sentences-spec-2026-06-28.md
-    @Published var cast: Cast {
-        didSet { persistenceStore.save(cast, key: castKey) }
+    @Published var cast: Cast = Cast() {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(cast, key: castKey) }
     }
 
     @Published var focusedPracticeWordIDs = Set<UUID>()
@@ -499,9 +510,15 @@ final class AppModel: ObservableObject {
     /// プロファイル台帳（複数子）。**この端末で誰がいるか＋今アクティブな子**の単一ソース。
     /// Phase 2 では移行で#1が入るだけ（切替UIは Phase 3）。同期の安全判定にも使う。
     @Published private(set) var profileRegistry: ProfileRegistry
-    /// キー名前空間化の Core ラッパ（切替時に `setActiveProfileID` する。Phase 3 で使用）。
+    /// キー名前空間化の Core ラッパ（切替時に `setActiveProfileID` する）。
     /// 名前空間化できないストアが注入された場合は nil（単一子フォールバック）。
     private let profileScopedStore: ProfileScopedStore?
+    /// 台帳（`profiles` キー）を実書き込みする生ストア。改名・切替で `persistRegistry()` が使う。
+    /// フォールバック（名前空間化不可）時は nil＝台帳は永続化せずメモリ内のみ。
+    private let profileRegistryStore: ProfileScopedRawStore?
+    /// プロファイル再ロード中フラグ。true の間、子スコープ @Published の didSet（保存・派生修復・
+    /// 同期要求）を止める。値は `loadChildScopedState()` が正規スコープから入れ直す（設計§4）。
+    private var isReloadingProfile = false
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
     private let practiceSamplesKey = "spellingTrainer.practiceSamples"
@@ -545,7 +562,8 @@ final class AppModel: ObservableObject {
     private let hasCompletedOnboardingKey = "spellingTrainer.hasCompletedOnboarding"
     private let hasShownHomeCharacterHintKey = "spellingTrainer.hasShownHomeCharacterHint"
     private let stepUnlockCelebrationKey = "spellingTrainer.stepUnlockCelebration"
-    private let childNameKey = "spellingTrainer.childName"
+    // 旧 `spellingTrainer.childName` キーは廃止。名前は `profileRegistry.activeProfile.displayName` が
+    // 単一の真実（SSOT）。移行元としての読み出しは Core `ProfileStoreMigration.legacyChildNameKey` が担う。
     private let selectedGradeKey = "spellingTrainer.selectedGrade"
     private let castKey = "spellingTrainer.cast"
 
@@ -558,21 +576,61 @@ final class AppModel: ObservableObject {
             let core = ProfileScopedStore(base: rawCapable, activeProfileID: registry.activeProfileID)
             self.profileRegistry = registry
             self.profileScopedStore = core
+            self.profileRegistryStore = rawCapable
             self.persistenceStore = ProfileScopedUserDataStore(scoped: core)
         } else {
             // 名前空間化できないストア（想定外）はそのまま使う＝単一子フォールバック。
             self.profileRegistry = ProfileRegistry(bootstrapping: ChildProfile(displayName: "", createdAt: Date()))
             self.profileScopedStore = nil
+            self.profileRegistryStore = nil
             self.persistenceStore = rawStore
         }
 
-        let loadedWords = persistenceStore.load([SpellingWord].self, key: wordsKey) ?? [
-            SpellingWord(text: "cat", promptText: "ねこ"),
-            SpellingWord(text: "dog", promptText: "いぬ"),
-            SpellingWord(text: "friend", promptText: "友[とも]だち"),
-            SpellingWord(text: "school", promptText: "学校[がっこう]")
-        ]
+        // グローバル（世帯・端末レベル。プロファイルを跨いで共有）はここで直接ロードする（切替では変えない）。
+        let cachedEntitlement = persistenceStore.load(CachedEntitlement.self, key: cachedEntitlementKey) ?? .none
+        isSubscribed = cachedEntitlement.isActive(now: Date())
+        debugUnlockAll = persistenceStore.load(Bool.self, key: debugUnlockAllKey) ?? false
+        debugDisableDailyLimit = persistenceStore.load(Bool.self, key: debugDisableDailyLimitKey) ?? false
+        #if DEBUG
+        debugAIJudgeOnTest = persistenceStore.load(Bool.self, key: debugAIJudgeOnTestKey) ?? false
+        #endif
+
+        // 子スコープの全 @Published をアクティブプロファイルから読み込む（切替時と共用）。
+        // 各プロパティは宣言時デフォルトで初期化済みなので、ここで正規スコープの値へ入れ替える。
+        loadChildScopedState()
+        // 派生修復・シードは再ロードガードの外で1回だけ（意図的に）実行する。
+        ensureSelectedWordStepStillExists()
+        // 既存の未クリア語を復習キューへ一度だけ取り込む（描画経路では行わない）。
+        seedSpellingReviewIfNeeded()
+    }
+
+    /// アクティブプロファイルの子スコープ状態を全 @Published へロードする。`init` と `activateProfile` で共用。
+    /// 実行中は `isReloadingProfile` を立て、子スコープ didSet の保存・派生修復・同期要求を止める
+    /// （値は今この正規スコープから入れているので保存は不要／派生修復は呼び出し側がガードの外で1回だけ行う）。
+    /// 移行の明示 `save` は didSet の外なので継続する（＝ガード中でも新プロファイルの初期値は永続化される）。
+    private func loadChildScopedState() {
+        isReloadingProfile = true
+        defer { isReloadingProfile = false }
+
+        let loadedWords: [SpellingWord]
+        if let storedWords = persistenceStore.load([SpellingWord].self, key: wordsKey) {
+            loadedWords = storedWords
+        } else {
+            loadedWords = [
+                SpellingWord(text: "cat", promptText: "ねこ"),
+                SpellingWord(text: "dog", promptText: "いぬ"),
+                SpellingWord(text: "friend", promptText: "友[とも]だち"),
+                SpellingWord(text: "school", promptText: "学校[がっこう]")
+            ]
+            // 新スコープの初期化：既定語を明示的に永続化して word.id（UUID）を安定させる。
+            // 再ロードガード中は words.didSet が保存しないため、ここで保存しないと再ロードのたびに
+            // 別UUIDの既定語が生成され、ステップ署名・クリア判定・復習状態（word.id キー）が壊れる
+            // （レビュー指摘・Critical）。移行の明示 save と同じ扱い。
+            persistenceStore.save(loadedWords, key: wordsKey)
+        }
         words = loadedWords
+        // セッション限りの選択（永続化なし）。切替時に前の子の選択を持ち越さない。
+        focusedPracticeWordIDs = []
         attempts = persistenceStore.load([SpellingAttempt].self, key: attemptsKey) ?? []
         practiceSamples = persistenceStore.load([PracticeSample].self, key: practiceSamplesKey) ?? []
         schoolTestResults = persistenceStore.load([SchoolTestResult].self, key: schoolTestResultsKey) ?? []
@@ -587,7 +645,7 @@ final class AppModel: ObservableObject {
                 ?? Self.defaultWordStepID(for: loadedWords)
             let migrated = ["personal": legacyStepID]
             selectedStepIDByCourse = migrated
-            // didSet は init 中に発火しないため、移行値を明示的に永続化する（self 参照を避けローカルで保存）。
+            // 再ロードガード中は didSet が保存しないため、移行値を明示的に永続化する。
             persistenceStore.save(migrated, key: selectedStepIDByCourseKey)
         }
         // 子のコース切替は既定でロック（親が決める）。親が設定で ON にしたときだけ解放。
@@ -598,21 +656,15 @@ final class AppModel: ObservableObject {
         // コイン単位 ×10 リリースの一回限り移行（純粋ロジックは CoinScaleMigration、判定/保存はここ）。
         // v2 キーがあればそれを使い、無ければ旧キー残高 ×10 で確定する。旧キーは不変なので、
         // v2 保存前にプロセスが落ちても次回また同じ値を再計算するだけで再倍化しない（冪等・クラッシュ安全）。
-        // （didSet は init 中は発火しないため、移行値は明示的に save する。
-        //   self.rewardCoins は全プロパティ初期化前に読めないので、ローカルで計算してから代入する。）
         let storedV2RewardCoins = persistenceStore.load(Int.self, key: rewardCoinsKey)
         let legacyRewardCoins = persistenceStore.load(Int.self, key: legacyRewardCoinsKey)
         let resolvedRewardCoins = CoinScaleMigration.resolveBalance(storedV2: storedV2RewardCoins, legacy: legacyRewardCoins)
         if CoinScaleMigration.needsPersist(storedV2: storedV2RewardCoins) {
+            // 再ロードガード中は didSet が保存しないため、移行値を明示的に永続化する。
             persistenceStore.save(resolvedRewardCoins, key: rewardCoinsKey)
         }
         rewardCoins = resolvedRewardCoins
-        let cachedEntitlement = persistenceStore.load(CachedEntitlement.self, key: cachedEntitlementKey) ?? .none
-        isSubscribed = cachedEntitlement.isActive(now: Date())
-        debugUnlockAll = persistenceStore.load(Bool.self, key: debugUnlockAllKey) ?? false
-        debugDisableDailyLimit = persistenceStore.load(Bool.self, key: debugDisableDailyLimitKey) ?? false
         #if DEBUG
-        debugAIJudgeOnTest = persistenceStore.load(Bool.self, key: debugAIJudgeOnTestKey) ?? false
         // 起動時：前回のTaskはもう生きていないので、残った「送信中」フラグは落とす（永久スピナー防止）。
         aiJudgments = (persistenceStore.load([AIJudgmentRecord].self, key: aiJudgmentsKey) ?? [])
             .map { var record = $0; record.isRunning = false; return record }
@@ -635,7 +687,6 @@ final class AppModel: ObservableObject {
         hasCompletedOnboarding = persistenceStore.load(Bool.self, key: hasCompletedOnboardingKey) ?? false
         hasShownHomeCharacterHint = persistenceStore.load(Bool.self, key: hasShownHomeCharacterHintKey) ?? false
         stepUnlockCelebration = persistenceStore.load(StepUnlockCelebration.self, key: stepUnlockCelebrationKey) ?? StepUnlockCelebration()
-        childName = persistenceStore.load(String.self, key: childNameKey) ?? ""
         selectedGrade = persistenceStore.load(String.self, key: selectedGradeKey) ?? ""
         cast = persistenceStore.load(Cast.self, key: castKey) ?? Cast()
         let savedCharacterID = persistenceStore.load(String.self, key: selectedCharacterIDKey) ?? Self.defaultCharacterID
@@ -649,10 +700,51 @@ final class AppModel: ObservableObject {
             hasCompletedOnboarding = true   // UIテストはオンボーディングを飛ばしてホームから開始する
         }
         #endif
-        ensureSelectedWordStepStillExists()
-        // 既存の未クリア語を復習キューへ一度だけ取り込む（描画経路では行わない＝init で実施）。
-        seedSpellingReviewIfNeeded()
     }
+
+    /// 台帳（`profiles` キー）を実ストアへ永続化する（改名・切替時）。
+    /// 実行時なので非同期書き込みで十分（起動時の書き込みバリアは移行 `loadOrBootstrap` が担う）。
+    /// フォールバック（名前空間化不可）時は永続先が無いので何もしない（メモリ内のみ）。
+    private func persistRegistry() {
+        guard let base = profileRegistryStore,
+              let data = try? JSONEncoder().encode(profileRegistry) else { return }
+        base.rawSave(data, key: ProfileStoreMigration.profilesKey)
+    }
+
+    /// アクティブな子プロファイルを切り替える（原子的・設計§4・レビュー指摘④）。
+    /// ①切替前の子に紐づく保留同期を破棄（新しい子へ流さない）→ ②台帳・スコープを差し替え →
+    /// ③子スコープ状態を再ロード（ガード中＝didSet 副作用は止まる）→ ④ガードの外で派生修復・シード・
+    /// 同期要求を1回だけ。`AppModel` インスタンスは作り直さない（View ツリーが依存するため中身を入れ替える）。
+    func activateProfile(_ id: UUID) {
+        guard let scoped = profileScopedStore else { return }   // フォールバック時は切替不可
+        guard id != profileRegistry.activeProfileID else { return }
+        let updated = profileRegistry.activating(id)
+        guard updated.activeProfileID == id else { return }     // 未知IDは無視（活性化されない）
+        pendingSyncTask?.cancel()
+        pendingSyncTask = nil
+        profileRegistry = updated
+        persistRegistry()
+        scoped.setActiveProfileID(id)
+        loadChildScopedState()
+        // ガードの外で意図的に：派生修復・シード・（安全なら）同期要求。
+        ensureSelectedWordStepStillExists()
+        seedSpellingReviewIfNeeded()
+        requestSync()
+    }
+
+    #if DEBUG
+    /// DEBUG専用：切替配線を手動確認するためのダミー子プロファイルを1人追加する。
+    /// 親向けの追加/改名/削除 UI は Phase 4。ここは開発用の最小導線（プロダクトUIには出さない）。
+    func debugAddTestProfile() {
+        guard profileScopedStore != nil else { return }   // フォールバック時は台帳を持たない
+        // 同期サイクル進行中は人数を増やさない（in-flight push が2人以上でサーバ到達する窓を作らない）。
+        guard !isSyncCycleInFlight else { return }
+        let number = profileRegistry.profiles.count + 1
+        let profile = ChildProfile(displayName: "テスト\(number)", createdAt: Date())
+        profileRegistry = profileRegistry.adding(profile)
+        persistRegistry()
+    }
+    #endif
 
     /// アクティブコースに応じてステップ供給元を切り替える（personal は既存導出・無改修／
     /// 学年・英検は wordbank から合成した仮想ステップ＝非永続）。
@@ -1348,6 +1440,11 @@ final class AppModel: ObservableObject {
     /// - 墓石になった id は除外される（生存レコードのみ渡される前提）。
     /// - 並びは `displayOrder` 昇順（同値は id で安定化）。
     func applyMergedWords(_ live: [WordSyncRecord]) {
+        // 複数プロファイル中はローカルへ反映しない。pull の await 中に `activateProfile` で
+        // 2人以上へ切り替わっていたら、この merge を別プロファイルのスコープへ書き込まない
+        // （レビュー指摘・Critical）。1人なら従来どおり反映（切替は起きえない）。
+        // 取りこぼしは次トリガ／pendingRerun で回収される。
+        guard isSyncSafeForActiveProfile else { return }
         let existingByID = Dictionary(words.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let mapped = live
             .sorted {
@@ -1381,6 +1478,17 @@ final class AppModel: ObservableObject {
 
     /// `words` を 1 サイクル同期する（世帯未選択なら何もしない）。
     func syncWords(householdID: UUID?) async throws {
+        // 複数プロファイル中は同期を止める（世帯グローバルな同期簿記のままなので、子切替時に
+        // 他児の単語を誤って墓石化しうる。設計§6・レビュー指摘①）。`syncNow`/`requestSync` の
+        // 入口だけでなく唯一のチョークポイントであるここにも張り、DEBUG の手動同期直呼びも塞ぐ。
+        // 進行中サイクルの各境界（開始／pull後／push後）でも `WordSyncCoordinator` が同じ不変条件を
+        // 再確認するので、pull の await 中に切替が入っても他児スコープへ反映・push しない。
+        guard isSyncSafeForActiveProfile else { return }
+        // サイクル中はプロファイル人数を増やせないようにする（`debugAddTestProfile` がこれを見る）。
+        // これで push の await 中に count が 2 になり、A の push が「2人以上」でサーバへ届く窓を消す。
+        // カウンタ増減にして、重複呼び出しの defer が先行サイクル進行中に 0 へ落とさないようにする。
+        syncCycleDepth += 1
+        defer { syncCycleDepth -= 1 }
         try await wordSyncCoordinator.sync(appModel: self, householdID: householdID)
     }
 
@@ -1390,6 +1498,14 @@ final class AppModel: ObservableObject {
     private var householdIDProvider: () -> UUID? = { nil }
     /// 編集連打をまとめるためのデバウンス用タスク。
     private var pendingSyncTask: Task<Void, Never>?
+    /// 進行中の `syncWords` サイクル数（pull/push の await 含む）。プロファイル人数を増やす操作は
+    /// これが 0 でない間ブロックする＝サイクル中は `profiles.count` を不変に固定し、in-flight の
+    /// push/tombstone が「2人以上の状態でサーバへ届く」窓自体を作らない（設計§6・レビュー指摘①。
+    /// 本対応は Phase 5）。**カウンタにするのは重要**：`syncWords` は @MainActor async で再入しうるため、
+    /// 単純な Bool だと重複呼び出し側の `defer` が先行サイクルの push await 中にフラグを消してしまう。
+    private var syncCycleDepth = 0
+    /// 同期サイクルが1つ以上進行中か（人数増加をブロックする判定に使う）。
+    private var isSyncCycleInFlight: Bool { syncCycleDepth > 0 }
     /// `applyMergedWords` による `words` 更新が、編集トリガを再帰的に誘発しないためのフラグ。
     private var isApplyingMergedWords = false
 
@@ -1412,7 +1528,11 @@ final class AppModel: ObservableObject {
     /// **子が2人以上いる間は同期を止める**（Phase 5 で同期をプロファイル別に本対応するまでの安全ネット）。
     /// 同期簿記（`sync.cursors`/`sync.wordSidecar`）が世帯グローバルのままなので、複数プロファイルで
     /// 同期すると子切替時に他児の単語を誤って墓石化しうる（設計 §6・レビュー指摘①）。1人なら従来通り安全。
-    private var isSyncSafeForActiveProfile: Bool {
+    /// **これが唯一の同期安全不変条件**：`syncWords` 入口・`applyMergedWords`・`WordSyncCoordinator`
+    /// の各サイクル境界（開始／pull後／push後）で必ずこれを確認する。切替は必ず2人以上の状態でしか
+    /// 起きない（＝切替が絡む間は常に false）ため、これを全境界で見れば in-flight／pendingRerun の
+    /// どの割り込みでも他児スコープへの反映・push・墓石化を止められる（coordinator から読むため internal）。
+    var isSyncSafeForActiveProfile: Bool {
         profileRegistry.profiles.count <= 1
     }
 

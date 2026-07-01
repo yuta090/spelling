@@ -115,11 +115,21 @@ final class WordSyncCoordinator {
     private func runOneCycle(appModel: AppModel, householdID: UUID) async throws {
         let sink = AppModelWordSink(model: appModel)
 
+        // 複数プロファイル中はサイクルを一切走らせない。世帯グローバルな sync 簿記
+        // （`sync.cursors`/`sync.wordSidecar`）のまま別プロファイルへ push/tombstone すると他児の
+        // 単語を壊すため（設計§6・レビュー指摘①。プロファイル別の本対応は Phase 5）。
+        // 各 await 境界（開始・pull後・push後）で再確認する：切替は必ず2人以上の状態でしか起きず、
+        // 一度2人以上になれば切替が絡む間は常に不成立なので、in-flight でも pendingRerun 再実行でも
+        // この不変条件が破れ、副作用（反映・state前進・push）を確実に止められる。
+        guard appModel.isSyncSafeForActiveProfile else { return }
+
         // フェーズ1: pull→（原子的に）merge＋反映（pull 由来はここで確定・永続化。push 失敗でも保持）。
         let outcome = try await WordSyncRunner.pullAndMerge(
             table: table, householdID: householdID, state: state,
             transport: transport, sink: sink, now: now()
         )
+        // pull の await 中に切替が入っていたら、state 前進も push も捨てる（他児スコープを汚さない）。
+        guard appModel.isSyncSafeForActiveProfile else { return }
         state = outcome.state
         persist()
 
@@ -129,6 +139,8 @@ final class WordSyncCoordinator {
             table: table, householdID: householdID, state: state,
             toPush: outcome.toPush, transport: transport
         )
+        // push の await 中に切替が入っていたら high-water の永続化は次サイクルへ委ねる（重複送信は冪等）。
+        guard appModel.isSyncSafeForActiveProfile else { return }
         persist()
     }
 
