@@ -119,8 +119,7 @@ struct HomeView: View {
 
                 return HomeLatestTestButtonSummary(
                     sessionID: sessionID,
-                    date: date,
-                    score: sortedAttempts.filter { $0.decision == .autoCorrect }.count
+                    date: date
                 )
             }
             .sorted { $0.date < $1.date }
@@ -889,7 +888,7 @@ private struct ChildMissionPanel: View {
                 MissionSmallButton(
                     title: isStepCleared
                         ? language.text(japanese: "ことばパズル", english: "Puzzle")
-                        : language.text(japanese: "パズル（まんてんで）", english: "Puzzle (perfect)"),
+                        : language.text(japanese: "パズル（クリアで）", english: "Puzzle (clear)"),
                     systemImage: isStepCleared ? "puzzlepiece.fill" : "lock.fill",
                     tint: Color(red: 0.96, green: 0.62, blue: 0.10),
                     disabled: !isStepCleared,
@@ -911,22 +910,21 @@ private struct ChildMissionPanel: View {
 private struct HomeLatestTestButtonSummary: Equatable {
     var sessionID: UUID
     var date: Date
-    var score: Int
     var attemptNumber: Int = 0
 
     func numbered(_ number: Int) -> HomeLatestTestButtonSummary {
         HomeLatestTestButtonSummary(
             sessionID: sessionID,
             date: date,
-            score: score,
             attemptNumber: number
         )
     }
 
+    // 子どもには点数を見せない（「◯点」＝評価でやる気を折らない）。回数だけを出す。
     func title(language: AppLanguage) -> String {
         language.text(
-            japanese: "テスト \(attemptNumber)回め \(score)点",
-            english: "Test #\(attemptNumber) \(score) pts"
+            japanese: "テスト \(attemptNumber)回め",
+            english: "Test #\(attemptNumber)"
         )
     }
 }

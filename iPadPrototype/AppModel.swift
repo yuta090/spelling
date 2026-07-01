@@ -1103,7 +1103,13 @@ final class AppModel: ObservableObject {
         hasPerfectRun(for: sourceWords, in: todayAttempts)
     }
 
-    /// 1セッション内で対象単語をすべて一発正解（満点）にしたことがあるか。
+    /// 1セッション内で対象単語をすべて「達成」したことがあるか（＝子どもの進行ゲート＝満点）。
+    ///
+    /// 「達成」は `SpellingAttempt.satisfiesAchievement`（`ChildGrading`）のやさしいルール:
+    /// 対象語がすべて揃い、各語が達成を満たせば満点。字が汚くて端末OCRが読めなかっただけ（本人は実際に
+    /// 書いた）は満たす＝「字が汚い＝間違い」でパズル解放/追加/永続できたがロックされる問題を防ぐ。一方で
+    /// **パス（未記入）・時間切れは満たさない**＝ズルで解放させない。親レポートの厳密なマスター判定
+    /// （`isCleared`）とは別軸（あちらは needsReview を未確認＝未マスター扱い）。
     private func hasPerfectRun(for sourceWords: [SpellingWord], in attempts: [SpellingAttempt]) -> Bool {
         let sourceTexts = Set(sourceWords.map { normalize($0.text) })
         guard !sourceTexts.isEmpty else {
@@ -1125,7 +1131,7 @@ final class AppModel: ObservableObject {
                 return false
             }
 
-            return latestInSession.values.allSatisfy { isCleared($0) }
+            return ChildGrading.isAchieved(satisfied: latestInSession.values.map { $0.satisfiesAchievement })
         }
     }
 

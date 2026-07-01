@@ -1503,10 +1503,11 @@ struct SpellingSessionView: View {
         if mode == .test, !sessionAttempts.isEmpty {
             model.recordSpellingTestResults(sessionAttempts, words: sessionWords)
         }
-        // テスト満点なら、1日1回のボーナスコインを付与（途中で単語を足していても完了問題数で計算）。
+        // 達成なら、1日1回のボーナスコインを付与（途中で単語を足していても完了問題数で計算）。
+        // 「達成」＝実際に書いた語にはっきりした綴りミスが無い（字が汚くて読めなかっただけでは剥奪しない／
+        // パス・時間切れでは達成にしない）。
         if mode == .test,
-           !sessionAttempts.isEmpty,
-           sessionAttempts.allSatisfy({ $0.decision == .autoCorrect }) {
+           ChildGrading.isAchieved(satisfied: sessionAttempts.map { $0.satisfiesAchievement }) {
             testPerfectBonus = model.awardPerfectTestBonusIfEligible(wordCount: sessionAttempts.count)
         }
         withAnimation(.easeInOut(duration: 0.18)) {
@@ -3556,12 +3557,11 @@ private struct TestSessionResultsView: View {
     @State private var showingCompletionCelebration = false
     @State private var celebrationSeed = 0
 
-    private var correctCount: Int {
-        attempts.filter { $0.decision == .autoCorrect }.count
-    }
-
-    private var isPerfect: Bool {
-        !attempts.isEmpty && correctCount == attempts.count
+    /// 達成＝実際に書いた語にはっきりした綴りミスが無い（`ChildGrading`）。字が汚くて端末が読めなかった
+    /// だけ（pending）では崩れない一方、パス・時間切れ（書いていない）では達成にしない。
+    /// ＝「点が取れない＝間違い」で子どものやる気を折らず、かつズルで解放もさせない。数は親側にだけ残す。
+    private var isAchieved: Bool {
+        ChildGrading.isAchieved(satisfied: attempts.map { $0.satisfiesAchievement })
     }
 
     private var attemptColumns: [GridItem] {
@@ -3593,7 +3593,7 @@ private struct TestSessionResultsView: View {
                 }
 
                 VStack(spacing: 10) {
-                    if isPerfect {
+                    if isAchieved {
                         HStack(spacing: 12) {
                             Image(systemName: "sparkles")
                             Image(systemName: "crown.fill")
@@ -3603,31 +3603,25 @@ private struct TestSessionResultsView: View {
                         .foregroundStyle(Color(red: 0.98, green: 0.80, blue: 0.10))
                     }
 
-                    Image(systemName: isPerfect ? "crown.fill" : "trophy.fill")
-                        .font(.system(size: isPerfect ? 72 : 58, weight: .bold))
-                        .foregroundStyle(isPerfect ? Color(red: 1.0, green: 0.72, blue: 0.08) : Color(red: 0.96, green: 0.68, blue: 0.04))
-                    Text(isPerfect ? language.text(japanese: "ぜんぶできた！", english: "Perfect!") : language.text(japanese: "がんばったね！", english: "Great effort!"))
-                        .font(.system(size: isPerfect ? 40 : 30, weight: .heavy, design: .rounded))
-                        .foregroundStyle(isPerfect ? Color(red: 0.78, green: 0.22, blue: 0.05) : Color(red: 0.80, green: 0.20, blue: 0.08))
-                    Text(isPerfect
-                        ? language.text(japanese: "最後までぜんぶ正解です。", english: "Every word was correct.")
-                        : language.text(japanese: "最後までやりきりました。直すところはあとで見よう。", english: "You finished the test. Review fixes later.")
+                    Image(systemName: isAchieved ? "crown.fill" : "trophy.fill")
+                        .font(.system(size: isAchieved ? 72 : 58, weight: .bold))
+                        .foregroundStyle(isAchieved ? Color(red: 1.0, green: 0.72, blue: 0.08) : Color(red: 0.96, green: 0.68, blue: 0.04))
+                    // 子どもには点数・正解数を見せない（努力/完了ベースで讃える）。数字は親側にだけ残す。
+                    Text(isAchieved ? language.text(japanese: "ぜんぶ かけたね！", english: "You did it!") : language.text(japanese: "がんばったね！", english: "Great effort!"))
+                        .font(.system(size: isAchieved ? 40 : 30, weight: .heavy, design: .rounded))
+                        .foregroundStyle(isAchieved ? Color(red: 0.78, green: 0.22, blue: 0.05) : Color(red: 0.80, green: 0.20, blue: 0.08))
+                    Text(isAchieved
+                        ? language.text(japanese: "さいごまで よくがんばりました。", english: "You finished every word.")
+                        : language.text(japanese: "さいごまで やりきったね。なおすところは あとで みよう。", english: "You finished. Let's fix a few later.")
                     )
                     .font(.headline.weight(.bold))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                    Text("\(correctCount)/\(max(attempts.count, 1))  \(language.text(japanese: "正解", english: "correct"))")
-                        .font(.system(size: 28, weight: .heavy, design: .rounded))
-                        .foregroundStyle(Color(red: 0.13, green: 0.35, blue: 0.74))
-                        .padding(.vertical, 7)
-                        .padding(.horizontal, 24)
-                        .background(Color(red: 0.91, green: 0.96, blue: 1.0))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
 
                     if let bonus = perfectBonusCoins {
                         HStack(spacing: 8) {
                             Image(systemName: "star.circle.fill")
-                            Text(language.text(japanese: "まんてんボーナス ＋\(bonus)", english: "Perfect bonus +\(bonus)"))
+                            Text(language.text(japanese: "ごほうび ＋\(bonus)", english: "Bonus +\(bonus)"))
                         }
                         .font(.title3.weight(.heavy))
                         .foregroundStyle(Color(red: 0.88, green: 0.56, blue: 0.05))
@@ -3638,10 +3632,10 @@ private struct TestSessionResultsView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .padding(isPerfect ? 24 : 18)
+                .padding(isAchieved ? 24 : 18)
                 .background(
                     Group {
-                        if isPerfect {
+                        if isAchieved {
                             LinearGradient(
                                 colors: [
                                     Color(red: 1.0, green: 0.95, blue: 0.62),
@@ -3659,9 +3653,9 @@ private struct TestSessionResultsView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isPerfect ? Color(red: 0.98, green: 0.64, blue: 0.08) : Color(red: 0.76, green: 0.84, blue: 0.96), lineWidth: isPerfect ? 3 : 1)
+                        .stroke(isAchieved ? Color(red: 0.98, green: 0.64, blue: 0.08) : Color(red: 0.76, green: 0.84, blue: 0.96), lineWidth: isAchieved ? 3 : 1)
                 )
-                .shadow(color: isPerfect ? Color.orange.opacity(0.28) : .clear, radius: 16, x: 0, y: 8)
+                .shadow(color: isAchieved ? Color.orange.opacity(0.28) : .clear, radius: 16, x: 0, y: 8)
 
                 if attempts.isEmpty {
                     EmptyStateView(
@@ -3711,10 +3705,6 @@ private struct TestAttemptResultCard: View {
     var attempt: SpellingAttempt
     var language: AppLanguage
 
-    private var isCorrect: Bool {
-        attempt.decision == .autoCorrect
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -3728,14 +3718,26 @@ private struct TestAttemptResultCard: View {
 
                 Spacer()
 
-                Label(
-                    attempt.decision.label(language: language),
-                    systemImage: isCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill"
-                )
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(isCorrect ? Color.green : Color.orange)
-                .lineLimit(1)
-                .minimumScaleFactor(0.72)
+                // 子ども向けのやさしい表示：✕や⚠️は出さない。
+                // ・correct  → できたね（緑）
+                // ・pending  → 機械が読めなかっただけ。罰マークを出さず、印なしで手書きだけ見せる。
+                // ・tryAgain → やさしく「もう いちど」（鉛筆アイコン）。
+                switch attempt.childOutcome {
+                case .correct:
+                    Label(language.text(japanese: "できたね", english: "Nice!"), systemImage: "checkmark.circle.fill")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(Color.green)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                case .tryAgain:
+                    Label(language.text(japanese: "もう いちど", english: "Try again"), systemImage: "pencil.circle.fill")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(Color(red: 0.20, green: 0.50, blue: 0.90))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                case .pending:
+                    EmptyView()
+                }
             }
 
             if let drawingData = attempt.drawingData {
