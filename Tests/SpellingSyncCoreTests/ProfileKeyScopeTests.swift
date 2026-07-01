@@ -54,8 +54,8 @@ final class ProfileKeyScopeTests: XCTestCase {
     func testKeyCountsAreStable() {
         // キー追加/削除時に「どちらに分類するか」を意識的に決めさせる回帰トリップワイヤ。
         // 変更したらこの数を更新し、分類（子/グローバル）を必ずレビューする。
-        XCTAssertEqual(ProfileKeyScope.childScopedKeys.count, 35)
-        XCTAssertEqual(ProfileKeyScope.globalKeys.count, 10)
+        XCTAssertEqual(ProfileKeyScope.childScopedKeys.count, 36)
+        XCTAssertEqual(ProfileKeyScope.globalKeys.count, 11)
     }
 
     func testCoreChildDataKeysAreScoped() {
