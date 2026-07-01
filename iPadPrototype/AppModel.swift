@@ -1221,6 +1221,23 @@ final class AppModel: ObservableObject {
         practiceSamples.filter { Calendar.current.isDateInToday($0.date) }
     }
 
+    /// きょう手書きした語数（テスト=attempts＋練習=practiceSamples、語で重複排除）。
+    /// 子の結果画面「きょう かいた かず」用：練習だけの日も 0 にならないよう両方を数える。
+    /// 語の重複はまとめる（同じ語を練習→テストや、練習で繰り返しても水増ししない）。
+    var todaysWrittenWordCount: Int {
+        var written = Set<String>()
+        // 空語（空白のみ等）は数えない＆表記ゆれをまとめる（totalLearnedWordCount 等と数え方を揃える）。
+        for attempt in todaysAttempts {
+            let word = normalize(attempt.word)
+            if !word.isEmpty { written.insert(word) }
+        }
+        for sample in todaysPracticeSamples {
+            let word = normalize(sample.word)
+            if !word.isEmpty { written.insert(word) }
+        }
+        return written.count
+    }
+
     /// こどもが登録した単語をまとめる専用ステップのID（最初のこどもステップ）。
     static let childWordStepID = "child-words"
 
