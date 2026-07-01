@@ -19,6 +19,12 @@ public struct WordRow: Equatable, Sendable {
     public var updatedAt: String
     /// 論理削除（RFC3339 文字列、未削除なら nil）。
     public var deletedAt: String?
+    /// ローカルの保管ステップ ID（`storage_step_id` text 列）。サーバー UUID `step_id` とは別管理（§7.5）。
+    public var storageStepID: String?
+    /// 表示先コースID（`linked_course_id` text 列）。
+    public var linkedCourseID: String?
+    /// 表示先コースの挿入位置ステップ ID（`linked_before_step_id` text 列）。
+    public var linkedBeforeStepID: String?
 
     public init(
         id: UUID,
@@ -29,7 +35,10 @@ public struct WordRow: Equatable, Sendable {
         source: String,
         displayOrder: Int,
         updatedAt: String,
-        deletedAt: String?
+        deletedAt: String?,
+        storageStepID: String? = nil,
+        linkedCourseID: String? = nil,
+        linkedBeforeStepID: String? = nil
     ) {
         self.id = id
         self.householdID = householdID
@@ -40,6 +49,9 @@ public struct WordRow: Equatable, Sendable {
         self.displayOrder = displayOrder
         self.updatedAt = updatedAt
         self.deletedAt = deletedAt
+        self.storageStepID = storageStepID
+        self.linkedCourseID = linkedCourseID
+        self.linkedBeforeStepID = linkedBeforeStepID
     }
 }
 
@@ -68,7 +80,8 @@ public enum WordWire {
 
     /// サーバー行 → 正準同期レコード。
     /// - `createdAt` はサーバー DTO に無いため `updatedAt` を流用する（情報用途のみ）。
-    /// - `payload.stepID` は当面 **nil**（サーバー `step_id`(UUID) をローカル String に写さない。§7.5）。
+    /// - `payload.stepID` は `storage_step_id`(text) を写す（サーバー UUID `step_id` は依然 nil 扱い＝§7.5）。
+    ///   Ph4: `linked_course_id` / `linked_before_step_id`(text) も payload へ写し、多端末で紐付けを伝搬する。
     /// - `updatedAt`、または非 nil の `deletedAt` が解釈できなければ nil（壊れた行は取り込まない）。
     ///   ⚠️ 解釈不能な `deletedAt` を黙って nil にすると**削除済み行が復活**するため、行ごと落とす。
     public static func record(from row: WordRow) -> WordSyncRecord? {
@@ -92,14 +105,17 @@ public enum WordWire {
             text: row.text,
             promptText: row.promptText,
             source: row.source,
-            stepID: nil,
-            displayOrder: row.displayOrder
+            stepID: row.storageStepID,
+            displayOrder: row.displayOrder,
+            linkedCourseID: row.linkedCourseID,
+            linkedBeforeStepID: row.linkedBeforeStepID
         )
         return WordSyncRecord(sync: meta, payload: payload)
     }
 
     /// 正準同期レコード → 送信用 wire 行。
-    /// - `stepID` は同期しない（§7.5。`step_id`(UUID) は当面 nil）。
+    /// - `stepID`(ローカル String) は `storage_step_id`(text) として送る（サーバー UUID `step_id` は別管理＝§7.5）。
+    ///   Ph4: `linkedCourseID` / `linkedBeforeStepID`(text) も送り、多端末で紐付けを伝搬する。
     /// - 日付は RFC3339（UTC, ミリ秒）文字列へ。
     /// - `householdID` が無いレコードは送れないため **nil** を返す（呼び出し側で除外）。
     public static func wire(from record: WordSyncRecord) -> WordRow? {
@@ -113,7 +129,10 @@ public enum WordWire {
             source: record.payload.source,
             displayOrder: record.payload.displayOrder,
             updatedAt: rfc3339(from: record.sync.updatedAt),
-            deletedAt: record.sync.deletedAt.map(rfc3339(from:))
+            deletedAt: record.sync.deletedAt.map(rfc3339(from:)),
+            storageStepID: record.payload.stepID,
+            linkedCourseID: record.payload.linkedCourseID,
+            linkedBeforeStepID: record.payload.linkedBeforeStepID
         )
     }
 }

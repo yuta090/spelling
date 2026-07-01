@@ -12,7 +12,10 @@ struct WordsSupabaseTransport: WordSyncTransport {
             WordRow(
                 id: dto.id, householdID: dto.householdId, profileID: dto.profileId,
                 text: dto.text, promptText: dto.promptText, source: dto.source,
-                displayOrder: dto.displayOrder, updatedAt: dto.updatedAt, deletedAt: dto.deletedAt
+                displayOrder: dto.displayOrder, updatedAt: dto.updatedAt, deletedAt: dto.deletedAt,
+                storageStepID: dto.storageStepId,
+                linkedCourseID: dto.linkedCourseId,
+                linkedBeforeStepID: dto.linkedBeforeStepId
             )
         }
         return WordPullPage(rows: rows, nextCursor: result.nextCursor)
@@ -22,9 +25,12 @@ struct WordsSupabaseTransport: WordSyncTransport {
         let upserts = rows.map { row in
             WordUpsert(
                 id: row.id, householdId: row.householdID, profileId: row.profileID,
-                stepId: nil,                         // §7.5: step_id(UUID) は当面同期しない
+                stepId: nil,                         // §7.5: サーバー UUID step_id は当面同期しない（storage_step_id text で往復）
                 text: row.text, promptText: row.promptText, source: row.source,
-                displayOrder: row.displayOrder, updatedAt: row.updatedAt, deletedAt: row.deletedAt
+                displayOrder: row.displayOrder, updatedAt: row.updatedAt, deletedAt: row.deletedAt,
+                storageStepId: row.storageStepID,    // Ph4: ローカル String の保管ステップ
+                linkedCourseId: row.linkedCourseID,
+                linkedBeforeStepId: row.linkedBeforeStepID
             )
         }
         try await engine.push(upserts)
