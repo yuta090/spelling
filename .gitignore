@@ -8,8 +8,20 @@ generated/
 xcuserdata/
 UserInterfaceState.xcuserstate
 
-# Claude Code local state
-.claude/
+# Claude Code local state (ignore everything except our own project skills)
+.claude/*
+!.claude/skills/
+# ...but keep generated/heavy artifacts out of git (regenerable per-machine)
+.claude/skills/*/out/
+.claude/skills/*/.venv/
+.claude/skills/*/node_modules/
+.claude/skills/swiftui
+# never commit generated raster/vector art
+.claude/skills/**/*.png
+.claude/skills/**/*.jpg
+.claude/skills/**/*.jpeg
+.claude/skills/**/*.webp
+.claude/skills/**/*.gif
 
 # Secrets / local env (NEVER commit real values)
 .env

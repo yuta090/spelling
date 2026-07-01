@@ -1,0 +1,6 @@
+id,category,ja_name,en_name,tags,concept,primary_hex,secondary_hex,accent_hex,variations
+alpaca,animal,アルパカ,Alpaca,"animal;land;mammal;fluffy;gentle","もこもこのアルパカ。長い首・丸い目・ふわふわの毛・やさしいニコ顔",#E7D6BE,#FBF3E6,#9A7B57,4
+seal,sea,あざらし,Seal,"sea;marine;mammal;baby;round","丸々したアザラシの赤ちゃん。短いヒレ・つぶらな黒目・ぷにっとした体",#AFC3D6,#EAF2F8,#4C6275,4
+sax,instruments,サックス,Saxophone,"music;instrument;brass;shiny","ぴかぴかの金色アルトサックス。なめらかなカーブの管と丸いベル・ボタンが並ぶ。かわいいマスコット風・正面やや斜め",#D6A43A,#F0D27A,#8A5A2B,4
+clownfish,sea,クマノミ,Clownfish,"sea;marine;fish;cute","オレンジに白い帯のクマノミ。まんまるの目・にこっと笑顔・ひらひらのヒレ。ぷっくりかわいいマスコット",#F0822E,#FFFFFF,#2E2A28,4
+ramen,food,ラーメン,Ramen,"food;meal;japanese;noodle","湯気のたつ醤油ラーメンのどんぶり。なると・味玉・のり・ねぎ・ちぢれ麺がのる。どんぶりにニコ顔。かわいいマスコット",#D98C3A,#F4E3C2,#8A4B2B,4

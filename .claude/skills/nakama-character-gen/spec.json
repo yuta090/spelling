@@ -1,0 +1,60 @@
+{
+  "_comment": "なかま(cast/仲間) キャラの画風・制約の単一ソース。explore も finalize も毎回この house_style を再掲する（reference-image + repeated-preserve-list 方式）。色は candidates.csv の hex を使う。",
+
+  "house_style": {
+    "summary": "幼児〜小学生向けの、かわいいフラットなマスコット。SpellingTrainer の既存『なかま』カタログ(くま/ねこ等)と同じ温度感。",
+    "must": [
+      "1体だけ・正面・中央配置・全身がフレームに収まる",
+      "やわらかい丸み(角は大きめ円弧)・太めのシルエット・親しみやすい",
+      "フラット塗り(派手なグラデ/写実シェーディングは避ける、軽い陰影までOK)",
+      "顔の目は黒のシンプルな点〜楕円、表情はやさしいニコ顔",
+      "余白を均等に・キャラはフレーム高さの約80%",
+      "文字・ロゴ・透かし・枠線は一切入れない"
+    ],
+    "ng": [
+      "写実/3D CG/フォトリアル",
+      "暗い・怖い・大人っぽい・複雑なディテール",
+      "複数体・見切れ・極端なポーズ",
+      "影や反射を地面に描かない(透過の邪魔になる)"
+    ],
+    "palette_rule": "candidates.csv の primary_hex / secondary_hex / accent_hex を主役・補助・差し色として使う。SwiftUI 著作モードでは character.primary/secondary/accent にそのまま対応させる(後で hex 再着色が効くように)。"
+  },
+
+  "explore": {
+    "engine": "agy",
+    "background": "純白(#FFFFFF) のべた塗り",
+    "note": "agy は本物の透過(アルファ)を出せない(JPEG＋偽チェッカーになる/実機検証 2026-06-28)。探索は『デザイン案を見て選ぶ』のが目的なので白背景で量産する。透過は finalize(codex) で作る。",
+    "variations_default": 4,
+    "canvas": "1:1 正方形・大きめ(1024程度)"
+  },
+
+  "finalize_image": {
+    "engine": "agy(量産・探索) → codex(採用1体の清書・出荷アセット)",
+    "reason": "agy はマゼンタ地の不透過画像を量産でき自動切り抜きで透過WebPにできる(縁綺麗)が、内部JPEG由来のノイズが焼き込まれ画質は荒い=デザイン選定向き。出荷アセットはcodex(PNG直出力=クリーン)で採用案をリファレンスに清書する(実機検証 2026-06-28)。",
+    "webp_quality_ship": 95,
+    "chroma_key": "#FF00FF",
+    "chroma_key_note": "マゼンタ。茶系の毛色に被りにくい。緑はハイライトに被る恐れがあるので避ける。agyのマゼンタは純#FF00FFでなく(253,40,250)等にドリフトするので finalize_image.py --autokey で四隅から実背景色を推定して抜く。",
+    "post": "scripts/cutout_agy.sh が agy量産→自動切り抜き。scripts/finalize_image.py が trim(余白切り)→正方形パディング→縮小→WebP(透過)。@1x/@2x/@3x も任意。",
+    "default_size": 512,
+    "webp_quality": 90
+  },
+
+  "finalize_swiftui": {
+    "engine": "codex (著作) + Claude (レビュー)",
+    "target": "iPadPrototype/HomeView.swift の既存 XxxCharacterFace/View と同じ流儀の SwiftUI View を新規作成する。",
+    "convention": [
+      "private struct <Name>CharacterFace: View { var character: HomeRewardCharacter; var body: some View { ZStack { ... } } }",
+      "色は必ず character.primary / character.secondary / character.accent を使う(hex 再着色のため。固定色を焼き込まない)",
+      "Circle / Capsule / Triangle / RoundedRectangle 等の primitive を ZStack＋offset で合成。描画域はおよそ 100x100pt 想定",
+      "目は共有の CharacterEyes(color:) を流用してよい",
+      "リファレンス(explore で選んだ白背景画像)に寄せる"
+    ]
+  },
+
+  "integration": {
+    "csv": "scripts/characters.csv に行を足す: id,category,ja_name,en_name,price,style,primary_hex,secondary_hex,accent_hex,default_unlocked,tags",
+    "tags_note": "tags 列(背景スキルと同方式・';'区切り)に既存全キャラ分のジャンルが入っている。並びは ①描画モード(swift=モードS / webp=モードW) → ②category由来のベース → ③横断属性。people は hair-<style> を持つ。新規行も必ず tags を付ける(先頭に swift/webp)。generate_characters.py は DictReader で tags を無視するのでカタログ生成は壊れない。check_duplicate.py の --tag/--tags/--catalog で活用。",
+    "swiftui_mode": "style に新しい case 名を付け、HomeView.swift の HomeRewardCharacterStyle enum・RewardCharacterAvatar の switch・generate_characters.py の VALID_STYLES に追加してから python3 scripts/generate_characters.py を実行。",
+    "image_mode": "画像ベースは新しい汎用 style(例: imageAsset)＋画像参照の仕組みが必要(現状未実装)。WebP を Assets か Bundle に入れ、RewardCharacterAvatar に画像ロード分岐を1つ足す設計。詳細は SKILL.md 参照。"
+  }
+}
