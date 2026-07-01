@@ -151,4 +151,54 @@ final class WordSyncRunnerTests: XCTestCase {
             // 期待通り。high-water は呼び出し側に返らない（前進しない）。
         }
     }
+
+    func testPushFailureKeepsRecordPushableNextCycle() async throws {
+        // push が失敗してフェーズ1 state を永続化しても、未送信のローカル変更は
+        // 次サイクルで再び toPush に乗ること（サイドカー基準を push 成功後にだけ前進させる保証）。
+        let transport = FakeTransport(page: WordPullPage(rows: [], nextCursor: 0))
+        transport.pushError = PushFailed()
+        let sink = FakeSink(localWords: [localWord(id1, "cat")])
+
+        let first = try await WordSyncRunner.pullAndMerge(
+            table: table, householdID: household, state: WordSyncState(),
+            transport: transport, sink: sink, now: at(10)
+        )
+        XCTAssertEqual(first.toPush.map(\.id), [id1], "初回は送信対象に乗る")
+        do {
+            _ = try await WordSyncRunner.push(
+                table: table, householdID: household, state: first.state,
+                toPush: first.toPush, transport: transport
+            )
+            XCTFail("push は失敗を伝播すべき")
+        } catch is PushFailed {}
+
+        // フェーズ1で確定した state（toPush は基準前進していない）を引き継いで再実行。
+        let second = try await WordSyncRunner.pullAndMerge(
+            table: table, householdID: household, state: first.state,
+            transport: transport, sink: sink, now: at(20)
+        )
+        XCTAssertEqual(second.toPush.map(\.id), [id1], "push 失敗後の次サイクルで再送対象に残る")
+    }
+
+    func testSuccessfulPushDoesNotRePushNextCycle() async throws {
+        // push 成功後はサイドカー基準が前進し、次サイクルで同じレコードを再送（churn）しないこと。
+        let transport = FakeTransport(page: WordPullPage(rows: [], nextCursor: 0))
+        let sink = FakeSink(localWords: [localWord(id1, "cat")])
+
+        let first = try await WordSyncRunner.pullAndMerge(
+            table: table, householdID: household, state: WordSyncState(),
+            transport: transport, sink: sink, now: at(10)
+        )
+        XCTAssertEqual(first.toPush.map(\.id), [id1])
+        let afterPush = try await WordSyncRunner.push(
+            table: table, householdID: household, state: first.state,
+            toPush: first.toPush, transport: transport
+        )
+
+        let second = try await WordSyncRunner.pullAndMerge(
+            table: table, householdID: household, state: afterPush,
+            transport: transport, sink: sink, now: at(20)
+        )
+        XCTAssertTrue(second.toPush.isEmpty, "送信成功済みのレコードは再送しない")
+    }
 }

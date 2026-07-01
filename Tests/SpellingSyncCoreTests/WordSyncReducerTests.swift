@@ -8,7 +8,10 @@ final class WordWireTests: XCTestCase {
     private let profile = UUID(uuidString: "22222222-2222-2222-2222-222222222222")!
     private let wordID = UUID(uuidString: "33333333-3333-3333-3333-333333333333")!
 
-    private func row(updatedAt: String, deletedAt: String? = nil) -> WordRow {
+    private func row(updatedAt: String, deletedAt: String? = nil,
+                     storageStepID: String? = nil,
+                     linkedCourseID: String? = nil,
+                     linkedBeforeStepID: String? = nil) -> WordRow {
         WordRow(
             id: wordID,
             householdID: household,
@@ -18,7 +21,10 @@ final class WordWireTests: XCTestCase {
             source: "parent",
             displayOrder: 3,
             updatedAt: updatedAt,
-            deletedAt: deletedAt
+            deletedAt: deletedAt,
+            storageStepID: storageStepID,
+            linkedCourseID: linkedCourseID,
+            linkedBeforeStepID: linkedBeforeStepID
         )
     }
 
@@ -56,8 +62,15 @@ final class WordWireTests: XCTestCase {
 
     // MARK: - record(from:)
 
-    func testRecordMapsFieldsAndDropsStepID() {
-        let r = WordWire.record(from: row(updatedAt: "2026-06-26T07:00:00Z"))
+    func testRecordMapsFieldsIncludingLinkedMeta() {
+        // Ph4: storage_step_id / linked_course_id / linked_before_step_id は text 列でそのまま往復する
+        // （ローカル String の storageStepID は UUID step_id へは写さない＝§7.5 の方針は維持）。
+        let r = WordWire.record(from: row(
+            updatedAt: "2026-06-26T07:00:00Z",
+            storageStepID: "2026-06-26-AB12CD34",
+            linkedCourseID: "eiken-5",
+            linkedBeforeStepID: "eiken-5.step-3"
+        ))
         XCTAssertNotNil(r)
         XCTAssertEqual(r?.sync.id, wordID)
         XCTAssertEqual(r?.sync.householdID, household)
@@ -70,8 +83,17 @@ final class WordWireTests: XCTestCase {
         XCTAssertEqual(r?.payload.promptText, "ねこ")
         XCTAssertEqual(r?.payload.source, "parent")
         XCTAssertEqual(r?.payload.displayOrder, 3)
-        // §7.5: サーバー step_id(UUID) はローカル String に写さない。
+        // Ph4: storage_step_id(text) はローカル String の stepID として写す。
+        XCTAssertEqual(r?.payload.stepID, "2026-06-26-AB12CD34")
+        XCTAssertEqual(r?.payload.linkedCourseID, "eiken-5")
+        XCTAssertEqual(r?.payload.linkedBeforeStepID, "eiken-5.step-3")
+    }
+
+    func testRecordLeavesLinkedMetaNilWhenAbsent() {
+        let r = WordWire.record(from: row(updatedAt: "2026-06-26T07:00:00Z"))
         XCTAssertNil(r?.payload.stepID)
+        XCTAssertNil(r?.payload.linkedCourseID)
+        XCTAssertNil(r?.payload.linkedBeforeStepID)
     }
 
     func testRecordParsesTombstone() {
@@ -91,7 +113,7 @@ final class WordWireTests: XCTestCase {
 
     // MARK: - wire(from:)
 
-    func testWireFormatsAndDropsStepID() {
+    func testWireFormatsAndWritesLinkedMeta() {
         let meta = SyncMetadata(
             id: wordID,
             householdID: household,
@@ -100,7 +122,9 @@ final class WordWireTests: XCTestCase {
             updatedAt: Date(timeIntervalSince1970: 1_782_457_200),
             deletedAt: Date(timeIntervalSince1970: 1_782_460_800)
         )
-        let payload = WordPayload(text: "cat", promptText: "ねこ", source: "parent", stepID: "child-words", displayOrder: 3)
+        let payload = WordPayload(text: "cat", promptText: "ねこ", source: "parent",
+                                  stepID: "2026-06-26-AB12CD34", displayOrder: 3,
+                                  linkedCourseID: "eiken-5", linkedBeforeStepID: "eiken-5.step-3")
         let wire = WordWire.wire(from: WordSyncRecord(sync: meta, payload: payload))
         XCTAssertEqual(wire?.id, wordID)
         XCTAssertEqual(wire?.householdID, household)
@@ -109,6 +133,38 @@ final class WordWireTests: XCTestCase {
         XCTAssertEqual(wire?.displayOrder, 3)
         XCTAssertEqual(wire?.updatedAt, "2026-06-26T07:00:00.000Z")
         XCTAssertEqual(wire?.deletedAt, "2026-06-26T08:00:00.000Z")
+        // Ph4: storage_step_id / linked_* を text 列へ書き出す。
+        XCTAssertEqual(wire?.storageStepID, "2026-06-26-AB12CD34")
+        XCTAssertEqual(wire?.linkedCourseID, "eiken-5")
+        XCTAssertEqual(wire?.linkedBeforeStepID, "eiken-5.step-3")
+    }
+
+    func testRecordWireRoundTripPreservesLinkedMeta() {
+        // row → record → wire の往復で 3 つの紐付けメタが保たれる（多端末伝搬の要）。
+        let original = row(
+            updatedAt: "2026-06-26T07:00:00.000Z",
+            storageStepID: "2026-06-26-AB12CD34",
+            linkedCourseID: "eiken-5",
+            linkedBeforeStepID: "eiken-5.step-3"
+        )
+        guard let rec = WordWire.record(from: original),
+              let back = WordWire.wire(from: rec) else {
+            return XCTFail("round-trip produced nil")
+        }
+        XCTAssertEqual(back.storageStepID, original.storageStepID)
+        XCTAssertEqual(back.linkedCourseID, original.linkedCourseID)
+        XCTAssertEqual(back.linkedBeforeStepID, original.linkedBeforeStepID)
+    }
+
+    func testRoundTripKeepsLinkedMetaNil() {
+        let original = row(updatedAt: "2026-06-26T07:00:00.000Z")
+        guard let rec = WordWire.record(from: original),
+              let back = WordWire.wire(from: rec) else {
+            return XCTFail("round-trip produced nil")
+        }
+        XCTAssertNil(back.storageStepID)
+        XCTAssertNil(back.linkedCourseID)
+        XCTAssertNil(back.linkedBeforeStepID)
     }
 
     func testWireReturnsNilWithoutHousehold() {

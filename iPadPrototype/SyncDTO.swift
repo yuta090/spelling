@@ -57,6 +57,10 @@ struct WordDTO: SyncedRow {
     let updatedAt: String
     let deletedAt: String?
     let syncVersion: Int
+    // Ph4: ローカル String の保管ステップ／コース紐付け（text 列。サーバー UUID step_id とは別管理＝§7.5）。
+    let storageStepId: String?
+    let linkedCourseId: String?
+    let linkedBeforeStepId: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -70,6 +74,9 @@ struct WordDTO: SyncedRow {
         case updatedAt = "updated_at"
         case deletedAt = "deleted_at"
         case syncVersion = "sync_version"
+        case storageStepId = "storage_step_id"
+        case linkedCourseId = "linked_course_id"
+        case linkedBeforeStepId = "linked_before_step_id"
     }
 }
 
@@ -116,6 +123,10 @@ struct WordUpsert: UpsertRow {
     let displayOrder: Int
     let updatedAt: String
     let deletedAt: String?
+    // Ph4: ローカル String の保管ステップ／コース紐付け（text 列。サーバー UUID step_id とは別管理＝§7.5）。
+    let storageStepId: String?
+    let linkedCourseId: String?
+    let linkedBeforeStepId: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -128,5 +139,8 @@ struct WordUpsert: UpsertRow {
         case displayOrder = "display_order"
         case updatedAt = "updated_at"
         case deletedAt = "deleted_at"
+        case storageStepId = "storage_step_id"
+        case linkedCourseId = "linked_course_id"
+        case linkedBeforeStepId = "linked_before_step_id"
     }
 }

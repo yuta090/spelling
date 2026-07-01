@@ -11,16 +11,23 @@ public struct WordPayload: Equatable, Codable, Sendable {
     public var promptText: String
     /// `WordSource` の raw 値（"parent" / "child"）。コアは enum を知らないので String で持つ。
     public var source: String
-    /// ローカルの派生ステップ ID（String）。サーバー `step_id`(UUID) とは別管理。
+    /// ローカルの派生ステップ ID（String）。サーバー `step_id`(UUID) とは別管理（→ `storage_step_id` text 列で往復）。
     public var stepID: String?
     public var displayOrder: Int
+    /// 表示先コースID（`Course.id`。合成コースへ「表示だけ」紐付ける。nil＝紐付け無し）。Ph4 で同期。
+    public var linkedCourseID: String?
+    /// 表示先コースのどの合成ステップ手前に差し込むか（nil＝末尾）。Ph4 で同期。
+    public var linkedBeforeStepID: String?
 
-    public init(text: String, promptText: String, source: String, stepID: String?, displayOrder: Int) {
+    public init(text: String, promptText: String, source: String, stepID: String?, displayOrder: Int,
+                linkedCourseID: String? = nil, linkedBeforeStepID: String? = nil) {
         self.text = text
         self.promptText = promptText
         self.source = source
         self.stepID = stepID
         self.displayOrder = displayOrder
+        self.linkedCourseID = linkedCourseID
+        self.linkedBeforeStepID = linkedBeforeStepID
     }
 }
 

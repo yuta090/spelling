@@ -88,6 +88,32 @@ final class WordSidecarProjectTests: XCTestCase {
         XCTAssertEqual(edited[0].sync.createdAt, first[0].sync.createdAt)  // createdAt は不変
     }
 
+    func testLinkedMetaChangeBumpsUpdatedAt() {
+        // Ph4: 紐付けメタ（linkedCourseID 等）だけが変わった語も dirty として検出され再送される。
+        // アップグレード後、これまで未同期だった storageStepID/linked を一度だけ push に乗せる土台。
+        var store = WordSidecarStore()
+        let id = UUID()
+        let plain = LocalWord(id: id,
+                              payload: WordPayload(text: "cat", promptText: "", source: "parent",
+                                                   stepID: nil, displayOrder: 0),
+                              createdAt: t0)
+        store.ingest(store.project(localWords: [plain], now: at(100),
+                                   householdID: household, profileID: profile))
+        // 同じ語に保管ステップ＋コース紐付けが付いた（テキストは不変）。
+        let linked = LocalWord(id: id,
+                               payload: WordPayload(text: "cat", promptText: "", source: "parent",
+                                                    stepID: "2026-06-26-AB12CD34", displayOrder: 0,
+                                                    linkedCourseID: "eiken-5",
+                                                    linkedBeforeStepID: "eiken-5.step-3"),
+                               createdAt: t0)
+        let projected = store.project(localWords: [linked], now: at(200),
+                                      householdID: household, profileID: profile)
+        XCTAssertEqual(projected[0].sync.updatedAt, at(200), "紐付けメタ変更は dirty 扱い")
+        XCTAssertEqual(projected[0].payload.stepID, "2026-06-26-AB12CD34")
+        XCTAssertEqual(projected[0].payload.linkedCourseID, "eiken-5")
+        XCTAssertEqual(projected[0].payload.linkedBeforeStepID, "eiken-5.step-3")
+    }
+
     func testVanishedWordBecomesTombstone() {
         var store = WordSidecarStore()
         let id = UUID()

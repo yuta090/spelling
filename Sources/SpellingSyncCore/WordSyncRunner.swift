@@ -30,6 +30,11 @@ public enum WordSyncRunner {
     /// ローカル読取と反映は `sink.planAndApply` 内で **割り込み不可** に行うため、pull の await 中や
     /// 計画中に入った編集を stale なマージで上書きしない。push が失敗しても、ここで返す `state` を
     /// 永続化すれば取得済みデータは保持される。
+    ///
+    /// ⚠️ サイドカー基準は **pull で確定した分（`merged` − `toPush`）だけ**前進させる。送信対象
+    /// （`toPush`）の基準前進は **push 成功後**（`push(...)` 内の ingest）に行う。フェーズ1で
+    /// 送信対象まで ingest すると、push が失敗してこの state が永続化された場合に次サイクルの
+    /// `project` が「変更なし」と誤判定し、未送信のローカル変更が二度と push されず取りこぼす。
     public static func pullAndMerge(
         table: String,
         householdID: UUID,
@@ -59,16 +64,21 @@ public enum WordSyncRunner {
             )
         }
 
+        // pull で確定した分（送信対象を除く）だけ基準を前進。送信対象は push 成功後に ingest する。
+        let toPushIDs = Set(plan.toPush.map(\.id))
+        let pullSettled = plan.merged.filter { !toPushIDs.contains($0.id) }
+
         var newState = state
-        newState.sidecar.ingest(plan.merged)
+        newState.sidecar.ingest(pullSettled)
         newState.cursors.advancePull(table: key, to: page.nextCursor)
 
         return MergeOutcome(state: newState, toPush: plan.toPush)
     }
 
-    /// フェーズ2: エンコード → push → high-water 前進。
+    /// フェーズ2: エンコード → push → （成功後に）サイドカー基準前進＋high-water 前進。
     /// high-water は **実際に送れた record** からのみ算出する（エンコード失敗分で進めない）。
-    /// push が空なら state を変えずに返す。失敗時は例外を伝播し high-water を進めない。
+    /// push が空なら state を変えずに返す。失敗時は例外を伝播し、サイドカー基準も high-water も
+    /// 進めない（→ 次サイクルの `project` が同じ変更を再び `toPush` に乗せ、取りこぼさない）。
     public static func push(
         table: String,
         householdID: UUID,
@@ -85,7 +95,10 @@ public enum WordSyncRunner {
 
         try await transport.push(table: table, rows: pushable.map(\.row))
 
+        // 送信成功後にのみ基準を前進。これでエンコード可能だった送信済みレコードが
+        // 次サイクルで churn せず（再 project が「変更なし」になる）、かつ未送信分は残る。
         var newState = state
+        newState.sidecar.ingest(pushable.map(\.record))
         if let highWater = OutboundSync.highWater(pushable.map(\.record), current: state.cursors.pushedThrough(for: key)) {
             newState.cursors.advancePush(table: key, to: highWater)
         }

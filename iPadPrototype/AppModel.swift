@@ -1247,8 +1247,10 @@ final class AppModel: ObservableObject {
                     text: word.text,
                     promptText: word.promptText,
                     source: word.source.rawValue,
-                    stepID: nil,
-                    displayOrder: index
+                    stepID: word.stepID,                     // Ph4: 保管ステップを storage_step_id で往復
+                    displayOrder: index,
+                    linkedCourseID: word.linkedCourseID,     // Ph4: コース紐付け（表示メタ）を同期
+                    linkedBeforeStepID: word.linkedBeforeStepID
                 ),
                 createdAt: word.registeredAt
             )
@@ -1274,12 +1276,13 @@ final class AppModel: ObservableObject {
                     text: record.payload.text,
                     promptText: record.payload.promptText,
                     registeredAt: prior?.registeredAt ?? record.sync.createdAt,
-                    stepID: prior?.stepID,                                   // ローカルのステップ割当を保持
+                    // Ph4: 保管ステップ／コース紐付けはサーバー往復値を権威とする（多端末伝搬・解除の両方が効く）。
+                    // ローカル編集は project→reconcile を経て record.payload に載るため取りこぼさない。
+                    stepID: record.payload.stepID,
                     source: WordSource(rawValue: record.payload.source) ?? .parent,
                     firstIntroducedAt: prior?.firstIntroducedAt,             // 学習リズムのローカル値を保持（同期で消さない）
-                    // コース紐付け（表示メタ）も同期では消さない。サーバー往復は Phase 4 で配線するまでローカル保持。
-                    linkedCourseID: prior?.linkedCourseID,
-                    linkedBeforeStepID: prior?.linkedBeforeStepID
+                    linkedCourseID: record.payload.linkedCourseID,
+                    linkedBeforeStepID: record.payload.linkedBeforeStepID
                 )
             }
         if mapped != words {
