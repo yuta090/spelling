@@ -6728,6 +6728,40 @@ private struct TestSettingsPanel: View {
                 .tint(ParentPalette.primary)
 
                 Divider()
+                // Phase 3 の切替配線を手動確認するための開発用UI（正式なランチャー/親管理は Phase 3/4 で別実装）。
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("こどもプロファイル切替（開発用）")
+                        .font(.subheadline.weight(.bold))
+                    Text("いま: \(model.profileRegistry.activeProfile.displayName.isEmpty ? "（名前なし）" : model.profileRegistry.activeProfile.displayName)  ／  \(model.profileRegistry.profiles.count)人")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    ForEach(model.profileRegistry.orderedProfiles, id: \.id) { profile in
+                        Button {
+                            model.activateProfile(profile.id)
+                        } label: {
+                            HStack {
+                                Image(systemName: profile.id == model.profileRegistry.activeProfileID ? "checkmark.circle.fill" : "circle")
+                                Text(profile.displayName.isEmpty ? "（名前なし）" : profile.displayName)
+                                    .font(.subheadline)
+                                Spacer()
+                            }
+                        }
+                        .tint(ParentPalette.primary)
+                        .disabled(profile.id == model.profileRegistry.activeProfileID)
+                    }
+                    Button {
+                        model.debugAddTestProfile()
+                    } label: {
+                        HStack {
+                            Image(systemName: "person.badge.plus")
+                            Text("テスト用こどもを追加")
+                                .font(.subheadline.weight(.bold))
+                        }
+                    }
+                    .tint(ParentPalette.primary)
+                }
+
+                Divider()
                 BenchExportRow()
 
                 Divider()
