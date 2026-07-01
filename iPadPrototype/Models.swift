@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import PencilKit
 import SpellingSyncCore
 
 /// 単語を誰が登録したか。既存データは親登録として読み込まれる。
@@ -379,6 +380,51 @@ struct DrawingCanvasSize: Equatable, Codable, Sendable {
             return nil
         }
         return width / height
+    }
+}
+
+extension SpellingAttempt {
+    /// 子ども向けのやさしい**表示**判定（機械が字を読めなかっただけの答案を「間違い」にしない）。
+    /// アプリ enum → Core enum は明示的な網羅 switch で写す（rawValue だと将来ズレたとき黙って
+    /// フォールバックして達成を誤解放しうる＝fail-open なので避ける／新ケースは追加時にコンパイルで気づく）。
+    var childOutcome: ChildOutcome {
+        let decisionState: GradeDecisionState
+        switch decision {
+        case .autoCorrect: decisionState = .autoCorrect
+        case .autoIncorrect: decisionState = .autoIncorrect
+        case .needsReview: decisionState = .needsReview
+        case .rewrite: decisionState = .rewrite
+        case .timeExpired: decisionState = .timeExpired
+        }
+
+        let reviewState: ParentReviewState
+        switch parentReviewDecision {
+        case .unreviewed: reviewState = .unreviewed
+        case .approved: reviewState = .approved
+        case .needsPractice: reviewState = .needsPractice
+        }
+
+        return ChildGrading.outcome(decision: decisionState, parentReview: reviewState)
+    }
+
+    /// 本人が実際に手を動かして書いたか。
+    /// 「字が汚くて端末が読めなかっただけ（benefit of the doubt で達成OK）」を、
+    /// 「パス（未記入）・時間切れ・空答案（＝実際に書いていない）」と区別するための達成ゲート用シグナル。
+    /// 時間切れは未完了として常に false。それ以外は手書きにインクがあるかで判定する。
+    var isGenuineHandwritingAttempt: Bool {
+        guard decision != .timeExpired else { return false }
+        guard let drawingData, let drawing = try? PKDrawing(data: drawingData) else { return false }
+        return !drawing.bounds.isNull && !drawing.bounds.isEmpty
+    }
+
+    /// 達成ゲート（クラウン／ごほうび／パズル解放）でこの答案が達成を満たすか。
+    /// `tryAgain`（はっきりした綴りミス）は即 false（インク復号を避ける）。それ以外は「実際に書いたか」を見る
+    /// ＝ 親のデフォルト一括承認で空答案が `autoCorrect` に化けても、インクが無ければ達成にしない。
+    var satisfiesAchievement: Bool {
+        if childOutcome == .tryAgain {
+            return false
+        }
+        return ChildGrading.achievementSatisfied(outcome: childOutcome, genuineAttempt: isGenuineHandwritingAttempt)
     }
 }
 

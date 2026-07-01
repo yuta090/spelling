@@ -93,8 +93,10 @@ struct ResultsView: View {
                 .font(.system(size: 76, weight: .bold))
                 .foregroundStyle(Color(red: 0.96, green: 0.68, blue: 0.04))
 
-            Text("\(model.todaysCorrectCount)/\(todayTotal)  \(language.text(japanese: "正解", english: "correct"))")
-                .font(.system(size: 30, weight: .heavy, design: .rounded))
+            // 子どもには点数・正解数を見せない（「点が取れない＝間違い」でやる気を折らない）。
+            // 努力＝きょう書いた数だけを、やさしく讃える。数字の内訳は親側にだけ残す。
+            Text(language.text(japanese: "きょうは \(todayTotal)こ かけたね！", english: "You wrote \(todayTotal) today!"))
+                .font(.system(size: 26, weight: .heavy, design: .rounded))
                 .foregroundStyle(Color(red: 0.70, green: 0.29, blue: 0.05))
                 .padding(.vertical, 8)
                 .padding(.horizontal, 28)
@@ -132,7 +134,8 @@ private struct ReviewWordsCard: View {
                     ForEach(words.prefix(8)) { word in
                         Text(word.text)
                             .font(.title3.weight(.bold))
-                            .foregroundStyle(.red)
+                            // 赤（＝バツ/失敗）は避け、やさしい前向きな色にする。
+                            .foregroundStyle(Color(red: 0.20, green: 0.50, blue: 0.90))
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -148,8 +151,9 @@ private struct EffortCard: View {
     var body: some View {
         ResultCard(title: language.text(japanese: "がんばりポイント", english: "Effort Points"), systemImage: "star.fill") {
             VStack(spacing: 12) {
-                ResultValueRow(title: language.text(japanese: "正解した単語", english: "Correct words"), value: "\(model.todaysCorrectCount)")
-                ResultValueRow(title: language.text(japanese: "もう一度やる単語", english: "Try again"), value: "\(model.selectedReviewWords.count)")
+                // 「正解した数」は見せない（点＝評価になる）。書いた数＝努力と、次にやる単語だけ。
+                ResultValueRow(title: language.text(japanese: "きょう かいた かず", english: "Words written today"), value: "\(model.todaysAttempts.count)")
+                ResultValueRow(title: language.text(japanese: "つぎに やる単語", english: "Words for next time"), value: "\(model.selectedReviewWords.count)")
             }
         }
     }
