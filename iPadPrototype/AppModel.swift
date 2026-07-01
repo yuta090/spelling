@@ -480,6 +480,27 @@ final class AppModel: ObservableObject {
         return ContentPolicy.standard(tier: tier, humorEnabled: settings.humorEnabled)
     }
 
+    /// スペル練習（書き問題）ヒント用の、学年に合う生成例文。生成バンク（学年タグ付き）から
+    /// 「その練習語を含み・子の段階(`contentPolicy`)で読める文」を1つ選ぶ（`PracticeExampleSelector`）。
+    /// 田中コーパス（大人題材）直読みの代わりの本命ソース。該当が無ければ nil（呼び出し側でフォールバック）。
+    /// seed は語で安定（同じ語は毎回同じ例文＝ちらつかない）。名前入り差し替えは別軸（従来の PersonalizedExample）。
+    func practiceExampleSentence(for word: String) -> WordExample? {
+        guard let item = PracticeExampleSelector.example(
+            for: word, in: SentenceBankBundle.items,
+            policy: contentPolicy, seed: Self.exampleSeed(for: word)
+        ) else { return nil }
+        return WordExample(en: item.en, ja: item.ja)
+    }
+
+    /// 語から決定論的な seed（FNV-1a 32bit）。同じ語なら常に同じ例文を選ばせる（実行間で安定）。
+    private static func exampleSeed(for word: String) -> UInt64 {
+        var hash: UInt64 = 0xcbf29ce484222325
+        for byte in word.lowercased().utf8 {
+            hash = (hash ^ UInt64(byte)) &* 0x100000001b3
+        }
+        return hash
+    }
+
     /// 例文パーソナライズの登場人物（本人＋友達）。親が親ゲートの奥で登録。
     /// 未成年実名のため **v1 はローカル保存のみ**（Supabase 同期しない・解析に送らない）。
     /// 仕様: docs/personalized-sentences-spec-2026-06-28.md
