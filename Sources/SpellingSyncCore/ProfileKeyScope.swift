@@ -44,7 +44,8 @@ public enum ProfileKeyScope {
         "spellingTrainer.childName",               // → ChildProfile.displayName へ移行（§4）
         "spellingTrainer.selectedGrade",
         "spellingTrainer.cast",                     // 本人実名＝プロファイル別・ローカルのみ
-        "spellingTrainer.aiJudgments"               // DEBUG のみ。子のテスト答案のAI採点記録＝子ども別
+        "spellingTrainer.aiJudgments",              // DEBUG のみ。子のテスト答案のAI採点記録＝子ども別
+        "spellingTrainer.aiJudgeConfig"             // DEBUG のみ。AI判定の実行パラメータ（子ども別に持つ）
     ]
 
     /// 世帯/端末グローバル（prefix しない）キー。

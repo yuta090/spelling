@@ -6507,6 +6507,11 @@ private struct TestSettingsPanel: View {
     @EnvironmentObject private var session: SyncSession
     @State private var showingAccount = false
     @State private var showingOnboardingResetConfirm = false
+    // こどもプロファイル管理（追加・改名）。切替そのものは子のホーム（顔タップ）が主導線。
+    @State private var showingAddProfile = false
+    @State private var newProfileName = ""
+    @State private var renamingProfileID: UUID?
+    @State private var renameText = ""
     #if DEBUG
     @State private var showingAvatarDressUp = false   // 開発用: 着せ替えアバターQAプレビュー
     @State private var showingAIJudgment = false      // 開発用: AI-OCR 3モデル判定くらべ
@@ -6560,6 +6565,81 @@ private struct TestSettingsPanel: View {
                         japanese: "学年やキャラ・はいけいを選び直せます。登録した単語は消えません。",
                         english: "Re-pick grade, character and background. Your words are kept."
                     ))
+                }
+            }
+
+            // こども（プロファイル）＝親の管理コンソール。1台を兄弟で共有するとき、ここで子を増やす／改名する。
+            // 「誰が今やるか」の切替は子のホーム（名前タップ）に置く。ここは *管理* だけ。
+            SettingBlock(title: language.text(japanese: "こども（プロファイル）", english: "Children (Profiles)")) {
+                Text(language.text(
+                    japanese: "1台を きょうだいで つかうとき、ここで こどもを ふやせます。きりかえは こどもの ホーム（なまえを タップ）から。",
+                    english: "Add children to share one iPad. Switching is done from the child's Home (tap the name)."
+                ))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+                ForEach(model.profileRegistry.orderedProfiles, id: \.id) { profile in
+                    HStack(spacing: 10) {
+                        Image(systemName: profile.id == model.profileRegistry.activeProfileID
+                              ? "checkmark.circle.fill" : "person.circle")
+                            .foregroundStyle(profile.id == model.profileRegistry.activeProfileID
+                                             ? Color.green : ParentPalette.primary)
+                        Text(profile.displayName.isEmpty
+                             ? language.text(japanese: "（名前なし）", english: "(no name)")
+                             : profile.displayName)
+                            .font(.subheadline.weight(.bold))
+                        if profile.id == model.profileRegistry.activeProfileID {
+                            Text(language.text(japanese: "いま", english: "now"))
+                                .font(.caption2.weight(.bold))
+                                .padding(.horizontal, 6).padding(.vertical, 2)
+                                .background(Capsule().fill(Color.green.opacity(0.15)))
+                                .foregroundStyle(.green)
+                        }
+                        Spacer()
+                        Button(language.text(japanese: "改名", english: "Rename")) {
+                            renamingProfileID = profile.id
+                            renameText = profile.displayName
+                        }
+                        .font(.caption.weight(.bold))
+                        .buttonStyle(.bordered)
+                        .tint(ParentPalette.primary)
+                    }
+                }
+
+                Button {
+                    newProfileName = ""
+                    showingAddProfile = true
+                } label: {
+                    HStack {
+                        Image(systemName: "person.badge.plus")
+                        Text(language.text(japanese: "こどもを ふやす", english: "Add child"))
+                            .font(.subheadline.weight(.bold))
+                    }
+                }
+                .tint(ParentPalette.primary)
+            }
+            .alert(language.text(japanese: "こどもを ふやす", english: "Add child"),
+                   isPresented: $showingAddProfile) {
+                TextField(language.text(japanese: "なまえ", english: "Name"), text: $newProfileName)
+                Button(language.text(japanese: "ついか", english: "Add")) {
+                    model.addProfile(displayName: newProfileName)
+                    newProfileName = ""
+                }
+                Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {}
+            } message: {
+                Text(language.text(japanese: "あとから 改名できます。", english: "You can rename later."))
+            }
+            .alert(language.text(japanese: "なまえを かえる", english: "Rename"),
+                   isPresented: Binding(get: { renamingProfileID != nil },
+                                        set: { if !$0 { renamingProfileID = nil } })) {
+                TextField(language.text(japanese: "なまえ", english: "Name"), text: $renameText)
+                Button(language.text(japanese: "ほぞん", english: "Save")) {
+                    if let id = renamingProfileID { model.renameProfile(id, to: renameText) }
+                    renamingProfileID = nil
+                }
+                Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {
+                    renamingProfileID = nil
                 }
             }
 
@@ -6726,40 +6806,6 @@ private struct TestSettingsPanel: View {
                         .font(.subheadline.weight(.bold))
                 }
                 .tint(ParentPalette.primary)
-
-                Divider()
-                // Phase 3 の切替配線を手動確認するための開発用UI（正式なランチャー/親管理は Phase 3/4 で別実装）。
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("こどもプロファイル切替（開発用）")
-                        .font(.subheadline.weight(.bold))
-                    Text("いま: \(model.profileRegistry.activeProfile.displayName.isEmpty ? "（名前なし）" : model.profileRegistry.activeProfile.displayName)  ／  \(model.profileRegistry.profiles.count)人")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    ForEach(model.profileRegistry.orderedProfiles, id: \.id) { profile in
-                        Button {
-                            model.activateProfile(profile.id)
-                        } label: {
-                            HStack {
-                                Image(systemName: profile.id == model.profileRegistry.activeProfileID ? "checkmark.circle.fill" : "circle")
-                                Text(profile.displayName.isEmpty ? "（名前なし）" : profile.displayName)
-                                    .font(.subheadline)
-                                Spacer()
-                            }
-                        }
-                        .tint(ParentPalette.primary)
-                        .disabled(profile.id == model.profileRegistry.activeProfileID)
-                    }
-                    Button {
-                        model.debugAddTestProfile()
-                    } label: {
-                        HStack {
-                            Image(systemName: "person.badge.plus")
-                            Text("テスト用こどもを追加")
-                                .font(.subheadline.weight(.bold))
-                        }
-                    }
-                    .tint(ParentPalette.primary)
-                }
 
                 Divider()
                 BenchExportRow()
