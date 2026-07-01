@@ -304,6 +304,14 @@ final class AppModel: ObservableObject {
     @Published var aiJudgments: [AIJudgmentRecord] {
         didSet { persistenceStore.save(aiJudgments, key: aiJudgmentsKey) }
     }
+
+    /// AI判定の実行パラメータ（モデル/temperature/max_tokens）。ページで編集し送信時に反映。
+    @Published var aiJudgeConfig: AIJudgeConfig {
+        didSet { persistenceStore.save(aiJudgeConfig, key: aiJudgeConfigKey) }
+    }
+
+    /// 一括判定の進捗（実行中のみ非nil）。UIのボタン無効化・進捗表示に使う。
+    @Published var aiBulkProgress: AIBulkProgress?
     #endif
 
     /// 有料コンテンツへのフルアクセス権があるか（購読中 or デバッグ全解放）。
@@ -509,6 +517,7 @@ final class AppModel: ObservableObject {
     #if DEBUG
     private let debugAIJudgeOnTestKey = "spellingTrainer.debugAIJudgeOnTest"
     private let aiJudgmentsKey = "spellingTrainer.aiJudgments"
+    private let aiJudgeConfigKey = "spellingTrainer.aiJudgeConfig"
     #endif
     private let loginStreakKey = "spellingTrainer.loginStreak"
     private let lastLoginDayKey = "spellingTrainer.lastLoginDay"
@@ -600,6 +609,7 @@ final class AppModel: ObservableObject {
         // 起動時：前回のTaskはもう生きていないので、残った「送信中」フラグは落とす（永久スピナー防止）。
         aiJudgments = (persistenceStore.load([AIJudgmentRecord].self, key: aiJudgmentsKey) ?? [])
             .map { var record = $0; record.isRunning = false; return record }
+        aiJudgeConfig = persistenceStore.load(AIJudgeConfig.self, key: aiJudgeConfigKey) ?? .default
         #endif
         loginStreak = max(persistenceStore.load(Int.self, key: loginStreakKey) ?? 0, 0)
         lastLoginDay = persistenceStore.load(Date.self, key: lastLoginDayKey)
@@ -1814,20 +1824,43 @@ final class AppModel: ObservableObject {
         runAIJudgment(for: attempt)
     }
 
-    /// 手書きを3モデルへ並行送信し、結果を比較レコードに保存する（子は待たせない＝非同期）。
+    /// 手書きを（設定中の）各モデルへ並行送信し、結果を比較レコードに保存する（子は待たせない＝非同期）。
     func runAIJudgment(for attempt: SpellingAttempt) {
-        // 同じ答案の送信が実行中なら二重送信しない（自動発火と手動送信の重複・連打を防ぐ）。
-        if aiJudgments.first(where: { $0.id == attempt.id })?.isRunning == true {
-            return
-        }
-        guard let png = AIJudgmentImage.png(for: attempt) else { return }
+        Task { await runAIJudgmentAsync(for: attempt) }
+    }
 
+    /// 現在表示中の答案すべてに順番に判定を適用する（モデル/パラメータを変えたあとの一括再判定用）。
+    /// 答案ごとは各モデルへ並行だが、答案は**順番に**処理して同時接続を抑える（コスト/レート対策）。
+    func runAIJudgmentForAll(_ attempts: [SpellingAttempt]) {
+        guard aiBulkProgress == nil, !attempts.isEmpty else { return }
+        aiBulkProgress = AIBulkProgress(done: 0, total: attempts.count)
+        Task { [weak self] in
+            for attempt in attempts {
+                await self?.runAIJudgmentAsync(for: attempt)
+                self?.aiBulkProgress?.done += 1
+            }
+            self?.aiBulkProgress = nil
+        }
+    }
+
+    /// 1答案ぶんの判定を実行して結果を保存する（await 可能な本体）。実行中の答案は二重送信しない。
+    @discardableResult
+    private func runAIJudgmentAsync(for attempt: SpellingAttempt) async -> Bool {
+        // 同じ答案の送信が実行中なら二重送信しない（自動発火・手動送信・一括の重複を防ぐ）。
+        if aiJudgments.first(where: { $0.id == attempt.id })?.isRunning == true {
+            return false
+        }
+        guard let png = AIJudgmentImage.png(for: attempt) else { return false }
+
+        let config = aiJudgeConfig
+        let models = config.sanitizedModels
         let runID = UUID()
+        let target = attempt.word
         upsertAIJudgment(
             AIJudgmentRecord(
                 id: attempt.id,
                 runID: runID,
-                target: attempt.word,
+                target: target,
                 localRecognizedText: attempt.recognizedText,
                 localDecision: attempt.decision.rawValue,
                 date: attempt.date,
@@ -1836,25 +1869,23 @@ final class AppModel: ObservableObject {
             )
         )
 
-        let attemptID = attempt.id
-        let target = attempt.word
-        Task { [weak self] in
-            let client = OpenRouterClient()
-            var results: [AIModelResult] = []
-            await withTaskGroup(of: AIModelResult.self) { group in
-                for model in OpenRouterConfig.models {
-                    group.addTask { await client.judge(imagePNG: png, target: target, model: model) }
-                }
-                for await result in group {
-                    results.append(result)
+        let client = OpenRouterClient()
+        var results: [AIModelResult] = []
+        await withTaskGroup(of: AIModelResult.self) { group in
+            for model in models {
+                group.addTask {
+                    await client.judge(imagePNG: png, target: target, model: model,
+                                       temperature: config.temperature, maxTokens: config.maxTokens)
                 }
             }
-            // TaskGroup は完了順なので、モデル定義順に並べ替えて表示を安定させる。
-            let ordered = OpenRouterConfig.models.compactMap { slug in results.first { $0.modelSlug == slug } }
-            await MainActor.run {
-                self?.completeAIJudgment(attemptID: attemptID, runID: runID, results: ordered)
+            for await result in group {
+                results.append(result)
             }
         }
+        // TaskGroup は完了順なので、モデル定義順に並べ替えて表示を安定させる。
+        let ordered = models.compactMap { slug in results.first { $0.modelSlug == slug } }
+        completeAIJudgment(attemptID: attempt.id, runID: runID, results: ordered)
+        return true
     }
 
     private func upsertAIJudgment(_ record: AIJudgmentRecord) {

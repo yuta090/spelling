@@ -36,14 +36,39 @@ struct AIJudgmentRecord: Identifiable, Codable, Equatable {
     var isRunning: Bool = false
 }
 
-enum OpenRouterConfig {
-    /// 比較する3モデル（scripts/ocr-bench/bench.py と揃える）。
-    static let models = [
+/// AI判定の実行パラメータ（モデル・temperature・max_tokens）。DEBUGページで編集し、送信時に反映する。
+struct AIJudgeConfig: Codable, Equatable {
+    var models: [String]
+    var temperature: Double
+    var maxTokens: Int
+
+    /// 既定の3モデル（scripts/ocr-bench/bench.py と揃える）。
+    static let defaultModels = [
         "google/gemini-2.5-flash-lite",
         "openai/gpt-5.4-nano",
         "anthropic/claude-haiku-4.5"
     ]
 
+    static let `default` = AIJudgeConfig(models: defaultModels, temperature: 0, maxTokens: 120)
+
+    /// 空行・前後空白を除き、重複を排したモデル一覧（全部空なら既定に戻す）。
+    /// 重複を残すと同一slugへ二重送信＋ForEachのidが重複するため、順序を保って一意化する。
+    var sanitizedModels: [String] {
+        var seen = Set<String>()
+        let cleaned = models
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty && seen.insert($0).inserted }
+        return cleaned.isEmpty ? Self.defaultModels : cleaned
+    }
+}
+
+/// 一括判定の進捗。
+struct AIBulkProgress: Equatable {
+    var done: Int
+    var total: Int
+}
+
+enum OpenRouterConfig {
     static let endpoint = URL(string: "https://openrouter.ai/api/v1/chat/completions")!
 
     /// APIキー取得（DEBUG）。優先: 環境変数 → リポジトリの `.env.local`（gitignore 済み）。
@@ -81,7 +106,7 @@ struct OpenRouterClient {
     var session: URLSession = .shared
 
     /// 1モデルに手書きPNGを投げて判定を得る。ネットワーク/パース失敗は `errorMessage` に載せて返す（throwしない）。
-    func judge(imagePNG: Data, target: String, model: String) async -> AIModelResult {
+    func judge(imagePNG: Data, target: String, model: String, temperature: Double, maxTokens: Int) async -> AIModelResult {
         let start = Date()
         guard let apiKey else {
             return AIModelResult(modelSlug: model, errorMessage: "APIキー未設定（.env.local に OPENROUTER_API_KEY を設定）")
@@ -96,8 +121,8 @@ struct OpenRouterClient {
         let dataURL = "data:image/png;base64,\(imagePNG.base64EncodedString())"
         let body: [String: Any] = [
             "model": model,
-            "temperature": 0,
-            "max_tokens": 120,
+            "temperature": temperature,
+            "max_tokens": maxTokens,
             "messages": [[
                 "role": "user",
                 "content": [
