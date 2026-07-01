@@ -433,7 +433,8 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(childName, key: childNameKey) }
     }
 
-    /// 選んだ学年（`GradeLevel.rawValue`、未選択は空）。初期単語のシードに使う。
+    /// 選んだ学年（`GradeLevel.rawValue`、未選択は空）。オンボーディングで学年コースを選ぶ根拠、
+    /// および漢字ゲート（`childMaxKanjiGrade`）／出題ティアの判断に使う。
     @Published var selectedGrade: String {
         didSet { persistenceStore.save(selectedGrade, key: selectedGradeKey) }
     }
@@ -509,12 +510,6 @@ final class AppModel: ObservableObject {
     private let childNameKey = "spellingTrainer.childName"
     private let selectedGradeKey = "spellingTrainer.selectedGrade"
     private let castKey = "spellingTrainer.cast"
-
-    /// オンボーディング初期状態の判定に使う、同梱デフォルト単語（text＋訳語のペア）。
-    /// text だけでなく訳語・件数も含めて厳密一致を見て、ユーザーが少しでも触っていたら置き換えない。
-    private static let defaultSeedPairs: Set<String> = [
-        "cat\u{1}ねこ", "dog\u{1}いぬ", "friend\u{1}友[とも]だち", "school\u{1}学校[がっこう]"
-    ]
 
     init(persistenceStore: UserDataStore = AppPersistenceStore()) {
         self.persistenceStore = persistenceStore
@@ -1307,16 +1302,14 @@ final class AppModel: ObservableObject {
     /// `applyMergedWords` による `words` 更新が、編集トリガを再帰的に誘発しないためのフラグ。
     private var isApplyingMergedWords = false
 
-    /// 学年に合った初期単語をシードする（オンボーディングで学年を選んだとき）。
-    /// - ユーザーがまだ単語をいじっていない（＝同梱デフォルトのまま）ときだけ置き換える。
-    ///   既存ユーザーのアップグレード時に、本人の単語を消さないための保険。
-    func seedStarterWordsIfDefault(for grade: GradeLevel) {
+    /// オンボーディングで学年を選んだときの確定処理（方針A）。
+    /// - 学年は事実として記録（漢字ゲート／出題ティアの判断に使う）。
+    /// - **その学年のコースを子のアクティブコースにする**＝personal へ単語シードはしない。
+    ///   grade コースは wordbank 合成の中身を持ち、親の学校テスト語もこのコースへ差し込まれる
+    ///   （course-linked words）。子には級/学年ラベルは出ない（childTitle は世界名）。
+    func applyOnboardingGrade(_ grade: GradeLevel) {
         selectedGrade = grade.rawValue
-        let current = Set(words.map { "\($0.text.lowercased())\u{1}\($0.promptText)" })
-        guard current == Self.defaultSeedPairs else { return }   // 触っていたら置き換えない
-        words = StarterWords.seeds(for: grade).map {
-            SpellingWord(text: $0.text, promptText: $0.promptText)
-        }
+        selectCourse(GradeBand.courseID(schoolGrade: grade.schoolGrade))
     }
 
     /// 自動同期の世帯供給元を設定する（アプリ起動時に 1 回）。
