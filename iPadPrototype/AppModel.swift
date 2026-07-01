@@ -294,6 +294,18 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(debugDisableDailyLimit, key: debugDisableDailyLimitKey) }
     }
 
+    #if DEBUG
+    /// デバッグ用：テストで1問終わるごとに、手書きを3モデルのAI(VLM)へ送って判定を比較保存する。
+    @Published var debugAIJudgeOnTest: Bool {
+        didSet { persistenceStore.save(debugAIJudgeOnTest, key: debugAIJudgeOnTestKey) }
+    }
+
+    /// AI判定の比較レコード（最新が末尾）。デバッグページで親採点風に表示する。
+    @Published var aiJudgments: [AIJudgmentRecord] {
+        didSet { persistenceStore.save(aiJudgments, key: aiJudgmentsKey) }
+    }
+    #endif
+
     /// 有料コンテンツへのフルアクセス権があるか（購読中 or デバッグ全解放）。
     /// コンテンツゲートの判定はこの値を使う。
     var hasFullAccess: Bool {
@@ -488,6 +500,10 @@ final class AppModel: ObservableObject {
     private let cachedEntitlementKey = "spellingTrainer.cachedEntitlement"
     private let debugUnlockAllKey = "spellingTrainer.debugUnlockAll"
     private let debugDisableDailyLimitKey = "spellingTrainer.debugDisableDailyLimit"
+    #if DEBUG
+    private let debugAIJudgeOnTestKey = "spellingTrainer.debugAIJudgeOnTest"
+    private let aiJudgmentsKey = "spellingTrainer.aiJudgments"
+    #endif
     private let loginStreakKey = "spellingTrainer.loginStreak"
     private let lastLoginDayKey = "spellingTrainer.lastLoginDay"
     private let lastPerfectBonusDayKey = "spellingTrainer.lastPerfectBonusDay"
@@ -559,6 +575,12 @@ final class AppModel: ObservableObject {
         isSubscribed = cachedEntitlement.isActive(now: Date())
         debugUnlockAll = persistenceStore.load(Bool.self, key: debugUnlockAllKey) ?? false
         debugDisableDailyLimit = persistenceStore.load(Bool.self, key: debugDisableDailyLimitKey) ?? false
+        #if DEBUG
+        debugAIJudgeOnTest = persistenceStore.load(Bool.self, key: debugAIJudgeOnTestKey) ?? false
+        // 起動時：前回のTaskはもう生きていないので、残った「送信中」フラグは落とす（永久スピナー防止）。
+        aiJudgments = (persistenceStore.load([AIJudgmentRecord].self, key: aiJudgmentsKey) ?? [])
+            .map { var record = $0; record.isRunning = false; return record }
+        #endif
         loginStreak = max(persistenceStore.load(Int.self, key: loginStreakKey) ?? 0, 0)
         lastLoginDay = persistenceStore.load(Date.self, key: lastLoginDayKey)
         lastPerfectBonusDay = persistenceStore.load(Date.self, key: lastPerfectBonusDayKey)
@@ -1752,6 +1774,80 @@ final class AppModel: ObservableObject {
     func awardPracticeCoins(_ amount: Int = AppModel.practiceCoinReward) {
         rewardCoins = max(rewardCoins + max(amount, 0), 0)
     }
+
+    #if DEBUG
+    // MARK: - AI-OCR 判定比較（DEBUG専用）
+
+    /// テストで1問終わったときに、トグルが ON なら AI 判定を発火する。
+    func enqueueAIJudgmentIfEnabled(for attempt: SpellingAttempt) {
+        guard debugAIJudgeOnTest else { return }
+        runAIJudgment(for: attempt)
+    }
+
+    /// 手書きを3モデルへ並行送信し、結果を比較レコードに保存する（子は待たせない＝非同期）。
+    func runAIJudgment(for attempt: SpellingAttempt) {
+        // 同じ答案の送信が実行中なら二重送信しない（自動発火と手動送信の重複・連打を防ぐ）。
+        if aiJudgments.first(where: { $0.id == attempt.id })?.isRunning == true {
+            return
+        }
+        guard let png = AIJudgmentImage.png(for: attempt) else { return }
+
+        let runID = UUID()
+        upsertAIJudgment(
+            AIJudgmentRecord(
+                id: attempt.id,
+                runID: runID,
+                target: attempt.word,
+                localRecognizedText: attempt.recognizedText,
+                localDecision: attempt.decision.rawValue,
+                date: attempt.date,
+                results: [],
+                isRunning: true
+            )
+        )
+
+        let attemptID = attempt.id
+        let target = attempt.word
+        Task { [weak self] in
+            let client = OpenRouterClient()
+            var results: [AIModelResult] = []
+            await withTaskGroup(of: AIModelResult.self) { group in
+                for model in OpenRouterConfig.models {
+                    group.addTask { await client.judge(imagePNG: png, target: target, model: model) }
+                }
+                for await result in group {
+                    results.append(result)
+                }
+            }
+            // TaskGroup は完了順なので、モデル定義順に並べ替えて表示を安定させる。
+            let ordered = OpenRouterConfig.models.compactMap { slug in results.first { $0.modelSlug == slug } }
+            await MainActor.run {
+                self?.completeAIJudgment(attemptID: attemptID, runID: runID, results: ordered)
+            }
+        }
+    }
+
+    private func upsertAIJudgment(_ record: AIJudgmentRecord) {
+        var list = aiJudgments.filter { $0.id != record.id }
+        list.append(record)
+        if list.count > 60 {
+            list.removeFirst(list.count - 60)
+        }
+        aiJudgments = list
+    }
+
+    private func completeAIJudgment(attemptID: UUID, runID: UUID, results: [AIModelResult]) {
+        guard let index = aiJudgments.firstIndex(where: { $0.id == attemptID }) else { return }
+        // clear→再送で世代が変わっていたら、古いTaskの結果は捨てる（新しいレコードを上書きしない）。
+        guard aiJudgments[index].runID == runID else { return }
+        aiJudgments[index].results = results
+        aiJudgments[index].isRunning = false
+    }
+
+    func clearAIJudgments() {
+        aiJudgments = []
+    }
+    #endif
 
     func selectCharacter(id: String) {
         guard unlockedCharacterIDs.contains(id) else {

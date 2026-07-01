@@ -6509,6 +6509,7 @@ private struct TestSettingsPanel: View {
     @State private var showingOnboardingResetConfirm = false
     #if DEBUG
     @State private var showingAvatarDressUp = false   // 開発用: 着せ替えアバターQAプレビュー
+    @State private var showingAIJudgment = false      // 開発用: AI-OCR 3モデル判定くらべ
     #endif
     var language: AppLanguage
 
@@ -6731,6 +6732,18 @@ private struct TestSettingsPanel: View {
 
                 Divider()
                 Button {
+                    showingAIJudgment = true
+                } label: {
+                    HStack {
+                        Image(systemName: "brain.head.profile")
+                        Text("AI判定くらべ（3モデル）")
+                            .font(.subheadline.weight(.bold))
+                    }
+                }
+                .tint(ParentPalette.primary)
+
+                Divider()
+                Button {
                     model.awardPracticeCoins(1000)
                 } label: {
                     HStack {
@@ -6794,6 +6807,18 @@ private struct TestSettingsPanel: View {
                         ToolbarItem(placement: .cancellationAction) {
                             Button(language.text(japanese: "とじる", english: "Close")) {
                                 showingAvatarDressUp = false
+                            }
+                        }
+                    }
+            }
+        }
+        .sheet(isPresented: $showingAIJudgment) {
+            NavigationStack {
+                AIJudgmentDebugView()
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button(language.text(japanese: "とじる", english: "Close")) {
+                                showingAIJudgment = false
                             }
                         }
                     }

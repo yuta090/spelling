@@ -22,9 +22,11 @@
 		0A10010D2D00000100000001 /* ParentDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A10020D2D00000100000001 /* ParentDashboardView.swift */; };
 		0A10010E2D00000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A10020E2D00000100000001 /* Assets.xcassets */; };
 		0A1001AA2D00000100000001 /* wordbank.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 0A1002AA2D00000100000001 /* wordbank.sqlite */; };
+		146A097F4736A06C17EB0137 /* OpenRouterClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDFB9DA6598F319BEFFA292 /* OpenRouterClient.swift */; };
 		5F7E2D37D6864BDF4D0DF14F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E2E2BB39714843CDD21EACC /* Foundation.framework */; };
 		9765087A2FEDA7750051D674 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 976508792FEDA7750051D674 /* Supabase */; };
 		B2C76506BF718B7F87B0EFA1 /* PaywallE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7550C658CF5DC65B7A824C3A /* PaywallE2ETests.swift */; };
+		E3EE93EA18D41CD84A40CFF2 /* AIJudgmentDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2AC00CA9FAACE6B2D894E4C /* AIJudgmentDebugView.swift */; };
 		FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000AE02 /* AnswerExplanationCard.swift */; };
 		FACE0000000000000000AV01 /* avatars in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000AV02 /* avatars */; };
 		FACE0000000000000000CA03 /* ParentCastPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CA04 /* ParentCastPanel.swift */; };
@@ -40,7 +42,6 @@
 		FACE0000000000000000CE13 /* SentenceBankBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE14 /* SentenceBankBundle.swift */; };
 		FACE0000000000000000CE15 /* sentence_bank.json in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE16 /* sentence_bank.json */; };
 		FACE0000000000000000CE20 /* PuzzleKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE21 /* PuzzleKit.swift */; };
-		FACE0000000000000000FF01 /* TapBurstView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000FF02 /* TapBurstView.swift */; };
 		FACE0000000000000000CE22 /* PuzzleSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CE23 /* PuzzleSessionView.swift */; };
 		FACE0000000000000000CF01 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF02 /* SupabaseConfig.swift */; };
 		FACE0000000000000000CF03 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF04 /* SupabaseService.swift */; };
@@ -59,6 +60,7 @@
 		FACE0000000000000000D003 /* CourseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000D004 /* CourseProvider.swift */; };
 		FACE0000000000000000DD01 /* AvatarDressUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000DD02 /* AvatarDressUpView.swift */; };
 		FACE0000000000000000FE01 /* Telemetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000FE02 /* Telemetry.swift */; };
+		FACE0000000000000000FF01 /* TapBurstView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000FF02 /* TapBurstView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +94,8 @@
 		7550C658CF5DC65B7A824C3A /* PaywallE2ETests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallE2ETests.swift; sourceTree = "<group>"; };
 		97909A8C2FECB3E100375E8A /* SpellingTrainer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpellingTrainer.entitlements; sourceTree = "<group>"; };
 		BA231912C2A5C48377C65383 /* SpellingTrainerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpellingTrainerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEDFB9DA6598F319BEFFA292 /* OpenRouterClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OpenRouterClient.swift; sourceTree = "<group>"; };
+		E2AC00CA9FAACE6B2D894E4C /* AIJudgmentDebugView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIJudgmentDebugView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000AE02 /* AnswerExplanationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerExplanationCard.swift; sourceTree = "<group>"; };
 		FACE0000000000000000AV02 /* avatars */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources/avatars; sourceTree = "<group>"; };
 		FACE0000000000000000CA04 /* ParentCastPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentCastPanel.swift; sourceTree = "<group>"; };
@@ -107,7 +111,6 @@
 		FACE0000000000000000CE14 /* SentenceBankBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentenceBankBundle.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE16 /* sentence_bank.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/sentence_bank.json; sourceTree = "<group>"; };
 		FACE0000000000000000CE21 /* PuzzleKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleKit.swift; sourceTree = "<group>"; };
-		FACE0000000000000000FF02 /* TapBurstView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapBurstView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CE23 /* PuzzleSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleSessionView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF02 /* SupabaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfig.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF04 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
@@ -125,6 +128,7 @@
 		FACE0000000000000000D004 /* CourseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseProvider.swift; sourceTree = "<group>"; };
 		FACE0000000000000000DD02 /* AvatarDressUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDressUpView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000FE02 /* Telemetry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Telemetry.swift; sourceTree = "<group>"; };
+		FACE0000000000000000FF02 /* TapBurstView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapBurstView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,6 +214,8 @@
 				FACE0000000000000000CF1A /* StarterWords.swift */,
 				FACE0000000000000000D002 /* Course.swift */,
 				FACE0000000000000000D004 /* CourseProvider.swift */,
+				CEDFB9DA6598F319BEFFA292 /* OpenRouterClient.swift */,
+				E2AC00CA9FAACE6B2D894E4C /* AIJudgmentDebugView.swift */,
 			);
 			path = iPadPrototype;
 			sourceTree = "<group>";
@@ -397,6 +403,8 @@
 				0A1001052D00000100000001 /* SpeechPlayer.swift in Sources */,
 				0A1001062D00000100000001 /* VisionTextRecognizer.swift in Sources */,
 				0A1001022D00000100000001 /* TestSessionView.swift in Sources */,
+				146A097F4736A06C17EB0137 /* OpenRouterClient.swift in Sources */,
+				E3EE93EA18D41CD84A40CFF2 /* AIJudgmentDebugView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
