@@ -446,6 +446,13 @@ final class AppModel: ObservableObject {
         return KanjiLevelGate.maxGrade(forSchoolGrade: grade.schoolGrade)
     }
 
+    /// 子に英語例文を見せるか。低学年（小1・小2）は同梱例文にまだ習っていない語が混ざるため出さない
+    /// （単語＋意味だけに割り切る）。学年未選択は安全側（tier a 相当）で非表示。意味（訳）は別軸で常に出す。
+    var showsChildExampleSentence: Bool {
+        let tier = GradeLevel(rawValue: selectedGrade)?.tier.contentTier ?? .a
+        return ExampleSentencePolicy.showsEnglishExample(tier: tier)
+    }
+
     /// 子の学年＋親トグルから決まる「出題プールの絞り込み制約」（Core・spec §10）。
     /// ことばパズルのプール組み立て入口で適用する。学年未選択は入門(a)扱いで安全側。
     var contentPolicy: ContentPolicy {

@@ -409,6 +409,7 @@ struct SpellingSessionView: View {
                                             language: language,
                                             cast: model.cast,
                                             maxKanjiGrade: model.childMaxKanjiGrade,
+                                            showsExample: model.showsChildExampleSentence,
                                             style: .compact,
                                             onSpeak: { speech.speak($0, language: "en-US") }
                                         )
@@ -573,6 +574,7 @@ struct SpellingSessionView: View {
                         language: language,
                         cast: model.cast,
                         maxKanjiGrade: model.childMaxKanjiGrade,
+                        showsExample: model.showsChildExampleSentence,
                         style: .full,
                         onSpeak: { speech.speak($0, language: "en-US") }
                     )
@@ -2949,6 +2951,8 @@ private struct ExampleHintView: View {
     var cast: Cast
     /// 和訳で許す漢字配当学年(0…6)。これを超える漢字はひらがな読みに落とす。
     var maxKanjiGrade: Int
+    /// 英語例文を出すか。低学年（小1・小2）は未習語が混ざるため false（意味だけ出す）。
+    var showsExample: Bool = true
     var style: HintStyle = .full
     /// 例文の英語を読み上げるためのコールバック（呼び出し側で SpeechPlayer に渡す）。
     var onSpeak: (String) -> Void = { _ in }
@@ -2988,6 +2992,7 @@ private struct ExampleHintView: View {
         .onValueChange(of: word, initial: true) { _ in loadHint() }
         .onValueChange(of: cast) { _ in loadHint() }
         .onValueChange(of: maxKanjiGrade) { _ in loadHint() }
+        .onValueChange(of: showsExample) { _ in loadHint() }
     }
 
     @ViewBuilder
@@ -3093,6 +3098,13 @@ private struct ExampleHintView: View {
             meaningSegments = JapaneseReading.rubySegments(sense, maxGrade: maxKanjiGrade)
         } else {
             meaningSegments = []
+        }
+
+        // 低学年（小1・小2）は同梱例文に未習語が混ざるため、英語例文は出さず意味だけにする。
+        guard showsExample else {
+            exampleEN = nil
+            exampleJASegments = []
+            return
         }
 
         // 例文: Cast に名前があり承認テンプレがあれば名前入りに差し替え。無ければ同梱の静的例文。
