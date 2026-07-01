@@ -1487,6 +1487,10 @@ struct SpellingSessionView: View {
                 sessionAttempts.append(attempt)
                 sessionAttempts.sort { $0.date < $1.date }
                 pendingTestGradeCount = max(pendingTestGradeCount - 1, 0)
+                #if DEBUG
+                // DEBUG: トグルON時、この1問の手書きを3モデルのAIへ送って判定を比較保存する（子は待たせない）。
+                model.enqueueAIJudgmentIfEnabled(for: attempt)
+                #endif
                 showTestResultsIfReady()
             }
         }
