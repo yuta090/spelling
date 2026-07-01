@@ -8,8 +8,9 @@ struct ResultsView: View {
         model.settings.appLanguage
     }
 
+    // テスト(attempts)だけでなく練習(practiceSamples)も数える。おぼえる/練習で書いた日も 0 にしない。
     private var todayTotal: Int {
-        model.todaysAttempts.count
+        model.todaysWrittenWordCount
     }
 
     // 学習者の結果画面は「いま開いているコースの今のステップ」の見直し語を出す（親の personal 集計とは別）。
@@ -152,7 +153,8 @@ private struct EffortCard: View {
         ResultCard(title: language.text(japanese: "がんばりポイント", english: "Effort Points"), systemImage: "star.fill") {
             VStack(spacing: 12) {
                 // 「正解した数」は見せない（点＝評価になる）。書いた数＝努力と、次にやる単語だけ。
-                ResultValueRow(title: language.text(japanese: "きょう かいた かず", english: "Words written today"), value: "\(model.todaysAttempts.count)")
+                // テスト＋練習の両方を数える（おぼえる/練習で書いた日も 0 にしない）。
+                ResultValueRow(title: language.text(japanese: "きょう かいた かず", english: "Words written today"), value: "\(model.todaysWrittenWordCount)")
                 ResultValueRow(title: language.text(japanese: "つぎに やる単語", english: "Words for next time"), value: "\(model.selectedReviewWords.count)")
             }
         }
