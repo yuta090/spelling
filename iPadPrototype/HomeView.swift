@@ -221,29 +221,17 @@ struct HomeView: View {
                 let onClose = {
                     iris.cover(animated: !reduceMotion) { activeMode = nil }
                 }
-                if mode == .practice {
-                    // 必須は「おぼえる練習（手書きの前・タップで選ぶ）」→ 手書きテスト の順で出す。
-                    PracticeFlowView(
-                        words: sessionWords(for: mode),
-                        resumeState: resumeState,
-                        onPracticeProgressChange: onProgress,
-                        onPracticeCompleted: onCompleted,
-                        onPracticeStartTest: onStartTest,
-                        onPracticeRetryWords: onRetry,
-                        onRequestClose: onClose
-                    )
-                } else {
-                    SpellingSessionView(
-                        mode: mode,
-                        words: sessionWords(for: mode),
-                        resumeState: resumeState,
-                        onPracticeProgressChange: onProgress,
-                        onPracticeCompleted: onCompleted,
-                        onPracticeStartTest: onStartTest,
-                        onPracticeRetryWords: onRetry,
-                        onRequestClose: onClose
-                    )
-                }
+                // はじめる（練習）もテストも、手書きの書き問題（SpellingSessionView）へ直行する。
+                SpellingSessionView(
+                    mode: mode,
+                    words: sessionWords(for: mode),
+                    resumeState: resumeState,
+                    onPracticeProgressChange: onProgress,
+                    onPracticeCompleted: onCompleted,
+                    onPracticeStartTest: onStartTest,
+                    onPracticeRetryWords: onRetry,
+                    onRequestClose: onClose
+                )
                 }
             }
             .fullScreenCover(isPresented: $showingParent) {
