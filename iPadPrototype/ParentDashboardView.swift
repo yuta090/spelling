@@ -45,8 +45,11 @@ struct ParentDashboardView: View {
                         }
                     }
                     ParentSectionSwitcher(selectedSection: $selectedSection, language: language)
-                    if selectedSection == .words || selectedSection == .records {
-                        ParentCurrentStepCard(language: language)
+                    // 記録タブは自分の単語（personal）のステップに紐づくのでここで固定表示。
+                    // 単語タブのステップカードは「コース選択の下」に置く（コース→ステップの順）ため
+                    // selectedPanel(.words) 側へ移した。
+                    if selectedSection == .records {
+                        ParentCurrentStepCard(language: language, track: .personal)
                     }
 
                     GeometryReader { proxy in
@@ -96,6 +99,10 @@ struct ParentDashboardView: View {
                 SettingBlock(title: language.text(japanese: "コース（れんしゅうする内容）", english: "Course")) {
                     CourseSettingsControls(language: language)
                 }
+
+                // コース選択の“下”に、いま選んだコースのステップ（子と同じ `wordSteps`）を出す。
+                // 合成コースの読み取り専用ステップも見えるようにする（親が中身を確認できる）。
+                ParentCurrentStepCard(language: language, track: .course)
 
                 if width >= 900 {
                     HStack(alignment: .top, spacing: 14) {
@@ -952,13 +959,34 @@ private struct ParentSectionButton: View {
     }
 }
 
+/// ステップカードが対象にするトラック。
+/// - `.personal`＝自分の登録語（記録タブ・従来の管理）。コース選択に依存しない。
+/// - `.course`＝いま選んだコースの `wordSteps`（子と同じ／合成コースの読み取りステップも含む）。
+enum ParentStepTrack {
+    case personal
+    case course
+}
+
 private struct ParentCurrentStepCard: View {
     @EnvironmentObject private var model: AppModel
     @State private var showingStepChooser = false
     var language: AppLanguage
+    var track: ParentStepTrack = .personal
+
+    private var steps: [WordStep] {
+        track == .course ? model.wordSteps : model.personalWordSteps
+    }
+
+    private var selectedStep: WordStep? {
+        track == .course ? model.selectedWordStep : model.personalSelectedWordStep
+    }
+
+    private var selectedStepID: String {
+        track == .course ? model.selectedWordStepID : model.personalSelectedWordStepID
+    }
 
     var body: some View {
-        let step = model.personalSelectedWordStep
+        let step = selectedStep
 
         HStack(spacing: 12) {
             Image(systemName: "rectangle.stack.fill")
@@ -990,7 +1018,7 @@ private struct ParentCurrentStepCard: View {
             .background(ParentPalette.primarySoft)
             .clipShape(RoundedRectangle(cornerRadius: 8))
 
-            if !model.personalWordSteps.isEmpty {
+            if !steps.isEmpty {
                 Button {
                     showingStepChooser = true
                 } label: {
@@ -1012,9 +1040,15 @@ private struct ParentCurrentStepCard: View {
             ParentStepChooserSheet(
                 title: language.text(japanese: "ステップを選ぶ", english: "Choose Step"),
                 language: language,
-                selectedStepID: model.personalSelectedWordStepID
+                steps: steps,
+                selectedStepID: selectedStepID,
+                // 合成コースのステップは登録日が無い（epoch）ので、月ごとの束ね表示はしない。
+                groupByMonth: track == .personal
             ) { step in
-                model.personalSelectedWordStepID = step.id
+                switch track {
+                case .course: model.selectedWordStepID = step.id
+                case .personal: model.personalSelectedWordStepID = step.id
+                }
             }
             .environmentObject(model)
             .presentationDetents([.large])
@@ -1028,11 +1062,14 @@ private struct ParentStepChooserSheet: View {
     @State private var searchText = ""
     var title: String
     var language: AppLanguage
+    var steps: [WordStep]
     var selectedStepID: String
+    var groupByMonth: Bool = true
     var onSelect: (WordStep) -> Void
 
     private var orderedSteps: [WordStep] {
-        Array(model.personalWordSteps.reversed())
+        // personal は登録が新しい順（月ごとに束ねる）。コースは階段の番号順（1→…）。
+        groupByMonth ? Array(steps.reversed()) : steps.sorted { $0.number < $1.number }
     }
 
     private var filteredSteps: [WordStep] {
@@ -1088,17 +1125,18 @@ private struct ParentStepChooserSheet: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List {
-                        ForEach(groupedSections) { section in
-                            Section(monthTitle(section.date)) {
-                                ForEach(section.steps) { step in
-                                    ParentStepChooserRow(
-                                        step: step,
-                                        language: language,
-                                        isSelected: step.id == selectedStepID,
-                                        hasSchoolResult: schoolResultStepIDs.contains(step.id)
-                                    ) {
-                                        select(step)
+                        if groupByMonth {
+                            ForEach(groupedSections) { section in
+                                Section(monthTitle(section.date)) {
+                                    ForEach(section.steps) { step in
+                                        stepRow(step)
                                     }
+                                }
+                            }
+                        } else {
+                            Section(language.text(japanese: "コースのステップ", english: "Course Steps")) {
+                                ForEach(filteredSteps) { step in
+                                    stepRow(step)
                                 }
                             }
                         }
@@ -1125,6 +1163,18 @@ private struct ParentStepChooserSheet: View {
                     .tapFeedback()
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private func stepRow(_ step: WordStep) -> some View {
+        ParentStepChooserRow(
+            step: step,
+            language: language,
+            isSelected: step.id == selectedStepID,
+            hasSchoolResult: schoolResultStepIDs.contains(step.id)
+        ) {
+            select(step)
         }
     }
 
@@ -2836,6 +2886,7 @@ private struct SchoolTestResultPanel: View {
             ParentStepChooserSheet(
                 title: language.text(japanese: "学校結果のステップを選ぶ", english: "Choose School Test Step"),
                 language: language,
+                steps: model.personalWordSteps,
                 selectedStepID: selectedStepID
             ) { step in
                 selectedStepID = step.id
@@ -4467,8 +4518,92 @@ private struct ParentWordListPanel: View {
     @State private var importSucceeded = false
     var language: AppLanguage
 
+    // 親のコース連動カード（track: .course）と同じステップを対象にする。
+    // 選んだステップが自分の単語なら編集フォーム、合成コースの読み取り専用なら閲覧表示にする。
     private var selectedStep: WordStep? {
-        model.personalSelectedWordStep
+        model.selectedWordStep
+    }
+
+    private var isEditable: Bool {
+        guard let step = selectedStep else { return false }
+        return model.isEditableStep(step)
+    }
+
+    /// 合成コース（学年/英検/Dolch）の読み取り専用ステップ。中身は wordbank 由来で編集できないので、
+    /// 単語を一覧するだけの表示にする（子が見るのと同じ内容を親が確認できる）。
+    @ViewBuilder
+    private func readOnlyStepView(_ step: WordStep) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 10) {
+                Image(systemName: "lock.fill")
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(ParentPalette.primary)
+                    .frame(width: 34, height: 34)
+                    .background(ParentPalette.primarySoft)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(language.text(japanese: "コースの単語（見るだけ）", english: "Course words (view only)"))
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(ParentPalette.ink)
+                    Text(language.text(
+                        japanese: "\(step.words.count)単語。コースの単語はここでは編集できません。自分の単語は「うちのれんしゅう」で追加・編集できます。",
+                        english: "\(step.words.count) words. Course words can't be edited here. Add your own words in your practice."
+                    ))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(12)
+            .background(ParentPalette.surfaceTint)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            if step.words.isEmpty {
+                EmptyStateView(
+                    language.text(japanese: "単語がありません", english: "No words"),
+                    systemImage: "tray",
+                    description: Text(language.text(japanese: "このステップには単語がありません。", english: "This step has no words."))
+                )
+                .frame(minHeight: 160)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(step.words.enumerated()), id: \.offset) { index, word in
+                        HStack(alignment: .firstTextBaseline, spacing: 12) {
+                            Text("\(index + 1)")
+                                .font(.subheadline.monospacedDigit().weight(.bold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: 28, alignment: .trailing)
+
+                            Text(word.text)
+                                .font(.title3.weight(.heavy))
+                                .foregroundStyle(ParentPalette.ink)
+
+                            Spacer(minLength: 8)
+
+                            if !word.promptText.isEmpty {
+                                Text(word.promptText)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+
+                        if index < step.words.count - 1 {
+                            Divider().opacity(0.4)
+                        }
+                    }
+                }
+                .background(ParentPalette.surfaceRaised)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+                )
+            }
+        }
     }
 
     /// このステップ（=1バッチ）が合成コースへ紐付いていれば、その表示先コース。
@@ -4547,6 +4682,7 @@ private struct ParentWordListPanel: View {
             systemImage: "list.bullet.rectangle"
         ) {
             if let step = selectedStep {
+              if isEditable {
                 if let course = linkedCourse(for: step) {
                     courseLinkBadge(step: step, course: course)
                 }
@@ -4688,6 +4824,9 @@ private struct ParentWordListPanel: View {
                     .tint(ParentPalette.primary)
                     .disabled(parseWordListEntries(from: rawWords).isEmpty)
                 }
+              } else {
+                readOnlyStepView(step)
+              }
             } else {
                 EmptyStateView(
                     language.text(japanese: "ステップがありません", english: "No step"),
@@ -4700,7 +4839,7 @@ private struct ParentWordListPanel: View {
         .onAppear {
             reloadSelectedStep()
         }
-        .onValueChange(of: model.personalSelectedWordStepID) { _ in
+        .onValueChange(of: model.selectedWordStepID) { _ in
             reloadSelectedStep()
         }
         .fullScreenCover(isPresented: $showingWordCamera) {

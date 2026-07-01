@@ -702,6 +702,15 @@ final class AppModel: ObservableObject {
         selectedWordStep?.words ?? words
     }
 
+    /// このステップを親が**その場で編集できるか**（＝personal トラックに実在するステップか）。
+    /// 合成コース／`linked.` 差し込みの表示ステップは保管とID が1:1でないため false（読み取り表示）。
+    /// 判定は純ロジック `SpellingSyncCore.StepEditability` に委譲する。
+    func isEditableStep(_ step: WordStep) -> Bool {
+        StepEditability.isEditable(
+            stepID: step.id,
+            personalStepIDs: Set(personalWordSteps.map(\.id)))
+    }
+
     // MARK: - personal トラック専用アクセサ
     //  親/子の単語“管理”（編集・子追加ゲート・学校テスト・親の復習送り）は、子が今どのコースを開いていても
     //  常に自分の単語（personal）を対象にする。学習者(ホーム/マップ/練習)はコース別の `wordSteps` を見る。
