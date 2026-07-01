@@ -1,0 +1,111 @@
+{
+  "_comment": "ホーム背景(HomeBackgroundTheme)の画風・制約の単一ソース。image も procedural も毎回この house_style を再掲する。背景の最重要原則は『中央を開けてキャラ＋UIを乗せても読める』こと。色/シーンは candidates.csv を使う。",
+
+  "canvas": {
+    "ship_size": "1448x1086",
+    "aspect": "4:3 横長(ratio 1.333)",
+    "note": "出荷PNGは 1448x1086。codex/agy は 4:3 横長で生成し、こちらで 1448x1086 にリサイズして imageset に入れる。アプリ表示は .scaledToFill()（中央基準で画面比に合わせて crop）なので、四隅は機種により切れる前提。重要要素と“開けた余白”は必ず中央に置く。"
+  },
+
+  "house_style": {
+    "summary": "幼児〜小学生向けの、やわらかいフラットイラストの背景。SpellingTrainer の既存ホーム背景(もり/こうえん/すいぞくかん等)と同じ温度感。子どもが安心するあかるい色。",
+    "must": [
+      "横長 4:3 の風景/場所として成立する1枚。画面いっぱいに敷ける",
+      "やわらかい丸み・フラット塗り(軽い陰影までOK、写実シェーディングは避ける)",
+      "あかるく親しみやすい配色。彩度は中庸〜やや高め、暗すぎない",
+      "情報は外周〜上部・下部に寄せ、中央は静か(低ディテール・低コントラスト)に保つ",
+      "全体は『遠景・舞台』。主役キャラは描かない(あとでアプリがキャラを中央に乗せる)"
+    ],
+    "ng": [
+      "写実/3D CG/フォトリアル/暗い・怖い・大人っぽい",
+      "文字・ロゴ・看板の英単語・透かし・枠線を入れる",
+      "中央に人物・キャラ・アバター・フィギュアを描く(アプリが自前のキャラを中央に乗せるので、中央は必ず“無人”で空ける)",
+      "中央に主役級の人物/動物/大きな建物/濃い模様を置く(キャラが埋もれる)",
+      "画面全体に細かい高コントラストの模様(チェック・密な葉・群衆)を敷き詰める",
+      "強い口径食(四隅だけ極端に暗い)や、中央に強い光源で白飛び"
+    ],
+    "center_open_rule": "画面中央(横45%×縦中央〜やや下の帯)は『キャラのステージ』。ここはディテールを抑え、明度はミドル〜ライト、コントラストは低く保つ。地面/床/芝/水面など“乗せられる平場”が中央下にあると最良。★中央は必ず“無人”：人物・キャラ・アバター・フィギュアを描かない(アプリが自前キャラを乗せる)。プロンプトに『for a character』と書くとモデルが人物を描いてしまうので使わない → 代わりに『a flat EMPTY open area in the foreground center, do NOT draw any person/character/figure — leave it empty』と書く。"
+  },
+
+  "tones": {
+    "_comment": "背景の『トーン(画風タッチ)』。同じ場所でもトーンで別物になる(例: しぶや=cute-flat の昼 / semi-real-cinematic の夜)。作成前に必ずユーザーにトーンを確認し、tags に tone:<key> を必ず付ける。house_style は既定トーン(cute-flat)の定義。",
+    "default": "cute-flat",
+    "catalog": {
+      "cute-flat": {
+        "label": "やわらかフラットイラスト(絵本タッチ)",
+        "summary": "丸み・フラット塗り・あかるいパステル。幼児〜小学生向けの安心トーン。既定。house_style がこれ。",
+        "feel": "明るい・低〜中コントラスト・写実シェーディングなし・暗所なし",
+        "fits": "自然/季節/ファンタジー/動物/お菓子など、やさしい世界。中央オープンを取りやすい。",
+        "engine_hint": "codex image_gen に house_style(must/ng)をそのまま再掲。"
+      },
+      "semi-real-cinematic": {
+        "label": "写実寄り・シネマティック(プレミアム実在系)",
+        "summary": "フォトリアル/3Dレンダ風。リッチなライティング・高彩度・暗め/夜もOK。あこがれの実在の場所/未来の場所を“本物っぽく”見せる上位ティア。",
+        "feel": "情報量多め・コントラスト強め・暗部や強い光源あり(=house_style の ng をあえて許容するトーン)",
+        "fits": "都市夜景/スポーツ/音楽/車/テックなど“本物を体感”系。price 高め。",
+        "caution": "中央オープン原則は据え置き(キャラが乗る中央は静かに)。暗い/混むと safezone_check が ⚠ を出しやすい → 中央だけは明度ミドル・低ディテールに調整。house_style の must/ng はこのトーンには適用しない(プロンプトを別に組む)。",
+        "engine_hint": "image_gen にフォトリアル/シネマティック指定。house_style の must/ng は再掲しない(中央オープンと『文字/ロゴ無し』だけは維持)。"
+      },
+      "voxel": {
+        "label": "ボクセルアート(マイクラ風)",
+        "summary": "立方体ブロックで作られた世界。色とりどりのキューブで地形・建物・空を構成。子どもに人気の“作る”ゲーム世界観。子どもに人気のカテゴリなので『色んな場所の風景』を複数パターン量産してよい。",
+        "feel": "明るい・はっきりした原色・キューブの段々。空はキューブ雲。中央は平らなブロック広場を開ける",
+        "fits": "森/砂漠/海/雪原/火山/街/空島など“色んな風景”をボクセルで。複数パターン歓迎(人気カテゴリ)。",
+        "caution": "中央は平らなブロックの広場にして開ける。キューブが細かすぎると safezone が ⚠ を出すので中央のブロックは大きめ・低コントラストに。",
+        "engine_hint": "agy/codex に『voxel art, blocky cubes, Minecraft-like, isometric-ish landscape』を指定。house_style の must/ng(フラット塗り)は適用しない。"
+      }
+    }
+  },
+
+  "tone_survey": {
+    "_comment": "既存背景(2026-06-29 時点)の実測トーン。新規作成時の参照用。タグ未付与の既存行は将来この分類で埋められる。",
+    "cute-flat": ["forest","flowerfield","park","town","sakura","autumn","underwater","rainbow","candyland","castle","farm","aquarium","amusement","zoo","shibuyaday","spaceship","earthspace","cakeshop","bakery","flowershop","police","firestation","dinomuseum","trainstation","toyshop","sciencelab","ninjavillage","artatelier","summerfes","halloween","shrine","(procedural: meadow/sunset/night/beach/snow/space)"],
+    "semi-real-cinematic": ["boutique","sneakers","carshowroom","racetrack","concert","studio","stadium","gamingroom","shibuya(夜)","paris","newyork","london","basketball","airport","soccerfield","planetarium","robotlab","musicstudio","neoncafe","arcade","beachresort","skilodge","fireworks","xmasmarket"],
+    "voxel": ["blockworld","(色んな風景のボクセルを複数パターン量産可: voxel森/砂漠/海/雪原/火山/街/空島 など)"],
+    "note": "ざっくり: 自然/季節/ファンタジー/子ども施設 = cute-flat。都市夜景/観光/スポーツ/音楽/車/テック/ファッション = semi-real-cinematic。マイクラ風キューブ世界 = voxel(人気・複数OK)。境界は厳密でないので作成時に都度トーンを決める。"
+  },
+
+  "safezone": {
+    "_comment": "safezone_check.py の既定。キャラの立ち位置に合わせた中央の楕円ゾーン。1448x1086 基準の比率で指定。",
+    "cx_ratio": 0.5,
+    "cy_ratio": 0.56,
+    "w_ratio": 0.46,
+    "h_ratio": 0.60,
+    "thresholds": {
+      "busy_edge_ratio_warn": 1.15,
+      "busy_edge_abs_warn": 14.0,
+      "luma_dark_warn": 70,
+      "luma_bright_warn": 238,
+      "contrast_std_warn": 62
+    },
+    "thresholds_note": "経験則・調整可。busy_edge_ratio=中央のエッジ量/全体エッジ量(>warnで中央が混みすぎ)。busy_edge_abs=中央エッジ絶対値。luma=中央平均輝度(暗/明すぎ警告)。contrast_std=中央の輝度ばらつき(高いとガチャつき)。"
+  },
+
+  "image": {
+    "engine": "agy(優先・1枚ずつ) ＋ codex(フォールバック/正寸清書・まとめ投げ可)",
+    "engine_note": "背景画像はまず agy に投げる。ただし agy は『1コール=1枚』で回す(複数枚をまとめて1コールに詰めると遅く落ちやすい→1枚ずつのほうがレスポンスが良い)。複数 ID は for ループで1枚ずつ順に。agy の品質が足りない/正寸で清書したいときだけ codex image_gen にフォールバック(codex は複数枚まとめ投げOK・並列OK)。背景は不透過なのでクロマキー/切り抜きは不要(なかまと最大の違い)。",
+    "agy_note": "agy は pseudo-TTY 必須で出力は ~/.gemini/antigravity-cli/scratch に出る(agy-cli-reliable-invocation 参照)。生成後 out/final/<id>/ へ回収。報告を鵜呑みにせず実体を ls/Read で確認。",
+    "usage_note": "agy/codex とも残量(quota/usage)を返すコマンドは無い。代わりに『事前プローブ＋レート制限検知→自動バックオフ』で usage に配慮する。(1) バッチ前に gen_agy.py が `agy models` を1回だけ叩いて疎通/レート制限を確認(--no-preflight で省略可)。レート制限シグネチャ(429/RESOURCE_EXHAUSTED/quota/overloaded 等)やモデル一覧が空なら中止。(2) 各 id のログを見て MISS をレート制限と通常 MISS に分類、(3) MISS は並列を半分に落とし backoff 秒待って自動再試行(--retries/--backoff)。codex は ChatGPT プラン依存で CLI 残量表示なし→バッチは控えめに、429 が返ったらバッチを割って待つ。",
+    "save_as": "PNG。透過しない。背景は完全不透過のフルフレーム。"
+  },
+
+  "procedural": {
+    "engine": "codex(SwiftUI 著作) ＋ Claude(レビュー)",
+    "target": "iPadPrototype/HomeView.swift。新しい HomeBackgroundScene case を足し、HomeBackgroundScenery(または相当のシーン描画)に描画分岐を追加し、proceduralThemes に色データ行を足す。CSVの render=procedural 行は“管理メモ”で generate_backgrounds.py からは出力されない。",
+    "convention": [
+      "HomeBackgroundScene に case <name> を追加",
+      "シーン描画は LinearGradient(skyTop→skyBottom) の上に Shape/Path/Canvas で要素を重ねる。色は theme.skyTop/skyBottom/groundPrimary/groundSecondary/accent を使う(固定色を焼き込まない)",
+      "中央(キャラのステージ)はディテールを置かず静かに保つ。装飾は上部・左右・下端に寄せる",
+      "proceduralThemes に HomeBackgroundTheme(id,japaneseName,englishName,price,scene,skyTop,skyBottom,groundPrimary,groundSecondary,accent) を追加",
+      "SwiftUI API は `swiftui` スキル(canvas.md/graphicscontext.md/color.md 等)で確認しながら書く"
+    ]
+  },
+
+  "integration": {
+    "csv": "scripts/backgrounds.csv に1行: id,category,ja_name,en_name,price,default_unlocked,render,image,art_prompt",
+    "image_mode": "(1) 1448x1086 PNG を iPadPrototype/Assets.xcassets/bg_<id>.imageset/ に置き Contents.json を作る (place_asset.py が両方やる) → (2) backgrounds.csv に render=image, image=bg_<id>.png 行を足す → (3) python3 scripts/generate_backgrounds.py → (4) 無料配布(price 0/開始から解放)なら HomeView.swift の defaultUnlockedIDs にも id を足す。",
+    "procedural_mode": "backgrounds.csv に render=procedural 行(管理メモ)＋ HomeView.swift を手書き(上記 procedural.convention)。generate_backgrounds.py は image 行だけ再生成するので procedural は手で配線する。",
+    "unlock_note": "解放制御は HomeView.swift の static defaultUnlockedIDs(ハードコード)で行う。backgrounds.csv の default_unlocked 列は管理用メモで、現状コードには反映されない。開始から無料解放したい背景は id を defaultUnlockedIDs に必ず足すこと。",
+    "build": "xcodebuild -scheme SpellingTrainer -sdk iphonesimulator build CODE_SIGNING_ALLOWED=NO"
+  }
+}
