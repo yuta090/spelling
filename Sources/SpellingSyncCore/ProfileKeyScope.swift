@@ -43,7 +43,8 @@ public enum ProfileKeyScope {
         "spellingTrainer.stepUnlockCelebration",
         "spellingTrainer.childName",               // → ChildProfile.displayName へ移行（§4）
         "spellingTrainer.selectedGrade",
-        "spellingTrainer.cast"                      // 本人実名＝プロファイル別・ローカルのみ
+        "spellingTrainer.cast",                     // 本人実名＝プロファイル別・ローカルのみ
+        "spellingTrainer.aiJudgments"               // DEBUG のみ。子のテスト答案のAI採点記録＝子ども別
     ]
 
     /// 世帯/端末グローバル（prefix しない）キー。
@@ -51,6 +52,7 @@ public enum ProfileKeyScope {
         "spellingTrainer.cachedEntitlement",        // サブスクは家族＝世帯単位（§7）
         "spellingTrainer.debugUnlockAll",
         "spellingTrainer.debugDisableDailyLimit",
+        "spellingTrainer.debugAIJudgeOnTest",       // DEBUG のみ。端末のデバッグトグル（他 debug フラグと同じく端末単位）
         "spellingTrainer.migratedFromSwiftData.v1", // 端末の移行フラグ
         "spellingTrainer.sync.activeHouseholdID",
         "spellingTrainer.sync.wordSidecar",         // Phase 5 で (world,profile) 別に本対応

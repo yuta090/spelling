@@ -481,6 +481,12 @@ final class AppModel: ObservableObject {
     static let defaultUnlockedBackgroundIDs: Set<String> = HomeBackgroundTheme.defaultUnlockedIDs
 
     private let persistenceStore: UserDataStore
+    /// プロファイル台帳（複数子）。**この端末で誰がいるか＋今アクティブな子**の単一ソース。
+    /// Phase 2 では移行で#1が入るだけ（切替UIは Phase 3）。同期の安全判定にも使う。
+    @Published private(set) var profileRegistry: ProfileRegistry
+    /// キー名前空間化の Core ラッパ（切替時に `setActiveProfileID` する。Phase 3 で使用）。
+    /// 名前空間化できないストアが注入された場合は nil（単一子フォールバック）。
+    private let profileScopedStore: ProfileScopedStore?
     private let wordsKey = "spellingTrainer.words"
     private let attemptsKey = "spellingTrainer.attempts"
     private let practiceSamplesKey = "spellingTrainer.practiceSamples"
@@ -527,8 +533,22 @@ final class AppModel: ObservableObject {
     private let selectedGradeKey = "spellingTrainer.selectedGrade"
     private let castKey = "spellingTrainer.cast"
 
-    init(persistenceStore: UserDataStore = AppPersistenceStore()) {
-        self.persistenceStore = persistenceStore
+    init(persistenceStore rawStore: UserDataStore = AppPersistenceStore()) {
+        // プロファイル名前空間化: 生の store を Core `ProfileScopedStore` で包み、子スコープキーだけ
+        // `profiles/<activeProfileID>/` に prefix する。初回は単一子データを#1へ移行（冪等・バリア）。
+        // 以後 `persistenceStore.save(x, key)` はキー文字列を変えずに自動でスコープされる（設計 §3-§5）。
+        if let rawCapable = rawStore as? ProfileScopedRawStore {
+            let registry = ProfileStoreMigration.loadOrBootstrap(base: rawCapable, now: Date())
+            let core = ProfileScopedStore(base: rawCapable, activeProfileID: registry.activeProfileID)
+            self.profileRegistry = registry
+            self.profileScopedStore = core
+            self.persistenceStore = ProfileScopedUserDataStore(scoped: core)
+        } else {
+            // 名前空間化できないストア（想定外）はそのまま使う＝単一子フォールバック。
+            self.profileRegistry = ProfileRegistry(bootstrapping: ChildProfile(displayName: "", createdAt: Date()))
+            self.profileScopedStore = nil
+            self.persistenceStore = rawStore
+        }
 
         let loadedWords = persistenceStore.load([SpellingWord].self, key: wordsKey) ?? [
             SpellingWord(text: "cat", promptText: "ねこ"),
@@ -1354,9 +1374,18 @@ final class AppModel: ObservableObject {
         self.householdIDProvider = householdIDProvider
     }
 
+    /// 同期を今のプロファイル構成で安全に走らせてよいか。
+    /// **子が2人以上いる間は同期を止める**（Phase 5 で同期をプロファイル別に本対応するまでの安全ネット）。
+    /// 同期簿記（`sync.cursors`/`sync.wordSidecar`）が世帯グローバルのままなので、複数プロファイルで
+    /// 同期すると子切替時に他児の単語を誤って墓石化しうる（設計 §6・レビュー指摘①）。1人なら従来通り安全。
+    private var isSyncSafeForActiveProfile: Bool {
+        profileRegistry.profiles.count <= 1
+    }
+
     /// 即時に 1 サイクル同期する（前面化・サインイン・世帯確定時など）。
     /// バックグラウンド同期なので失敗は握りつぶす（次トリガで回収。多重実行は coordinator がガード）。
     func syncNow() async {
+        guard isSyncSafeForActiveProfile else { return }
         guard let household = householdIDProvider() else { return }
         do { try await syncWords(householdID: household) }
         catch {
@@ -1370,6 +1399,7 @@ final class AppModel: ObservableObject {
     /// 直前の予約はキャンセルし、`seconds` 静かになってから 1 回だけ走らせる。
     /// **発火時に世帯が変わっていたら破棄**する（古い世帯のローカル編集を新世帯へ流さない）。
     func requestSync(debounce seconds: Double = 1.5) {
+        guard isSyncSafeForActiveProfile else { return }
         guard let scheduledHousehold = householdIDProvider() else { return }
         pendingSyncTask?.cancel()
         pendingSyncTask = Task { [weak self] in
@@ -2478,6 +2508,51 @@ final class AppPersistenceStore: @unchecked Sendable {
 // `load`/`save` は既存シグネチャと一致するため、宣言のみで準拠が成立する。
 extension AppPersistenceStore: UserDataStore {}
 
+// バイト列レベルの永続化ポート（Core `ProfileScopedStore` がキー名前空間化に使う）。
+// ファイルが真実の源（SwiftData→file 移行後）なので rawLoad はファイルのみ見る。
+extension AppPersistenceStore: ProfileScopedRawStore {
+    func rawLoad(_ key: String) -> Data? {
+        Self.loadFileData(for: key)
+    }
+    func rawSave(_ data: Data, key: String) {
+        Self.persistenceQueue.async {
+            if Self.writeFileData(data, key: key) {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
+        }
+    }
+    /// 書き込み完了を待つ同期保存（移行のバリア用）。serial queue の `sync` で先行 async 保存の後に実行される。
+    func rawSaveBlocking(_ data: Data, key: String) {
+        Self.persistenceQueue.sync {
+            if Self.writeFileData(data, key: key) {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
+        }
+    }
+}
+
+/// Core `ProfileScopedStore`（バイト列＋キー名前空間化）を、アプリの `UserDataStore`（型付き）境界に適合させる薄いアダプタ。
+/// JSON encode/decode だけを担い、キーの prefix 判定・切替は Core 側に委ねる。
+final class ProfileScopedUserDataStore: UserDataStore, @unchecked Sendable {
+    let scoped: ProfileScopedStore
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
+
+    init(scoped: ProfileScopedStore) {
+        self.scoped = scoped
+    }
+
+    func load<T: Decodable>(_ type: T.Type, key: String) -> T? {
+        guard let data = scoped.load(key) else { return nil }
+        return try? decoder.decode(type, from: data)
+    }
+
+    func save<T: Encodable & Sendable>(_ value: T, key: String) {
+        guard let data = try? encoder.encode(value) else { return }
+        scoped.save(data, key: key)
+    }
+}
+
 // MARK: - UIテスト支援（E2E）
 
 /// UIテスト（XCUITest）からの起動かどうか。**Release では常に false**（`#if DEBUG` で無効）。
@@ -2516,6 +2591,20 @@ final class InMemoryUserDataStore: UserDataStore, @unchecked Sendable {
     func save<T: Encodable & Sendable>(_ value: T, key: String) {
         lock.lock(); defer { lock.unlock() }
         storage[key] = try? JSONEncoder().encode(value)
+    }
+}
+
+extension InMemoryUserDataStore: ProfileScopedRawStore {
+    func rawLoad(_ key: String) -> Data? {
+        lock.lock(); defer { lock.unlock() }
+        return storage[key]
+    }
+    func rawSave(_ data: Data, key: String) {
+        lock.lock(); defer { lock.unlock() }
+        storage[key] = data
+    }
+    func rawSaveBlocking(_ data: Data, key: String) {
+        rawSave(data, key: key)
     }
 }
 #endif

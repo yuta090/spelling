@@ -223,6 +223,20 @@ final class ProfileScopedStore: UserDataStore {  // @unchecked Sendable
 **Phase 1–5 は Apple 非依存で完成可能**。まず 1→2 を TDD で通し（**同期の安全化を Phase 2 に含める**のが肝）、3 で体験を確認、4 で管理、5 で同期を本対応、の順。
 **工数見積（codex Architect）**：Phase 1 = Short（1–4h）／Phase 2 = **Medium（1–2日）**（`AppModel` init・多数の `didSet` 経路・移行・同期ガードに触れるため。同期スコープ化を含めると Medium 上限）。
 
+### Phase 2 実装状況（2026-07-02・codex Code Reviewer = APPROVE）
+**実装済み（behavior-preserving。単一子データは `profiles/<id>/` へ移るだけで挙動不変）**:
+- Core `ProfileScopedStore`（`ProfileScopedRawStore` 越しにキー名前空間化・NSLock）＋ `ProfileStoreMigration.loadOrBootstrap`（初回=単一子→#1 を冪等・バリアコピー、**全コピー着地を検証してから台帳マーカー保存**＝書込失敗時は次回起動で再試行）。台帳存在自体が移行済みマーカー（別 bool フラグ無し）。
+- アプリ配線: `AppModel.init` が生 store を包む／`ProfileScopedUserDataStore` アダプタ（JSON glue）／`AppPersistenceStore`・`InMemoryUserDataStore` が `ProfileScopedRawStore` 準拠。**既存の `persistenceStore.save/load` 81箇所はキー不変のまま自動スコープ化**（churn ゼロ）。
+- 同期安全化: `isSyncSafeForActiveProfile`（`profiles.count <= 1`）で `syncNow`/`requestSync` をガード（>1人時 hard-disable＝設計指摘①の暫定）。Phase 2 は常に1人なので休眠。
+- DEBUG キー分類明示: `aiJudgments`=子スコープ / `debugAIJudgeOnTest`=グローバル（子36/global11）。
+- テスト: Core 15 本追加（名前空間化・A→B→A 非混在・グローバル共有・移行冪等/バリア順/着地検証）。**全 893 green**＋`xcodebuild` BUILD SUCCEEDED。
+
+**意図的に Phase 2 では未対応（延期）**:
+- **切替UI・`activateProfile`/`loadChildScopedState` 抽出 → Phase 3**（init 再ロードの並べ替えは呼び出す UI と一緒に入れる方が安全。今は切替経路が無い）。
+- **進行中 sync の drain/cancel → Phase 3**（Code Reviewer 指摘③。Phase 2 は `profiles.count` が不変なので不要。プロファイル生成/切替を足す時に「>1 になる前に in-flight sync をキャンセル/待機」を入れる）。
+- **`childName` → `ChildProfile.displayName` の単一 SSOT 化 → Phase 3/4**（改名/ランチャー UI が出る時。今は移行時に displayName を childName から一度シードし、childName は子スコープキーとして継続）。
+- 同期のプロファイル別本対応（cursor/sidecar/tombstone）→ Phase 5。
+
 ---
 
 ## 10. テスト観点（Core・TDD）
