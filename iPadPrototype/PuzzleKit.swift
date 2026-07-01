@@ -32,10 +32,12 @@ enum PuzzleTheme {
                        startPoint: .top, endPoint: .bottom)
     }
 
+    @MainActor
     static func haptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .light) {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
     }
 
+    @MainActor
     static func notify(_ type: UINotificationFeedbackGenerator.FeedbackType) {
         UINotificationFeedbackGenerator().notificationOccurred(type)
     }

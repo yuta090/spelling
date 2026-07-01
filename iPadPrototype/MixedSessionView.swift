@@ -15,6 +15,7 @@ private enum MX {
     static let correct = Color(red: 0.30, green: 0.62, blue: 0.28)
     static let retry = Color(red: 0.84, green: 0.36, blue: 0.08)
     static let bg = Color(red: 1.0, green: 0.99, blue: 0.95)
+    @MainActor
     static func haptic() { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
 }
 
