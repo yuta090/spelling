@@ -78,21 +78,48 @@ struct HomeView: View {
         !activeHomeReviewWordIDs.isEmpty
     }
 
+    /// この再開状態が「いま『はじめる』が起動する練習タスク」に属するか。
+    /// 比較は派生後の `selectedPracticeWords`（1日上限/抑制でゆらぐ）ではなく、
+    /// 選択の入力である `selectedPracticeWordIDs`（安定）に対する部分集合で見る。
+    /// これにより既定練習の再計算ゆらぎで再開が捨てられるのを防ぎつつ、
+    /// 復習/フォーカスなど別タスクへ切り替わったら再開を無効にできる。
+    ///
+    /// 判定は「削除済みを除いた**生存語**が現在の選択に含まれるか」で行う。セッション中に
+    /// 語が消えても（親が削除）、残りが同じタスクに属していれば再開を保ち、`PracticeResume.resolve`
+    /// が消えた語を飛ばして続行できる（＝丸ごと1問目に戻さない）。全滅時は false。
+    private func practiceResumeBelongsToCurrentSelection(_ state: PracticeSessionResumeState) -> Bool {
+        let availableIDs = Set(model.activeWords.map(\.id))
+        let surviving = state.wordIDs.filter { availableIDs.contains($0) }
+        return !surviving.isEmpty && Set(surviving).isSubset(of: selectedPracticeWordIDs)
+    }
+
+    /// 中断した練習を「やめた語」から再開する状態。
+    /// 選択集合を計算し直すと（練習の firstIntroducedAt スタンプや抑制で）揺れて再開が
+    /// 破棄されるため、保存した語ID列を **アクティブに残っている語だけ** で再構築する。
     private var activePracticeResumeState: PracticeSessionResumeState? {
         guard let practiceResumeState,
-              practiceResumeState.wordIDs == selectedPracticeWordIDsInOrder,
-              practiceResumeState.index < selectedPracticeWords.count
+              practiceResumeBelongsToCurrentSelection(practiceResumeState),
+              let resolved = PracticeResume.resolve(
+                  savedWordIDs: practiceResumeState.wordIDs,
+                  savedIndex: practiceResumeState.index,
+                  availableIDs: Set(model.activeWords.map(\.id))
+              )
         else {
             return nil
         }
-        return practiceResumeState
+        return PracticeSessionResumeState(
+            wordIDs: resolved.wordIDs,
+            index: resolved.index,
+            repeatIndex: practiceResumeState.repeatIndex,
+            sessionID: practiceResumeState.sessionID
+        )
     }
 
     private var activePracticeRemainingCount: Int? {
         guard let activePracticeResumeState else {
             return nil
         }
-        return max(selectedPracticeWords.count - activePracticeResumeState.index, 1)
+        return max(activePracticeResumeState.wordIDs.count - activePracticeResumeState.index, 1)
     }
 
     private var hasFinishedCurrentPracticeRound: Bool {
@@ -479,6 +506,13 @@ struct HomeView: View {
     private func sessionWords(for mode: SessionMode) -> [SpellingWord] {
         switch mode {
         case .practice:
+            // 再開中は選択を計算し直さず、保存済みの語列（生き残り）をそのまま使う。
+            // こうしないと SpellingSessionView 側の resume 判定（語ID一致）が外れて 1問目に戻る。
+            if let resume = activePracticeResumeState {
+                let wordsByID = Dictionary(model.activeWords.map { ($0.id, $0) },
+                                           uniquingKeysWith: { first, _ in first })
+                return resume.wordIDs.compactMap { wordsByID[$0] }
+            }
             return selectedPracticeWords
         case .test:
             return model.nextTestWords
@@ -565,7 +599,9 @@ struct HomeView: View {
         guard let practiceResumeState else {
             return
         }
-        if practiceResumeState.wordIDs != selectedPracticeWordIDsInOrder {
+        // 別タスク（復習/フォーカス等）へ切り替わったら破棄する。既定練習の再計算ゆらぎ
+        // （1日上限/抑制で選ばれる語が揺れる）では破棄しない＝「やめた語」から続けられる。
+        if !practiceResumeBelongsToCurrentSelection(practiceResumeState) {
             self.practiceResumeState = nil
         }
     }
