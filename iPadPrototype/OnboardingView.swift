@@ -146,7 +146,7 @@ struct OnboardingView: View {
             advance()
         case .grade:
             if let pickedGrade {
-                model.seedStarterWordsIfDefault(for: pickedGrade)
+                model.applyOnboardingGrade(pickedGrade)
             }
             advance()
         case .lookAndFeel:
