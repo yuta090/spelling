@@ -423,6 +423,7 @@ struct SpellingSessionView: View {
                                     ForEach(compactPracticeWords, id: \.id) { word in
                                         ExampleHintView(
                                             word: word.text,
+                                            storedMeaning: word.promptText,
                                             language: language,
                                             cast: model.cast,
                                             maxKanjiGrade: model.childMaxKanjiGrade,
@@ -604,6 +605,7 @@ struct SpellingSessionView: View {
                 if showsPracticeHint {
                     ExampleHintView(
                         word: currentWord.text,
+                        storedMeaning: currentWord.promptText,
                         language: language,
                         cast: model.cast,
                         maxKanjiGrade: model.childMaxKanjiGrade,
@@ -2933,6 +2935,9 @@ private enum HintStyle {
 /// - 例文の英語は **🔊 で聞ける**（音で伝える）。
 private struct ExampleHintView: View {
     var word: String
+    /// 単語リストが保持する訳（親の手入力・取り込み時の自動付与・コース由来）。
+    /// 意味表示はこれを最優先し、無いときだけ同梱辞書(EJDict)の第1語義に落とす（`MeaningResolver`）。
+    var storedMeaning: String? = nil
     var language: AppLanguage
     /// 例文を名前入りに差し替えるための登場人物（親が登録した Cast）。未登録なら従来の静的例文。
     var cast: Cast
@@ -2984,6 +2989,7 @@ private struct ExampleHintView: View {
         .onValueChange(of: cast) { _ in loadHint() }
         .onValueChange(of: maxKanjiGrade) { _ in loadHint() }
         .onValueChange(of: showsExample) { _ in loadHint() }
+        .onValueChange(of: storedMeaning ?? "") { _ in loadHint() }
     }
 
     @ViewBuilder
@@ -3083,10 +3089,14 @@ private struct ExampleHintView: View {
     }
 
     private func loadHint() {
-        // 意味: 最初の語義だけに絞り（GlossFormatter）、学年ハイブリッド＋ふりがなのかたまりにする。
-        if let raw = WordBank.shared.japanese(for: word) {
-            let sense = GlossFormatter.primarySense(raw)
-            meaningSegments = JapaneseReading.rubySegments(sense, maxGrade: maxKanjiGrade)
+        // 意味: 単語リストが持つ訳(storedMeaning)を最優先し、無いときだけ同梱辞書(EJDict)の第1語義へ。
+        // 学年ハイブリッド＋ふりがなのかたまりにする。
+        let resolvedMeaning = MeaningResolver.resolve(
+            promptText: storedMeaning,
+            dictionaryGloss: WordBank.shared.japanese(for: word)
+        )
+        if let resolvedMeaning {
+            meaningSegments = JapaneseReading.rubySegments(resolvedMeaning, maxGrade: maxKanjiGrade)
         } else {
             meaningSegments = []
         }
