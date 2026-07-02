@@ -98,9 +98,14 @@ public struct ProfileRegistry: Equatable, Codable, Sendable {
     // MARK: 操作（新しい台帳を返す）
 
     /// 追加。アクティブは変えない。id が既にあれば no-op（重複を作らない）。
+    /// 追加した子は **末尾** に来るよう `sortIndex` を既存の最大+1 にする。
+    /// （呼び出し側は既定 `sortIndex=0` の `ChildProfile` を渡すため、そのまま入れると reorder 後の
+    ///  正準順序（sortIndex→createdAt→id）で先頭付近へ割り込んでしまう。ここで末尾採番に正規化する。）
     public func adding(_ profile: ChildProfile) -> ProfileRegistry {
         guard !profiles.contains(where: { $0.id == profile.id }) else { return self }
-        return ProfileRegistry(profiles: profiles + [profile], activeProfileID: activeProfileID)
+        var appended = profile
+        appended.sortIndex = (profiles.map(\.sortIndex).max() ?? -1) + 1
+        return ProfileRegistry(profiles: profiles + [appended], activeProfileID: activeProfileID)
     }
 
     /// 削除。最後の1人は消せない／未知IDは無視。アクティブを消したら残りの先頭へ移す。
