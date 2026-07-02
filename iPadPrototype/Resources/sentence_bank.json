@@ -34234,5 +34234,885 @@
       "is",
       "wise"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "thank"
+    ],
+    "en" : "Thank you",
+    "gradeBand" : 1,
+    "id" : "7FD59042-BB13-5501-B008-6CD35CC827E7",
+    "ja" : "ありがとう",
+    "sourceID" : "nm-greet-thanks-friend",
+    "tokens" : [
+      "Thank",
+      "you"
+    ]
+  },
+  {
+    "contentLemmas" : [
+
+    ],
+    "en" : "How are you",
+    "gradeBand" : 1,
+    "id" : "87AD9696-647F-53DB-A5A0-E9DEA87E015D",
+    "ja" : "げんき？",
+    "sourceID" : "nm-greet-howareyou-friend",
+    "tokens" : [
+      "How",
+      "are",
+      "you"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "good",
+      "night"
+    ],
+    "en" : "Good night",
+    "gradeBand" : 1,
+    "id" : "2C80DCA6-3087-5153-A2D6-E6157AAAFCFD",
+    "ja" : "おやすみ",
+    "sourceID" : "nm-greet-goodnight-child",
+    "tokens" : [
+      "Good",
+      "night"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "welcome",
+      "home"
+    ],
+    "en" : "Welcome home",
+    "gradeBand" : 3,
+    "id" : "1DD14099-2F41-5262-A844-87E83D0C91AD",
+    "ja" : "おかえり",
+    "sourceID" : "nm-greet-welcome-child",
+    "tokens" : [
+      "Welcome",
+      "home"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see"
+    ],
+    "en" : "See you",
+    "gradeBand" : 1,
+    "id" : "BFDEE487-FE90-5715-B0D5-E00F25797C24",
+    "ja" : "じゃあね",
+    "sourceID" : "nm-greet-seeyou-friend",
+    "tokens" : [
+      "See",
+      "you"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "today"
+    ],
+    "en" : "Can you play today",
+    "gradeBand" : 1,
+    "grammar" : "canModal",
+    "id" : "7C8CFE1D-8288-5C2C-A4D7-68DB90D571BC",
+    "ja" : "きょう あそべる？",
+    "sourceID" : "nm-play-together-friend",
+    "tokens" : [
+      "Can",
+      "you",
+      "play",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "jump",
+      "high"
+    ],
+    "en" : "He can jump high",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "EDC36955-13EE-588D-B108-121A1D21D057",
+    "ja" : "かれは たかく とべる",
+    "sourceID" : "nm-play-jump-high-friend",
+    "tokens" : [
+      "He",
+      "can",
+      "jump",
+      "high"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "game"
+    ],
+    "en" : "He likes games",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "A9833A26-816B-57E7-94B6-5D788A08D37D",
+    "ja" : "かれは ゲームが すき",
+    "sourceID" : "nm-play-likes-games-friend",
+    "tokens" : [
+      "He",
+      "likes",
+      "games"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ball"
+    ],
+    "en" : "She has a ball",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "79C5BC1C-FC88-5951-A62B-3DF28FD538E6",
+    "ja" : "かのじょは ボールを もっている",
+    "sourceID" : "nm-play-has-ball-friend",
+    "tokens" : [
+      "She",
+      "has",
+      "a",
+      "ball"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "run",
+      "park"
+    ],
+    "en" : "He is running in the park",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "D2BB210C-9467-5907-91C3-92F5385F8B81",
+    "ja" : "かれは こうえんで はしっている",
+    "sourceID" : "nm-play-running-friend",
+    "tokens" : [
+      "He",
+      "is",
+      "running",
+      "in",
+      "the",
+      "park"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "jump",
+      "now"
+    ],
+    "en" : "She is jumping now",
+    "gradeBand" : 3,
+    "grammar" : "presentContinuous",
+    "id" : "B2B8B63F-4BA5-5DAC-9C55-96666976F7D7",
+    "ja" : "かのじょは いま ジャンプしている",
+    "sourceID" : "nm-play-jumping-friend",
+    "tokens" : [
+      "She",
+      "is",
+      "jumping",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play"
+    ],
+    "en" : "She can play with me",
+    "gradeBand" : 1,
+    "grammar" : "canModal",
+    "id" : "F427B03F-CB9D-55A5-B548-61A33CC68958",
+    "ja" : "かのじょは わたしと あそべる",
+    "sourceID" : "nm-play-with-me",
+    "tokens" : [
+      "She",
+      "can",
+      "play",
+      "with",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "catch",
+      "ball"
+    ],
+    "en" : "He caught the ball",
+    "gradeBand" : 3,
+    "grammar" : "pastSimple",
+    "id" : "FDFBF5AE-76D5-5EE2-A2EA-3F8816BA6CDB",
+    "ja" : "かれは ボールを キャッチした",
+    "sourceID" : "nm-play-caught-ball-friend",
+    "tokens" : [
+      "He",
+      "caught",
+      "the",
+      "ball"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "run"
+    ],
+    "en" : "Let's run",
+    "gradeBand" : 1,
+    "grammar" : "imperative",
+    "id" : "9F7D431A-B40E-5D84-95C8-B89A7F773A37",
+    "ja" : "はしろう",
+    "sourceID" : "nm-play-lets-run-friend",
+    "tokens" : [
+      "Let's",
+      "run"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "swim"
+    ],
+    "en" : "Let's swim",
+    "gradeBand" : 3,
+    "grammar" : "imperative",
+    "id" : "4AE99DA6-7D5A-5878-8098-0A58F30F1982",
+    "ja" : "およごう",
+    "sourceID" : "nm-play-lets-swim-friend",
+    "tokens" : [
+      "Let's",
+      "swim"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "run"
+    ],
+    "en" : "They are running",
+    "gradeBand" : 1,
+    "grammar" : "presentContinuous",
+    "id" : "2B730BAD-D4D3-569C-A7D0-24B7AB601ACC",
+    "ja" : "ふたりは はしっている",
+    "sourceID" : "nm-play-two-running",
+    "tokens" : [
+      "They",
+      "are",
+      "running"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "jump"
+    ],
+    "en" : "They are jumping",
+    "gradeBand" : 3,
+    "grammar" : "presentContinuous",
+    "id" : "3602068D-58C4-523C-80C1-73B1EA61ACD0",
+    "ja" : "ふたりは ジャンプしている",
+    "sourceID" : "nm-play-two-jumping",
+    "tokens" : [
+      "They",
+      "are",
+      "jumping"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "run",
+      "friend"
+    ],
+    "en" : "I ran with my friend",
+    "gradeBand" : 1,
+    "grammar" : "pastSimple",
+    "id" : "85CBBF75-0990-509B-8E48-22D241DE1779",
+    "ja" : "わたしは ともだちと はしった",
+    "sourceID" : "nm-play-i-ran-with-friend",
+    "tokens" : [
+      "I",
+      "ran",
+      "with",
+      "my",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "run",
+      "fast"
+    ],
+    "en" : "She runs very fast",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "083DBC9D-5943-5A27-80C3-8CE6FD6B9D1C",
+    "ja" : "かのじょは とても はやく はしる",
+    "sourceID" : "nm-play-fast-runner-friend",
+    "tokens" : [
+      "She",
+      "runs",
+      "very",
+      "fast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "try"
+    ],
+    "en" : "He wants to try",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "CA0B6D9D-05F8-5449-B48B-98DC7B1B30AB",
+    "ja" : "かれは やってみたい",
+    "sourceID" : "nm-play-wants-turn-friend",
+    "tokens" : [
+      "He",
+      "wants",
+      "to",
+      "try"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "book"
+    ],
+    "en" : "She likes books",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "A786E1B3-EF51-594F-99FA-E34E378E68E8",
+    "ja" : "かのじょは 本が すき",
+    "sourceID" : "nm-school-likes-books-friend",
+    "tokens" : [
+      "She",
+      "likes",
+      "books"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "new",
+      "pen"
+    ],
+    "en" : "He has a new pen",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "C3121225-3C57-5220-A279-48842BF4AE78",
+    "ja" : "かれは あたらしい ペンを もっている",
+    "sourceID" : "nm-school-has-pen-friend",
+    "tokens" : [
+      "He",
+      "has",
+      "a",
+      "new",
+      "pen"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "kind"
+    ],
+    "en" : "He is kind",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "F2613201-96D3-5F2B-B24B-F6A559110FF3",
+    "ja" : "かれは やさしい",
+    "sourceID" : "nm-school-is-kind-friend",
+    "tokens" : [
+      "He",
+      "is",
+      "kind"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "smart"
+    ],
+    "en" : "She is smart",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "D23EE58C-2D82-5028-A509-2F4F8A9D3662",
+    "ja" : "かのじょは かしこい",
+    "sourceID" : "nm-school-is-smart-friend",
+    "tokens" : [
+      "She",
+      "is",
+      "smart"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "book"
+    ],
+    "en" : "She is reading a book",
+    "gradeBand" : 1,
+    "grammar" : "presentContinuous",
+    "id" : "BD417A21-A6E8-5F6E-A9E7-D34EF417915A",
+    "ja" : "かのじょは 本を よんでいる",
+    "sourceID" : "nm-school-reading-friend",
+    "tokens" : [
+      "She",
+      "is",
+      "reading",
+      "a",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "write",
+      "now"
+    ],
+    "en" : "He is writing now",
+    "gradeBand" : 1,
+    "grammar" : "presentContinuous",
+    "id" : "D123A090-7310-5C9A-B737-C294D9C50E6A",
+    "ja" : "かれは いま 書いている",
+    "sourceID" : "nm-school-writing-friend",
+    "tokens" : [
+      "He",
+      "is",
+      "writing",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "music"
+    ],
+    "en" : "She likes music",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "BB919193-42D9-5A1E-9C98-E65B40467243",
+    "ja" : "かのじょは おんがくが すき",
+    "sourceID" : "nm-school-likes-music-friend",
+    "tokens" : [
+      "She",
+      "likes",
+      "music"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "desk",
+      "clean"
+    ],
+    "en" : "Her desk is clean",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "4F25ED93-084A-5509-83ED-95497F224F58",
+    "ja" : "かのじょの つくえは きれい",
+    "sourceID" : "nm-school-her-desk",
+    "tokens" : [
+      "Her",
+      "desk",
+      "is",
+      "clean"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bag",
+      "new"
+    ],
+    "en" : "His bag is new",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "683E5C07-B31E-5312-A10C-06706D416FFE",
+    "ja" : "かれの かばんは あたらしい",
+    "sourceID" : "nm-school-his-bag",
+    "tokens" : [
+      "His",
+      "bag",
+      "is",
+      "new"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sit",
+      "next"
+    ],
+    "en" : "He sits next to me",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "50B6DAB4-876B-5ACB-9DEF-90E23F816B24",
+    "ja" : "かれは わたしの となりに すわる",
+    "sourceID" : "nm-school-sits-next",
+    "tokens" : [
+      "He",
+      "sits",
+      "next",
+      "to",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "help",
+      "today"
+    ],
+    "en" : "She helped me today",
+    "gradeBand" : 1,
+    "grammar" : "pastSimple",
+    "id" : "1D2E8242-B5B5-5475-B7A4-4AF97EF577DD",
+    "ja" : "かのじょは きょう わたしを 手つだってくれた",
+    "sourceID" : "nm-school-helped-me",
+    "tokens" : [
+      "She",
+      "helped",
+      "me",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "draw",
+      "well"
+    ],
+    "en" : "She draws very well",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "079746BD-3FD4-5CD4-924B-C75107808DF8",
+    "ja" : "かのじょは えが とても じょうず",
+    "sourceID" : "nm-school-draws-well",
+    "tokens" : [
+      "She",
+      "draws",
+      "very",
+      "well"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "always",
+      "early"
+    ],
+    "en" : "He is always early",
+    "gradeBand" : 1,
+    "grammar" : "frequencyAdverb",
+    "id" : "3D7793D5-908B-51F6-A703-D7F987A7E0FC",
+    "ja" : "かれは いつも 早く来る",
+    "sourceID" : "nm-school-always-early",
+    "tokens" : [
+      "He",
+      "is",
+      "always",
+      "early"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "help",
+      "mom"
+    ],
+    "en" : "She helps her mom",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "0B9644F7-23DA-50E8-A912-54378CEB65A1",
+    "ja" : "かのじょは お母さんを 手つだう",
+    "sourceID" : "nm-home-helps-mom-friend",
+    "tokens" : [
+      "She",
+      "helps",
+      "her",
+      "mom"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog"
+    ],
+    "en" : "He has a dog",
+    "gradeBand" : 2,
+    "grammar" : "presentSimple",
+    "id" : "F4500033-E972-5D6E-82CC-5A0C5301270C",
+    "ja" : "かれは いぬを かっている",
+    "sourceID" : "nm-home-has-dog-friend",
+    "tokens" : [
+      "He",
+      "has",
+      "a",
+      "dog"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat",
+      "lunch"
+    ],
+    "en" : "He is eating lunch",
+    "gradeBand" : 3,
+    "grammar" : "presentContinuous",
+    "id" : "2DAFCE6B-EDE4-573A-8C73-8D9431E3D822",
+    "ja" : "かれは おひるを たべている",
+    "sourceID" : "nm-home-eating-lunch-friend",
+    "tokens" : [
+      "He",
+      "is",
+      "eating",
+      "lunch"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "visited",
+      "friend",
+      "today"
+    ],
+    "en" : "I visited my friend today",
+    "gradeBand" : 2,
+    "grammar" : "pastSimple",
+    "id" : "ABD92883-F988-5D80-B06B-2C05E7F306A1",
+    "ja" : "わたしは きょう ともだちに 会いに 行った",
+    "sourceID" : "nm-home-visited-friend",
+    "tokens" : [
+      "I",
+      "visited",
+      "my",
+      "friend",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "live",
+      "near"
+    ],
+    "en" : "He lives near me",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "65F7AD14-C91B-50FD-9FC6-DCC0CEFCCD2A",
+    "ja" : "かれは わたしの 近くに すんでいる",
+    "sourceID" : "nm-home-lives-near",
+    "tokens" : [
+      "He",
+      "lives",
+      "near",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "happy"
+    ],
+    "en" : "She is happy",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "92144778-F82F-5A65-AC27-3959EBD8A04E",
+    "ja" : "かのじょは うれしそう",
+    "sourceID" : "nm-daily-is-happy-friend",
+    "tokens" : [
+      "She",
+      "is",
+      "happy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tire"
+    ],
+    "en" : "He is tired",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "2CF02C86-074E-59F0-960E-3A98F389DDDF",
+    "ja" : "かれは つかれている",
+    "sourceID" : "nm-daily-is-tired-friend",
+    "tokens" : [
+      "He",
+      "is",
+      "tired"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "apples"
+    ],
+    "en" : "He likes apples",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "86CDF415-63C6-5195-A239-DFE7C460729B",
+    "ja" : "かれは りんごが すき",
+    "sourceID" : "nm-daily-likes-apples-boy",
+    "tokens" : [
+      "He",
+      "likes",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "drink",
+      "milk"
+    ],
+    "en" : "She drinks milk",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "5B4FCD2F-A54D-579F-9E27-63ADC357921B",
+    "ja" : "かのじょは ぎゅうにゅうを のむ",
+    "sourceID" : "nm-daily-drinks-milk-friend",
+    "tokens" : [
+      "She",
+      "drinks",
+      "milk"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sing",
+      "song"
+    ],
+    "en" : "She is singing a song",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "3A420F7E-61A5-5A05-B259-AF8B284CC5D9",
+    "ja" : "かのじょは うたを うたっている",
+    "sourceID" : "nm-daily-singing-friend",
+    "tokens" : [
+      "She",
+      "is",
+      "singing",
+      "a",
+      "song"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "smile"
+    ],
+    "en" : "He is smiling",
+    "gradeBand" : 2,
+    "grammar" : "presentContinuous",
+    "id" : "D074F4B9-E1B4-59E3-B73D-56119223B164",
+    "ja" : "かれは にこにこしている",
+    "sourceID" : "nm-daily-smiling-friend",
+    "tokens" : [
+      "He",
+      "is",
+      "smiling"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "come"
+    ],
+    "en" : "Come here",
+    "gradeBand" : 1,
+    "grammar" : "imperative",
+    "id" : "4EAAD5C9-881F-5D96-94BD-3A9254D6B522",
+    "ja" : "こっちへ おいで",
+    "sourceID" : "nm-daily-comehere-friend",
+    "tokens" : [
+      "Come",
+      "here"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "taller"
+    ],
+    "en" : "He is taller than me",
+    "gradeBand" : 2,
+    "grammar" : "comparativeEr",
+    "id" : "815CB952-3D39-5468-A6B7-E04CE2BB1985",
+    "ja" : "かれは わたしより せが たかい",
+    "sourceID" : "nm-daily-taller-friend",
+    "tokens" : [
+      "He",
+      "is",
+      "taller",
+      "than",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "old"
+    ],
+    "en" : "She is older than me",
+    "gradeBand" : 1,
+    "grammar" : "comparativeEr",
+    "id" : "EBC73E5E-3BB0-5ED7-9D8C-B50D5AF8BA8D",
+    "ja" : "かのじょは わたしより 年上",
+    "sourceID" : "nm-daily-older-friend",
+    "tokens" : [
+      "She",
+      "is",
+      "older",
+      "than",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "friend"
+    ],
+    "en" : "I like my friend",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "F0DE96CD-A699-5461-9270-405B626EF11B",
+    "ja" : "わたしは ともだちが すき",
+    "sourceID" : "nm-daily-i-like-friend",
+    "tokens" : [
+      "I",
+      "like",
+      "my",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "friend",
+      "today"
+    ],
+    "en" : "I saw my friend today",
+    "gradeBand" : 1,
+    "grammar" : "pastSimple",
+    "id" : "C477DDB6-D63A-59AA-8523-6F655D9DE3A0",
+    "ja" : "きょう ともだちに 会った",
+    "sourceID" : "nm-daily-saw-friend",
+    "tokens" : [
+      "I",
+      "saw",
+      "my",
+      "friend",
+      "today"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "today",
+      "birthday"
+    ],
+    "en" : "Today is her birthday",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "DFAFFB41-CD08-5B33-98AA-2947D36FB862",
+    "ja" : "きょうは かのじょの たんじょうび",
+    "sourceID" : "nm-daily-birthday-friend",
+    "tokens" : [
+      "Today",
+      "is",
+      "her",
+      "birthday"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "happy"
+    ],
+    "en" : "They are happy",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "B9E83915-9EC0-57A9-9FB6-2E3401D9D7C5",
+    "ja" : "ふたりは うれしそう",
+    "sourceID" : "nm-daily-two-happy",
+    "tokens" : [
+      "They",
+      "are",
+      "happy"
+    ]
   }
 ]
