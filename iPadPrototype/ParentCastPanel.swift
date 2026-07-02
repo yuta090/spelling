@@ -87,16 +87,19 @@ struct ParentCastPanel: View {
     // MARK: 部品
 
     private var intro: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        HStack(spacing: 8) {
             Text(language.text(japanese: "例文に名前を出す", english: "Names in example lines"))
                 .font(.title3.weight(.heavy))
                 .foregroundStyle(CastPalette.ink)
-            Text(language.text(
-                japanese: "登録した友達の名前が「Yuki likes apples」のように例文に登場します。本人は「Yuta, look!」のような呼びかけで出ます。",
-                english: "Registered friends appear in lines like “Yuki likes apples.” The child appears as a call, e.g. “Yuta, look!”"
-            ))
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
+            ParentInfoButton(
+                title: language.text(japanese: "例文に名前を出す", english: "Names in example lines"),
+                message: language.text(
+                    japanese: "登録した友達の名前が「Yuki likes apples」のように例文に登場します。本人は「Yuta, look!」のような呼びかけで出ます。",
+                    english: "Registered friends appear in lines like “Yuki likes apples.” The child appears as a call, e.g. “Yuta, look!”"
+                ),
+                tint: CastPalette.primary
+            )
+            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
@@ -134,15 +137,15 @@ struct ParentCastPanel: View {
     private var previewSection: some View {
         castSection(
             title: language.text(japanese: "例文セットをみる", english: "Preview lines"),
-            systemImage: "text.bubble.fill"
+            systemImage: "text.bubble.fill",
+            info: (
+                title: language.text(japanese: "例文セットをみる", english: "Preview lines"),
+                message: language.text(
+                    japanese: "カテゴリをえらぶと、登録したなかまの名前が入った例文セットを確認できます。",
+                    english: "Pick a category to preview a set of example lines with your cast’s names."
+                )
+            )
         ) {
-            Text(language.text(
-                japanese: "カテゴリをえらぶと、登録したなかまの名前が入った例文セットを確認できます。",
-                english: "Pick a category to preview a set of example lines with your cast’s names."
-            ))
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-
             categoryChips
 
             if !hasActiveCast {
@@ -234,11 +237,18 @@ struct ParentCastPanel: View {
 
     @ViewBuilder
     private func castSection<Content: View>(title: String, systemImage: String,
+                                            info: (title: String, message: String)? = nil,
                                             @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: systemImage)
-                .font(.headline.weight(.heavy))
-                .foregroundStyle(CastPalette.primary)
+            HStack(spacing: 8) {
+                Label(title, systemImage: systemImage)
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(CastPalette.primary)
+                if let info {
+                    ParentInfoButton(title: info.title, message: info.message, tint: CastPalette.primary)
+                }
+                Spacer(minLength: 0)
+            }
             content()
         }
         .frame(maxWidth: .infinity, alignment: .leading)

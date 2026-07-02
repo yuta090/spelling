@@ -697,12 +697,6 @@ private struct OverviewReviewCard: View {
                         ))
                         .font(.system(size: 22, weight: .heavy, design: .rounded))
                         .foregroundStyle(ParentPalette.ink)
-                        Text(language.text(
-                            japanese: "まちがえた問題を、これからのテスト・パズルに少しずつ混ぜます。",
-                            english: "Missed items are mixed back into future tests and puzzles."
-                        ))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(ParentPalette.neutral)
                         HStack {
                             Spacer()
                             Text(language.text(japanese: "くわしく", english: "Details"))
@@ -738,13 +732,6 @@ private struct ParentReviewDetailSheet: View {
             let spelling = model.spellingReviewDetails()
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text(language.text(
-                        japanese: "まちがえた問題を、これからのテスト・パズルに少しずつ混ぜて出します。何回か正解すると卒業します。",
-                        english: "Missed items are mixed back into future tests and puzzles a little at a time. They graduate after a few correct answers."
-                    ))
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
                     // スペル：語ごとに状態＋直近の正誤を見せる。
                     sectionHeader(language.text(japanese: "スペル", english: "Spelling"), count: spelling.count)
                     if spelling.isEmpty {
@@ -771,6 +758,16 @@ private struct ParentReviewDetailSheet: View {
             .navigationTitle(language.text(japanese: "まちがい復習", english: "Review"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    ParentInfoButton(
+                        title: language.text(japanese: "まちがい復習", english: "Review"),
+                        message: language.text(
+                            japanese: "まちがえた問題を、これからのテスト・パズルに少しずつ混ぜて出します。何回か正解すると卒業します。",
+                            english: "Missed items are mixed back into future tests and puzzles a little at a time. They graduate after a few correct answers."
+                        ),
+                        tint: ParentPalette.primary
+                    )
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(language.text(japanese: "閉じる", english: "Close")) { dismiss() }
                 }
@@ -2398,7 +2395,7 @@ private struct ParentStepRecordPrimaryAction {
     var infoMessage: String? = nil
 }
 
-private struct ParentInfoButton: View {
+struct ParentInfoButton: View {
     @State private var showingInfo = false
     var title: String
     var message: String
@@ -3366,22 +3363,31 @@ private struct ParentPanel<Content: View>: View {
     var systemImage: String
     var tint: Color = ParentPalette.primary
     var showsHeader = true
+    /// 見出しに添える ⓘ ヒント（説明文はここに退避し、画面本体はすっきりさせる）。
+    var headerInfo: (title: String, message: String)? = nil
     var content: Content
 
-    init(title: String, systemImage: String, tint: Color = ParentPalette.primary, showsHeader: Bool = true, @ViewBuilder content: () -> Content) {
+    init(title: String, systemImage: String, tint: Color = ParentPalette.primary, showsHeader: Bool = true, headerInfo: (title: String, message: String)? = nil, @ViewBuilder content: () -> Content) {
         self.title = title
         self.systemImage = systemImage
         self.tint = tint
         self.showsHeader = showsHeader
+        self.headerInfo = headerInfo
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             if showsHeader {
-                Label(title, systemImage: systemImage)
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(tint)
+                HStack(spacing: 8) {
+                    Label(title, systemImage: systemImage)
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(tint)
+                    if let headerInfo {
+                        ParentInfoButton(title: headerInfo.title, message: headerInfo.message, tint: tint)
+                    }
+                    Spacer(minLength: 0)
+                }
             }
 
             content
@@ -4300,26 +4306,31 @@ private struct ParentNewStepSheet: View {
     /// 「いまのコースの途中に出す」紐付けスイッチ。合成コースを見ているときだけ表示。
     @ViewBuilder
     private func courseLinkToggle(course: Course) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Toggle(isOn: $linkToCourse) {
-                Label(
-                    language.text(
-                        japanese: "「\(course.parentTitle)」のれんしゅうに、すぐ次として出す",
-                        english: "Show next in “\(course.parentTitle)”"
-                    ),
-                    systemImage: "arrow.turn.down.right"
-                )
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(ParentPalette.ink)
-            }
-            .tint(ParentPalette.primary)
+        HStack(alignment: .center, spacing: 8) {
+            Label(
+                language.text(
+                    japanese: "「\(course.parentTitle)」のれんしゅうに、すぐ次として出す",
+                    english: "Show next in “\(course.parentTitle)”"
+                ),
+                systemImage: "arrow.turn.down.right"
+            )
+            .font(.subheadline.weight(.bold))
+            .foregroundStyle(ParentPalette.ink)
 
-            Text(language.text(
-                japanese: "保管は「うちのれんしゅう」のまま。コースは切り替えず、いまの階段の途中（子のすぐ次）に出します。学校テスト向け。",
-                english: "Stored in your own words; inserted into the current course right after where the child is — no course switch."
-            ))
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
+            ParentInfoButton(
+                title: language.text(japanese: "コースの途中に出す", english: "Insert into course"),
+                message: language.text(
+                    japanese: "保管は「うちのれんしゅう」のまま。コースは切り替えず、いまの階段の途中（子のすぐ次）に出します。学校テスト向け。",
+                    english: "Stored in your own words; inserted into the current course right after where the child is — no course switch."
+                ),
+                tint: ParentPalette.primary
+            )
+
+            Spacer(minLength: 8)
+
+            Toggle("", isOn: $linkToCourse)
+                .labelsHidden()
+                .tint(ParentPalette.primary)
         }
         .padding(12)
         .background(ParentPalette.surfaceTint)
@@ -4556,12 +4567,22 @@ private struct ParentWordListPanel: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(language.text(japanese: "コースの単語（見るだけ）", english: "Course words (view only)"))
-                        .font(.subheadline.weight(.heavy))
-                        .foregroundStyle(ParentPalette.ink)
+                    HStack(spacing: 6) {
+                        Text(language.text(japanese: "コースの単語（見るだけ）", english: "Course words (view only)"))
+                            .font(.subheadline.weight(.heavy))
+                            .foregroundStyle(ParentPalette.ink)
+                        ParentInfoButton(
+                            title: language.text(japanese: "コースの単語（見るだけ）", english: "Course words (view only)"),
+                            message: language.text(
+                                japanese: "コースの単語はここでは編集できません。自分の単語は「うちのれんしゅう」で追加・編集できます。",
+                                english: "Course words can't be edited here. Add your own words in your practice."
+                            ),
+                            tint: ParentPalette.primary
+                        )
+                    }
                     Text(language.text(
-                        japanese: "\(step.words.count)単語。コースの単語はここでは編集できません。自分の単語は「うちのれんしゅう」で追加・編集できます。",
-                        english: "\(step.words.count) words. Course words can't be edited here. Add your own words in your practice."
+                        japanese: "\(step.words.count)単語",
+                        english: "\(step.words.count) words"
                     ))
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
@@ -4637,19 +4658,23 @@ private struct ParentWordListPanel: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(language.text(
-                    japanese: "「\(course.parentTitle)」に表示中",
-                    english: "Shown in “\(course.parentTitle)”"
-                ))
-                .font(.subheadline.weight(.heavy))
-                .foregroundStyle(ParentPalette.ink)
+                HStack(spacing: 6) {
+                    Text(language.text(
+                        japanese: "「\(course.parentTitle)」に表示中",
+                        english: "Shown in “\(course.parentTitle)”"
+                    ))
+                    .font(.subheadline.weight(.heavy))
+                    .foregroundStyle(ParentPalette.ink)
 
-                Text(language.text(
-                    japanese: "保管はうちのれんしゅう。コースの途中に出ています。",
-                    english: "Stored in your own words; inserted into the course."
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+                    ParentInfoButton(
+                        title: language.text(japanese: "コースに表示中", english: "Shown in course"),
+                        message: language.text(
+                            japanese: "保管はうちのれんしゅう。コースの途中に出ています。",
+                            english: "Stored in your own words; inserted into the course."
+                        ),
+                        tint: ParentPalette.primary
+                    )
+                }
             }
 
             Spacer(minLength: 8)
@@ -5104,13 +5129,6 @@ private struct WordLevelSetSheet: View {
                             ForEach(grades, id: \.self) { Text(gradeLabel($0)).tag($0) }
                         }
                         .pickerStyle(.segmented)
-                        Text(language.text(
-                            japanese: "Dolch（アメリカの小学校の読み・スペル用の語）。\"US 1年生\"はネイティブ向けの目安です。",
-                            english: "Dolch sight words (US elementary reading/spelling). US grades are native-speaker levels."
-                        ))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
                     } else {
                         Picker(language.text(japanese: "難易度", english: "Difficulty"), selection: $band) {
                             ForEach(1...5, id: \.self) { Text("Lv\($0)").tag($0) }
@@ -5119,13 +5137,6 @@ private struct WordLevelSetSheet: View {
                         Text(bandLabel(band))
                             .font(.subheadline.weight(.heavy))
                             .foregroundStyle(ParentPalette.primary)
-                        Text(language.text(
-                            japanese: "NGSL（使われる頻度）による難易度。やさしい＝よく使う語。",
-                            english: "Difficulty by NGSL word frequency. Easy = very common words."
-                        ))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
                     }
 
                     Stepper(value: $count, in: 5...30, step: 5) {
@@ -5231,6 +5242,16 @@ private struct WordLevelSetSheet: View {
                         Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
                     }
                     .font(.headline.weight(.bold))
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ParentInfoButton(
+                        title: language.text(japanese: "レベルについて", english: "About levels"),
+                        message: language.text(
+                            japanese: "US学年＝Dolch（アメリカの小学校の読み・スペル用の語）。ネイティブ向けの目安です。／難易度＝NGSL（使われる頻度）による難しさ。やさしい＝よく使う語。",
+                            english: "US Grade = Dolch sight words (US elementary reading/spelling), native-speaker levels. Difficulty = NGSL word frequency; easy = very common words."
+                        ),
+                        tint: ParentPalette.primary
+                    )
                 }
             }
             .sheet(isPresented: $showingPaywall) {
@@ -5582,14 +5603,6 @@ private struct WordRegistrationManagerView: View {
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 12) {
-                            Text(language.text(
-                                japanese: "登録したタイミングごとにまとまっています。いらないまとまりは「まとめて削除」で消せます。",
-                                english: "Grouped by when they were added. Remove unwanted groups with Delete."
-                            ))
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
                             ForEach(batches) { batch in
                                 batchCard(batch)
                             }
@@ -5608,6 +5621,16 @@ private struct WordRegistrationManagerView: View {
                         Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
                     }
                     .font(.headline.weight(.bold))
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ParentInfoButton(
+                        title: language.text(japanese: "登録のまとめ", english: "Registrations"),
+                        message: language.text(
+                            japanese: "登録したタイミングごとにまとまっています。いらないまとまりは「まとめて削除」で消せます。",
+                            english: "Grouped by when they were added. Remove unwanted groups with Delete."
+                        ),
+                        tint: ParentPalette.primary
+                    )
                 }
             }
             .alert(
@@ -5764,15 +5787,15 @@ private struct ParentLegacyWordListPanel: View {
     var body: some View {
         ParentPanel(
             title: language.text(japanese: "単語リスト", english: "Word List"),
-            systemImage: "list.bullet.rectangle"
+            systemImage: "list.bullet.rectangle",
+            headerInfo: (
+                title: language.text(japanese: "書き方", english: "How to write"),
+                message: language.text(
+                    japanese: "1行に1単語。問題で日本語や説明を出す時は「friend | 友[とも]だち」のように書けます。",
+                    english: "One word per line. Add a test hint like \"friend | friend meaning.\""
+                )
+            )
         ) {
-            Text(language.text(
-                japanese: "1行に1単語。問題で日本語や説明を出す時は「friend | 友[とも]だち」のように書けます。",
-                english: "One word per line. Add a test hint like \"friend | friend meaning.\""
-            ))
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
-
             TextEditor(text: $rawWords)
                 .font(.title3.monospaced())
                 .frame(minHeight: 180, maxHeight: 210)
@@ -8058,6 +8081,15 @@ struct SessionInlineGradingView: View {
                     .font(.title3.weight(.heavy))
                     .foregroundStyle(ParentPalette.ink)
 
+                ParentInfoButton(
+                    title: language.text(japanese: "テストの採点", english: "Grade this test"),
+                    message: language.text(
+                        japanese: "ぜんぶOKがデフォルトです。直すものだけ「直そう」にして、採点完了を押してください。",
+                        english: "Everything defaults to OK. Mark only the ones to fix, then tap Done."
+                    ),
+                    tint: ParentPalette.primary
+                )
+
                 Spacer()
 
                 Button(action: onCancel) {
@@ -8072,14 +8104,6 @@ struct SessionInlineGradingView: View {
                 .buttonStyle(.plain)
                 .tapFeedback()
             }
-
-            Text(language.text(
-                japanese: "ぜんぶOKがデフォルトです。直すものだけ「直そう」にして、採点完了を押してください。",
-                english: "Everything defaults to OK. Mark only the ones to fix, then tap Done."
-            ))
-            .font(.callout.weight(.semibold))
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
 
             ScrollView {
                 LazyVGrid(columns: gradingColumns, alignment: .leading, spacing: 10) {
@@ -8951,7 +8975,14 @@ private struct LearningHistoryPanel: View {
     var body: some View {
         ParentPanel(
             title: language.text(japanese: "学習履歴", english: "Learning History"),
-            systemImage: "clock.arrow.circlepath"
+            systemImage: "clock.arrow.circlepath",
+            headerInfo: (
+                title: language.text(japanese: "学習履歴", english: "Learning History"),
+                message: language.text(
+                    japanese: "アプリの練習・テスト結果と、学校で返ってきた結果を時系列で保存しています。",
+                    english: "Saved records include app practice, app test results, and school test results."
+                )
+            )
         ) {
             HStack(spacing: 12) {
                 SettingValueRow(
@@ -8967,13 +8998,6 @@ private struct LearningHistoryPanel: View {
                     value: "\(model.schoolTestResults.count)"
                 )
             }
-
-            Text(language.text(
-                japanese: "アプリの練習・テスト結果と、学校で返ってきた結果を時系列で保存しています。",
-                english: "Saved records include app practice, app test results, and school test results."
-            ))
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
 
             if history.isEmpty {
                 EmptyStateView(
@@ -9054,7 +9078,14 @@ private struct HandwritingListPanel: View {
     var body: some View {
         ParentPanel(
             title: language.text(japanese: "手書き一覧", english: "Handwriting List"),
-            systemImage: "rectangle.stack.fill"
+            systemImage: "rectangle.stack.fill",
+            headerInfo: (
+                title: language.text(japanese: "手書き一覧", english: "Handwriting List"),
+                message: language.text(
+                    japanese: "練習・復習・テストで書いた内容を、親が確認しやすい大きさで表示します。",
+                    english: "Review all practice, review, and test handwriting at a larger size."
+                )
+            )
         ) {
             HStack {
                 SettingValueRow(
@@ -9064,13 +9095,6 @@ private struct HandwritingListPanel: View {
 
                 Spacer()
             }
-
-            Text(language.text(
-                japanese: "練習・復習・テストで書いた内容を、親が確認しやすい大きさで表示します。",
-                english: "Review all practice, review, and test handwriting at a larger size."
-            ))
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
 
             if handwritingEntries.isEmpty {
                 EmptyStateView(
