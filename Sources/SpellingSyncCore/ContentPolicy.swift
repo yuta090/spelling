@@ -41,7 +41,10 @@ public struct ContentPolicy: Equatable, Sendable {
     public var targetBand: Int
     /// 文法の天井（これを超える文法は出さない）。
     public var grammarCeiling: GrammarStage
-    /// 漢字の壁（和訳に使ってよい配当学年の上限。0=ひらがな主体）。
+    /// ルビ境界（この配当学年以下＝素／これを超える漢字＝ふりがな。0=すべてルビ）。
+    /// §13.3 改訂で採用フィルタ（isAdmissible / CoreProblem.frameAdmissible）の却下には**使わない**。
+    /// 段階ごとのルビ境界を表す値として保持（表示側 rubySegments へ渡す想定。現状アプリは
+    /// `childMaxKanjiGrade` で学年から別途算出しており、Core のロジックからは参照しない）。
     public var maxKanjiGrade: Int
     /// 出してよいジャンル（humor トグルを反映）。
     public var enabledGenres: Set<Genre>
@@ -119,8 +122,10 @@ extension ContentPolicy {
         // 文法の天井（タグ無しは通す）。
         if let stage = item.grammarStage, stage > policy.grammarCeiling { return false }
 
-        // 漢字の壁（和訳の漢字が許可学年以内か）。
-        guard KanjiLevelGate.isWithin(item.ja, maxGrade: policy.maxKanjiGrade) else { return false }
+        // 漢字は「捨てる」でなく表示側でルビ（§13.3 改訂2026-07-02）。超過漢字を含む和訳も採用し、
+        // `JapaneseReading.rubySegments` が当該学年以上の漢字にふりがなを振る。難度は下の語彙band で
+        // 担保する（漢字＝表記であり難度の主軸ではない）。policy.maxKanjiGrade はルビ境界として
+        // 表示側が使う値で、ここ（採用フィルタ）では却下に使わない。
 
         // 語彙band：まずビルド時の gradeBand で判定。超過時は登録語(例外)を除いた band で救済を試みる。
         // ⚠ 安全側＝非例外語の band が1つでも不明なら救済しない（不明を“安全”と誤判定しない）。
