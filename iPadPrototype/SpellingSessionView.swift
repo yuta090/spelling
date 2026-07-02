@@ -218,6 +218,13 @@ struct SpellingSessionView: View {
         max(190, writingCanvasHeight)
     }
 
+    /// 2こ横並びの書く欄の下限高さ。iPad mini など縦が狭い端末では上限のままだと
+    /// 画面をはみ出すため、下限つきの可変高さにして VStack が自動で縮められるようにする。
+    /// 2列は各セルが幅広いので、単一レイアウトより低くても書ける（上限は超えないよう min で丸める）。
+    private var compactPracticeCanvasMinHeight: CGFloat {
+        min(compactPracticeCanvasHeight, 120)
+    }
+
     private var compactPracticeBatchSize: Int {
         usesCompactPracticeGrid ? 2 : 1
     }
@@ -869,13 +876,17 @@ struct SpellingSessionView: View {
     }
 
     private var compactPracticeGrid: some View {
-        LazyVGrid(columns: compactPracticeGridColumns, spacing: 14) {
+        // 2こ横並びは常に1行。LazyVGrid は縦が狭い端末（iPad mini など）でも行高を
+        // 縮めず画面をはみ出すため、可変高さを伝搬できる HStack で組む（書く欄を
+        // 上限つきの可変高さにして、収まらないときは自動で縮める）[[child-ignores-horizontal-text]]。
+        HStack(alignment: .top, spacing: 14) {
             ForEach(compactPracticeWords) { word in
                 CompactPracticeWritingCell(
                     word: word,
                     drawing: compactPracticeDrawingBinding(for: word),
                     resetID: compactPracticeResetIDs[word.id] ?? word.id,
                     canvasHeight: compactPracticeCanvasHeight,
+                    canvasMinHeight: compactPracticeCanvasMinHeight,
                     guideLabels: guideLabels,
                     language: language,
                     isMissing: compactPracticeMissingWordIDs.contains(word.id),
@@ -896,6 +907,7 @@ struct SpellingSessionView: View {
                         compactPracticeCanvasSizes[word.id] = size
                     }
                 )
+                .frame(maxWidth: .infinity, alignment: .top)
             }
         }
         .frame(maxWidth: compactPracticeGridMaxWidth)
@@ -908,13 +920,6 @@ struct SpellingSessionView: View {
         .onValueChange(of: practiceRepeatIndex) { _ in
             prepareCompactPracticeBatch()
         }
-    }
-
-    private var compactPracticeGridColumns: [GridItem] {
-        [
-            GridItem(.flexible(minimum: 330), spacing: 14, alignment: .top),
-            GridItem(.flexible(minimum: 330), spacing: 14, alignment: .top)
-        ]
     }
 
     private var controls: some View {
@@ -1978,6 +1983,7 @@ private struct CompactPracticeWritingCell: View {
     @Binding var drawing: PKDrawing
     var resetID: UUID
     var canvasHeight: CGFloat
+    var canvasMinHeight: CGFloat
     var guideLabels: [String]
     var language: AppLanguage
     var isMissing: Bool
@@ -2053,7 +2059,7 @@ private struct CompactPracticeWritingCell: View {
                 sampleTextOpacity: sampleTextOpacity
             )
             .id(resetID)
-            .frame(height: canvasHeight)
+            .frame(minHeight: canvasMinHeight, maxHeight: canvasHeight)
             .background(
                 GeometryReader { proxy in
                     Color.clear
