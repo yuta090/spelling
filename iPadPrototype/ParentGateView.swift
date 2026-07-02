@@ -17,6 +17,10 @@ struct ParentGateChallenge: Equatable {
 /// 2桁の足し算の答えを手入力し、正解すると `onPass` を呼ぶ。
 /// 選択式ではないので当てずっぽうでは抜けにくい。子側 UX なので文字は最小。
 struct ParentGateView: View {
+    /// デバッグビルドで計算を省略して即通過するか（親の「デバッグ」トグルで切替）。
+    /// Release では無視される（常に計算問題を出す）。既定 false＝ゲートを出す（安全側）。
+    /// トレイリングクロージャを `onPass` に割り当てるため、こちらを先に置く。
+    var skipCalculationInDebug: Bool = false
     let onPass: () -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var challenge = ParentGateChallenge.random()
@@ -29,16 +33,20 @@ struct ParentGateView: View {
 
     var body: some View {
         #if DEBUG
-        // デバッグビルドでは大人ゲートの計算を省略し、そのまま通す。
-        // （開発中は保護者メニュー／採点を毎回開くので、毎回の暗算をなくす。効果は DEBUG のみ。）
-        // onAppear は再挿入で複数回呼ばれ得るので、通過は一度だけに絞る。
-        Color.clear
-            .frame(width: 1, height: 1)
-            .onAppear {
-                guard !didAutoPass else { return }
-                didAutoPass = true
-                onPass()
-            }
+        if skipCalculationInDebug {
+            // デバッグビルドで「スキップ」ON のときだけ、計算を省略してそのまま通す。
+            // （開発中は保護者メニュー／採点を毎回開くので、毎回の暗算をなくす。効果は DEBUG のみ。）
+            // onAppear は再挿入で複数回呼ばれ得るので、通過は一度だけに絞る。
+            Color.clear
+                .frame(width: 1, height: 1)
+                .onAppear {
+                    guard !didAutoPass else { return }
+                    didAutoPass = true
+                    onPass()
+                }
+        } else {
+            gateBody
+        }
         #else
         gateBody
         #endif

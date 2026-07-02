@@ -617,7 +617,7 @@ struct SpellingSessionView: View {
                 showingInlineGrading = true
             }
         }) {
-            ParentGateView {
+            ParentGateView(skipCalculationInDebug: model.debugSkipParentGate) {
                 pendingOpenGrading = true
                 showingGradingGate = false
             }

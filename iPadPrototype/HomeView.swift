@@ -281,7 +281,7 @@ struct HomeView: View {
                     showingParent = true
                 }
             }) {
-                ParentGateView {
+                ParentGateView(skipCalculationInDebug: model.debugSkipParentGate) {
                     pendingParentOpen = true
                     showingParentGate = false
                 }

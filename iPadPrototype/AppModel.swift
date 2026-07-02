@@ -302,6 +302,12 @@ final class AppModel: ObservableObject {
         didSet { persistenceStore.save(debugDisableDailyLimit, key: debugDisableDailyLimitKey) }
     }
 
+    /// デバッグ用：大人ゲートの計算を省略して即通過する（開発中は保護者メニュー／採点を毎回開くので手間を省く）。
+    /// 既定 true。false にすると本番同様に計算問題を出す。効果は DEBUG ビルドの `ParentGateView` のみ（Release では無視）。
+    @Published var debugSkipParentGate: Bool {
+        didSet { persistenceStore.save(debugSkipParentGate, key: debugSkipParentGateKey) }
+    }
+
     #if DEBUG
     /// デバッグ用：テストで1問終わるごとに、手書きを3モデルのAI(VLM)へ送って判定を比較保存する。
     @Published var debugAIJudgeOnTest: Bool {
@@ -575,6 +581,7 @@ final class AppModel: ObservableObject {
     private let cachedEntitlementKey = "spellingTrainer.cachedEntitlement"
     private let debugUnlockAllKey = "spellingTrainer.debugUnlockAll"
     private let debugDisableDailyLimitKey = "spellingTrainer.debugDisableDailyLimit"
+    private let debugSkipParentGateKey = "spellingTrainer.debugSkipParentGate"
     #if DEBUG
     private let debugAIJudgeOnTestKey = "spellingTrainer.debugAIJudgeOnTest"
     private let aiJudgmentsKey = "spellingTrainer.aiJudgments"
@@ -629,6 +636,8 @@ final class AppModel: ObservableObject {
         isSubscribed = cachedEntitlement.isActive(now: Date())
         debugUnlockAll = persistenceStore.load(Bool.self, key: debugUnlockAllKey) ?? false
         debugDisableDailyLimit = persistenceStore.load(Bool.self, key: debugDisableDailyLimitKey) ?? false
+        // 大人ゲートのスキップは既定 ON（開発中の手間を省く）。効果は DEBUG のみ。
+        debugSkipParentGate = persistenceStore.load(Bool.self, key: debugSkipParentGateKey) ?? true
         #if DEBUG
         debugAIJudgeOnTest = persistenceStore.load(Bool.self, key: debugAIJudgeOnTestKey) ?? false
         #endif
