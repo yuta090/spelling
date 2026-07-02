@@ -106,9 +106,9 @@ final class OverviewStatsTests: XCTestCase {
         let mon = makeDate(2026, 6, 22, cal: cal)
         let tue = makeDate(2026, 6, 23, cal: cal)
         let events = [
-            LearningEvent(word: "cat", date: addingHours(mon, 1, cal: cal), cleared: true),
-            LearningEvent(word: "dog", date: addingHours(mon, 5, cal: cal), cleared: false),
-            LearningEvent(word: "sun", date: addingHours(tue, 9, cal: cal), cleared: true),
+            LearningEvent(word: "cat", date: addingHours(mon, 1, cal: cal), cleared: true, kind: .test(graded: true)),
+            LearningEvent(word: "dog", date: addingHours(mon, 5, cal: cal), cleared: false, kind: .test(graded: true)),
+            LearningEvent(word: "sun", date: addingHours(tue, 9, cal: cal), cleared: true, kind: .test(graded: true)),
         ]
         let series = DailyActivity.counts(events: events, dayStarts: [mon, tue], calendar: cal)
         XCTAssertEqual(series, [2, 1])

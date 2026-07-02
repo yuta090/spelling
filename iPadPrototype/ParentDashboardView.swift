@@ -509,6 +509,34 @@ private struct OverviewIconChip: View {
     }
 }
 
+/// 「前の期間と比べてどうか」の小さなキャプション。きろくタブの3カード（正答率・利用時間・期間レポート）で共通利用し、
+/// 見た目の言語（矢印の使い方）を統一する。向き判定と丸めは `SpellingSyncCore.Trend`。
+private struct TrendCaption: View {
+    var text: String
+    var tint: Color
+
+    var body: some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(tint)
+    }
+}
+
+/// トレンドの向きを表す矢印文字。3カードで統一して使う（テキスト埋め込み方式）。
+private func trendArrowText(_ direction: TrendDirection) -> String {
+    switch direction {
+    case .up: return "↑"
+    case .down: return "↓"
+    case .flat: return "→"
+    }
+}
+
+/// 手書き読み取り結果（recognizedText）を示すラベル。親向け表示では技術用語「OCR」を避け「よみとり」と言う
+/// （デバッグ専用ビュー AIJudgmentDebugView 等は技術者向けなので対象外）。
+private func readingLabel(language: AppLanguage) -> String {
+    language.text(japanese: "よみとり", english: "Read")
+}
+
 // MARK: ヒーロー帯（アバター＋名前＋連続日数）
 
 private struct OverviewHeroStrip: View {
@@ -519,6 +547,11 @@ private struct OverviewHeroStrip: View {
         let name = stats.childName.trimmingCharacters(in: .whitespaces)
         if name.isEmpty { return language.text(japanese: "がんばりの ようす", english: "Overview") }
         return language.text(japanese: "\(name)の ようす", english: "\(name)'s overview")
+    }
+
+    /// 連続は続いている（streakDays > 0）が、今日はまだ学習していない時に注記を出す。
+    private var streakNeedsTodayNote: Bool {
+        stats.streakDays > 0 && !stats.streakIsActiveToday
     }
 
     var body: some View {
@@ -545,12 +578,18 @@ private struct OverviewHeroStrip: View {
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Image(systemName: "flame.fill")
                         .font(.title2.weight(.bold))
-                        .foregroundStyle(ParentPalette.warning)
+                        .foregroundStyle(ParentPalette.warning.opacity(streakNeedsTodayNote ? 0.5 : 1))
                     Text("\(stats.streakDays)")
                         .font(.system(size: 40, weight: .heavy, design: .rounded))
                         .foregroundStyle(ParentPalette.ink)
                     Text(language.text(japanese: "日れんぞく", english: "day streak"))
                         .font(.subheadline.weight(.bold))
+                        .foregroundStyle(ParentPalette.neutral)
+                }
+                // 連続は続いているが今日はまだ学習していない時（朝など）に、0日に見えないよう小さく添える。
+                if streakNeedsTodayNote {
+                    Text(language.text(japanese: "きょうは まだ", english: "Not yet today"))
+                        .font(.caption2.weight(.semibold))
                         .foregroundStyle(ParentPalette.neutral)
                 }
                 HStack(spacing: 6) {
@@ -596,14 +635,14 @@ private struct OverviewWordsCard: View {
                         .foregroundStyle(ParentPalette.ink)
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text("\(stats.totalWords)")
+                    Text("\(stats.masteredWords)")
                         .font(.system(size: 32, weight: .heavy, design: .rounded))
                         .foregroundStyle(ParentPalette.ink)
                     Text(language.text(japanese: "語", english: "words"))
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(ParentPalette.neutral)
                 }
-                Text(language.text(japanese: "マスター \(stats.masteredWords)語", english: "\(stats.masteredWords) mastered"))
+                Text(language.text(japanese: "とりくんだ \(stats.totalWords)語", english: "\(stats.totalWords) attempted"))
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ParentPalette.neutral)
                 ProgressBar(ratio: stats.masteryRatio, tint: ParentPalette.success)
@@ -683,7 +722,44 @@ private struct OverviewAccuracyCard: View {
                 Text(moodText)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ParentPalette.neutral)
+                // 前の14日と比べてどうか（親が成長を把握できるように）。
+                // flat判定は±2pt以内。データが少ない（両期間とも採点確定テスト5件未満）ときは stats 側で nil になり出さない。
+                if let delta = stats.accuracyDeltaPoints {
+                    TrendCaption(text: accuracyTrendText(delta: delta), tint: accuracyTrendTint(delta: delta))
+                }
+                // 親の採点待ち件数を小さく添える（採点すると正答率が変わり得るため）。
+                // ※件数は「つける」タブの未採点と同じ定義。うち needsReview/rewrite は正答率の分母から除外済み。
+                if stats.pendingGradingCount > 0 {
+                    Text(language.text(
+                        japanese: "未採点 \(stats.pendingGradingCount)件",
+                        english: "\(stats.pendingGradingCount) not graded yet"
+                    ))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(ParentPalette.warning)
+                }
             }
+        }
+    }
+
+    private func accuracyTrendDirection(delta: Int) -> TrendDirection {
+        Trend.direction(current: Double(delta), previous: 0, flatTolerance: 2)
+    }
+
+    private func accuracyTrendText(delta: Int) -> String {
+        let direction = accuracyTrendDirection(delta: delta)
+        let arrow = trendArrowText(direction)
+        if direction == .flat {
+            return language.text(japanese: "前の14日より \(arrow) かわらず", english: "\(arrow) about the same as the previous 14 days")
+        }
+        let signed = delta > 0 ? "+\(delta)" : "\(delta)"
+        return language.text(japanese: "前の14日より \(arrow)\(signed)", english: "\(arrow)\(signed) vs previous 14 days")
+    }
+
+    private func accuracyTrendTint(delta: Int) -> Color {
+        switch accuracyTrendDirection(delta: delta) {
+        case .up: return ParentPalette.success
+        case .down: return ParentPalette.warning
+        case .flat: return ParentPalette.neutral
         }
     }
 }
@@ -718,8 +794,24 @@ private struct OverviewUsageCard: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(ParentPalette.neutral)
                 Sparkline(values: stats.usageWeekSeries, tint: ParentPalette.info)
+                // 先週のいまごろ（同じ経過日数まで）と比べてどうか。増減に善悪をつけない指標なので色は常に中立。
+                // flat判定は±5分以内。前週・今週がどちらも0分ならstats側でnilになり出さない。
+                if let prevSeconds = stats.usagePrevWeekSeconds {
+                    TrendCaption(text: usageTrendText(currentSeconds: stats.usageWeekSeconds, previousSeconds: prevSeconds), tint: ParentPalette.neutral)
+                }
             }
         }
+    }
+
+    private func usageTrendText(currentSeconds: Int, previousSeconds: Int) -> String {
+        let deltaMinutes = (currentSeconds / 60) - (previousSeconds / 60)
+        let direction = Trend.direction(current: Double(deltaMinutes), previous: 0, flatTolerance: 5)
+        let arrow = trendArrowText(direction)
+        if direction == .flat {
+            return language.text(japanese: "先週のいまごろより \(arrow) おなじくらい", english: "\(arrow) about the same as this time last week")
+        }
+        let signed = deltaMinutes > 0 ? "+\(deltaMinutes)" : "\(deltaMinutes)"
+        return language.text(japanese: "先週のいまごろより \(arrow)\(signed)ぶん", english: "\(arrow)\(signed)m vs this time last week")
     }
 
     /// 秒→「Xぶん」/「X時間Yぶん」。0は「0ぶん」。
@@ -1472,34 +1564,16 @@ private struct ParentStepChooserRow: View {
     }
 }
 
-private enum ParentRecordDetailSheet: String, Identifiable {
-    case appTests
-    case handwriting
-    case allHistory
-
-    var id: String { rawValue }
-
-    func title(language: AppLanguage) -> String {
-        switch self {
-        case .appTests:
-            return language.text(japanese: "アプリのテスト結果", english: "App Test Results")
-        case .handwriting:
-            return language.text(japanese: "手書き一覧", english: "Handwriting")
-        case .allHistory:
-            return language.text(japanese: "すべての記録", english: "All Records")
-        }
+/// 「その他の記録」に出す唯一の詳細シート（すべての記録＝学習履歴）のタイトル・アイコン。
+/// かつては アプリのテスト結果／手書き一覧／すべての記録 の3種があったが、
+/// 中身がほぼ同じ attempts の別ビューで導線が重複していたため「すべての記録」1本に統合し、
+/// フィルタ（テスト／れんしゅう／学校）で絞り込めるようにした。
+private enum ParentRecordDetail {
+    static func title(language: AppLanguage) -> String {
+        language.text(japanese: "すべての記録", english: "All Records")
     }
 
-    var systemImage: String {
-        switch self {
-        case .appTests:
-            return "checklist.checked"
-        case .handwriting:
-            return "pencil.and.scribble"
-        case .allHistory:
-            return "clock.arrow.circlepath"
-        }
-    }
+    static let systemImage = "clock.arrow.circlepath"
 }
 
 /// 親向け「期間レポート」カード（スリム版）。直近7/30日の頑張りを数字で見せる（努力を肯定する）。
@@ -1514,6 +1588,8 @@ private struct LearningReportCard: View {
     var body: some View {
         // 1回だけ集計する（body 内で複数回参照しても再集計しないように local に保持）。
         let report = model.learningReport(days: days)
+        // 前の期間（すぐ手前・同じ長さ）との比較。「練習・テスト回数」タイルにだけ添える。
+        let previousReport = model.previousLearningReport(days: days)
         ParentPanel(
             title: language.text(japanese: "期間レポート", english: "Period Report"),
             systemImage: "chart.bar.fill",
@@ -1534,7 +1610,14 @@ private struct LearningReportCard: View {
                         .foregroundStyle(.secondary)
                 } else {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 10)], spacing: 10) {
-                        metric(report.totalEvents, label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"), tint: ParentPalette.primary, systemImage: "checkmark.seal.fill")
+                        metric(
+                            report.totalEvents,
+                            label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"),
+                            tint: ParentPalette.primary,
+                            systemImage: "checkmark.seal.fill",
+                            trendText: totalEventsTrendText(current: report.totalEvents, previous: previousReport.totalEvents),
+                            trendTint: totalEventsTrendTint(current: report.totalEvents, previous: previousReport.totalEvents)
+                        )
                         metric(report.distinctWords, label: language.text(japanese: "とりくんだ語", english: "Words worked on"), tint: ParentPalette.info, systemImage: "book.fill")
                         metric(report.activeDays, label: language.text(japanese: "学習した日数", english: "Active days"), tint: ParentPalette.warning, systemImage: "calendar")
                     }
@@ -1543,7 +1626,25 @@ private struct LearningReportCard: View {
         }
     }
 
-    private func metric(_ value: Int, label: String, tint: Color, systemImage: String) -> some View {
+    /// 「練習・テスト回数」の前期間比テキスト。前期間・今期間がどちらも0なら出さない（nil）。
+    private func totalEventsTrendText(current: Int, previous: Int) -> String? {
+        guard current != 0 || previous != 0 else { return nil }
+        let delta = current - previous
+        let direction = Trend.direction(current: Double(delta), previous: 0, flatTolerance: 0)
+        let arrow = trendArrowText(direction)
+        if direction == .flat {
+            return language.text(japanese: "前の\(days)日より \(arrow) ±0", english: "\(arrow) ±0 vs previous \(days) days")
+        }
+        let signed = delta > 0 ? "+\(delta)" : "\(delta)"
+        return language.text(japanese: "前の\(days)日より \(arrow)\(signed)回", english: "\(arrow)\(signed) vs previous \(days) days")
+    }
+
+    /// 回数の減少を責める色にしない：増えたときだけ success、それ以外（減った・かわらず）は neutral。
+    private func totalEventsTrendTint(current: Int, previous: Int) -> Color {
+        current > previous ? ParentPalette.success : ParentPalette.neutral
+    }
+
+    private func metric(_ value: Int, label: String, tint: Color, systemImage: String, trendText: String? = nil, trendTint: Color = ParentPalette.neutral) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
                 Image(systemName: systemImage)
@@ -1557,6 +1658,9 @@ private struct LearningReportCard: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+            if let trendText {
+                TrendCaption(text: trendText, tint: trendTint)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
@@ -1575,11 +1679,78 @@ private struct LearningReportCard: View {
     }
 }
 
+/// 「よくまちがえる単語」カード（親が子の苦手を単語粒度で見る）。直近30日の上位5語を表示。
+private struct StrugglingWordsCard: View {
+    @EnvironmentObject private var model: AppModel
+    var language: AppLanguage
+
+    var body: some View {
+        // 1回だけ集計する（body 内で複数回参照しても再集計しないように local に保持）。
+        let words = model.strugglingWords(days: 30, limit: 5)
+        ParentPanel(
+            title: language.text(japanese: "よくまちがえる単語", english: "Frequently Missed Words"),
+            systemImage: "exclamationmark.triangle.fill",
+            tint: ParentPalette.warning,
+            showsHeader: true
+        ) {
+            if words.isEmpty {
+                Text(language.text(japanese: "この30日で よくまちがえた単語はありません。", english: "No frequently missed words in the last 30 days."))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(words, id: \.word) { entry in
+                        StrugglingWordRow(entry: entry, language: language)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct StrugglingWordRow: View {
+    var entry: StrugglingWord
+    var language: AppLanguage
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text(entry.word)
+                .font(.body.weight(.bold).monospaced())
+                .foregroundStyle(ParentPalette.ink)
+                .lineLimit(1)
+
+            Spacer(minLength: 8)
+
+            if entry.clearedAfterLastMiss {
+                Text(language.text(japanese: "その後○", english: "Fixed"))
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(ParentPalette.success)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(ParentPalette.successSoft)
+                    .clipShape(Capsule())
+            }
+
+            Text(formattedCompactResultDate(entry.lastMissDate, language: language))
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+
+            Text(language.text(japanese: "×\(entry.missCount)回", english: "×\(entry.missCount)"))
+                .font(.caption.weight(.bold))
+                .foregroundStyle(ParentPalette.warning)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(ParentPalette.warningSoft.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
 private struct ParentRecordsWorkspace: View {
     @EnvironmentObject private var model: AppModel
     @State private var showingOtherSteps = false
     @State private var showingMoreRecords = false
-    @State private var presentedRecordDetail: ParentRecordDetailSheet?
+    @State private var showingRecordDetail = false
     var language: AppLanguage
 
     private var orderedSteps: [WordStep] {
@@ -1602,6 +1773,9 @@ private struct ParentRecordsWorkspace: View {
             // 期間レポート（スリム版）。連続日数・おぼえた語は上段サマリーと重複するため出さず、
             // サマリーに無い「回数・とりくんだ語・学習日数」＋7/30日切替だけを残す。
             LearningReportCard(language: language)
+                .environmentObject(model)
+
+            StrugglingWordsCard(language: language)
                 .environmentObject(model)
 
             ParentPanel(
@@ -1648,8 +1822,8 @@ private struct ParentRecordsWorkspace: View {
 
             if !orderedSteps.isEmpty {
                 DisclosureGroup(isExpanded: $showingMoreRecords) {
-                    ParentRecordDetailLauncher(language: language) { detail in
-                        presentedRecordDetail = detail
+                    ParentRecordDetailLauncher(language: language) {
+                        showingRecordDetail = true
                     }
                     .padding(.top, 8)
                 } label: {
@@ -1661,8 +1835,8 @@ private struct ParentRecordsWorkspace: View {
                 .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: 4)
             }
         }
-        .sheet(item: $presentedRecordDetail) { detail in
-            ParentRecordDetailSheetView(detail: detail, language: language)
+        .sheet(isPresented: $showingRecordDetail) {
+            ParentRecordDetailSheetView(language: language)
                 .environmentObject(model)
                 .presentationDetents([.large])
         }
@@ -1724,48 +1898,12 @@ private struct ParentOtherStepRecordsHeader: View {
 
 private struct ParentRecordDetailLauncher: View {
     var language: AppLanguage
-    var open: (ParentRecordDetailSheet) -> Void
+    var open: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        Button(action: open) {
             HStack(spacing: 10) {
-                ParentRecordDetailButton(
-                    detail: .appTests,
-                    language: language
-                ) {
-                    open(.appTests)
-                }
-
-                ParentRecordDetailButton(
-                    detail: .handwriting,
-                    language: language
-                ) {
-                    open(.handwriting)
-                }
-
-                ParentRecordDetailButton(
-                    detail: .allHistory,
-                    language: language
-                ) {
-                    open(.allHistory)
-                }
-            }
-        }
-        .padding(14)
-        .background(ParentPalette.surfaceTint)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-}
-
-private struct ParentRecordDetailButton: View {
-    var detail: ParentRecordDetailSheet
-    var language: AppLanguage
-    var action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Image(systemName: detail.systemImage)
+                Image(systemName: ParentRecordDetail.systemImage)
                     .font(.headline.weight(.bold))
                     .foregroundStyle(ParentPalette.primary)
                     .frame(width: 32, height: 32)
@@ -1773,7 +1911,7 @@ private struct ParentRecordDetailButton: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(detail.title(language: language))
+                    Text(ParentRecordDetail.title(language: language))
                         .font(.subheadline.weight(.heavy))
                         .foregroundStyle(ParentPalette.ink)
                         .lineLimit(1)
@@ -1797,12 +1935,14 @@ private struct ParentRecordDetailButton: View {
         }
         .buttonStyle(.plain)
         .tapFeedback()
+        .padding(14)
+        .background(ParentPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
 private struct ParentRecordDetailSheetView: View {
     @Environment(\.dismiss) private var dismiss
-    var detail: ParentRecordDetailSheet
     var language: AppLanguage
 
     var body: some View {
@@ -1811,12 +1951,12 @@ private struct ParentRecordDetailSheetView: View {
                 ParentBackground()
 
                 ScrollView {
-                    detailPanel
+                    LearningHistoryPanel(language: language)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
                         .padding(22)
                 }
             }
-            .navigationTitle(detail.title(language: language))
+            .navigationTitle(ParentRecordDetail.title(language: language))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -1830,135 +1970,6 @@ private struct ParentRecordDetailSheetView: View {
                 }
             }
         }
-    }
-
-    @ViewBuilder
-    private var detailPanel: some View {
-        switch detail {
-        case .appTests:
-            ParentAppTestResultsPanel(language: language)
-        case .handwriting:
-            HandwritingListPanel(language: language)
-        case .allHistory:
-            LearningHistoryPanel(language: language)
-        }
-    }
-}
-
-private struct ParentAppTestResultsPanel: View {
-    @EnvironmentObject private var model: AppModel
-    var language: AppLanguage
-
-    private var attempts: [SpellingAttempt] {
-        Array(model.attempts.reversed())
-    }
-
-    private var correctCount: Int {
-        model.attempts.filter { $0.decision == .autoCorrect || $0.parentReviewDecision == .approved }.count
-    }
-
-    var body: some View {
-        ParentPanel(
-            title: language.text(japanese: "アプリのテスト結果", english: "App Test Results"),
-            systemImage: "checklist.checked"
-        ) {
-            HStack(spacing: 12) {
-                SettingValueRow(
-                    title: language.text(japanese: "回答", english: "Answers"),
-                    value: "\(model.attempts.count)"
-                )
-                SettingValueRow(
-                    title: language.text(japanese: "正解", english: "Correct"),
-                    value: "\(correctCount)"
-                )
-                SettingValueRow(
-                    title: language.text(japanese: "見直し", english: "Review"),
-                    value: "\(model.reviewWords.count)"
-                )
-            }
-
-            if attempts.isEmpty {
-                EmptyStateView(
-                    language.text(japanese: "まだアプリのテスト結果はありません", english: "No app test results yet"),
-                    systemImage: "checklist",
-                    description: Text(language.text(japanese: "子供がテストをするとここに表示されます。", english: "App test answers will appear here."))
-                )
-                .frame(minHeight: 260)
-            } else {
-                LazyVStack(spacing: 12) {
-                    ForEach(attempts) { attempt in
-                        ParentAppTestResultRow(attempt: attempt, language: language)
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct ParentAppTestResultRow: View {
-    var attempt: SpellingAttempt
-    var language: AppLanguage
-
-    private var isCleared: Bool {
-        attempt.parentReviewDecision == .approved
-            || (attempt.parentReviewDecision == .unreviewed && attempt.decision == .autoCorrect)
-    }
-
-    private var tint: Color {
-        isCleared ? ParentPalette.success : ParentPalette.warning
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 9) {
-            HStack(spacing: 10) {
-                Image(systemName: isCleared ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(tint)
-                    .frame(width: 34, height: 34)
-                    .background(tint.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(attempt.word)
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(ParentPalette.ink)
-                    Text(formattedLocalizedDateTime(attempt.date, language: language))
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                Text(attempt.parentReviewDecision == .unreviewed ? attempt.decision.label(language: language) : attempt.parentReviewDecision.label(language: language))
-                    .font(.caption.weight(.heavy))
-                    .foregroundStyle(tint)
-                    .padding(.vertical, 5)
-                    .padding(.horizontal, 8)
-                    .background(tint.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-
-            if !attempt.recognizedText.isEmpty {
-                Text("OCR: \(attempt.recognizedText)")
-                    .font(.caption.monospaced().weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
-
-            if let drawingData = attempt.drawingData {
-                DrawingPreview(drawingData: drawingData, canvasSize: attempt.canvasSize)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 150)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.22), lineWidth: 1)
-                    )
-            }
-        }
-        .padding(10)
-        .background(ParentPalette.surfaceTint)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
@@ -8446,7 +8457,7 @@ private struct ParentAttemptGradingCard: View {
                 word: attempt.word,
                 decision: decision,
                 language: language,
-                detail: attempt.recognizedText.isEmpty ? nil : "OCR: \(attempt.recognizedText)"
+                detail: attempt.recognizedText.isEmpty ? nil : "\(readingLabel(language: language)): \(attempt.recognizedText)"
             )
 
             if let drawingData = attempt.drawingData {
@@ -9255,22 +9266,52 @@ private struct ReviewAttemptSummary: Identifiable {
     var needsPracticeCount: Int
 }
 
+/// 学習履歴の3種エントリの分類（フィルタチップ用）。
+/// かつては「アプリのテスト結果」「手書き一覧」「すべての記録」の3画面に分かれていたが、
+/// 中身がほぼ同じ attempts の別ビューで導線が重複していたため、この履歴パネル1本に統合し、
+/// フィルタで絞り込む形にした。
+private enum LearningHistoryCategory: String, CaseIterable, Identifiable {
+    case test
+    case practice
+    case school
+
+    var id: String { rawValue }
+
+    func label(language: AppLanguage) -> String {
+        switch self {
+        case .test: return language.text(japanese: "テスト", english: "Test")
+        case .practice: return language.text(japanese: "れんしゅう", english: "Practice")
+        case .school: return language.text(japanese: "学校", english: "School")
+        }
+    }
+}
+
 private struct LearningHistoryPanel: View {
     @EnvironmentObject private var model: AppModel
     var language: AppLanguage
+    @State private var selectedFilter: LearningHistoryCategory?
 
-    private var history: [LearningHistoryEntry] {
-        let testEntries = model.attempts.map { attempt in
-            LearningHistoryEntry(
+    private func buildHistory() -> [LearningHistoryEntry] {
+        // 親が採点済み（unreviewed以外）ならその採点結果を優先して表示する。
+        // isCleared の意味論は削除済み ParentAppTestResultRow と揃える:
+        // 「親approved」または「未採点(unreviewed)でautoCorrect」を“できた”として扱う。
+        let testEntries = model.attempts.map { attempt -> LearningHistoryEntry in
+            let isCleared = attempt.parentReviewDecision == .approved
+                || (attempt.parentReviewDecision == .unreviewed && attempt.decision == .autoCorrect)
+            let statusLabel = attempt.parentReviewDecision == .unreviewed
+                ? attempt.decision.label(language: language)
+                : attempt.parentReviewDecision.label(language: language)
+            return LearningHistoryEntry(
                 id: "test-\(attempt.id.uuidString)",
                 date: attempt.date,
                 word: attempt.word,
                 modeLabel: language.text(japanese: "アプリのテスト", english: "App Test"),
-                detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
-                systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
-                tint: attempt.decision == .autoCorrect ? ParentPalette.success : ParentPalette.warning,
+                detail: "\(statusLabel) ・ \(readingLabel(language: language)): \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
+                systemImage: isCleared ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
+                tint: isCleared ? ParentPalette.success : ParentPalette.warning,
                 drawingData: attempt.drawingData,
-                canvasSize: attempt.canvasSize
+                canvasSize: attempt.canvasSize,
+                category: .test
             )
         }
 
@@ -9288,7 +9329,8 @@ private struct LearningHistoryPanel: View {
                 systemImage: "pencil.and.scribble",
                 tint: ParentPalette.primary,
                 drawingData: sample.drawingData,
-                canvasSize: sample.canvasSize
+                canvasSize: sample.canvasSize,
+                category: .practice
             )
         }
 
@@ -9302,7 +9344,8 @@ private struct LearningHistoryPanel: View {
                 systemImage: "graduationcap.fill",
                 tint: ParentPalette.primary,
                 drawingData: nil,
-                canvasSize: nil
+                canvasSize: nil,
+                category: .school
             )
         }
 
@@ -9310,6 +9353,11 @@ private struct LearningHistoryPanel: View {
     }
 
     var body: some View {
+        // 履歴スナップショットは1回だけ組み立てる（computed property のままだと
+        // チップ件数・フィルタ・空判定のたびに全件の生成＋sortが走るため）。
+        let history = buildHistory()
+        let countsByCategory = Dictionary(grouping: history, by: \.category).mapValues(\.count)
+        let filteredHistory = selectedFilter.map { filter in history.filter { $0.category == filter } } ?? history
         ParentPanel(
             title: language.text(japanese: "学習履歴", english: "Learning History"),
             systemImage: "clock.arrow.circlepath",
@@ -9336,9 +9384,17 @@ private struct LearningHistoryPanel: View {
                 )
             }
 
-            if history.isEmpty {
+            LearningHistoryFilterBar(
+                selectedFilter: $selectedFilter,
+                count: { category in category.map { countsByCategory[$0] ?? 0 } ?? history.count },
+                language: language
+            )
+
+            if filteredHistory.isEmpty {
                 EmptyStateView(
-                    language.text(japanese: "まだ履歴がありません", english: "No history yet"),
+                    history.isEmpty
+                        ? language.text(japanese: "まだ履歴がありません", english: "No history yet")
+                        : language.text(japanese: "この種類の記録はありません。", english: "No records of this type yet."),
                     systemImage: "clock",
                     description: Text(language.text(japanese: "練習やテストをするとここに残ります。", english: "Practice and test records will appear here."))
                 )
@@ -9346,7 +9402,7 @@ private struct LearningHistoryPanel: View {
             } else {
                 ScrollView {
                     VStack(spacing: 12) {
-                        ForEach(history) { entry in
+                        ForEach(filteredHistory) { entry in
                             LearningHistoryCard(entry: entry, language: language)
                         }
                     }
@@ -9354,6 +9410,68 @@ private struct LearningHistoryPanel: View {
                 .frame(maxHeight: 620)
             }
         }
+    }
+}
+
+/// すべて／テスト／れんしゅう／学校 のフィルタチップ列。
+private struct LearningHistoryFilterBar: View {
+    @Binding var selectedFilter: LearningHistoryCategory?
+    var count: (LearningHistoryCategory?) -> Int
+    var language: AppLanguage
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                LearningHistoryFilterChip(
+                    title: language.text(japanese: "すべて", english: "All"),
+                    count: count(nil),
+                    isSelected: selectedFilter == nil
+                ) {
+                    selectedFilter = nil
+                }
+
+                ForEach(LearningHistoryCategory.allCases) { category in
+                    LearningHistoryFilterChip(
+                        title: category.label(language: language),
+                        count: count(category),
+                        isSelected: selectedFilter == category
+                    ) {
+                        selectedFilter = category
+                    }
+                }
+            }
+            .padding(.vertical, 1)
+        }
+    }
+}
+
+private struct LearningHistoryFilterChip: View {
+    var title: String
+    var count: Int
+    var isSelected: Bool
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                Text(title)
+                    .font(.caption.weight(.heavy))
+                Text("\(count)")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(isSelected ? .white.opacity(0.85) : ParentPalette.neutral)
+            }
+            .padding(.vertical, 7)
+            .padding(.horizontal, 12)
+            .background(isSelected ? ParentPalette.primary : Color.white.opacity(0.9))
+            .foregroundStyle(isSelected ? .white : ParentPalette.ink)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule().stroke(ParentPalette.primary.opacity(isSelected ? 0 : 0.16), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -9367,142 +9485,7 @@ private struct LearningHistoryEntry: Identifiable {
     var tint: Color
     var drawingData: Data?
     var canvasSize: DrawingCanvasSize?
-}
-
-private struct HandwritingListPanel: View {
-    @EnvironmentObject private var model: AppModel
-    var language: AppLanguage
-
-    private var handwritingEntries: [LearningHistoryEntry] {
-        let testEntries = model.attempts.compactMap { attempt -> LearningHistoryEntry? in
-            guard let drawingData = attempt.drawingData else {
-                return nil
-            }
-            return LearningHistoryEntry(
-                id: "test-writing-\(attempt.id.uuidString)",
-                date: attempt.date,
-                word: attempt.word,
-                modeLabel: language.text(japanese: "アプリのテスト", english: "App Test"),
-                detail: "\(attempt.decision.label(language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
-                systemImage: attempt.decision == .autoCorrect ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
-                tint: attempt.decision == .autoCorrect ? ParentPalette.success : ParentPalette.warning,
-                drawingData: drawingData,
-                canvasSize: attempt.canvasSize
-            )
-        }
-
-        let practiceEntries = model.practiceSamples.map { sample in
-            let modeLabel = sample.mode == SessionMode.review.rawValue
-                ? language.text(japanese: "ふくしゅう", english: "Review")
-                : language.text(japanese: "れんしゅう", english: "Practice")
-
-            return LearningHistoryEntry(
-                id: "practice-writing-\(sample.id.uuidString)",
-                date: sample.date,
-                word: sample.word,
-                modeLabel: modeLabel,
-                detail: language.text(japanese: "手書き記録", english: "Handwriting saved"),
-                systemImage: "pencil.and.scribble",
-                tint: ParentPalette.primary,
-                drawingData: sample.drawingData,
-                canvasSize: sample.canvasSize
-            )
-        }
-
-        return (testEntries + practiceEntries).sorted { $0.date > $1.date }
-    }
-
-    var body: some View {
-        ParentPanel(
-            title: language.text(japanese: "手書き一覧", english: "Handwriting List"),
-            systemImage: "rectangle.stack.fill",
-            headerInfo: (
-                title: language.text(japanese: "手書き一覧", english: "Handwriting List"),
-                message: language.text(
-                    japanese: "練習・復習・テストで書いた内容を、親が確認しやすい大きさで表示します。",
-                    english: "Review all practice, review, and test handwriting at a larger size."
-                )
-            )
-        ) {
-            HStack {
-                SettingValueRow(
-                    title: language.text(japanese: "保存された手書き", english: "Saved handwriting"),
-                    value: "\(handwritingEntries.count)"
-                )
-
-                Spacer()
-            }
-
-            if handwritingEntries.isEmpty {
-                EmptyStateView(
-                    language.text(japanese: "まだ手書きがありません", english: "No handwriting yet"),
-                    systemImage: "pencil.and.scribble",
-                    description: Text(language.text(japanese: "練習やテストをするとここに残ります。", english: "Practice and test handwriting will appear here."))
-                )
-                .frame(minHeight: 260)
-            } else {
-                ScrollView {
-                    VStack(spacing: 14) {
-                        ForEach(handwritingEntries) { entry in
-                            ParentHandwritingListCard(entry: entry, language: language)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .top)
-                }
-                .frame(maxHeight: 760)
-            }
-        }
-    }
-}
-
-private struct ParentHandwritingListCard: View {
-    var entry: LearningHistoryEntry
-    var language: AppLanguage
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: entry.systemImage)
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(entry.tint)
-                    .frame(width: 34, height: 34)
-
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(entry.word)
-                        .font(.title2.weight(.bold))
-                        .foregroundStyle(ParentPalette.ink)
-                    Text("\(entry.modeLabel) ・ \(formattedLocalizedDateTime(entry.date, language: language))")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    Text(entry.detail)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-            }
-
-            if let drawingData = entry.drawingData {
-                DrawingPreview(drawingData: drawingData, canvasSize: entry.canvasSize)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 220)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.24), lineWidth: 1)
-                    )
-            }
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(ParentPalette.surfaceTint)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
-        )
-    }
+    var category: LearningHistoryCategory
 }
 
 private struct LearningHistoryCard: View {
@@ -9565,8 +9548,8 @@ private struct ReviewAttemptSummaryCard: View {
                     Text(summary.word)
                         .font(.headline.weight(.bold))
                     Text(language.text(
-                        japanese: "最新: \(formattedLocalizedTime(attempt.date, language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
-                        english: "Latest: \(formattedLocalizedTime(attempt.date, language: language)) ・ OCR: \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)"
+                        japanese: "最新: \(formattedLocalizedTime(attempt.date, language: language)) ・ \(readingLabel(language: language)): \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)",
+                        english: "Latest: \(formattedLocalizedTime(attempt.date, language: language)) ・ \(readingLabel(language: language)): \(attempt.recognizedText.isEmpty ? "-" : attempt.recognizedText)"
                     ))
                     .font(.caption.monospaced().weight(.semibold))
                     .foregroundStyle(.secondary)
