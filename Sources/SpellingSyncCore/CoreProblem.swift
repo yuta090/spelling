@@ -124,15 +124,14 @@ public enum CoreProblemResolver {
     }
 
     /// フレーム（＝生成物）が子の tier 制約内か。`policy` 無しなら常に可（後方互換）。
-    /// 文法天井・語彙band・和訳の漢字を、フレーム自身の宣言で判定する（§3.5＝生成文/和訳に効く）。
+    /// 文法天井・語彙band を、フレーム自身の宣言で判定する（§3.5＝生成文/和訳に効く）。
     /// 登録語は tier 例外なので**フレーム側の band/grammar には含めない**（呼び出し側の責務）。
+    /// 漢字は「捨てる（却下）」でなく表示側でルビ（§13.3 改訂2026-07-02）＝ここでは漢字で却下しない。
     private static func frameAdmissible(_ frame: SpellingInvariantFrame,
                                         under policy: ContentPolicy?) -> Bool {
         guard let policy else { return true }
         if let g = frame.grammar, g.stage > policy.grammarCeiling { return false }
         if let b = frame.gradeBand, b > policy.targetBand { return false }
-        // 和訳の漢字も tier 内に（既存プール絞り込みと同じ KanjiLevelGate）。
-        guard KanjiLevelGate.isWithin(frame.ja, maxGrade: policy.maxKanjiGrade) else { return false }
         return true
     }
 }

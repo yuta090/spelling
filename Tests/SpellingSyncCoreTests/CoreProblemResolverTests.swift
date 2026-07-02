@@ -154,17 +154,22 @@ final class CoreProblemResolverTests: XCTestCase {
         }
     }
 
-    // §3.5：和訳の漢字が tier 上限を超えるフレームは使わない（tier a＝漢字0）→ 下の rung へ。
-    func testFrameOverKanjiCeilingSkipped() {
+    // §13.3 改訂2026-07-02：和訳の漢字ではフレームを却下しない（表示側でルビ）。tier a でも漢字入り
+    // フレームを使う（超過漢字は表示時にふりがな）。難度は文法天井・語彙band で担保。
+    func testFrameWithOverGradeKanjiStillUsed() {
         let word = RegisteredWord(stableID: "w-rice", text: "rice", partOfSpeech: "noun")
-        // 文法・band は tier a 内だが、和訳に漢字（食/好）を含む。
+        // 文法・band は tier a 内。和訳に超過漢字（米/好）を含むが、却下しない。
         let kanjiFrame = SpellingInvariantFrame(id: "f-kanji", tokens: ["I", "like", "_"], answerSlotIndex: 2,
                                                 ja: "お米が 好きだよ", allowedPOS: ["noun"],
                                                 gradeBand: 1, grammar: .presentSimple)
         let policy = ContentPolicy.standard(tier: .a, humorEnabled: false) // maxKanjiGrade 0
         let problem = CoreProblemResolver.resolve(word: word, frames: [kanjiFrame],
                                                   confusables: confusables, policy: policy)
-        XCTAssertEqual(problem, .wordListening(word: word, distractors: ["lice", "race"]))
+        guard case let .spellingInvariantFrame(f, w) = problem else {
+            return XCTFail("漢字入りでも却下せずフレームを使うべき: \(problem)")
+        }
+        XCTAssertEqual(f.id, "f-kanji")
+        XCTAssertEqual(w.text, "rice")
     }
 
     // §3.5：登録語は tier 例外。むずかしい/まれな語でも、やさしい乗り物フレームには載る。

@@ -67,7 +67,8 @@ public enum JapaneseReading {
     public struct RubySegment: Equatable, Sendable {
         /// 画面に出す本体（習った漢字／かな／記号／英字）。
         public let text: String
-        /// ふりがな（本体が習った漢字で読みが要るときのみ。かな・記号・未習かな化済みは nil）。
+        /// ふりがな（本体に当該学年以上・教育漢字外の漢字を含み読みが要るときのみ。
+        /// 習った漢字・かな・記号は nil）。
         public let reading: String?
         public init(text: String, reading: String?) {
             self.text = text
@@ -77,13 +78,15 @@ public enum JapaneseReading {
 
     /// 和文を**学年ハイブリッド＋ふりがな**の表示かたまりに分解する。
     ///
-    /// 方針（CLAUDE.md 子ども原則）:
-    /// - **習った学年以内の漢字を含む語** → 漢字のまま残し、その語の読みを `reading`（ふりがな）に付ける。
-    /// - **学年を超える漢字を含む語** → その語の読み（ひらがな）に置き換える（`reading` は nil）。
+    /// 方針（CLAUDE.md 子ども原則・spec §13.3 改訂2026-07-02）:
+    /// - **習った学年以内（≤maxGrade）の漢字を含む語** → 素（漢字のまま・`reading` は nil）。
+    ///   漢字は語境界の視覚手がかりとして残す（総ひらがなは逆に読みにくい）。
+    /// - **当該学年以上・教育漢字外の漢字を含む語** → 漢字は残し、語全体の読みを `reading`
+    ///   （ふりがな＝グループルビ）に付ける。**かな化（漢字消去）はしない**（＝「捨てる」の置換）。
     /// - かな・記号・英字・スペース → そのまま（`reading` は nil）。
     ///
     /// ふりがなは語単位（グループルビ）。読みは `kanaizingOverGrade` と同じ OS 内蔵辞書由来で、稀に
-    /// 揺れる（私→わたくし）。許可学年内の漢字に振る前提なので、致命的な誤読は出にくい。
+    /// 揺れる（私→わたくし）。将来はビルド時生成＋検証した読みを同梱して差し替える（spec 1.5）。
     /// 例文に使うときは呼び出し側で `wakachi` を通してから渡すと、文節スペースも保たれる
     /// （スペースは隣接しない別かたまりとして返る）。
     public static func rubySegments(_ text: String, maxGrade: Int) -> [RubySegment] {
@@ -123,17 +126,18 @@ public enum JapaneseReading {
 
             let surface = ns.substring(with: NSRange(location: start, length: length))
             if surface.contains(where: KanjiLevelGate.isKanji) {
-                let reading = hiraganaReading(of: tokenizer)
                 if KanjiLevelGate.offendingKanji(in: surface, maxGrade: maxGrade).isEmpty {
-                    // 習った漢字 → 漢字のまま＋ふりがな（読みが取れて表記と違うときだけ振る）。
+                    // 習った漢字（≤学年−1）→ 素（ルビ無し）。漢字は語境界の手がかりとして残す。
+                    appendPlain(surface)
+                } else {
+                    // 当該学年以上・教育漢字外を含む語 → 漢字は残し、語全体の読みをふりがなに振る
+                    //（§13.3「捨てる（かな化）」→ルビ）。読みが取れない／表記と同じ時だけ素で残す。
+                    let reading = hiraganaReading(of: tokenizer)
                     if let reading, !reading.isEmpty, reading != surface {
                         segments.append(RubySegment(text: surface, reading: reading))
                     } else {
                         appendPlain(surface)
                     }
-                } else {
-                    // 未習漢字を含む → 読み（かな）に置き換え。ふりがなは振らない。
-                    appendPlain((reading?.isEmpty == false) ? reading! : surface)
                 }
             } else {
                 appendPlain(surface)
