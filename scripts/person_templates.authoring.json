@@ -45440,5 +45440,1286 @@
       "bike"
     ],
     "fallbackJa": "かのじょは じてんしゃに のる"
+  },
+  {
+    "id": "n3-play-played-tennis-f",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "play",
+      "tennis"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "played",
+      "tennis"
+    ],
+    "ja": "{f}は テニスを した",
+    "fallbackEn": [
+      "She",
+      "played",
+      "tennis"
+    ],
+    "fallbackJa": "かのじょは テニスを した"
+  },
+  {
+    "id": "n3-daily-ate-breakfast-f",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "eat",
+      "breakfast"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "ate",
+      "breakfast"
+    ],
+    "ja": "{f}は あさごはんを たべた",
+    "fallbackEn": [
+      "He",
+      "ate",
+      "breakfast"
+    ],
+    "fallbackJa": "かれは あさごはんを たべた"
+  },
+  {
+    "id": "n3-school-wrote-a-letter-f",
+    "category": "school",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "write",
+      "letter"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "wrote",
+      "a",
+      "letter"
+    ],
+    "ja": "{f}は てがみを かいた",
+    "fallbackEn": [
+      "She",
+      "wrote",
+      "a",
+      "letter"
+    ],
+    "fallbackJa": "かのじょは てがみを かいた"
+  },
+  {
+    "id": "n3-play-caught-a-fish-f",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "catch",
+      "fish"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "caught",
+      "a",
+      "fish"
+    ],
+    "ja": "{f}は さかなを つかまえた",
+    "fallbackEn": [
+      "He",
+      "caught",
+      "a",
+      "fish"
+    ],
+    "fallbackJa": "かれは さかなを つかまえた"
+  },
+  {
+    "id": "n3-home-cleaned-room-f",
+    "category": "home",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "clean",
+      "room"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "cleaned",
+      "{f:possessive}",
+      "room"
+    ],
+    "ja": "{f}は へやを そうじした",
+    "fallbackEn": [
+      "She",
+      "cleaned",
+      "her",
+      "room"
+    ],
+    "fallbackJa": "かのじょは へやを そうじした"
+  },
+  {
+    "id": "n3-play-drew-a-picture-f",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "draw",
+      "picture"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "drew",
+      "a",
+      "picture"
+    ],
+    "ja": "{f}は えを かいた",
+    "fallbackEn": [
+      "He",
+      "drew",
+      "a",
+      "picture"
+    ],
+    "fallbackJa": "かれは えを かいた"
+  },
+  {
+    "id": "n3-daily-drank-milk-f",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "drink",
+      "milk"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "drank",
+      "milk"
+    ],
+    "ja": "{f}は ぎゅうにゅうを のんだ",
+    "fallbackEn": [
+      "She",
+      "drank",
+      "milk"
+    ],
+    "fallbackJa": "かのじょは ぎゅうにゅうを のんだ"
+  },
+  {
+    "id": "n3-play-went-to-park-f",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "park"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "went",
+      "to",
+      "the",
+      "park"
+    ],
+    "ja": "{f}は こうえんに いった",
+    "fallbackEn": [
+      "He",
+      "went",
+      "to",
+      "the",
+      "park"
+    ],
+    "fallbackJa": "かれは こうえんに いった"
+  },
+  {
+    "id": "n3-daily-cooked-dinner-f",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "cook",
+      "dinner"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "cooked",
+      "dinner"
+    ],
+    "ja": "{f}は ばんごはんを つくった",
+    "fallbackEn": [
+      "She",
+      "cooked",
+      "dinner"
+    ],
+    "fallbackJa": "かのじょは ばんごはんを つくった"
+  },
+  {
+    "id": "n3-play-sang-a-song-f",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "sing",
+      "song"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "sang",
+      "a",
+      "song"
+    ],
+    "ja": "{f}は うたを うたった",
+    "fallbackEn": [
+      "He",
+      "sang",
+      "a",
+      "song"
+    ],
+    "fallbackJa": "かれは うたを うたった"
+  },
+  {
+    "id": "n3-home-watered-flowers-f",
+    "category": "home",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "water",
+      "flower"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "watered",
+      "the",
+      "flowers"
+    ],
+    "ja": "{f}は はなに みずを あげた",
+    "fallbackEn": [
+      "She",
+      "watered",
+      "the",
+      "flowers"
+    ],
+    "fallbackJa": "かのじょは はなに みずを あげた"
+  },
+  {
+    "id": "n3-play-rode-a-train-f",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "train"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "rode",
+      "a",
+      "train"
+    ],
+    "ja": "{f}は でんしゃに のった",
+    "fallbackEn": [
+      "He",
+      "rode",
+      "a",
+      "train"
+    ],
+    "fallbackJa": "かれは でんしゃに のった"
+  },
+  {
+    "id": "n3-cmp-younger-than-me-f",
+    "category": "other",
+    "grammar": "comparativeEr",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "young"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "younger",
+      "than",
+      "me"
+    ],
+    "ja": "{f}は わたしより としした",
+    "fallbackEn": [
+      "She",
+      "is",
+      "younger",
+      "than",
+      "me"
+    ],
+    "fallbackJa": "かのじょは わたしより としした"
+  },
+  {
+    "id": "n3-cmp-runs-faster-f",
+    "category": "play",
+    "grammar": "comparativeEr",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "run"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "runs",
+      "faster",
+      "than",
+      "me"
+    ],
+    "ja": "{f}は わたしより はやく はしる",
+    "fallbackEn": [
+      "He",
+      "runs",
+      "faster",
+      "than",
+      "me"
+    ],
+    "fallbackJa": "かれは わたしより はやく はしる"
+  },
+  {
+    "id": "n3-q-where-live-f",
+    "category": "other",
+    "grammar": "whQuestion",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "live"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "Where",
+      "does",
+      "{f:name}",
+      "live"
+    ],
+    "ja": "{f}は どこに すんでいるの？",
+    "fallbackEn": [
+      "Where",
+      "does",
+      "she",
+      "live"
+    ],
+    "fallbackJa": "かのじょは どこに すんでいるの？"
+  },
+  {
+    "id": "n3-q-what-like-f",
+    "category": "other",
+    "grammar": "whQuestion",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "like"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "What",
+      "does",
+      "{f:name}",
+      "like"
+    ],
+    "ja": "{f}は なにが すきなの？",
+    "fallbackEn": [
+      "What",
+      "does",
+      "he",
+      "like"
+    ],
+    "fallbackJa": "かれは なにが すきなの？"
+  },
+  {
+    "id": "n3-q-what-eat-f",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "eat"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "What",
+      "did",
+      "{f:name}",
+      "eat"
+    ],
+    "ja": "{f}は なにを たべたの？",
+    "fallbackEn": [
+      "What",
+      "did",
+      "she",
+      "eat"
+    ],
+    "fallbackJa": "かのじょは なにを たべたの？"
+  },
+  {
+    "id": "n3-imp-close-window",
+    "category": "home",
+    "grammar": "imperative",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "close",
+      "window"
+    ],
+    "slots": [
+      {
+        "key": "me",
+        "role": "child"
+      }
+    ],
+    "en": [
+      "{me:vocative},",
+      "close",
+      "the",
+      "window"
+    ],
+    "ja": "{me}、まどを しめてね",
+    "fallbackEn": [
+      "Close",
+      "the",
+      "window"
+    ],
+    "fallbackJa": "まどを しめてね"
+  },
+  {
+    "id": "n3-imp-draw-picture",
+    "category": "play",
+    "grammar": "imperative",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "draw",
+      "picture"
+    ],
+    "slots": [
+      {
+        "key": "me",
+        "role": "child"
+      }
+    ],
+    "en": [
+      "{me:vocative},",
+      "draw",
+      "a",
+      "picture"
+    ],
+    "ja": "{me}、えを かいてね",
+    "fallbackEn": [
+      "Draw",
+      "a",
+      "picture"
+    ],
+    "fallbackJa": "えを かいてね"
+  },
+  {
+    "id": "n3-self-played-with-f",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 3,
+    "contentLemmas": [
+      "play"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "I",
+      "played",
+      "with",
+      "{f:name}"
+    ],
+    "ja": "わたしは {f}と あそんだ",
+    "fallbackEn": [
+      "I",
+      "played",
+      "with",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "わたしは ともだちと あそんだ"
+  },
+  {
+    "id": "n4-fut-play-tennis-f",
+    "category": "play",
+    "grammar": "willGoingTo",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "play",
+      "tennis"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "will",
+      "play",
+      "tennis"
+    ],
+    "ja": "{f}は テニスを するよ",
+    "fallbackEn": [
+      "He",
+      "will",
+      "play",
+      "tennis"
+    ],
+    "fallbackJa": "かれは テニスを するよ"
+  },
+  {
+    "id": "n4-fut-visit-grandma-f",
+    "category": "home",
+    "grammar": "willGoingTo",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "visit",
+      "grandmother"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "will",
+      "visit",
+      "{f:possessive}",
+      "grandmother"
+    ],
+    "ja": "{f}は おばあちゃんに あいに いく",
+    "fallbackEn": [
+      "She",
+      "will",
+      "visit",
+      "her",
+      "grandmother"
+    ],
+    "fallbackJa": "かのじょは おばあちゃんに あいに いく"
+  },
+  {
+    "id": "n4-fut-be-teacher-f",
+    "category": "other",
+    "grammar": "willGoingTo",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "teacher"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "will",
+      "be",
+      "a",
+      "teacher"
+    ],
+    "ja": "{f}は せんせいに なる",
+    "fallbackEn": [
+      "He",
+      "will",
+      "be",
+      "a",
+      "teacher"
+    ],
+    "fallbackJa": "かれは せんせいに なる"
+  },
+  {
+    "id": "n4-fut-going-to-swim-f",
+    "category": "play",
+    "grammar": "willGoingTo",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "swim"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "going",
+      "to",
+      "swim"
+    ],
+    "ja": "{f}は およぐよ",
+    "fallbackEn": [
+      "She",
+      "is",
+      "going",
+      "to",
+      "swim"
+    ],
+    "fallbackJa": "かのじょは およぐよ"
+  },
+  {
+    "id": "n4-inf-want-be-doctor-f",
+    "category": "other",
+    "grammar": "infinitive",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "doctor"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "wants",
+      "to",
+      "be",
+      "a",
+      "doctor"
+    ],
+    "ja": "{f}は いしゃに なりたい",
+    "fallbackEn": [
+      "He",
+      "wants",
+      "to",
+      "be",
+      "a",
+      "doctor"
+    ],
+    "fallbackJa": "かれは いしゃに なりたい"
+  },
+  {
+    "id": "n4-inf-want-play-with-you-f",
+    "category": "play",
+    "grammar": "infinitive",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "play"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "wants",
+      "to",
+      "play",
+      "with",
+      "you"
+    ],
+    "ja": "{f}は あなたと あそびたい",
+    "fallbackEn": [
+      "She",
+      "wants",
+      "to",
+      "play",
+      "with",
+      "you"
+    ],
+    "fallbackJa": "かのじょは あなたと あそびたい"
+  },
+  {
+    "id": "n4-inf-like-to-sing-f",
+    "category": "play",
+    "grammar": "infinitive",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "sing"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "likes",
+      "to",
+      "sing"
+    ],
+    "ja": "{f}は うたうのが すき",
+    "fallbackEn": [
+      "He",
+      "likes",
+      "to",
+      "sing"
+    ],
+    "fallbackJa": "かれは うたうのが すき"
+  },
+  {
+    "id": "n4-inf-want-eat-cake-f",
+    "category": "daily",
+    "grammar": "infinitive",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "eat",
+      "cake"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "wants",
+      "to",
+      "eat",
+      "cake"
+    ],
+    "ja": "{f}は ケーキが たべたい",
+    "fallbackEn": [
+      "She",
+      "wants",
+      "to",
+      "eat",
+      "cake"
+    ],
+    "fallbackJa": "かのじょは ケーキが たべたい"
+  },
+  {
+    "id": "n4-should-go-to-bed-f",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "bed"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "should",
+      "go",
+      "to",
+      "bed"
+    ],
+    "ja": "{f}は もう ねた ほうが いい",
+    "fallbackEn": [
+      "He",
+      "should",
+      "go",
+      "to",
+      "bed"
+    ],
+    "fallbackJa": "かれは もう ねた ほうが いい"
+  },
+  {
+    "id": "n4-should-read-book-f",
+    "category": "school",
+    "grammar": "shouldModal",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "read",
+      "book"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "should",
+      "read",
+      "this",
+      "book"
+    ],
+    "ja": "{f}は この ほんを よんだ ほうが いい",
+    "fallbackEn": [
+      "She",
+      "should",
+      "read",
+      "this",
+      "book"
+    ],
+    "fallbackJa": "かのじょは この ほんを よんだ ほうが いい"
+  },
+  {
+    "id": "n4-should-drink-water-f",
+    "category": "daily",
+    "grammar": "shouldModal",
+    "gradeBand": 4,
+    "contentLemmas": [
+      "drink",
+      "water"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "should",
+      "drink",
+      "water"
+    ],
+    "ja": "{f}は みずを のんだ ほうが いい",
+    "fallbackEn": [
+      "He",
+      "should",
+      "drink",
+      "water"
+    ],
+    "fallbackJa": "かれは みずを のんだ ほうが いい"
+  },
+  {
+    "id": "n5-have-to-study-f",
+    "category": "school",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "study"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "has",
+      "to",
+      "study"
+    ],
+    "ja": "{f}は べんきょう しないと いけない",
+    "fallbackEn": [
+      "He",
+      "has",
+      "to",
+      "study"
+    ],
+    "fallbackJa": "かれは べんきょう しないと いけない"
+  },
+  {
+    "id": "n5-have-to-go-home-f",
+    "category": "daily",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "home"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "has",
+      "to",
+      "go",
+      "home"
+    ],
+    "ja": "{f}は もう いえに かえらないと いけない",
+    "fallbackEn": [
+      "She",
+      "has",
+      "to",
+      "go",
+      "home"
+    ],
+    "fallbackJa": "かのじょは もう いえに かえらないと いけない"
+  },
+  {
+    "id": "n5-have-to-clean-room-f",
+    "category": "home",
+    "grammar": "haveToNeedTo",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "clean",
+      "room"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "has",
+      "to",
+      "clean",
+      "{f:possessive}",
+      "room"
+    ],
+    "ja": "{f}は へやを そうじしないと いけない",
+    "fallbackEn": [
+      "He",
+      "has",
+      "to",
+      "clean",
+      "his",
+      "room"
+    ],
+    "fallbackJa": "かれは へやを そうじしないと いけない"
+  },
+  {
+    "id": "n5-ger-likes-reading-f",
+    "category": "school",
+    "grammar": "gerund",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "read",
+      "book"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "likes",
+      "reading",
+      "books"
+    ],
+    "ja": "{f}は ほんを よむのが すき",
+    "fallbackEn": [
+      "She",
+      "likes",
+      "reading",
+      "books"
+    ],
+    "fallbackJa": "かのじょは ほんを よむのが すき"
+  },
+  {
+    "id": "n5-ger-good-at-swimming-f",
+    "category": "play",
+    "grammar": "gerund",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "good",
+      "swim"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "good",
+      "at",
+      "swimming"
+    ],
+    "ja": "{f}は およぐのが とくい",
+    "fallbackEn": [
+      "He",
+      "is",
+      "good",
+      "at",
+      "swimming"
+    ],
+    "fallbackJa": "かれは およぐのが とくい"
+  },
+  {
+    "id": "n5-ger-likes-singing-f",
+    "category": "play",
+    "grammar": "gerund",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "sing"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "likes",
+      "singing"
+    ],
+    "ja": "{f}は うたうのが すき",
+    "fallbackEn": [
+      "She",
+      "likes",
+      "singing"
+    ],
+    "fallbackJa": "かのじょは うたうのが すき"
+  },
+  {
+    "id": "n5-pp-finished-homework-f",
+    "category": "school",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "finish",
+      "homework"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "has",
+      "finished",
+      "{f:possessive}",
+      "homework"
+    ],
+    "ja": "{f}は しゅくだいを おわらせた",
+    "fallbackEn": [
+      "He",
+      "has",
+      "finished",
+      "his",
+      "homework"
+    ],
+    "fallbackJa": "かれは しゅくだいを おわらせた"
+  },
+  {
+    "id": "n5-pp-seen-movie-f",
+    "category": "play",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "movie"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "has",
+      "seen",
+      "that",
+      "movie"
+    ],
+    "ja": "{f}は あの えいがを みた ことが ある",
+    "fallbackEn": [
+      "She",
+      "has",
+      "seen",
+      "that",
+      "movie"
+    ],
+    "fallbackJa": "かのじょは あの えいがを みた ことが ある"
+  },
+  {
+    "id": "n5-pp-never-eaten-natto-f",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "eat"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "has",
+      "never",
+      "eaten",
+      "natto"
+    ],
+    "ja": "{f}は なっとうを たべた ことが ない",
+    "fallbackEn": [
+      "He",
+      "has",
+      "never",
+      "eaten",
+      "natto"
+    ],
+    "fallbackJa": "かれは なっとうを たべた ことが ない"
+  },
+  {
+    "id": "n5-pp-made-cake-f",
+    "category": "daily",
+    "grammar": "presentPerfect",
+    "gradeBand": 5,
+    "contentLemmas": [
+      "make",
+      "cake"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "has",
+      "made",
+      "a",
+      "cake"
+    ],
+    "ja": "{f}は ケーキを つくった ことが ある",
+    "fallbackEn": [
+      "She",
+      "has",
+      "made",
+      "a",
+      "cake"
+    ],
+    "fallbackJa": "かのじょは ケーキを つくった ことが ある"
   }
 ]
