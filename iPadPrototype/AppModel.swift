@@ -739,17 +739,25 @@ final class AppModel: ObservableObject {
     /// ③子スコープ状態を再ロード（ガード中＝didSet 副作用は止まる）→ ④ガードの外で派生修復・シード・
     /// 同期要求を1回だけ。`AppModel` インスタンスは作り直さない（View ツリーが依存するため中身を入れ替える）。
     func activateProfile(_ id: UUID) {
-        guard let scoped = profileScopedStore else { return }   // フォールバック時は切替不可
+        guard profileScopedStore != nil else { return }         // フォールバック時は切替不可
         guard id != profileRegistry.activeProfileID else { return }
         let updated = profileRegistry.activating(id)
         guard updated.activeProfileID == id else { return }     // 未知IDは無視（活性化されない）
-        pendingSyncTask?.cancel()
-        pendingSyncTask = nil
         profileRegistry = updated
         persistRegistry()
-        scoped.setActiveProfileID(id)
+        applyActiveProfileChange()
+    }
+
+    /// `profileRegistry.activeProfileID` が変わった後に、スコープ差し替え＋子スコープ状態の再ロードを
+    /// 原子的に行う共通処理（`activateProfile` と「アクティブを削除したとき」で共用）。
+    /// ①切替前の子に紐づく保留同期を破棄 → ②スコープを差し替え → ③再ロード（ガード中＝didSet 副作用は
+    /// 止まる）→ ④ガードの外で派生修復・シード・（安全なら）同期要求を1回だけ。`AppModel` は作り直さない。
+    private func applyActiveProfileChange() {
+        guard let scoped = profileScopedStore else { return }
+        pendingSyncTask?.cancel()
+        pendingSyncTask = nil
+        scoped.setActiveProfileID(profileRegistry.activeProfileID)
         loadChildScopedState()
-        // ガードの外で意図的に：派生修復・シード・（安全なら）同期要求。
         ensureSelectedWordStepStillExists()
         seedSpellingReviewIfNeeded()
         requestSync()
@@ -780,6 +788,38 @@ final class AppModel: ObservableObject {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         let updated = profileRegistry.renaming(id, to: trimmed)
+        guard updated != profileRegistry else { return }
+        profileRegistry = updated
+        persistRegistry()
+    }
+
+    /// 子プロファイルを削除する（親の管理用）。最後の1人は消せない／未知IDは no-op。
+    /// アクティブを消した場合は残りの先頭へ移り、スコープ差し替え＋再ロードする。
+    /// 削除は必ず2人以上の状態でしか起きない＝そのとき同期は hard-disable 中なので sync とは競合しない。
+    /// 注: 削除した子の `profiles/<id>/*` はストアに残る（孤児データ）。UUID は再利用しないので実害は無く、
+    /// プレフィックス一括削除の本対応は Phase 5（同期のプロファイル別化）でまとめて行う。
+    func deleteProfile(_ id: UUID) {
+        guard profileScopedStore != nil else { return }
+        let previousActive = profileRegistry.activeProfileID
+        let updated = profileRegistry.removing(id)
+        guard updated != profileRegistry else { return }   // 最後の1人／未知IDは no-op
+        profileRegistry = updated
+        persistRegistry()
+        if updated.activeProfileID != previousActive {
+            applyActiveProfileChange()   // アクティブが移った → スコープ差し替え＆再ロード（内部で requestSync）
+        } else if isSyncSafeForActiveProfile {
+            // 非アクティブを消して1人に戻った → 同期が再び安全に。無効中に溜めたアクティブ子の
+            // 編集をここでフラッシュ要求する（requestSync は安全でなければ内部で no-op）。
+            requestSync()
+        }
+    }
+
+    /// 子プロファイルの並べ替え（SwiftUI の `.onMove` 用）。アクティブ・人数は変えない。
+    /// 並び順は子ランチャー（「だれが やる？」）の表示順になる。
+    func moveProfiles(fromOffsets source: IndexSet, toOffset destination: Int) {
+        var ids = profileRegistry.orderedProfiles.map(\.id)
+        ids.move(fromOffsets: source, toOffset: destination)
+        let updated = profileRegistry.reordering(ids)
         guard updated != profileRegistry else { return }
         profileRegistry = updated
         persistRegistry()

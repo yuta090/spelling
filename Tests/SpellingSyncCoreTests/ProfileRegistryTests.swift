@@ -60,6 +60,20 @@ final class ProfileRegistryTests: XCTestCase {
         XCTAssertEqual(next.activeProfileID, a.id, "追加はアクティブを変えない")
     }
 
+    func testAddingAfterReorderAppendsToEnd() {
+        let a = profile(1, sort: 0)
+        let b = profile(2, sort: 1)
+        let reg = ProfileRegistry(profiles: [a, b], activeProfileID: a.id)
+        // [b, a] へ並べ替え（b が先頭・a が末尾）。
+        let reordered = reg.reordering([b.id, a.id])
+        XCTAssertEqual(reordered.orderedProfiles.map(\.id), [b.id, a.id])
+        // 呼び出し側は既定 sortIndex=0 の子を渡す。adding は末尾採番するので末尾に付くこと。
+        let c = profile(3, sort: 0)
+        let next = reordered.adding(c)
+        XCTAssertEqual(next.orderedProfiles.map(\.id), [b.id, a.id, c.id],
+                       "reorder 後の追加は先頭へ割り込まず末尾に付く")
+    }
+
     func testRemovingNonActiveKeepsActive() {
         let a = profile(1, sort: 0)
         let b = profile(2, sort: 1)

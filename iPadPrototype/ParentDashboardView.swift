@@ -6512,11 +6512,20 @@ private struct TestSettingsPanel: View {
     @State private var newProfileName = ""
     @State private var renamingProfileID: UUID?
     @State private var renameText = ""
+    @State private var deletingProfile: ChildProfile?
     #if DEBUG
     @State private var showingAvatarDressUp = false   // 開発用: 着せ替えアバターQAプレビュー
     @State private var showingAIJudgment = false      // 開発用: AI-OCR 3モデル判定くらべ
     #endif
     var language: AppLanguage
+
+    /// 上下ボタン → SwiftUI の move セマンティクスへ変換（下方向は挿入位置を +1 余分にずらす）。
+    private func moveProfile(from index: Int, to target: Int) {
+        let count = model.profileRegistry.orderedProfiles.count
+        guard target >= 0, target < count else { return }
+        let destination = target > index ? target + 1 : target
+        model.moveProfiles(fromOffsets: IndexSet(integer: index), toOffset: destination)
+    }
 
     var body: some View {
         ParentPanel(
@@ -6579,7 +6588,8 @@ private struct TestSettingsPanel: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-                ForEach(model.profileRegistry.orderedProfiles, id: \.id) { profile in
+                let orderedProfiles = model.profileRegistry.orderedProfiles
+                ForEach(Array(orderedProfiles.enumerated()), id: \.element.id) { index, profile in
                     HStack(spacing: 10) {
                         Image(systemName: profile.id == model.profileRegistry.activeProfileID
                               ? "checkmark.circle.fill" : "person.circle")
@@ -6597,6 +6607,21 @@ private struct TestSettingsPanel: View {
                                 .foregroundStyle(.green)
                         }
                         Spacer()
+                        // 並べ替え（子ランチャー「だれが やる？」の表示順）。上下ボタンで端は無効。
+                        Button {
+                            moveProfile(from: index, to: index - 1)
+                        } label: { Image(systemName: "chevron.up") }
+                            .buttonStyle(.plain)
+                            .disabled(index == 0)
+                            .foregroundStyle(index == 0 ? Color.secondary.opacity(0.4) : ParentPalette.primary)
+                            .accessibilityLabel(language.text(japanese: "上へ", english: "Move up"))
+                        Button {
+                            moveProfile(from: index, to: index + 1)
+                        } label: { Image(systemName: "chevron.down") }
+                            .buttonStyle(.plain)
+                            .disabled(index == orderedProfiles.count - 1)
+                            .foregroundStyle(index == orderedProfiles.count - 1 ? Color.secondary.opacity(0.4) : ParentPalette.primary)
+                            .accessibilityLabel(language.text(japanese: "下へ", english: "Move down"))
                         Button(language.text(japanese: "改名", english: "Rename")) {
                             renamingProfileID = profile.id
                             renameText = profile.displayName
@@ -6604,6 +6629,14 @@ private struct TestSettingsPanel: View {
                         .font(.caption.weight(.bold))
                         .buttonStyle(.bordered)
                         .tint(ParentPalette.primary)
+                        // 削除（破壊的・確認あり）。最後の1人は消せない。
+                        Button {
+                            deletingProfile = profile
+                        } label: { Image(systemName: "trash") }
+                            .buttonStyle(.plain)
+                            .disabled(orderedProfiles.count <= 1)
+                            .foregroundStyle(orderedProfiles.count <= 1 ? Color.secondary.opacity(0.4) : Color.red)
+                            .accessibilityLabel(language.text(japanese: "削除", english: "Delete"))
                     }
                 }
 
@@ -6641,6 +6674,27 @@ private struct TestSettingsPanel: View {
                 Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {
                     renamingProfileID = nil
                 }
+            }
+            .confirmationDialog(
+                language.text(japanese: "このこどもを 削除しますか？", english: "Delete this child?"),
+                isPresented: Binding(get: { deletingProfile != nil },
+                                     set: { if !$0 { deletingProfile = nil } }),
+                presenting: deletingProfile
+            ) { profile in
+                Button(language.text(japanese: "削除する（元にもどせません）", english: "Delete (cannot undo)"),
+                       role: .destructive) {
+                    model.deleteProfile(profile.id)
+                    deletingProfile = nil
+                }
+                Button(language.text(japanese: "やめる", english: "Cancel"), role: .cancel) { deletingProfile = nil }
+            } message: { profile in
+                let name = profile.displayName.isEmpty
+                    ? language.text(japanese: "（名前なし）", english: "(no name)")
+                    : profile.displayName
+                Text(language.text(
+                    japanese: "「\(name)」の きろく・れんしゅう・ごほうび が すべて 消えます。",
+                    english: "All progress, practice, and rewards for \"\(name)\" will be erased."
+                ))
             }
 
             SettingBlock(title: language.text(japanese: "表示言語", english: "Screen Language")) {
