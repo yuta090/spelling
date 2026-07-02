@@ -7693,6 +7693,9 @@ private struct ParentGradingPanel: View {
                             showsOnlyUngraded: sessionFilter == .unreviewed,
                             language: language
                         )
+                        // セッションを切り替えたら下書き・演出などの @State を作り直す
+                        // （前のセッションのお祝い演出や未コミット下書きを持ち越さない）。
+                        .id(activeSession.id)
                         .environmentObject(model)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
@@ -8029,6 +8032,7 @@ private struct ParentGradingRemainingPill: View {
 
 private struct ParentGradingSessionCard: View {
     @EnvironmentObject private var model: AppModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var session: ParentGradingSession
     var showsOnlyUngraded: Bool
     var language: AppLanguage
@@ -8036,6 +8040,13 @@ private struct ParentGradingSessionCard: View {
     // 下書き：採点完了を押すまでモデルには保存しない。未指定はデフォルトOK扱い。
     @State private var decisionDrafts: [UUID: ParentReviewDecision] = [:]
     @State private var exampleDrafts: [UUID: Data] = [:]
+    // OKタップのたびに再生する「派手なお祝い」演出（見ている子を喜ばせる）。
+    @State private var approveCelebrationID = 0
+    // 採点完了時の画面全体のお祝い（ランダムなほめ言葉つき）。
+    @State private var allDonePraise: String?
+    @State private var allDoneID = 0
+    // 採点完了は「演出→コミット」を遅延実行するため、連打で二重発火しないよう1回だけに制限。
+    @State private var isCompleting = false
 
     private var visibleAttempts: [SpellingAttempt] {
         guard showsOnlyUngraded else {
@@ -8073,6 +8084,30 @@ private struct ParentGradingSessionCard: View {
     var body: some View {
         // 種別バッジ・回名・日付・残り件数は上部バー（ParentGradingPanel）で見せるので、
         // カード内ではヘッダーを持たず、手書きの一覧に画面を最大限使う。
+        ZStack {
+            gridContent
+
+            // OKタップの派手演出（中央で紙吹雪＋バースト）。タップ操作は妨げない。
+            if approveCelebrationID > 0 {
+                PuzzleCelebration(pieces: 22, radius: 220)
+                    .id(approveCelebrationID)
+                    .transition(.opacity)
+                    .allowsHitTesting(false)
+                    .zIndex(20)
+            }
+
+            // 採点完了の画面全体のお祝い（ランダムなほめ言葉つき）。
+            if let praise = allDonePraise {
+                GradingAllDoneCelebration(praise: praise)
+                    .id(allDoneID)
+                    .transition(.opacity)
+                    .allowsHitTesting(false)
+                    .zIndex(30)
+            }
+        }
+    }
+
+    private var gridContent: some View {
         VStack(alignment: .leading, spacing: 8) {
             ScrollView {
                 LazyVGrid(columns: gradingColumns, alignment: .leading, spacing: 10) {
@@ -8081,8 +8116,9 @@ private struct ParentGradingSessionCard: View {
                             attempt: attempt,
                             language: language,
                             decision: draftDecision(for: attempt.id, current: attempt.parentReviewDecision),
+                            isApprovedExplicit: decisionDrafts[attempt.id] == .approved,
                             exampleData: exampleDrafts[attempt.id] ?? attempt.parentExampleDrawingData,
-                            setDecision: { decisionDrafts[attempt.id] = $0 },
+                            setDecision: { approve(attempt.id, decision: $0) },
                             setExample: { exampleDrafts[attempt.id] = $0 }
                         )
                         .transition(.opacity.combined(with: .move(edge: .trailing)))
@@ -8093,8 +8129,9 @@ private struct ParentGradingSessionCard: View {
                             sample: sample,
                             language: language,
                             decision: draftDecision(for: sample.id, current: sample.parentReviewDecision),
+                            isApprovedExplicit: decisionDrafts[sample.id] == .approved,
                             exampleData: exampleDrafts[sample.id] ?? sample.parentExampleDrawingData,
-                            setDecision: { decisionDrafts[sample.id] = $0 },
+                            setDecision: { approve(sample.id, decision: $0) },
                             setExample: { exampleDrafts[sample.id] = $0 }
                         )
                         .transition(.opacity.combined(with: .move(edge: .trailing)))
@@ -8124,6 +8161,7 @@ private struct ParentGradingSessionCard: View {
                 .buttonStyle(.borderedProminent)
                 .tint(ParentPalette.success)
                 .tapFeedback(scale: 0.96, bounce: true)
+                .disabled(isCompleting)
             }
         }
         .padding(8)
@@ -8132,7 +8170,67 @@ private struct ParentGradingSessionCard: View {
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
     }
 
+    /// カード単位の採点。OKなら見ている子へ派手なごほうび演出を1回。
+    private func approve(_ id: UUID, decision: ParentReviewDecision) {
+        decisionDrafts[id] = decision
+        if decision == .approved { celebrateApprove() }
+    }
+
+    /// OKタップ演出を1回再生する（連打しても最新の1回に差し替わる）。
+    private func celebrateApprove() {
+        let next = approveCelebrationID + 1
+        withAnimation(.easeOut(duration: 0.2)) { approveCelebrationID = next }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+            if approveCelebrationID == next {
+                withAnimation(.easeOut(duration: 0.25)) { approveCelebrationID = 0 }
+            }
+        }
+    }
+
     private func completeGrading() {
+        guard !isCompleting else { return }
+        isCompleting = true
+
+        // ① まだ触っていないカードを明示OKにして、ボタンのスターを一斉にポップさせる（短いアニメ）。
+        let starPop = reduceMotion ? Animation.easeOut(duration: 0.2) : Animation.spring(response: 0.34, dampingFraction: 0.58)
+        withAnimation(starPop) {
+            for attempt in visibleAttempts where decisionDrafts[attempt.id] == nil {
+                decisionDrafts[attempt.id] = .approved
+            }
+            for sample in visibleSamples where decisionDrafts[sample.id] == nil {
+                decisionDrafts[sample.id] = .approved
+            }
+        }
+
+        // ② ぜんぶOK（直すが1つも無い）なら、画面全体のお祝い＋ランダムなほめ言葉。
+        let celebrate = fixCount == 0
+        if celebrate {
+            presentAllDoneCelebration()
+        }
+
+        // ③ スターと演出を見せてからモデルへコミット（コミットするとカードが消えるため少し待つ）。
+        let delay = celebrate ? 1.5 : 0.32
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            commitAllReviews()
+        }
+    }
+
+    private func presentAllDoneCelebration() {
+        let phrases = language == .japanese ? PracticePraise.japanese : PracticePraise.english
+        let index = phrases.isEmpty ? 0 : Int.random(in: 0..<phrases.count)
+        allDoneID += 1
+        let current = allDoneID
+        withAnimation(.easeOut(duration: 0.2)) {
+            allDonePraise = PracticePraise.phrase(index: index, japanese: language == .japanese)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.9) {
+            if allDoneID == current {
+                withAnimation(.easeOut(duration: 0.3)) { allDonePraise = nil }
+            }
+        }
+    }
+
+    private func commitAllReviews() {
         let attemptsToCommit = visibleAttempts
         let samplesToCommit = visibleSamples
 
@@ -8336,6 +8434,8 @@ private struct ParentAttemptGradingCard: View {
     var attempt: SpellingAttempt
     var language: AppLanguage
     var decision: ParentReviewDecision
+    /// 親が明示的にOKにしたか（デフォルトOKと区別）。スター演出の出し分けに使う。
+    var isApprovedExplicit: Bool = false
     var exampleData: Data?
     var setDecision: (ParentReviewDecision) -> Void
     var setExample: (Data) -> Void
@@ -8361,6 +8461,7 @@ private struct ParentAttemptGradingCard: View {
                 decision: decision,
                 pendingDecision: nil,
                 language: language,
+                approvedStar: isApprovedExplicit,
                 approve: { setDecision(.approved) },
                 needsPractice: { setDecision(.needsPractice) }
             )
@@ -8389,6 +8490,8 @@ private struct ParentPracticeGradingCard: View {
     var sample: PracticeSample
     var language: AppLanguage
     var decision: ParentReviewDecision
+    /// 親が明示的にOKにしたか（デフォルトOKと区別）。スター演出の出し分けに使う。
+    var isApprovedExplicit: Bool = false
     var exampleData: Data?
     var setDecision: (ParentReviewDecision) -> Void
     var setExample: (Data) -> Void
@@ -8419,6 +8522,7 @@ private struct ParentPracticeGradingCard: View {
                 decision: decision,
                 pendingDecision: nil,
                 language: language,
+                approvedStar: isApprovedExplicit,
                 approve: { setDecision(.approved) },
                 needsPractice: { setDecision(.needsPractice) }
             )
@@ -8482,6 +8586,8 @@ private struct ParentReviewButtons: View {
     var decision: ParentReviewDecision
     var pendingDecision: ParentReviewDecision?
     var language: AppLanguage
+    /// 親が明示的にOKにした時だけ、OKボタンに「スター」を出す（デフォルトOKでは出さない）。
+    var approvedStar: Bool = false
     var approve: () -> Void
     var needsPractice: () -> Void
 
@@ -8497,6 +8603,7 @@ private struct ParentReviewButtons: View {
                 tint: ParentPalette.success,
                 isSelected: visualDecision == .approved,
                 isPending: pendingDecision == .approved,
+                showsStar: approvedStar,
                 action: approve
             )
 
@@ -8527,7 +8634,10 @@ private struct ParentReviewToggleButton: View {
     var tint: Color
     var isSelected: Bool
     var isPending: Bool
+    /// OKした証の「スター」を右上にポップ表示する（明示OK時のみ true）。
+    var showsStar: Bool = false
     var action: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button(action: action) {
@@ -8544,9 +8654,75 @@ private struct ParentReviewToggleButton: View {
                 .clipShape(Capsule())
                 .contentShape(Capsule())
                 .scaleEffect(isPending ? 1.04 : 1)
+                .overlay(alignment: .topTrailing) {
+                    if showsStar {
+                        StarBadge()
+                            .offset(x: 6, y: -8)
+                            .transition(reduceMotion ? .opacity : .scale(scale: 0.2).combined(with: .opacity))
+                    }
+                }
+                .animation(reduceMotion ? .easeOut(duration: 0.2) : .spring(response: 0.34, dampingFraction: 0.55), value: showsStar)
         }
         .buttonStyle(.plain)
         .tapFeedback()
+    }
+}
+
+/// OKの証の小さな金色スター（ボタン右上にポップ）。
+private struct StarBadge: View {
+    var body: some View {
+        Image(systemName: "star.fill")
+            .font(.system(size: 15, weight: .black))
+            .foregroundStyle(Color(red: 1.0, green: 0.82, blue: 0.25))
+            .padding(3)
+            .background(Circle().fill(.white))
+            .overlay(Circle().stroke(Color.black.opacity(0.06), lineWidth: 1))
+            .shadow(color: .black.opacity(0.18), radius: 2, x: 0, y: 1)
+    }
+}
+
+/// 採点完了（ぜんぶOK）時の画面全体のお祝い。中央に大きくランダムなほめ言葉＋バースト。
+/// [[child-ignores-horizontal-text]]：子は横の説明を読まないので、短いほめ言葉を中央に大きく。
+private struct GradingAllDoneCelebration: View {
+    var praise: String
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var pop = false
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.06).ignoresSafeArea()
+
+            PuzzleCelebration(pieces: 30, radius: 300)
+
+            VStack(spacing: 12) {
+                Image(systemName: "star.circle.fill")
+                    .font(.system(size: 60, weight: .black))
+                    .foregroundStyle(Color(red: 1.0, green: 0.82, blue: 0.25))
+                Text(praise)
+                    .font(.system(size: 52, weight: .black, design: .rounded))
+                    .foregroundStyle(ParentPalette.ink)
+                    .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(2)
+            }
+            .padding(.horizontal, 44)
+            .padding(.vertical, 30)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .stroke(Color.white.opacity(0.7), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.12), radius: 18, x: 0, y: 8)
+            .scaleEffect(pop ? 1 : 0.6)
+            .opacity(pop ? 1 : 0)
+        }
+        .onAppear {
+            if reduceMotion {
+                pop = true
+            } else {
+                withAnimation(.spring(response: 0.42, dampingFraction: 0.58)) { pop = true }
+            }
+        }
     }
 }
 
