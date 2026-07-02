@@ -412,6 +412,9 @@ struct PuzzleCelebration: View {
             // ③ 紙吹雪：上からくるくる舞い落ちる短冊。
             ForEach(0..<pieces, id: \.self) { i in confettiPiece(i) }
         }
+        // 粒（バースト＋紙吹雪で最大 pieces×2 個）を Metal で1レイヤーに合成。
+        // 個別レイヤー合成のままだと A12 世代（iPad mini 5 等）でコマ落ちする。
+        .drawingGroup()
         .allowsHitTesting(false)
         .onAppear {
             withAnimation(.easeOut(duration: 0.45)) { glow = true }
