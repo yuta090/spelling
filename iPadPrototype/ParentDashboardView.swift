@@ -1369,7 +1369,9 @@ private enum ParentRecordDetailSheet: String, Identifiable {
     }
 }
 
-/// 親向け「学習レポート」カード。直近7/30日の頑張りを数字で見せる（採点感より努力を肯定する）。
+/// 親向け「期間レポート」カード（スリム版）。直近7/30日の頑張りを数字で見せる（努力を肯定する）。
+/// 連続日数・おぼえた語は上段のひと目サマリー（ParentOverviewPanel）と重複するため出さず、
+/// サマリーに無い「回数・とりくんだ語・学習日数」＋期間切替だけを残す。
 /// 集計は純粋ロジック `SpellingSyncCore.LearningReportBuilder`（AppModel.learningReport 経由）。
 private struct LearningReportCard: View {
     @EnvironmentObject private var model: AppModel
@@ -1380,7 +1382,7 @@ private struct LearningReportCard: View {
         // 1回だけ集計する（body 内で複数回参照しても再集計しないように local に保持）。
         let report = model.learningReport(days: days)
         ParentPanel(
-            title: language.text(japanese: "学習レポート", english: "Learning Report"),
+            title: language.text(japanese: "期間レポート", english: "Period Report"),
             systemImage: "chart.bar.fill",
             tint: ParentPalette.primary,
             showsHeader: true
@@ -1398,19 +1400,11 @@ private struct LearningReportCard: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 } else {
-                    HStack(spacing: 8) {
-                        Image(systemName: "flame.fill").foregroundStyle(.orange)
-                        Text(language.text(japanese: "\(report.currentStreakDays)日 れんぞく学習", english: "\(report.currentStreakDays)-day streak"))
-                            .font(.title3.weight(.heavy))
-                            .foregroundStyle(ParentPalette.ink)
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 10)], spacing: 10) {
+                        metric(report.totalEvents, label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"))
+                        metric(report.distinctWords, label: language.text(japanese: "とりくんだ語", english: "Words worked on"))
+                        metric(report.activeDays, label: language.text(japanese: "学習した日数", english: "Active days"))
                     }
-                }
-
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 10)], spacing: 10) {
-                    metric(report.totalEvents, label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"))
-                    metric(report.distinctWords, label: language.text(japanese: "とりくんだ語", english: "Words worked on"))
-                    metric(report.learnedWords, label: language.text(japanese: "おぼえた語", english: "Words learned"))
-                    metric(report.activeDays, label: language.text(japanese: "学習した日数", english: "Active days"))
                 }
             }
         }
@@ -1457,8 +1451,11 @@ private struct ParentRecordsWorkspace: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            // 連続日数・語数などの集計は上段のひと目サマリー（ParentOverviewPanel）と重複するため、
-            // ここでは LearningReportCard を出さない（きろくタブでの二重表示を避ける）。
+            // 期間レポート（スリム版）。連続日数・おぼえた語は上段サマリーと重複するため出さず、
+            // サマリーに無い「回数・とりくんだ語・学習日数」＋7/30日切替だけを残す。
+            LearningReportCard(language: language)
+                .environmentObject(model)
+
             ParentPanel(
                 title: language.text(japanese: "ステップ別の結果", english: "Step Results"),
                 systemImage: "rectangle.stack.fill",
