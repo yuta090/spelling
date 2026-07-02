@@ -14620,5 +14620,6359 @@
       "see",
       "yourself"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "absolutely",
+      "love",
+      "apples"
+    ],
+    "en" : "I absolutely love apples",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "4FA89E9F-9DCB-5EA6-9832-9CF28002456B",
+    "ja" : "わたしは りんごが ぜったいに すきだ",
+    "sourceID" : "i-absolutely-love-apples",
+    "tokens" : [
+      "I",
+      "absolutely",
+      "love",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "accident"
+    ],
+    "en" : "This is an accident",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "3BC6DE28-CEA8-5146-AB65-DE50DDA0E171",
+    "ja" : "これは じこだ",
+    "sourceID" : "this-is-an-accident",
+    "tokens" : [
+      "This",
+      "is",
+      "an",
+      "accident"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "acquire",
+      "new",
+      "toy"
+    ],
+    "en" : "I acquire new toys",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "5277C86A-CD6B-56AA-A06D-FDA888AF7F69",
+    "ja" : "わたしは あたらしい おもちゃを てにいれる",
+    "sourceID" : "i-acquire-new-toys",
+    "tokens" : [
+      "I",
+      "acquire",
+      "new",
+      "toys"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "active"
+    ],
+    "en" : "The dog is active",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "16D9C355-6802-50C6-B15B-030196C6D4B0",
+    "ja" : "いぬは かっぱつだ",
+    "sourceID" : "the-dog-is-active",
+    "tokens" : [
+      "The",
+      "dog",
+      "is",
+      "active"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "actor"
+    ],
+    "en" : "He is an actor",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "1E4D5431-2104-5CAD-9050-5C2FC3A464A8",
+    "ja" : "かれは はいゆうだ",
+    "sourceID" : "he-is-an-actor",
+    "tokens" : [
+      "He",
+      "is",
+      "an",
+      "actor"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "admit",
+      "mistake"
+    ],
+    "en" : "I admit my mistake",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "E6E611E3-91FA-5080-89B7-36D7A0BD2DF6",
+    "ja" : "わたしは まちがいを みとめる",
+    "sourceID" : "i-admit-my-mistake",
+    "tokens" : [
+      "I",
+      "admit",
+      "my",
+      "mistake"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "adopt",
+      "cat"
+    ],
+    "en" : "We adopt a cat",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "09D54556-8219-57EA-98C8-A96340641BDD",
+    "ja" : "わたしたちは ねこを むかえる",
+    "sourceID" : "we-adopt-a-cat",
+    "tokens" : [
+      "We",
+      "adopt",
+      "a",
+      "cat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "advertise",
+      "toy"
+    ],
+    "en" : "They advertise the toys",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "C3A4F73E-2885-5CBC-B27A-0C51A3C23930",
+    "ja" : "かれらは おもちゃを せんでんする",
+    "sourceID" : "they-advertise-the-toys",
+    "tokens" : [
+      "They",
+      "advertise",
+      "the",
+      "toys"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "need",
+      "advice"
+    ],
+    "en" : "I need your advice",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "6595A56A-19F0-5C11-A41F-87E78F55C5A4",
+    "ja" : "わたしは あなたの アドバイスが いる",
+    "sourceID" : "i-need-your-advice",
+    "tokens" : [
+      "I",
+      "need",
+      "your",
+      "advice"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "agent"
+    ],
+    "en" : "She is an agent",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "E4F76564-C1A2-5C01-85AB-43FE5F9D4DF3",
+    "ja" : "かのじょは エージェントだ",
+    "sourceID" : "she-is-an-agent",
+    "tokens" : [
+      "She",
+      "is",
+      "an",
+      "agent"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "aid",
+      "animal"
+    ],
+    "en" : "We aid the animals",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A83ABF4F-BAEE-55E1-90B2-4C5825AA3A0B",
+    "ja" : "わたしたちは どうぶつを たすける",
+    "sourceID" : "we-aid-the-animals",
+    "tokens" : [
+      "We",
+      "aid",
+      "the",
+      "animals"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "alternative"
+    ],
+    "en" : "I want an alternative",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "887A119E-2A0E-5521-82C9-738774B17DD4",
+    "ja" : "わたしは べつのものが ほしい",
+    "sourceID" : "i-want-an-alternative",
+    "tokens" : [
+      "I",
+      "want",
+      "an",
+      "alternative"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "announce",
+      "game"
+    ],
+    "en" : "They announce the game",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "BE9E7804-7B1E-56EF-982F-5E75FCDA5D27",
+    "ja" : "かれらは ゲームを はっぴょうする",
+    "sourceID" : "they-announce-the-game",
+    "tokens" : [
+      "They",
+      "announce",
+      "the",
+      "game"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "annual",
+      "event"
+    ],
+    "en" : "This is an annual event",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "D53E4803-525D-5375-AA97-918507544F08",
+    "ja" : "これは まいとしの イベントだ",
+    "sourceID" : "this-is-an-annual-event",
+    "tokens" : [
+      "This",
+      "is",
+      "an",
+      "annual",
+      "event"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "toy",
+      "apart"
+    ],
+    "en" : "The toys are apart",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "01D66FA4-9B71-5168-B389-31C295AFCE38",
+    "ja" : "おもちゃは ばらばらだ",
+    "sourceID" : "the-toys-are-apart",
+    "tokens" : [
+      "The",
+      "toys",
+      "are",
+      "apart"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "appeal"
+    ],
+    "en" : "They appeal to me",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2506C72A-9E08-5DF0-B11A-3DB8ED424EB8",
+    "ja" : "それらは わたしにとって みりょくてきだ",
+    "sourceID" : "they-appeal-to-me",
+    "tokens" : [
+      "They",
+      "appeal",
+      "to",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "appreciate",
+      "help"
+    ],
+    "en" : "I appreciate your help",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "DD13C0A0-51B0-50C2-BD91-2FA27EC7F767",
+    "ja" : "わたしは あなたの たすけに かんしゃする",
+    "sourceID" : "i-appreciate-your-help",
+    "tokens" : [
+      "I",
+      "appreciate",
+      "your",
+      "help"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "army"
+    ],
+    "en" : "I see an army",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "58F7E80C-D2E8-5FBD-8BAB-B55E59D781EC",
+    "ja" : "わたしは ぐんたいを みる",
+    "sourceID" : "i-see-an-army",
+    "tokens" : [
+      "I",
+      "see",
+      "an",
+      "army"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "arrangement"
+    ],
+    "en" : "I like this arrangement",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "FD06A73D-5BFE-52D4-B05C-53558CBD5D81",
+    "ja" : "わたしは この ならびが すきだ",
+    "sourceID" : "i-like-this-arrangement",
+    "tokens" : [
+      "I",
+      "like",
+      "this",
+      "arrangement"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "artist"
+    ],
+    "en" : "I am an artist",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "69FFEF0F-5627-5733-9969-2E9A2FA7978D",
+    "ja" : "わたしは アーティストだ",
+    "sourceID" : "i-am-an-artist",
+    "tokens" : [
+      "I",
+      "am",
+      "an",
+      "artist"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "assessment"
+    ],
+    "en" : "I read the assessment",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "38736CC8-7952-5F3D-AD39-59E2B5144641",
+    "ja" : "わたしは ひょうかを よむ",
+    "sourceID" : "i-read-the-assessment",
+    "tokens" : [
+      "I",
+      "read",
+      "the",
+      "assessment"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "flower",
+      "attract",
+      "many",
+      "bees"
+    ],
+    "en" : "Flowers attract many bees",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "071B0860-1043-5BC4-B0FD-CB833C4053A8",
+    "ja" : "はなは たくさんの はちを ひきつける",
+    "sourceID" : "flowers-attract-many-bees",
+    "tokens" : [
+      "Flowers",
+      "attract",
+      "many",
+      "bees"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "audience",
+      "like"
+    ],
+    "en" : "The audience likes it",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "10FCED03-5E7D-5275-B7E4-44F9E778D4D4",
+    "ja" : "かんきゃくは それが すきだ",
+    "sourceID" : "the-audience-likes-it",
+    "tokens" : [
+      "The",
+      "audience",
+      "likes",
+      "it"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "win",
+      "award"
+    ],
+    "en" : "I win an award",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "CECE0747-9A19-57E5-9C5A-C8CA72FF5FD6",
+    "ja" : "わたしは しょうを もらう",
+    "sourceID" : "i-win-an-award",
+    "tokens" : [
+      "I",
+      "win",
+      "an",
+      "award"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "background",
+      "blue"
+    ],
+    "en" : "The background is blue",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "4B73AF5C-E950-501B-B65C-96BB4876801D",
+    "ja" : "はいけいは あおい",
+    "sourceID" : "the-background-is-blue",
+    "tokens" : [
+      "The",
+      "background",
+      "is",
+      "blue"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "band"
+    ],
+    "en" : "I like this band",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "DD563A8C-A95C-59CA-A7DE-B00BB9EC9FD6",
+    "ja" : "わたしは この バンドが すきだ",
+    "sourceID" : "like-this-band",
+    "tokens" : [
+      "I",
+      "like",
+      "this",
+      "band"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "win",
+      "battle"
+    ],
+    "en" : "I win the battle",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3CA9377B-9C67-599B-BC55-63AA01F589B6",
+    "ja" : "わたしは たたかいに かつ",
+    "sourceID" : "win-the-battle",
+    "tokens" : [
+      "I",
+      "win",
+      "the",
+      "battle"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "beach"
+    ],
+    "en" : "I like the beach",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "37BEE242-3245-5020-97F8-32A4536586D7",
+    "ja" : "わたしは うみが すきだ",
+    "sourceID" : "like-the-beach",
+    "tokens" : [
+      "I",
+      "like",
+      "the",
+      "beach"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "beat",
+      "drum"
+    ],
+    "en" : "I beat the drum",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "CE5656F1-4FA1-546A-91BE-75DF79EA74DD",
+    "ja" : "わたしは たいこを たたく",
+    "sourceID" : "beat-the-drum",
+    "tokens" : [
+      "I",
+      "beat",
+      "the",
+      "drum"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bedroom"
+    ],
+    "en" : "This is my bedroom",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "9F1A5658-DC39-5050-90D9-E2049B4934A4",
+    "ja" : "ここは わたしの しんしつだ",
+    "sourceID" : "this-is-my-bedroom",
+    "tokens" : [
+      "This",
+      "is",
+      "my",
+      "bedroom"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bind",
+      "book"
+    ],
+    "en" : "I bind the book",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "7ECBE2C6-A135-5248-A0BB-4941EE1BDFFB",
+    "ja" : "わたしは ほんを とじる",
+    "sourceID" : "bind-the-book",
+    "tokens" : [
+      "I",
+      "bind",
+      "the",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "blood",
+      "red"
+    ],
+    "en" : "The blood is red",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "83FCEF1F-9BFE-5F71-BBBD-B818D007ECFD",
+    "ja" : "ちは あかい",
+    "sourceID" : "blood-is-red",
+    "tokens" : [
+      "The",
+      "blood",
+      "is",
+      "red"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "boat"
+    ],
+    "en" : "I have a boat",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "356F14E2-B599-5A77-B07E-0141A747D5CB",
+    "ja" : "わたしは ふねを もっている",
+    "sourceID" : "have-a-boat",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "boat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "draw",
+      "bomb"
+    ],
+    "en" : "I draw a bomb",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "1B977F14-AA11-511E-8ACF-2B887693E638",
+    "ja" : "わたしは ばくだんの えを かく",
+    "sourceID" : "draw-a-bomb",
+    "tokens" : [
+      "I",
+      "draw",
+      "a",
+      "bomb"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bond"
+    ],
+    "en" : "We have a bond",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "9FC9A373-F99C-5DC1-967C-62E84D47B3DD",
+    "ja" : "わたしたちには きずなが ある",
+    "sourceID" : "have-a-bond",
+    "tokens" : [
+      "We",
+      "have",
+      "a",
+      "bond"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "touch",
+      "bottom"
+    ],
+    "en" : "I touch the bottom",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "5DD49EB7-BE06-54A1-976C-1E052B5911F0",
+    "ja" : "わたしは そこを さわる",
+    "sourceID" : "touch-the-bottom",
+    "tokens" : [
+      "I",
+      "touch",
+      "the",
+      "bottom"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "brain",
+      "smart"
+    ],
+    "en" : "The brain is smart",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "6448B97A-049F-5186-8168-358E1102F53C",
+    "ja" : "のうは かしこい",
+    "sourceID" : "brain-is-smart",
+    "tokens" : [
+      "The",
+      "brain",
+      "is",
+      "smart"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "branch"
+    ],
+    "en" : "I see a branch",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "16A7A538-068E-5B2B-87D3-20C580BA4210",
+    "ja" : "わたしは えだを みる",
+    "sourceID" : "see-a-branch",
+    "tokens" : [
+      "I",
+      "see",
+      "a",
+      "branch"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "take",
+      "breath"
+    ],
+    "en" : "I take a breath",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "D35B7ED4-E2E6-5A9C-BEA0-14EAD8C4F6C2",
+    "ja" : "わたしは いきを すう",
+    "sourceID" : "take-a-breath",
+    "tokens" : [
+      "I",
+      "take",
+      "a",
+      "breath"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "river",
+      "broad"
+    ],
+    "en" : "The river is broad",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "419F4DA7-C149-5816-8200-CC3A5B66807D",
+    "ja" : "その かわは ひろい",
+    "sourceID" : "river-is-broad",
+    "tokens" : [
+      "The",
+      "river",
+      "is",
+      "broad"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fire",
+      "burn",
+      "wood"
+    ],
+    "en" : "Fire can burn wood",
+    "gradeBand" : 4,
+    "grammar" : "canModal",
+    "id" : "412E6A9A-9381-50E5-8BF7-B354B6F6674E",
+    "ja" : "ひは きを もやす ことができる",
+    "sourceID" : "fire-can-burn",
+    "tokens" : [
+      "Fire",
+      "can",
+      "burn",
+      "wood"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bees",
+      "busy"
+    ],
+    "en" : "The bees are busy",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "319FB0E6-39EB-503F-A53E-04BB0842F350",
+    "ja" : "みつばちは いそがしい",
+    "sourceID" : "bees-are-busy",
+    "tokens" : [
+      "The",
+      "bees",
+      "are",
+      "busy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "camera"
+    ],
+    "en" : "This is a camera",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "4568CC17-E473-565D-83B1-D3E3A802EC9A",
+    "ja" : "これは カメラだ",
+    "sourceID" : "this-is-a-camera",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "camera"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "doctor",
+      "stop",
+      "cancer"
+    ],
+    "en" : "The doctor stops cancer",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2A298F2A-11BC-5319-ABED-5C16CB486C1E",
+    "ja" : "いしゃは ガンを なおす",
+    "sourceID" : "doctor-stops-cancer",
+    "tokens" : [
+      "The",
+      "doctor",
+      "stops",
+      "cancer"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "walk",
+      "carefully"
+    ],
+    "en" : "I walk carefully",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "7846D1EB-CEFA-5176-BB65-F4CFD458DCE9",
+    "ja" : "わたしは しんちょうに あるく",
+    "sourceID" : "walk-carefully",
+    "tokens" : [
+      "I",
+      "walk",
+      "carefully"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cash"
+    ],
+    "en" : "I have cash",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "E0699248-87E6-5524-898B-18E67C3BB8C9",
+    "ja" : "わたしは げんきんを もっている",
+    "sourceID" : "have-cash",
+    "tokens" : [
+      "I",
+      "have",
+      "cash"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "chair"
+    ],
+    "en" : "This is a chair",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "CE7F6C8A-E541-57E8-910A-DFF41CA7E7C2",
+    "ja" : "これは いすだ",
+    "sourceID" : "this-is-a-chair",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "chair"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "chapter"
+    ],
+    "en" : "I read a chapter",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "ED90A0E3-016F-5ED5-BF6B-C8E403C7102F",
+    "ja" : "わたしは ほんの しょうを よむ",
+    "sourceID" : "read-a-chapter",
+    "tokens" : [
+      "I",
+      "read",
+      "a",
+      "chapter"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "toy",
+      "cheap"
+    ],
+    "en" : "The toy is cheap",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "81282502-7977-5BDB-83BA-8D4675162B1E",
+    "ja" : "その おもちゃは やすい",
+    "sourceID" : "toy-is-cheap",
+    "tokens" : [
+      "The",
+      "toy",
+      "is",
+      "cheap"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "chief"
+    ],
+    "en" : "He is the chief",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "D6CCC367-0599-51D0-85E0-72791B7052EC",
+    "ja" : "かれは リーダーだ",
+    "sourceID" : "is-the-chief",
+    "tokens" : [
+      "He",
+      "is",
+      "the",
+      "chief"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "coach"
+    ],
+    "en" : "I like my coach",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "6FC7743C-0163-5364-8524-FAAD8398B329",
+    "ja" : "わたしは コーチが すき",
+    "sourceID" : "i-like-my-coach",
+    "tokens" : [
+      "I",
+      "like",
+      "my",
+      "coach"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "code"
+    ],
+    "en" : "I read the code",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "11FB35E9-0B6A-58A4-A629-D845125123A9",
+    "ja" : "わたしは コードを よむ",
+    "sourceID" : "i-read-the-code",
+    "tokens" : [
+      "I",
+      "read",
+      "the",
+      "code"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hot",
+      "coffee"
+    ],
+    "en" : "This is hot coffee",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "4F071FB0-6A9C-5091-AC91-63E6AE8F1717",
+    "ja" : "これは あつい コーヒーだ",
+    "sourceID" : "this-is-hot-coffee",
+    "tokens" : [
+      "This",
+      "is",
+      "hot",
+      "coffee"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bed",
+      "comfortable"
+    ],
+    "en" : "The bed is comfortable",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "1DD7CAFB-2E10-55EF-824D-B9C719343C36",
+    "ja" : "ベッドは ふかふかだ",
+    "sourceID" : "the-bed-is-comfortable",
+    "tokens" : [
+      "The",
+      "bed",
+      "is",
+      "comfortable"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "make",
+      "commitment"
+    ],
+    "en" : "I make a commitment",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "417FC8CA-62EE-5518-A4CC-A3D99897B8A2",
+    "ja" : "わたしは やくそくを する",
+    "sourceID" : "i-make-a-commitment",
+    "tokens" : [
+      "I",
+      "make",
+      "a",
+      "commitment"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "concert"
+    ],
+    "en" : "I like the concert",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B280C0C5-9F0C-5B35-A82F-15C35DCA4F73",
+    "ja" : "わたしは コンサートが すきだ",
+    "sourceID" : "i-like-the-concert",
+    "tokens" : [
+      "I",
+      "like",
+      "the",
+      "concert"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "construction"
+    ],
+    "en" : "I see a construction",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "6AD38FA0-1BAC-55E4-902F-E0702931EC6E",
+    "ja" : "わたしは こうじを みる",
+    "sourceID" : "i-see-a-construction",
+    "tokens" : [
+      "I",
+      "see",
+      "a",
+      "construction"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "copy",
+      "book"
+    ],
+    "en" : "I copy the book",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "01B6639B-6B18-572D-BB57-A449F7AAA364",
+    "ja" : "わたしは ほんを うつす",
+    "sourceID" : "i-copy-the-book",
+    "tokens" : [
+      "I",
+      "copy",
+      "the",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "clean",
+      "corner"
+    ],
+    "en" : "I clean the corner",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2C85EE64-7DF9-5035-8517-C584BCB2D2DA",
+    "ja" : "わたしは すみを そうじする",
+    "sourceID" : "i-clean-the-corner",
+    "tokens" : [
+      "I",
+      "clean",
+      "the",
+      "corner"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "answer",
+      "correct"
+    ],
+    "en" : "The answer is correct",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "59C476E8-AADB-5043-BBFB-2281800C6572",
+    "ja" : "こたえは あっている",
+    "sourceID" : "the-answer-is-correct",
+    "tokens" : [
+      "The",
+      "answer",
+      "is",
+      "correct"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "count",
+      "apples"
+    ],
+    "en" : "I can count apples",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "D7776E3E-8218-53A8-A3F1-6B395001562C",
+    "ja" : "わたしは りんごを かぞえられる",
+    "sourceID" : "i-can-count-apples",
+    "tokens" : [
+      "I",
+      "can",
+      "count",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cross",
+      "road"
+    ],
+    "en" : "We cross the road",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "35A85ED2-C2E7-53F8-BDEB-19B23C699985",
+    "ja" : "わたしたちは みちを わたる",
+    "sourceID" : "we-cross-the-road",
+    "tokens" : [
+      "We",
+      "cross",
+      "the",
+      "road"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "crowd",
+      "big"
+    ],
+    "en" : "The crowd is big",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "466F8FE0-074F-5CA0-850C-F42FD845CE95",
+    "ja" : "ひとが たくさん いる",
+    "sourceID" : "the-crowd-is-big",
+    "tokens" : [
+      "The",
+      "crowd",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sad",
+      "baby",
+      "cry"
+    ],
+    "en" : "The sad babies cry",
+    "gradeBand" : 4,
+    "grammar" : "plurals",
+    "id" : "383A32AB-BA98-5DD7-8952-62C53A16985C",
+    "ja" : "かなしい あかちゃんが なく",
+    "sourceID" : "the-sad-babies-cry",
+    "tokens" : [
+      "The",
+      "sad",
+      "babies",
+      "cry"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "decrease",
+      "speed"
+    ],
+    "en" : "I decrease the speed",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "CA291C91-940F-5674-87A0-5D3A0EB01C4C",
+    "ja" : "わたしは スピードを おとす",
+    "sourceID" : "i-decrease-the-speed",
+    "tokens" : [
+      "I",
+      "decrease",
+      "the",
+      "speed"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hate",
+      "delay"
+    ],
+    "en" : "I hate the delay",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "272BB1AC-2E24-57D9-B95D-3A7332AC5494",
+    "ja" : "わたしは おくれるのが いやだ",
+    "sourceID" : "i-hate-the-delay",
+    "tokens" : [
+      "I",
+      "hate",
+      "the",
+      "delay"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "delivery",
+      "fast"
+    ],
+    "en" : "The delivery is fast",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "BC414DC8-4831-546E-A8E8-DF481712483E",
+    "ja" : "はいたつは はやい",
+    "sourceID" : "the-delivery-is-fast",
+    "tokens" : [
+      "The",
+      "delivery",
+      "is",
+      "fast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "distance",
+      "short"
+    ],
+    "en" : "The distance is short",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "B07FAB91-2205-5657-B95F-A4144832F0EF",
+    "ja" : "きょりは みじかい",
+    "sourceID" : "the-distance-is-short",
+    "tokens" : [
+      "The",
+      "distance",
+      "is",
+      "short"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "divide",
+      "cake"
+    ],
+    "en" : "We divide the cake",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "E1A5F4FD-C91D-50DF-B3A8-7B1FEAA9AD0A",
+    "ja" : "わたしたちは ケーキを わける",
+    "sourceID" : "we-divide-the-cake",
+    "tokens" : [
+      "We",
+      "divide",
+      "the",
+      "cake"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "driver",
+      "nice"
+    ],
+    "en" : "The driver is nice",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "C164792C-7368-57DB-85EF-16B93E9F389E",
+    "ja" : "うんてんしゅさんは やさしい",
+    "sourceID" : "the-driver-is-nice",
+    "tokens" : [
+      "The",
+      "driver",
+      "is",
+      "nice"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "towel",
+      "dry"
+    ],
+    "en" : "The towel is dry",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "6258C566-3BB3-5B8F-B0B2-9329619F2649",
+    "ja" : "タオルは かわいている",
+    "sourceID" : "the-towel-is-dry",
+    "tokens" : [
+      "The",
+      "towel",
+      "is",
+      "dry"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "love",
+      "earth"
+    ],
+    "en" : "We love the earth",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "EB02FDFC-4576-5A0A-B3FD-84A34673B952",
+    "ja" : "わたしたちは ちきゅうが すきだ",
+    "sourceID" : "we-love-the-earth",
+    "tokens" : [
+      "We",
+      "love",
+      "the",
+      "earth"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "run",
+      "easily"
+    ],
+    "en" : "I can run easily",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "8DCFC122-FA68-51F5-A73D-879C16DA93C9",
+    "ja" : "わたしは かんたんに はしれる",
+    "sourceID" : "i-can-run-easily",
+    "tokens" : [
+      "I",
+      "can",
+      "run",
+      "easily"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "touch",
+      "edge"
+    ],
+    "en" : "I touch the edge",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3C304DC2-BA5B-5491-8DA8-54D6C53D74F2",
+    "ja" : "わたしは はしを さわる",
+    "sourceID" : "i-touch-the-edge",
+    "tokens" : [
+      "I",
+      "touch",
+      "the",
+      "edge"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "use",
+      "editor"
+    ],
+    "en" : "I use an editor",
+    "gradeBand" : 3,
+    "grammar" : "articles",
+    "id" : "8CFEAFF9-B724-5266-AC21-170EF827771B",
+    "ja" : "わたしは エディタを つかう",
+    "sourceID" : "i-use-an-editor",
+    "tokens" : [
+      "I",
+      "use",
+      "an",
+      "editor"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "egg"
+    ],
+    "en" : "I like this egg",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "47428F0E-7AC1-5880-89D7-B69D9ED4694A",
+    "ja" : "わたしは この たまごが すき",
+    "sourceID" : "i-like-this-egg",
+    "tokens" : [
+      "I",
+      "like",
+      "this",
+      "egg"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "engineer",
+      "good"
+    ],
+    "en" : "The engineer is good",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "7914B1BC-3A43-546E-ACBB-5FA7529C180E",
+    "ja" : "その エンジニアは すごい",
+    "sourceID" : "the-engineer-is-good",
+    "tokens" : [
+      "The",
+      "engineer",
+      "is",
+      "good"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "excellent"
+    ],
+    "en" : "This is excellent",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "E9C97A3F-D892-5F37-8146-742064E54959",
+    "ja" : "これは すばらしい",
+    "sourceID" : "this-is-excellent",
+    "tokens" : [
+      "This",
+      "is",
+      "excellent"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "game",
+      "excite"
+    ],
+    "en" : "Games excite me",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "93EB2E8B-5866-5377-B8BE-8433D047791F",
+    "ja" : "ゲームは わたしを わくわくさせる",
+    "sourceID" : "games-excite-me",
+    "tokens" : [
+      "Games",
+      "excite",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "export",
+      "apples"
+    ],
+    "en" : "We export the apples",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "8643AB1A-4116-5013-AD42-FAA7401FBA0F",
+    "ja" : "わたしたちは りんごを ゆしゅつする",
+    "sourceID" : "we-export-the-apples",
+    "tokens" : [
+      "We",
+      "export",
+      "the",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "failure",
+      "sad"
+    ],
+    "en" : "A failure is sad",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "14387291-21CC-56C1-B1C5-25C81348DB8E",
+    "ja" : "しっぱいは かなしい",
+    "sourceID" : "a-failure-is-sad",
+    "tokens" : [
+      "A",
+      "failure",
+      "is",
+      "sad"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "game",
+      "fair"
+    ],
+    "en" : "The game is fair",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "FA207B5C-2350-555F-A5BB-9C3CABADF4AD",
+    "ja" : "その ゲームは こうへいだ",
+    "sourceID" : "the-game-is-fair",
+    "tokens" : [
+      "The",
+      "game",
+      "is",
+      "fair"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cat",
+      "famous"
+    ],
+    "en" : "The cat is famous",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "09ED16A2-31DF-5DBB-943E-CD83AAC90E9B",
+    "ja" : "その ねこは ゆうめいだ",
+    "sourceID" : "the-cat-is-famous",
+    "tokens" : [
+      "The",
+      "cat",
+      "is",
+      "famous"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fan"
+    ],
+    "en" : "I have a fan",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "EDF63388-6588-5F12-87F1-59778B61386C",
+    "ja" : "わたしは せんぷうきを もっている",
+    "sourceID" : "i-have-a-fan",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "fan"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "farm"
+    ],
+    "en" : "This is a farm",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "2E430403-4218-5E06-817C-DB927B6EC677",
+    "ja" : "ここは のうじょうだ",
+    "sourceID" : "this-is-a-farm",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "farm"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "federal",
+      "park",
+      "big"
+    ],
+    "en" : "The federal park is big",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "5A500CBD-4BEB-5090-BC8B-5701A6EFE1D9",
+    "ja" : "くにの こうえんは おおきい",
+    "sourceID" : "the-federal-park-is-big",
+    "tokens" : [
+      "The",
+      "federal",
+      "park",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pay",
+      "fee"
+    ],
+    "en" : "I pay a fee",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "94DD7627-6E75-5300-9D86-8DB386CEA87F",
+    "ja" : "わたしは おかねを はらう",
+    "sourceID" : "i-pay-a-fee",
+    "tokens" : [
+      "I",
+      "pay",
+      "a",
+      "fee"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "feed",
+      "fish"
+    ],
+    "en" : "I feed the fish",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "EA3855A3-7A2C-554C-A631-A5F4A60345FC",
+    "ja" : "わたしは さかなに えさを やる",
+    "sourceID" : "i-feed-the-fish",
+    "tokens" : [
+      "I",
+      "feed",
+      "the",
+      "fish"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fifty",
+      "apples"
+    ],
+    "en" : "I have fifty apples",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "DB459322-BBD9-59AC-BBC7-3BD57F633BC9",
+    "ja" : "わたしは りんごを ごじゅっこ もっている",
+    "sourceID" : "i-have-fifty-apples",
+    "tokens" : [
+      "I",
+      "have",
+      "fifty",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "learn",
+      "finance"
+    ],
+    "en" : "I learn about finance",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "4F132DB6-B469-5A9F-B61E-7C3344B608A8",
+    "ja" : "わたしは おかねの ことを まなぶ",
+    "sourceID" : "i-learn-about-finance",
+    "tokens" : [
+      "I",
+      "learn",
+      "about",
+      "finance"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fix",
+      "toy"
+    ],
+    "en" : "I fix the toy",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "2FA24CFE-43A3-5713-BFD7-6653ADDDCA83",
+    "ja" : "わたしは おもちゃを なおす",
+    "sourceID" : "i-fix-the-toy",
+    "tokens" : [
+      "I",
+      "fix",
+      "the",
+      "toy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bed",
+      "flat"
+    ],
+    "en" : "The bed is flat",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "FA678242-2C74-5C8E-BE57-F124EA8A5D0F",
+    "ja" : "ベッドは たいらだ",
+    "sourceID" : "the-bed-is-flat",
+    "tokens" : [
+      "The",
+      "bed",
+      "is",
+      "flat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "flight",
+      "long"
+    ],
+    "en" : "The flight is long",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "2ACA786C-B61D-50A3-A930-982FFBAF2C1F",
+    "ja" : "ひこうきの たびは ながい",
+    "sourceID" : "the-flight-is-long",
+    "tokens" : [
+      "The",
+      "flight",
+      "is",
+      "long"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "football"
+    ],
+    "en" : "I play football",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "074A184D-06AD-53F2-992C-4F776E02F8F3",
+    "ja" : "わたしは フットボールを する",
+    "sourceID" : "i-play-football",
+    "tokens" : [
+      "I",
+      "play",
+      "football"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "freedom"
+    ],
+    "en" : "I like my freedom",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "4C58B81E-6FF7-5FB4-99C9-56BA06858CC7",
+    "ja" : "わたしは じゆうが すきだ",
+    "sourceID" : "i-like-my-freedom",
+    "tokens" : [
+      "I",
+      "like",
+      "my",
+      "freedom"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "apple",
+      "fresh"
+    ],
+    "en" : "The apple is fresh",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "4842ECFC-2D7B-5C2D-A082-22B1DCED7DFC",
+    "ja" : "その りんごは しんせんだ",
+    "sourceID" : "the-apple-is-fresh",
+    "tokens" : [
+      "The",
+      "apple",
+      "is",
+      "fresh"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fully",
+      "understand"
+    ],
+    "en" : "I fully understand this",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "CFBDA974-0568-58EB-A13C-124D8F5F5BD7",
+    "ja" : "わたしは これを ぜんぶ わかる",
+    "sourceID" : "i-fully-understand-this",
+    "tokens" : [
+      "I",
+      "fully",
+      "understand",
+      "this"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "book",
+      "funny"
+    ],
+    "en" : "The book is funny",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "6F2CDEAC-F130-50B0-93AF-AB4DEB00BE96",
+    "ja" : "その ほんは おもしろい",
+    "sourceID" : "the-book-is-funny",
+    "tokens" : [
+      "The",
+      "book",
+      "is",
+      "funny"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "furthermore",
+      "like",
+      "cat"
+    ],
+    "en" : "Furthermore I like cats",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "99790BBF-E71D-544C-8F77-C5D3CBCBD2FD",
+    "ja" : "さらに わたしは ねこが すきだ",
+    "sourceID" : "furthermore-i-like-cats",
+    "tokens" : [
+      "Furthermore",
+      "I",
+      "like",
+      "cats"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "car",
+      "need",
+      "gas"
+    ],
+    "en" : "The car needs gas",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "538D3BD6-699A-5B89-ADA7-30A7442A013D",
+    "ja" : "その くるまは ガスが いる",
+    "sourceID" : "the-car-needs-gas",
+    "tokens" : [
+      "The",
+      "car",
+      "needs",
+      "gas"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "gather",
+      "apples"
+    ],
+    "en" : "I gather the apples",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "45B04B60-DA6B-51C5-8A5F-9B01359481E6",
+    "ja" : "わたしは りんごを あつめる",
+    "sourceID" : "i-gather-the-apples",
+    "tokens" : [
+      "I",
+      "gather",
+      "the",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "fan",
+      "generate",
+      "wind"
+    ],
+    "en" : "The fans generate wind",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "543D71AA-890F-5545-B493-CCFCF8D5C3C3",
+    "ja" : "ファンは かぜを つくる",
+    "sourceID" : "the-fans-generate-wind",
+    "tokens" : [
+      "The",
+      "fans",
+      "generate",
+      "wind"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "generation"
+    ],
+    "en" : "This is my generation",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "ADFD4045-9F11-503B-A66C-27F90B183050",
+    "ja" : "これは わたしの じだい だ",
+    "sourceID" : "this-is-my-generation",
+    "tokens" : [
+      "This",
+      "is",
+      "my",
+      "generation"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "glad"
+    ],
+    "en" : "I am very glad",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "92EE602C-4093-5D37-BBA5-E5DDBC3F4D2E",
+    "ja" : "わたしは とても うれしい",
+    "sourceID" : "i-am-very-glad",
+    "tokens" : [
+      "I",
+      "am",
+      "very",
+      "glad"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "glass"
+    ],
+    "en" : "This is a glass",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "24524ABD-C6EB-5AD3-9BC8-159FE83DBD64",
+    "ja" : "これは コップ だ",
+    "sourceID" : "this-is-a-glass",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "glass"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "global",
+      "map"
+    ],
+    "en" : "This is a global map",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "0FFEB433-C700-5B57-8320-9F0D8D709BB5",
+    "ja" : "これは せかいの ちず だ",
+    "sourceID" : "this-is-a-global-map",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "global",
+      "map"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "grant",
+      "wish"
+    ],
+    "en" : "I grant your wish",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "02C592E3-DAE8-5BF8-9071-D0D175C9A57B",
+    "ja" : "わたしは あなたの ねがいを かなえる",
+    "sourceID" : "i-grant-your-wish",
+    "tokens" : [
+      "I",
+      "grant",
+      "your",
+      "wish"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "guest"
+    ],
+    "en" : "You are a guest",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "60234354-39FE-5FC6-A624-8DA2DBF0E7E0",
+    "ja" : "あなたは おきゃくさん だ",
+    "sourceID" : "you-are-a-guest",
+    "tokens" : [
+      "You",
+      "are",
+      "a",
+      "guest"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "guide",
+      "dog"
+    ],
+    "en" : "I guide the dog",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "6E438CF4-A6F9-51F5-9F8B-A0932383C7C7",
+    "ja" : "わたしは いぬを あんない する",
+    "sourceID" : "i-guide-the-dog",
+    "tokens" : [
+      "I",
+      "guide",
+      "the",
+      "dog"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "water",
+      "gun"
+    ],
+    "en" : "This is a water gun",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "277F920C-1C70-56DA-BADF-EB232F2FAFE6",
+    "ja" : "これは みずでっぽう だ",
+    "sourceID" : "this-is-a-water-gun",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "water",
+      "gun"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pull",
+      "handle"
+    ],
+    "en" : "I pull the handle",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "20B9EFF0-8066-5944-BCC7-F0364850894C",
+    "ja" : "わたしは とってを ひっぱる",
+    "sourceID" : "i-pull-the-handle",
+    "tokens" : [
+      "I",
+      "pull",
+      "the",
+      "handle"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hang",
+      "coat"
+    ],
+    "en" : "I hang the coat",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "B930E1A0-D166-540E-9AD1-557D28E0BD93",
+    "ja" : "わたしは コートを かける",
+    "sourceID" : "i-hang-the-coat",
+    "tokens" : [
+      "I",
+      "hang",
+      "the",
+      "coat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hardly",
+      "see"
+    ],
+    "en" : "I hardly see it",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "56EAC8F6-BDB0-5156-9E39-69D87B8B391B",
+    "ja" : "わたしは それが ほとんど みえない",
+    "sourceID" : "i-hardly-see-it",
+    "tokens" : [
+      "I",
+      "hardly",
+      "see",
+      "it"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "food",
+      "healthy"
+    ],
+    "en" : "The food is healthy",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "F228707A-5719-5A93-A26B-11730F071528",
+    "ja" : "その たべものは けんこうに いい",
+    "sourceID" : "the-food-is-healthy",
+    "tokens" : [
+      "The",
+      "food",
+      "is",
+      "healthy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "feel",
+      "heat"
+    ],
+    "en" : "I feel the heat",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "99F5C238-CD11-53B4-B389-A4372574D593",
+    "ja" : "わたしは あつさを かんじる",
+    "sourceID" : "i-feel-the-heat",
+    "tokens" : [
+      "I",
+      "feel",
+      "the",
+      "heat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hide",
+      "toy"
+    ],
+    "en" : "I hide the toy",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "A78EC0A9-59DB-5756-8E98-6ED299F67420",
+    "ja" : "わたしは おもちゃを かくす",
+    "sourceID" : "i-hide-the-toy",
+    "tokens" : [
+      "I",
+      "hide",
+      "the",
+      "toy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rate",
+      "highly"
+    ],
+    "en" : "I rate it highly",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "BDFF8B18-8177-59AC-8CD7-2A531875411C",
+    "ja" : "わたしは それを たかく ひょうか する",
+    "sourceID" : "i-rate-it-highly",
+    "tokens" : [
+      "I",
+      "rate",
+      "it",
+      "highly"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "historical",
+      "book"
+    ],
+    "en" : "It is a historical book",
+    "gradeBand" : 3,
+    "grammar" : "articles",
+    "id" : "48D695C0-6FE8-5E65-855A-6F40EB72F488",
+    "ja" : "それは れきしの ほん だ",
+    "sourceID" : "it-is-a-historical-book",
+    "tokens" : [
+      "It",
+      "is",
+      "a",
+      "historical",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "horse",
+      "fast"
+    ],
+    "en" : "The horse is fast",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "F8E8FE6E-4237-5BEE-BAD1-7EA4810CBDFB",
+    "ja" : "その うまは はやい",
+    "sourceID" : "the-horse-is-fast",
+    "tokens" : [
+      "The",
+      "horse",
+      "is",
+      "fast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "host",
+      "party"
+    ],
+    "en" : "I host the party",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "FC037A07-EAB7-58E4-AAC4-4A7180E7F47A",
+    "ja" : "わたしは パーティーを ひらく",
+    "sourceID" : "i-host-the-party",
+    "tokens" : [
+      "I",
+      "host",
+      "the",
+      "party"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "leg",
+      "hurt"
+    ],
+    "en" : "My legs hurt",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "89632CA2-0EE4-5A55-AA38-743A6AC510C4",
+    "ja" : "わたしの あしが いたい",
+    "sourceID" : "my-legs-hurt",
+    "tokens" : [
+      "My",
+      "legs",
+      "hurt"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat",
+      "immediately"
+    ],
+    "en" : "I eat it immediately",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "44F7CF12-DC7E-5544-8CCE-6613ECB2B38F",
+    "ja" : "わたしは それを すぐに たべる",
+    "sourceID" : "i-eat-it-immediately",
+    "tokens" : [
+      "I",
+      "eat",
+      "it",
+      "immediately"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "know",
+      "importance"
+    ],
+    "en" : "I know its importance",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "32EE6C4B-12A1-5E8F-9E48-1EEE2612F170",
+    "ja" : "わたしは その たいせつさが わかる",
+    "sourceID" : "i-know-its-importance",
+    "tokens" : [
+      "I",
+      "know",
+      "its",
+      "importance"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "impossible"
+    ],
+    "en" : "It is impossible",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "BB52C5FD-1B13-5722-8072-8BF5330A778B",
+    "ja" : "それは むり だ",
+    "sourceID" : "it-is-impossible",
+    "tokens" : [
+      "It",
+      "is",
+      "impossible"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "improvement"
+    ],
+    "en" : "This is an improvement",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "DC30E338-10F6-5BCD-BEC8-56393EDCF2FE",
+    "ja" : "これは よい へんか だ",
+    "sourceID" : "this-is-an-improvement",
+    "tokens" : [
+      "This",
+      "is",
+      "an",
+      "improvement"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "independent"
+    ],
+    "en" : "I am independent",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "EED6B998-83A6-57F8-AA1A-6595A25425A9",
+    "ja" : "わたしは ひとりで できる",
+    "sourceID" : "i-am-independent",
+    "tokens" : [
+      "I",
+      "am",
+      "independent"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "industrial",
+      "town"
+    ],
+    "en" : "It is an industrial town",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "00978764-DD78-51FC-9A69-614F3F634EE3",
+    "ja" : "これは こうじょうの まち だ",
+    "sourceID" : "is-an-industrial-town",
+    "tokens" : [
+      "It",
+      "is",
+      "an",
+      "industrial",
+      "town"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "initial",
+      "letter"
+    ],
+    "en" : "The initial letter is A",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "AC06D94E-E254-53E8-9962-5F96399149FE",
+    "ja" : "さいしょの もじは えー だ",
+    "sourceID" : "the-initial-letter",
+    "tokens" : [
+      "The",
+      "initial",
+      "letter",
+      "is",
+      "A"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "school",
+      "institution"
+    ],
+    "en" : "The school is an institution",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "B18DCC2E-2179-5407-B3C1-0D7CFEB255DF",
+    "ja" : "がっこうは たいせつな ばしょ だ",
+    "sourceID" : "school-is-an-institution",
+    "tokens" : [
+      "The",
+      "school",
+      "is",
+      "an",
+      "institution"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "car",
+      "insurance"
+    ],
+    "en" : "I have car insurance",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "8420AB2C-5BCD-517E-9FE6-2F904A57C2B6",
+    "ja" : "わたしは くるまの ほけんに はいる",
+    "sourceID" : "have-car-insurance",
+    "tokens" : [
+      "I",
+      "have",
+      "car",
+      "insurance"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "intend",
+      "play"
+    ],
+    "en" : "I intend to play",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B235837F-1096-5D16-9F34-9B099AA4A391",
+    "ja" : "わたしは あそぶ つもり だ",
+    "sourceID" : "i-intend-to-play",
+    "tokens" : [
+      "I",
+      "intend",
+      "to",
+      "play"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "introduction"
+    ],
+    "en" : "I read the introduction",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "06E7BC86-BBD6-5BA7-BBF2-8289C45E2BE1",
+    "ja" : "わたしは さいしょを よむ",
+    "sourceID" : "read-the-introduction",
+    "tokens" : [
+      "I",
+      "read",
+      "the",
+      "introduction"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "invest",
+      "money"
+    ],
+    "en" : "I invest my money",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "EA825CB4-4399-5183-8B02-76F9A029DCC5",
+    "ja" : "わたしは おかねを つかう",
+    "sourceID" : "invest-my-money",
+    "tokens" : [
+      "I",
+      "invest",
+      "my",
+      "money"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "investigation",
+      "long"
+    ],
+    "en" : "The investigation is long",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "97BC9E83-3FE7-5B46-A205-02D04408F566",
+    "ja" : "しらべものは ながい",
+    "sourceID" : "investigation-is-long",
+    "tokens" : [
+      "The",
+      "investigation",
+      "is",
+      "long"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "investor",
+      "buy",
+      "house"
+    ],
+    "en" : "The investor buys houses",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "02211438-BA42-52F0-A470-70FB77942EC2",
+    "ja" : "その ひとは いえを かう",
+    "sourceID" : "the-investor-buys",
+    "tokens" : [
+      "The",
+      "investor",
+      "buys",
+      "houses"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "invite",
+      "friend"
+    ],
+    "en" : "I invite my friends",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B42EAEA6-6858-5E88-ABCA-26F4DB81F3C9",
+    "ja" : "わたしは ともだちを よぶ",
+    "sourceID" : "invite-my-friends",
+    "tokens" : [
+      "I",
+      "invite",
+      "my",
+      "friends"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "island"
+    ],
+    "en" : "This is an island",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "0334F4F5-6EE1-5B75-9451-C0D92FB2EDA9",
+    "ja" : "これは しま だ",
+    "sourceID" : "this-is-an-island",
+    "tokens" : [
+      "This",
+      "is",
+      "an",
+      "island"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "judge",
+      "nice"
+    ],
+    "en" : "The judge is nice",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "F060833B-78AF-50F8-BF4A-8C8042C1628E",
+    "ja" : "その ひとは やさしい",
+    "sourceID" : "the-judge-is-nice",
+    "tokens" : [
+      "The",
+      "judge",
+      "is",
+      "nice"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "kiss",
+      "mom"
+    ],
+    "en" : "I kiss my mom",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "5951F26C-0F48-5FB8-8CD0-96C3EFD169ED",
+    "ja" : "わたしは ママに キスを する",
+    "sourceID" : "kiss-my-mom",
+    "tokens" : [
+      "I",
+      "kiss",
+      "my",
+      "mom"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "kitchen",
+      "big"
+    ],
+    "en" : "The kitchen is big",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "B0FE31C7-AF64-54B4-960B-1335ABBDF8BC",
+    "ja" : "だいどころは おおきい",
+    "sourceID" : "the-kitchen-is-big",
+    "tokens" : [
+      "The",
+      "kitchen",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "lady",
+      "tall"
+    ],
+    "en" : "The lady is tall",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "5DA4C66B-3548-5AAB-864C-96C3AD6E6899",
+    "ja" : "おんなのひとは せがたかい",
+    "sourceID" : "the-lady-is-tall",
+    "tokens" : [
+      "The",
+      "lady",
+      "is",
+      "tall"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hear",
+      "loud",
+      "laughter"
+    ],
+    "en" : "I hear loud laughter",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "5C82E51B-CD7B-5F8B-9897-4C287458D466",
+    "ja" : "おおきな わらいごえが きこえる",
+    "sourceID" : "hear-loud-laughter",
+    "tokens" : [
+      "I",
+      "hear",
+      "loud",
+      "laughter"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "launch",
+      "rocket"
+    ],
+    "en" : "I launch the rocket",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "FE6B5681-7300-5588-A6F0-1B8D81E91B4D",
+    "ja" : "わたしは ロケットを とばす",
+    "sourceID" : "launch-the-rocket",
+    "tokens" : [
+      "I",
+      "launch",
+      "the",
+      "rocket"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "lawyer",
+      "help",
+      "people"
+    ],
+    "en" : "The lawyer helps people",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "5F91065A-CB68-5846-B7C8-A32B3B87653B",
+    "ja" : "その ひとは ひとを たすける",
+    "sourceID" : "lawyer-helps-people",
+    "tokens" : [
+      "The",
+      "lawyer",
+      "helps",
+      "people"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "lay"
+    ],
+    "en" : "I lay it here",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "C1248C7F-E983-541A-82C2-A5DA05DA7706",
+    "ja" : "わたしは それを ここに おく",
+    "sourceID" : "lay-it-here",
+    "tokens" : [
+      "I",
+      "lay",
+      "it",
+      "here"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "use",
+      "left",
+      "hand"
+    ],
+    "en" : "I use my left hand",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A398A7DD-E80E-522D-900A-2130E0A2C4F8",
+    "ja" : "わたしは ひだりてを つかう",
+    "sourceID" : "use-my-left-hand",
+    "tokens" : [
+      "I",
+      "use",
+      "my",
+      "left",
+      "hand"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "legal",
+      "rule"
+    ],
+    "en" : "It is a legal rule",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "E4551034-6381-5524-854F-E484ED58FED4",
+    "ja" : "これは たいせつな きまり だ",
+    "sourceID" : "is-a-legal-rule",
+    "tokens" : [
+      "It",
+      "is",
+      "a",
+      "legal",
+      "rule"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "length",
+      "short"
+    ],
+    "en" : "The length is short",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "FF979689-678C-5A98-8409-D2EF9778388A",
+    "ja" : "ながさは みじかい",
+    "sourceID" : "the-length-is-short",
+    "tokens" : [
+      "The",
+      "length",
+      "is",
+      "short"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "lesson"
+    ],
+    "en" : "I like this lesson",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "6D16AFA8-69DE-5492-A113-84ED82AA606D",
+    "ja" : "わたしは この じゅぎょうが すきだ",
+    "sourceID" : "like-this-lesson",
+    "tokens" : [
+      "I",
+      "like",
+      "this",
+      "lesson"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "lift"
+    ],
+    "en" : "I can lift it",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "D629FC33-FFDC-5011-9D38-0624CFE5EA60",
+    "ja" : "わたしは それを もてる",
+    "sourceID" : "can-lift-it",
+    "tokens" : [
+      "I",
+      "can",
+      "lift",
+      "it"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "literature"
+    ],
+    "en" : "I like literature",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "DA2EE6D7-46E2-57FC-BF5C-5B0EE158FD1C",
+    "ja" : "わたしは ほんが すきだ",
+    "sourceID" : "i-like-literature",
+    "tokens" : [
+      "I",
+      "like",
+      "literature"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "locate"
+    ],
+    "en" : "I can locate it",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "FDBD9C5E-CF86-57FD-9730-85CEC721E154",
+    "ja" : "わたしは それを みつけられる",
+    "sourceID" : "i-can-locate-it",
+    "tokens" : [
+      "I",
+      "can",
+      "locate",
+      "it"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "location"
+    ],
+    "en" : "This is a location",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "0F32BACC-C912-5118-BFE4-275A0DE3061E",
+    "ja" : "ここは ばしょ だ",
+    "sourceID" : "this-is-a-location",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "location"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "magazine"
+    ],
+    "en" : "I read a magazine",
+    "gradeBand" : 3,
+    "grammar" : "articles",
+    "id" : "F7BF3F2F-5A89-535A-B949-95767E17C367",
+    "ja" : "わたしは ざっしを よむ",
+    "sourceID" : "i-read-a-magazine",
+    "tokens" : [
+      "I",
+      "read",
+      "a",
+      "magazine"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mainly",
+      "eat",
+      "apples"
+    ],
+    "en" : "I mainly eat apples",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "8D9AED32-BF95-5CE8-AD54-155805768592",
+    "ja" : "わたしは おもに りんごを たべる",
+    "sourceID" : "i-mainly-eat-apples",
+    "tokens" : [
+      "I",
+      "mainly",
+      "eat",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "majority"
+    ],
+    "en" : "The majority is here",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "2A0A52B7-7A95-533A-AAA9-233AB76D6D9C",
+    "ja" : "だいはんが ここに いる",
+    "sourceID" : "the-majority-is-here",
+    "tokens" : [
+      "The",
+      "majority",
+      "is",
+      "here"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "manner"
+    ],
+    "en" : "I like your manner",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "F6505037-3E07-5A92-8878-0E5E9D90B545",
+    "ja" : "あなたの やりかたが すきだ",
+    "sourceID" : "i-like-your-manner",
+    "tokens" : [
+      "I",
+      "like",
+      "your",
+      "manner"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "manufacture",
+      "toy"
+    ],
+    "en" : "They manufacture toys",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "5140DC2E-B9D2-5672-9FC2-B35905C43DB6",
+    "ja" : "かれらは おもちゃを つくる",
+    "sourceID" : "they-manufacture-toys",
+    "tokens" : [
+      "They",
+      "manufacture",
+      "toys"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "map"
+    ],
+    "en" : "I have a map",
+    "gradeBand" : 3,
+    "grammar" : "articles",
+    "id" : "63818431-EAFC-521F-8154-B2F5C2D64C68",
+    "ja" : "わたしは ちずが ある",
+    "sourceID" : "i-have-a-map",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "map"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "marriage",
+      "good"
+    ],
+    "en" : "Marriage is good",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "6ACD3E28-C2D7-509B-88F9-40FCE32589F1",
+    "ja" : "けっこんは いい ものだ",
+    "sourceID" : "marriage-is-good",
+    "tokens" : [
+      "Marriage",
+      "is",
+      "good"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mass",
+      "big"
+    ],
+    "en" : "The mass is big",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "04ECE3B4-CA37-5E81-88AA-7E8BC062F91D",
+    "ja" : "その かたまりは おおきい",
+    "sourceID" : "the-mass-is-big",
+    "tokens" : [
+      "The",
+      "mass",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "meal"
+    ],
+    "en" : "This is a meal",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "1134CE42-FE35-5EBC-A88A-50F8F480F459",
+    "ja" : "これは ごはん だ",
+    "sourceID" : "this-is-a-meal",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "meal"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "need",
+      "medical",
+      "help"
+    ],
+    "en" : "I need medical help",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "F22D35B0-9D5D-5059-BE0C-F40FC767D6D6",
+    "ja" : "いりょうの たすけが いる",
+    "sourceID" : "i-need-medical-help",
+    "tokens" : [
+      "I",
+      "need",
+      "medical",
+      "help"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "minister"
+    ],
+    "en" : "He is a minister",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "32B8F2C5-DC0F-50AE-8B26-19EF475CBDDA",
+    "ja" : "かれは だいじん だ",
+    "sourceID" : "he-is-a-minister",
+    "tokens" : [
+      "He",
+      "is",
+      "a",
+      "minister"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "make",
+      "mistake"
+    ],
+    "en" : "I make a mistake",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B6E5CD9A-558F-535A-BCC0-12AC0D9B1D37",
+    "ja" : "わたしは まちがいを する",
+    "sourceID" : "i-make-a-mistake",
+    "tokens" : [
+      "I",
+      "make",
+      "a",
+      "mistake"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mix",
+      "color"
+    ],
+    "en" : "I mix the colors",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "410ECB4E-F5D3-511E-A892-F7E322AA7D94",
+    "ja" : "わたしは いろを まぜる",
+    "sourceID" : "i-mix-the-colors",
+    "tokens" : [
+      "I",
+      "mix",
+      "the",
+      "colors"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "watch",
+      "monitor"
+    ],
+    "en" : "I watch the monitor",
+    "gradeBand" : 3,
+    "grammar" : "articles",
+    "id" : "3AEFD5C7-430E-518A-B30B-C5B065AE7F4E",
+    "ja" : "わたしは がめんを みる",
+    "sourceID" : "i-watch-the-monitor",
+    "tokens" : [
+      "I",
+      "watch",
+      "the",
+      "monitor"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "moreover",
+      "like",
+      "cat"
+    ],
+    "en" : "Moreover I like cats",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "5B16C72C-653B-5A77-8D47-D7C31285E529",
+    "ja" : "さらに わたしは ねこが すきだ",
+    "sourceID" : "moreover-i-like-cats",
+    "tokens" : [
+      "Moreover",
+      "I",
+      "like",
+      "cats"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "mostly",
+      "sleep"
+    ],
+    "en" : "I mostly sleep",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B453439F-DB21-5FB9-8950-E4BA6F160731",
+    "ja" : "わたしは たいてい ねる",
+    "sourceID" : "i-mostly-sleep",
+    "tokens" : [
+      "I",
+      "mostly",
+      "sleep"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "museum"
+    ],
+    "en" : "We like the museum",
+    "gradeBand" : 3,
+    "grammar" : "articles",
+    "id" : "9931251F-133A-50EC-92FE-F825E001E6A4",
+    "ja" : "わたしたちは はくぶつかんが すきだ",
+    "sourceID" : "we-like-the-museum",
+    "tokens" : [
+      "We",
+      "like",
+      "the",
+      "museum"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "number",
+      "negative"
+    ],
+    "en" : "The number is negative",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "02E13008-14FE-54EB-A93C-54DCEC612D40",
+    "ja" : "その かずは マイナス だ",
+    "sourceID" : "the-number-is-negative",
+    "tokens" : [
+      "The",
+      "number",
+      "is",
+      "negative"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "neither",
+      "cat",
+      "big"
+    ],
+    "en" : "Neither cat is big",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "1ADE141E-5DB9-5DA5-911C-DFBD9C0E5988",
+    "ja" : "どちらの ねこも おおきくない",
+    "sourceID" : "neither-cat-is-big",
+    "tokens" : [
+      "Neither",
+      "cat",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "nobody"
+    ],
+    "en" : "Nobody is here",
+    "gradeBand" : 3,
+    "grammar" : "pronouns",
+    "id" : "A152CFD7-844C-58AB-BC69-89EE0FEF5EDF",
+    "ja" : "だれも ここに いない",
+    "sourceID" : "nobody-is-here",
+    "tokens" : [
+      "Nobody",
+      "is",
+      "here"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hear",
+      "noise"
+    ],
+    "en" : "I hear a noise",
+    "gradeBand" : 3,
+    "grammar" : "articles",
+    "id" : "1A5E1B24-FB3A-5F16-83BB-8C7AC10C0F2B",
+    "ja" : "おとが きこえる",
+    "sourceID" : "i-hear-a-noise",
+    "tokens" : [
+      "I",
+      "hear",
+      "a",
+      "noise"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "none"
+    ],
+    "en" : "I have none",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "C15A1104-05EB-537D-A821-BBEC446B3368",
+    "ja" : "わたしは ひとつも もって いない",
+    "sourceID" : "have-none",
+    "tokens" : [
+      "I",
+      "have",
+      "none"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bear",
+      "north"
+    ],
+    "en" : "The bear is north",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "E44605F7-C99D-5DAF-B48D-4061FD1449DC",
+    "ja" : "くまは きたに いる",
+    "sourceID" : "bear-is-north",
+    "tokens" : [
+      "The",
+      "bear",
+      "is",
+      "north"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "novel"
+    ],
+    "en" : "This is a novel",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "E42CEDFC-F0A9-5C6A-AACA-C9A87473766E",
+    "ja" : "これは しょうせつ です",
+    "sourceID" : "this-is-novel",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "novel"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "nuclear",
+      "plant",
+      "big"
+    ],
+    "en" : "The nuclear plant is big",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "DE7D4418-764A-5423-83F4-AE8DB42F7866",
+    "ja" : "げんしりょく はつでんしょは おおきい",
+    "sourceID" : "nuclear-plant-big",
+    "tokens" : [
+      "The",
+      "nuclear",
+      "plant",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "nurse",
+      "nice"
+    ],
+    "en" : "The nurse is nice",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "4291435E-E06A-5814-9DC5-932A89475D6E",
+    "ja" : "かんごしさんは やさしい です",
+    "sourceID" : "nurse-is-nice",
+    "tokens" : [
+      "The",
+      "nurse",
+      "is",
+      "nice"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "objective"
+    ],
+    "en" : "I have an objective",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "731A316A-6AD6-58E9-9AEC-2D1D92A80322",
+    "ja" : "わたしには もくひょうが ある",
+    "sourceID" : "have-objective",
+    "tokens" : [
+      "I",
+      "have",
+      "an",
+      "objective"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "answer",
+      "obvious"
+    ],
+    "en" : "The answer is obvious",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "6D776E86-875B-5968-95E0-2166164874CC",
+    "ja" : "こたえは あきらか です",
+    "sourceID" : "answer-is-obvious",
+    "tokens" : [
+      "The",
+      "answer",
+      "is",
+      "obvious"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "oppose",
+      "game"
+    ],
+    "en" : "I oppose this game",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3634B195-8299-57D7-96B6-5C285D77BC42",
+    "ja" : "わたしは この ゲームに はんたい する",
+    "sourceID" : "oppose-this-game",
+    "tokens" : [
+      "I",
+      "oppose",
+      "this",
+      "game"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "opposite"
+    ],
+    "en" : "You are the opposite",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "05786F90-923E-5551-BF1B-CBCE7B85F192",
+    "ja" : "あなたは はんたい です",
+    "sourceID" : "are-the-opposite",
+    "tokens" : [
+      "You",
+      "are",
+      "the",
+      "opposite"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "otherwise",
+      "play"
+    ],
+    "en" : "Otherwise I can play",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "50B49C43-1685-55F8-9374-2EA49A5371B8",
+    "ja" : "そうで なければ わたしは あそべる",
+    "sourceID" : "otherwise-can-play",
+    "tokens" : [
+      "Otherwise",
+      "I",
+      "can",
+      "play"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "overall",
+      "size",
+      "big"
+    ],
+    "en" : "The overall size is big",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "80C7A7D7-4CE6-5D8C-B26E-CFB2DC0BA508",
+    "ja" : "ぜんたいの おおきさは おおきい",
+    "sourceID" : "overall-size-big",
+    "tokens" : [
+      "The",
+      "overall",
+      "size",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "owner"
+    ],
+    "en" : "I am the owner",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "F17C9DC6-325F-569A-9462-FF6A0F7C84E4",
+    "ja" : "わたしが もちぬし です",
+    "sourceID" : "am-the-owner",
+    "tokens" : [
+      "I",
+      "am",
+      "the",
+      "owner"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pack",
+      "bag"
+    ],
+    "en" : "I pack my bag",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "E995752A-711C-54A4-BC6A-F0DBAFD1EF6A",
+    "ja" : "わたしは かばんを つめる",
+    "sourceID" : "pack-my-bag",
+    "tokens" : [
+      "I",
+      "pack",
+      "my",
+      "bag"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "open",
+      "package"
+    ],
+    "en" : "I open the package",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "249D244A-9DF1-557D-B190-B9D1BFF5EA2E",
+    "ja" : "わたしは つつみを あける",
+    "sourceID" : "open-the-package",
+    "tokens" : [
+      "I",
+      "open",
+      "the",
+      "package"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "feel",
+      "pain"
+    ],
+    "en" : "I feel the pain",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "1A5DAED9-0D6F-54A7-A9AE-1D8CE33E688E",
+    "ja" : "わたしは いたみを かんじる",
+    "sourceID" : "feel-the-pain",
+    "tokens" : [
+      "I",
+      "feel",
+      "the",
+      "pain"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pair"
+    ],
+    "en" : "I have a pair",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "01085C73-AB70-5EB3-95A1-9CF37AC1D6C4",
+    "ja" : "わたしは ペアを もって いる",
+    "sourceID" : "have-a-pair",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "pair"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "partner"
+    ],
+    "en" : "You are my partner",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "3A67D4BD-351F-542F-8AF1-9398B3026EFB",
+    "ja" : "あなたは わたしの パートナー です",
+    "sourceID" : "are-my-partner",
+    "tokens" : [
+      "You",
+      "are",
+      "my",
+      "partner"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "path",
+      "long"
+    ],
+    "en" : "The path is long",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "37BDC874-F081-5759-AFEA-18246454F6BE",
+    "ja" : "その みちは ながい",
+    "sourceID" : "path-is-long",
+    "tokens" : [
+      "The",
+      "path",
+      "is",
+      "long"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "payment"
+    ],
+    "en" : "I want my payment",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B0286084-EBE6-575C-A275-86DE03195024",
+    "ja" : "わたしは おかねが ほしい",
+    "sourceID" : "want-my-payment",
+    "tokens" : [
+      "I",
+      "want",
+      "my",
+      "payment"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "peace"
+    ],
+    "en" : "I like peace",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "5D6899CA-3F71-568B-A6CC-688E5FB0A853",
+    "ja" : "わたしは へいわが すき です",
+    "sourceID" : "like-peace",
+    "tokens" : [
+      "I",
+      "like",
+      "peace"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "percentage",
+      "small"
+    ],
+    "en" : "The percentage is small",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "723CEE81-F995-5ED4-AC6B-602B8BA7E22E",
+    "ja" : "その わりあいは ちいさい",
+    "sourceID" : "percentage-is-small",
+    "tokens" : [
+      "The",
+      "percentage",
+      "is",
+      "small"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "apple",
+      "perfect"
+    ],
+    "en" : "The apple is perfect",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "6D49324A-F80D-5D81-B23D-1B20A2CE5537",
+    "ja" : "その りんごは かんぺき です",
+    "sourceID" : "apple-is-perfect",
+    "tokens" : [
+      "The",
+      "apple",
+      "is",
+      "perfect"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "photograph"
+    ],
+    "en" : "This is a photograph",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "A6607205-7755-5B8E-9AAB-3BB7C0548B2C",
+    "ja" : "これは しゃしん です",
+    "sourceID" : "this-is-photograph",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "photograph"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "physical",
+      "game"
+    ],
+    "en" : "I like physical games",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "42E24DDE-2BC8-516D-AA7C-D25B10E37B98",
+    "ja" : "わたしは からだを うごかす ゲームが すき です",
+    "sourceID" : "like-physical-games",
+    "tokens" : [
+      "I",
+      "like",
+      "physical",
+      "games"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pleasure"
+    ],
+    "en" : "It is a pleasure",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "ACE88595-D28F-549E-B552-0FAF8218B44B",
+    "ja" : "それは たのしい こと です",
+    "sourceID" : "is-a-pleasure",
+    "tokens" : [
+      "It",
+      "is",
+      "a",
+      "pleasure"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "draw",
+      "plus"
+    ],
+    "en" : "I draw a plus",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "E7C27DFC-8FCF-5258-B737-26099D3A96CA",
+    "ja" : "わたしは プラスを かく",
+    "sourceID" : "draw-a-plus",
+    "tokens" : [
+      "I",
+      "draw",
+      "a",
+      "plus"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "politics"
+    ],
+    "en" : "I like politics",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "C79DB24B-038B-5927-B9E8-ABC5F1893995",
+    "ja" : "わたしは せいじが すきだ",
+    "sourceID" : "like-politics",
+    "tokens" : [
+      "I",
+      "like",
+      "politics"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pop",
+      "balloon"
+    ],
+    "en" : "I pop the balloon",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "0EE63AB9-D2CE-5ED7-AB0A-1E77C8E3D801",
+    "ja" : "わたしは ふうせんを わる",
+    "sourceID" : "pop-the-balloon",
+    "tokens" : [
+      "I",
+      "pop",
+      "the",
+      "balloon"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "possibility"
+    ],
+    "en" : "It is a possibility",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "9C7639CC-29C9-5ACF-A0FD-05FB3B106828",
+    "ja" : "それは かのうせいだ",
+    "sourceID" : "is-a-possibility",
+    "tokens" : [
+      "It",
+      "is",
+      "a",
+      "possibility"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "possibly",
+      "go"
+    ],
+    "en" : "I can possibly go",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "0E884BE2-09E3-5602-9C51-DBCA9ED365D8",
+    "ja" : "わたしは たぶん いける",
+    "sourceID" : "can-possibly-go",
+    "tokens" : [
+      "I",
+      "can",
+      "possibly",
+      "go"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "king",
+      "powerful"
+    ],
+    "en" : "The king is powerful",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "6F401719-8F2C-5F50-85F2-43547E6CDD53",
+    "ja" : "おうさまは ちからづよい",
+    "sourceID" : "king-is-powerful",
+    "tokens" : [
+      "The",
+      "king",
+      "is",
+      "powerful"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "presence"
+    ],
+    "en" : "We like your presence",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "DE817052-A940-5300-B115-06111B76BC8E",
+    "ja" : "わたしたちは あなたの そんざいが すきだ",
+    "sourceID" : "like-your-presence",
+    "tokens" : [
+      "We",
+      "like",
+      "your",
+      "presence"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "prevent",
+      "fire"
+    ],
+    "en" : "They prevent a fire",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "F968FACD-7023-5F52-A08B-E1347D0F1EEC",
+    "ja" : "かれらは かじを ふせぐ",
+    "sourceID" : "prevent-a-fire",
+    "tokens" : [
+      "They",
+      "prevent",
+      "a",
+      "fire"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "primary",
+      "school"
+    ],
+    "en" : "I go to primary school",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3D23A133-4FF2-525C-81A8-F48D5894153E",
+    "ja" : "わたしは しょうがっこうへ いく",
+    "sourceID" : "go-to-primary-school",
+    "tokens" : [
+      "I",
+      "go",
+      "to",
+      "primary",
+      "school"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "principal"
+    ],
+    "en" : "I see the principal",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "DB602064-B59B-52F0-9F05-796141424C17",
+    "ja" : "わたしは こうちょうせんせいを みる",
+    "sourceID" : "see-the-principal",
+    "tokens" : [
+      "I",
+      "see",
+      "the",
+      "principal"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "principle"
+    ],
+    "en" : "This is a principle",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "3E528A5C-AF7E-5261-BE06-6B6F895D0C03",
+    "ja" : "これは きまりだ",
+    "sourceID" : "is-a-principle",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "principle"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "print",
+      "book"
+    ],
+    "en" : "I print a book",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "9B5497C6-CE17-5A5D-8374-81A905E0DDC3",
+    "ja" : "わたしは ほんを いんさつする",
+    "sourceID" : "print-a-book",
+    "tokens" : [
+      "I",
+      "print",
+      "a",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "procedure"
+    ],
+    "en" : "This is a procedure",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "81BD3F9E-812A-513E-9C1C-EE138C9B0457",
+    "ja" : "これは てつづきだ",
+    "sourceID" : "is-a-procedure",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "procedure"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "proceed",
+      "now"
+    ],
+    "en" : "We can proceed now",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "AFA93C17-9003-5D48-BAE1-A2C4E8B3D22F",
+    "ja" : "わたしたちは いま すすめる",
+    "sourceID" : "can-proceed-now",
+    "tokens" : [
+      "We",
+      "can",
+      "proceed",
+      "now"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "make",
+      "good",
+      "progress"
+    ],
+    "en" : "I make good progress",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "F764ACEA-17E9-51D4-AEF5-4BAD3FB84700",
+    "ja" : "わたしは よく しんぽする",
+    "sourceID" : "make-good-progress",
+    "tokens" : [
+      "I",
+      "make",
+      "good",
+      "progress"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "promote",
+      "game"
+    ],
+    "en" : "They promote the game",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "F9B4FBBA-A109-5F59-876C-9CF3C615A80F",
+    "ja" : "かれらは ゲームを せんでんする",
+    "sourceID" : "promote-the-game",
+    "tokens" : [
+      "They",
+      "promote",
+      "the",
+      "game"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat",
+      "protein"
+    ],
+    "en" : "I eat protein",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "46BFDE33-FD7E-510C-8E83-FFAF3952A4EA",
+    "ja" : "わたしは たんぱくしつを たべる",
+    "sourceID" : "eat-protein",
+    "tokens" : [
+      "I",
+      "eat",
+      "protein"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "provision"
+    ],
+    "en" : "I have a provision",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "76FB0903-3B8F-57B3-80D6-AEBD152759D4",
+    "ja" : "わたしは じゅんびが ある",
+    "sourceID" : "have-a-provision",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "provision"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rabbit",
+      "quick"
+    ],
+    "en" : "The rabbit is quick",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "89350C9F-A761-5A75-944B-126DF4466F59",
+    "ja" : "うさぎは すばやい",
+    "sourceID" : "rabbit-is-quick",
+    "tokens" : [
+      "The",
+      "rabbit",
+      "is",
+      "quick"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "quote"
+    ],
+    "en" : "I read a quote",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A9D0E899-768B-51D5-B0BC-15185138B236",
+    "ja" : "わたしは いんようを よむ",
+    "sourceID" : "read-a-quote",
+    "tokens" : [
+      "I",
+      "read",
+      "a",
+      "quote"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "radio"
+    ],
+    "en" : "I like the radio",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "82BA8493-33AD-555A-B5F4-1ED2E0136CA4",
+    "ja" : "わたしは ラジオが すきだ",
+    "sourceID" : "like-the-radio",
+    "tokens" : [
+      "I",
+      "like",
+      "the",
+      "radio"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "rat"
+    ],
+    "en" : "I see a rat",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "5B346F11-A79B-5118-9FE5-43A8659AD009",
+    "ja" : "わたしは ねずみを みる",
+    "sourceID" : "see-a-rat",
+    "tokens" : [
+      "I",
+      "see",
+      "a",
+      "rat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "reaction"
+    ],
+    "en" : "This is a reaction",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "F59DB3B5-53C7-5CEF-A39F-E724BB1B9682",
+    "ja" : "これは はんのうだ",
+    "sourceID" : "is-a-reaction",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "reaction"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "reader"
+    ],
+    "en" : "I am a reader",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "0639873C-33DA-5FCF-AD91-98D488FBCB9D",
+    "ja" : "わたしは ほんを よむひとだ",
+    "sourceID" : "am-a-reader",
+    "tokens" : [
+      "I",
+      "am",
+      "a",
+      "reader"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "reality"
+    ],
+    "en" : "This is a reality",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "6CD748E7-9331-5414-AABE-358226262F9D",
+    "ja" : "これは げんじつだ",
+    "sourceID" : "is-a-reality",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "reality"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "recall",
+      "story"
+    ],
+    "en" : "I recall the story",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "BBE53DCD-5DBA-5D2B-A17B-F5EB579EE930",
+    "ja" : "わたしは おはなしを おもいだす",
+    "sourceID" : "i-recall-the-story",
+    "tokens" : [
+      "I",
+      "recall",
+      "the",
+      "story"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "recommend",
+      "book"
+    ],
+    "en" : "I recommend this book",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "DBC00C1B-E8CE-5C44-9E9E-68FBF7C0EDBD",
+    "ja" : "わたしは この ほんを すすめる",
+    "sourceID" : "i-recommend-this-book",
+    "tokens" : [
+      "I",
+      "recommend",
+      "this",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "reform",
+      "rule"
+    ],
+    "en" : "We reform the rules",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "1A795237-FB01-565D-B420-4E01347F953C",
+    "ja" : "わたしたちは ルールを かえる",
+    "sourceID" : "we-reform-the-rules",
+    "tokens" : [
+      "We",
+      "reform",
+      "the",
+      "rules"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "refuse",
+      "bad",
+      "food"
+    ],
+    "en" : "I refuse bad food",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "0CBE32E9-CA27-577D-A507-1497E0706455",
+    "ja" : "わたしは わるい たべものを ことわる",
+    "sourceID" : "i-refuse-bad-food",
+    "tokens" : [
+      "I",
+      "refuse",
+      "bad",
+      "food"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "register",
+      "name"
+    ],
+    "en" : "I register my name",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "483BFD9A-437A-52B4-A270-C1D27FC75329",
+    "ja" : "わたしは なまえを とうろくする",
+    "sourceID" : "i-register-my-name",
+    "tokens" : [
+      "I",
+      "register",
+      "my",
+      "name"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "regular",
+      "day"
+    ],
+    "en" : "It is a regular day",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "7F40A799-B82F-56AC-9311-546BCBAAE6B6",
+    "ja" : "ふつうの いちにち だよ",
+    "sourceID" : "it-is-a-regular-day",
+    "tokens" : [
+      "It",
+      "is",
+      "a",
+      "regular",
+      "day"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "follow",
+      "regulation"
+    ],
+    "en" : "We follow the regulation",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A72D06E8-9F99-585A-B21F-CF53C948ED55",
+    "ja" : "わたしたちは きまりを まもる",
+    "sourceID" : "we-follow-the-regulation",
+    "tokens" : [
+      "We",
+      "follow",
+      "the",
+      "regulation"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "relative",
+      "nice"
+    ],
+    "en" : "My relative is nice",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "3AEE900A-05A9-5B78-9409-15D827BE28F1",
+    "ja" : "わたしの しんせきは やさしい",
+    "sourceID" : "my-relative-is-nice",
+    "tokens" : [
+      "My",
+      "relative",
+      "is",
+      "nice"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "game",
+      "relatively",
+      "easy"
+    ],
+    "en" : "The game is relatively easy",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "D62CFB77-366C-5D81-8E7A-8E6F16272454",
+    "ja" : "ゲームは わりと かんたん だよ",
+    "sourceID" : "the-game-is-relatively-easy",
+    "tokens" : [
+      "The",
+      "game",
+      "is",
+      "relatively",
+      "easy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "relax",
+      "home"
+    ],
+    "en" : "I relax at home",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "8ADA42C3-EBF7-58F3-9ADC-583ED5919CCC",
+    "ja" : "わたしは いえで リラックスする",
+    "sourceID" : "i-relax-at-home",
+    "tokens" : [
+      "I",
+      "relax",
+      "at",
+      "home"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "book",
+      "relevant"
+    ],
+    "en" : "This book is relevant",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "A3EFBF99-611B-5F26-B171-934B5C2EDB68",
+    "ja" : "この ほんは かんけいがある",
+    "sourceID" : "this-book-is-relevant",
+    "tokens" : [
+      "This",
+      "book",
+      "is",
+      "relevant"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "religious",
+      "place"
+    ],
+    "en" : "This is a religious place",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "2F8FCF37-6B12-5ACC-92A0-7ED9A508D39E",
+    "ja" : "ここは しゅうきょうの ばしょ だよ",
+    "sourceID" : "this-is-a-religious-place",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "religious",
+      "place"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "remove",
+      "dirt"
+    ],
+    "en" : "I remove the dirt",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "5BA83276-992B-599A-AAB1-73DD0855A058",
+    "ja" : "わたしは どろを とる",
+    "sourceID" : "i-remove-the-dirt",
+    "tokens" : [
+      "I",
+      "remove",
+      "the",
+      "dirt"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "repeat",
+      "song"
+    ],
+    "en" : "I repeat the song",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2790FBA7-138B-5F23-90A1-83255FB7C7CE",
+    "ja" : "わたしは うたを くりかえす",
+    "sourceID" : "i-repeat-the-song",
+    "tokens" : [
+      "I",
+      "repeat",
+      "the",
+      "song"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "replace",
+      "toy"
+    ],
+    "en" : "I replace the toy",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "E851D269-9D26-5609-8067-6C0BF3E07C2F",
+    "ja" : "わたしは おもちゃを とりかえる",
+    "sourceID" : "i-replace-the-toy",
+    "tokens" : [
+      "I",
+      "replace",
+      "the",
+      "toy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "reply",
+      "friend"
+    ],
+    "en" : "I reply to my friend",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "1DFCF42F-F230-5ED2-BD5A-163A3A2A45E3",
+    "ja" : "わたしは ともだちに へんじをする",
+    "sourceID" : "i-reply-to-my-friend",
+    "tokens" : [
+      "I",
+      "reply",
+      "to",
+      "my",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sleep",
+      "requirement"
+    ],
+    "en" : "Sleep is a requirement",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "A22ACF69-150E-5A81-B3FE-2918AF23D8AD",
+    "ja" : "すいみんは ひつよう だよ",
+    "sourceID" : "sleep-is-a-requirement",
+    "tokens" : [
+      "Sleep",
+      "is",
+      "a",
+      "requirement"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "respond",
+      "teacher"
+    ],
+    "en" : "I respond to the teacher",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "7F9BFF28-9715-5F06-9450-A022D33C6910",
+    "ja" : "わたしは せんせいに こたえる",
+    "sourceID" : "i-respond-to-the-teacher",
+    "tokens" : [
+      "I",
+      "respond",
+      "to",
+      "the",
+      "teacher"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "responsibility"
+    ],
+    "en" : "It is my responsibility",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "9AC05217-A213-59B7-92CD-9EC1560C9CE9",
+    "ja" : "それは わたしの せきにん だよ",
+    "sourceID" : "it-is-my-responsibility",
+    "tokens" : [
+      "It",
+      "is",
+      "my",
+      "responsibility"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "responsible",
+      "child"
+    ],
+    "en" : "I am a responsible child",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "B4540870-97EB-58F9-A171-26683E0485B8",
+    "ja" : "わたしは せきにんかんがある こども だよ",
+    "sourceID" : "i-am-a-responsible-child",
+    "tokens" : [
+      "I",
+      "am",
+      "a",
+      "responsible",
+      "child"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "reveal",
+      "secret"
+    ],
+    "en" : "I reveal the secret",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "7471F6A9-C635-5BE7-B106-4229252B20EF",
+    "ja" : "わたしは ひみつを おしえる",
+    "sourceID" : "i-reveal-the-secret",
+    "tokens" : [
+      "I",
+      "reveal",
+      "the",
+      "secret"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "store",
+      "revenue"
+    ],
+    "en" : "The store has revenue",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A63D1F57-EADC-59E1-B2EC-7F1DA98FDFE7",
+    "ja" : "おみせには うりあげが ある",
+    "sourceID" : "the-store-has-revenue",
+    "tokens" : [
+      "The",
+      "store",
+      "has",
+      "revenue"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "king",
+      "rich"
+    ],
+    "en" : "The king is rich",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "C14C976E-3021-5F40-838A-A7A810811831",
+    "ja" : "おうさまは おかねもち だよ",
+    "sourceID" : "the-king-is-rich",
+    "tokens" : [
+      "The",
+      "king",
+      "is",
+      "rich"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "big",
+      "rock"
+    ],
+    "en" : "This is a big rock",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "9B2BC35B-61DD-54A6-9166-3B285589045A",
+    "ja" : "これは おおきな いわ だよ",
+    "sourceID" : "this-is-a-big-rock",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "big",
+      "rock"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "roll",
+      "ball"
+    ],
+    "en" : "I roll the ball",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "80B1BCCD-D88F-5070-8012-8507E09615B8",
+    "ja" : "わたしは ボールを ころがす",
+    "sourceID" : "i-roll-the-ball",
+    "tokens" : [
+      "I",
+      "roll",
+      "the",
+      "ball"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "know",
+      "route"
+    ],
+    "en" : "I know the route",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B37907D4-3E99-5589-8552-6AC8528CDDDD",
+    "ja" : "わたしは ルートが わかる",
+    "sourceID" : "know-the-route",
+    "tokens" : [
+      "I",
+      "know",
+      "the",
+      "route"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "place",
+      "safe"
+    ],
+    "en" : "This place is safe",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "EAA30F77-0B0F-5BE7-997B-7F601FB2C54F",
+    "ja" : "この ばしょは あんぜんだ",
+    "sourceID" : "place-is-safe",
+    "tokens" : [
+      "This",
+      "place",
+      "is",
+      "safe"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "safety"
+    ],
+    "en" : "I like safety",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "C0401D53-920F-55C3-BCC7-68CAF32F9495",
+    "ja" : "わたしは あんぜんが すきだ",
+    "sourceID" : "like-safety",
+    "tokens" : [
+      "I",
+      "like",
+      "safety"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "apples",
+      "satisfy"
+    ],
+    "en" : "The apples satisfy me",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "72F68C74-3A11-58CE-9CC2-4B28D07EB316",
+    "ja" : "りんごは わたしを まんぞくさせる",
+    "sourceID" : "apples-satisfy-me",
+    "tokens" : [
+      "The",
+      "apples",
+      "satisfy",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "scale"
+    ],
+    "en" : "I have a scale",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "9194D95C-C74C-5412-89F8-1891353BA25F",
+    "ja" : "わたしは はかりを もっている",
+    "sourceID" : "have-a-scale",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "scale"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "scene"
+    ],
+    "en" : "I see the scene",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A20DC179-777F-504C-B078-7FF8EF5EC353",
+    "ja" : "わたしは けしきを みる",
+    "sourceID" : "see-the-scene",
+    "tokens" : [
+      "I",
+      "see",
+      "the",
+      "scene"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "schedule"
+    ],
+    "en" : "I read the schedule",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3A993CCD-7A57-5E9C-AFE1-AF5A293DA1C7",
+    "ja" : "わたしは スケジュールを よむ",
+    "sourceID" : "read-the-schedule",
+    "tokens" : [
+      "I",
+      "read",
+      "the",
+      "schedule"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "scheme"
+    ],
+    "en" : "This is a scheme",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "6DC18408-967F-597F-8C47-1E726BC2056C",
+    "ja" : "これは けいかくだ",
+    "sourceID" : "is-a-scheme",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "scheme"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "scientist"
+    ],
+    "en" : "I am a scientist",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "05691F6E-7A23-5B8B-BFE9-AFB0FB56036C",
+    "ja" : "わたしは かがくしゃだ",
+    "sourceID" : "am-a-scientist",
+    "tokens" : [
+      "I",
+      "am",
+      "a",
+      "scientist"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "secret"
+    ],
+    "en" : "I have a secret",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3E0CFEB3-899C-57FB-B2B4-4C64031E5757",
+    "ja" : "わたしには ひみつが ある",
+    "sourceID" : "have-a-secret",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "secret"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "secretary"
+    ],
+    "en" : "I see the secretary",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "FE5F3AE9-B3BE-5BC3-B782-55943B127B38",
+    "ja" : "わたしは ひしょを みる",
+    "sourceID" : "see-the-secretary",
+    "tokens" : [
+      "I",
+      "see",
+      "the",
+      "secretary"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sector"
+    ],
+    "en" : "This is my sector",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "36F2FD40-7E2B-543A-A51F-571B6FE71BB3",
+    "ja" : "これは わたしの セクターだ",
+    "sourceID" : "is-my-sector",
+    "tokens" : [
+      "This",
+      "is",
+      "my",
+      "sector"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "select",
+      "apples"
+    ],
+    "en" : "I select the apples",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "AFE806A4-CBC6-5797-B7A6-5612138473C3",
+    "ja" : "わたしは りんごを えらぶ",
+    "sourceID" : "select-the-apples",
+    "tokens" : [
+      "I",
+      "select",
+      "the",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "senior"
+    ],
+    "en" : "He is a senior",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "7A6BB51D-1D1B-5B44-8E0E-1FCE6E873D13",
+    "ja" : "かれは ねんちょうしゃだ",
+    "sourceID" : "is-a-senior",
+    "tokens" : [
+      "He",
+      "is",
+      "a",
+      "senior"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "sentence"
+    ],
+    "en" : "I read the sentence",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A2ABF591-91B8-5A25-8087-A58ED40821EA",
+    "ja" : "わたしは ぶんを よむ",
+    "sourceID" : "read-the-sentence",
+    "tokens" : [
+      "I",
+      "read",
+      "the",
+      "sentence"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "settle"
+    ],
+    "en" : "The birds settle here",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2BA260BD-FEC5-53EE-853E-94C4B1CFE2F4",
+    "ja" : "とりが ここに とまる",
+    "sourceID" : "birds-settle-here",
+    "tokens" : [
+      "The",
+      "birds",
+      "settle",
+      "here"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "shake",
+      "box"
+    ],
+    "en" : "I shake the box",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "BBC5C7E1-34CE-5316-80C3-719B8CAEF294",
+    "ja" : "わたしは はこを ふる",
+    "sourceID" : "shake-the-box",
+    "tokens" : [
+      "I",
+      "shake",
+      "the",
+      "box"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "shape"
+    ],
+    "en" : "I like this shape",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "905293F0-1722-5219-B5FC-D96F2F7CA968",
+    "ja" : "わたしは この かたちが すきだ",
+    "sourceID" : "like-this-shape",
+    "tokens" : [
+      "I",
+      "like",
+      "this",
+      "shape"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "shareholder"
+    ],
+    "en" : "He is a shareholder",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "B65BE914-405D-5D56-AE00-EB06514AF357",
+    "ja" : "かれは かぶぬしだ",
+    "sourceID" : "is-a-shareholder",
+    "tokens" : [
+      "He",
+      "is",
+      "a",
+      "shareholder"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "shift",
+      "box"
+    ],
+    "en" : "I shift the box",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "8336EDD3-4B77-59F1-83E5-2F4DC2315779",
+    "ja" : "わたしは はこを うごかす",
+    "sourceID" : "shift-the-box",
+    "tokens" : [
+      "I",
+      "shift",
+      "the",
+      "box"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ship"
+    ],
+    "en" : "This is a ship",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "F56AACCD-4AE1-5F3E-9529-49771AD2B266",
+    "ja" : "これは ふねだ",
+    "sourceID" : "is-a-ship",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "ship"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "noise",
+      "shock"
+    ],
+    "en" : "The noise shocks me",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "D09E0CCB-0E3C-5F9F-803E-7E0751311432",
+    "ja" : "その おとは わたしを おどろかせる",
+    "sourceID" : "noise-shocks-me",
+    "tokens" : [
+      "The",
+      "noise",
+      "shocks",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "shoot",
+      "ball"
+    ],
+    "en" : "I shoot the ball",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "D1AD65D9-FD72-5BD7-97BD-A2940A1B6318",
+    "ja" : "わたしは ボールを うつ",
+    "sourceID" : "shoot-the-ball",
+    "tokens" : [
+      "I",
+      "shoot",
+      "the",
+      "ball"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "touch",
+      "shoulder"
+    ],
+    "en" : "I touch my shoulder",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "EA51517E-999E-5F55-9D1E-E1DBF978B9F4",
+    "ja" : "わたしは かたを さわる",
+    "sourceID" : "touch-my-shoulder",
+    "tokens" : [
+      "I",
+      "touch",
+      "my",
+      "shoulder"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "good",
+      "sight"
+    ],
+    "en" : "I have good sight",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "9316041E-5AE6-53DA-A20B-55A086F7332C",
+    "ja" : "わたしは めが いい",
+    "sourceID" : "i-have-good-sight",
+    "tokens" : [
+      "I",
+      "have",
+      "good",
+      "sight"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "grow",
+      "significantly"
+    ],
+    "en" : "They grow significantly",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "32694874-921D-5FE3-8319-83D7AF723C65",
+    "ja" : "かれらは おおきく そだつ",
+    "sourceID" : "they-grow-significantly",
+    "tokens" : [
+      "They",
+      "grow",
+      "significantly"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "skin",
+      "soft"
+    ],
+    "en" : "My skin is soft",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "CFF3EDC7-078D-55C8-A883-CB11AFFDDF96",
+    "ja" : "わたしの はだは やわらかい",
+    "sourceID" : "my-skin-is-soft",
+    "tokens" : [
+      "My",
+      "skin",
+      "is",
+      "soft"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "move",
+      "slightly"
+    ],
+    "en" : "I move it slightly",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "ECFB19B6-807A-5382-854A-24C52F9EC9CC",
+    "ja" : "わたしは それを すこし うごかす",
+    "sourceID" : "i-move-it-slightly",
+    "tokens" : [
+      "I",
+      "move",
+      "it",
+      "slightly"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "white",
+      "smoke"
+    ],
+    "en" : "I see white smoke",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3F7086AE-B447-53BB-837F-589233BFA3BA",
+    "ja" : "わたしは しろい けむりを みる",
+    "sourceID" : "i-see-white-smoke",
+    "tokens" : [
+      "I",
+      "see",
+      "white",
+      "smoke"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "make",
+      "game",
+      "software"
+    ],
+    "en" : "I make game software",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "AC628AB8-3582-5195-8012-6A7399F85177",
+    "ja" : "わたしは ゲームの ソフトウェアを つくる",
+    "sourceID" : "i-make-game-software",
+    "tokens" : [
+      "I",
+      "make",
+      "game",
+      "software"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "brave",
+      "soldier"
+    ],
+    "en" : "He is a brave soldier",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "4D9E9E60-1910-56AA-A400-826839713C3A",
+    "ja" : "かれは ゆうかんな へいし だ",
+    "sourceID" : "he-is-a-brave-soldier",
+    "tokens" : [
+      "He",
+      "is",
+      "a",
+      "brave",
+      "soldier"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "solve"
+    ],
+    "en" : "I can solve it",
+    "gradeBand" : 3,
+    "grammar" : "canModal",
+    "id" : "35D3352B-9C33-56EF-9DC1-43320D27A6D0",
+    "ja" : "わたしは それを とける",
+    "sourceID" : "i-can-solve-it",
+    "tokens" : [
+      "I",
+      "can",
+      "solve",
+      "it"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "somewhere"
+    ],
+    "en" : "They go somewhere",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "68F1A2D9-751E-5F28-A5EE-92761A183A0A",
+    "ja" : "かれらは どこかへ いく",
+    "sourceID" : "they-go-somewhere",
+    "tokens" : [
+      "They",
+      "go",
+      "somewhere"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bird",
+      "fly",
+      "south"
+    ],
+    "en" : "The bird flies south",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "0A1F2213-CC45-5C11-8386-98EAFB3BA435",
+    "ja" : "とりは みなみへ とぶ",
+    "sourceID" : "the-bird-flies-south",
+    "tokens" : [
+      "The",
+      "bird",
+      "flies",
+      "south"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "use",
+      "speaker"
+    ],
+    "en" : "I use a speaker",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2DA3758A-BB91-5D80-A6F7-35AA6135D473",
+    "ja" : "わたしは スピーカーを つかう",
+    "sourceID" : "i-use-a-speaker",
+    "tokens" : [
+      "I",
+      "use",
+      "a",
+      "speaker"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "fast",
+      "speed"
+    ],
+    "en" : "I like fast speed",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "1247D656-452F-55CF-A76B-FAF9D7F9689B",
+    "ja" : "わたしは はやい スピードが すき だ",
+    "sourceID" : "i-like-fast-speed",
+    "tokens" : [
+      "I",
+      "like",
+      "fast",
+      "speed"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "strong",
+      "spirit"
+    ],
+    "en" : "He has a strong spirit",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "211BB08C-B7E3-56EA-A9E0-77E43F949C8E",
+    "ja" : "かれは つよい こころを もつ",
+    "sourceID" : "he-has-a-strong-spirit",
+    "tokens" : [
+      "He",
+      "has",
+      "a",
+      "strong",
+      "spirit"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "red",
+      "spot"
+    ],
+    "en" : "I see a red spot",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A3E42885-8613-531C-9404-CCAADCB8ADB4",
+    "ja" : "わたしは あかい てんを みる",
+    "sourceID" : "i-see-a-red-spot",
+    "tokens" : [
+      "I",
+      "see",
+      "a",
+      "red",
+      "spot"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "spread",
+      "but"
+    ],
+    "en" : "I spread the butter",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3D4AACB4-CE26-5EAD-AB89-16EABF1FA428",
+    "ja" : "わたしは バターを ぬる",
+    "sourceID" : "i-spread-the-butter",
+    "tokens" : [
+      "I",
+      "spread",
+      "the",
+      "butter"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "stare"
+    ],
+    "en" : "They stare at me",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "76269B5E-994D-5B2A-B4A2-19E72FB84149",
+    "ja" : "かれらは わたしを じっと みる",
+    "sourceID" : "they-stare-at-me",
+    "tokens" : [
+      "They",
+      "stare",
+      "at",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "check",
+      "status"
+    ],
+    "en" : "I check the status",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "0100023B-076B-5C89-B267-797F9B20E4D5",
+    "ja" : "わたしは じょうたいを かくにん する",
+    "sourceID" : "i-check-the-status",
+    "tokens" : [
+      "I",
+      "check",
+      "the",
+      "status"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "find",
+      "stick"
+    ],
+    "en" : "I find a stick",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "AC20613B-9D51-56DD-B076-3F1B030D667D",
+    "ja" : "わたしは ぼうを みつける",
+    "sourceID" : "i-find-a-stick",
+    "tokens" : [
+      "I",
+      "find",
+      "a",
+      "stick"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "stone"
+    ],
+    "en" : "This is a stone",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "524E222E-AFFB-587D-BE45-7D116EE0B02A",
+    "ja" : "これは いし だ",
+    "sourceID" : "this-is-a-stone",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "stone"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "walk",
+      "straight"
+    ],
+    "en" : "I walk straight",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B9AF822B-08D3-5ED4-B843-0460956D58FB",
+    "ja" : "わたしは まっすぐ あるく",
+    "sourceID" : "i-walk-straight",
+    "tokens" : [
+      "I",
+      "walk",
+      "straight"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "strange"
+    ],
+    "en" : "This is strange",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "4202BA56-3A39-503A-9DFA-B6AF1FA48019",
+    "ja" : "これは へん だ",
+    "sourceID" : "this-is-strange",
+    "tokens" : [
+      "This",
+      "is",
+      "strange"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "great",
+      "strength"
+    ],
+    "en" : "I have great strength",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "751A8FD8-C745-5101-B8DD-ADD83B5AFEDC",
+    "ja" : "わたしには すごい ちからが ある",
+    "sourceID" : "i-have-great-strength",
+    "tokens" : [
+      "I",
+      "have",
+      "great",
+      "strength"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "feel",
+      "stress"
+    ],
+    "en" : "I feel stress",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2878C9D6-A799-5648-8BA5-896BB7537763",
+    "ja" : "わたしは ストレスを かんじる",
+    "sourceID" : "i-feel-stress",
+    "tokens" : [
+      "I",
+      "feel",
+      "stress"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "struggle",
+      "math"
+    ],
+    "en" : "I struggle with math",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "AAE50967-B22F-526A-8E4E-CA8EAC6B7912",
+    "ja" : "わたしは さんすうが にがて だ",
+    "sourceID" : "i-struggle-with-math",
+    "tokens" : [
+      "I",
+      "struggle",
+      "with",
+      "math"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "studio"
+    ],
+    "en" : "This is a studio",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "000342A1-707B-5D15-9673-1F0298A93275",
+    "ja" : "これは スタジオ だ",
+    "sourceID" : "this-is-a-studio",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "studio"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "suggestion"
+    ],
+    "en" : "I have a suggestion",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "31F1B583-EB45-5868-AEDE-4634FE463D54",
+    "ja" : "わたしには ていあんが ある",
+    "sourceID" : "have-a-suggestion",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "suggestion"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "suit",
+      "black"
+    ],
+    "en" : "The suit is black",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "F0A5F618-DAD0-5BC4-A0AD-6CBBC924E6EE",
+    "ja" : "その スーツは くろい",
+    "sourceID" : "suit-is-black",
+    "tokens" : [
+      "The",
+      "suit",
+      "is",
+      "black"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sum",
+      "big"
+    ],
+    "en" : "The sum is big",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "92E7FCEE-4903-5EDC-A7EF-C01C12907791",
+    "ja" : "その ごうけいは おおきい",
+    "sourceID" : "sum-is-big",
+    "tokens" : [
+      "The",
+      "sum",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "surface",
+      "soft"
+    ],
+    "en" : "The surface is soft",
+    "gradeBand" : 4,
+    "grammar" : "beVerb",
+    "id" : "5EF9290F-C182-5074-BCC3-4C212825FAAC",
+    "ja" : "その ひょうめんは やわらかい",
+    "sourceID" : "surface-is-soft",
+    "tokens" : [
+      "The",
+      "surface",
+      "is",
+      "soft"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tree",
+      "surround",
+      "house"
+    ],
+    "en" : "Trees surround the house",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2C64DC25-9599-51B7-8438-B0E7D49431D8",
+    "ja" : "きが いえを かこむ",
+    "sourceID" : "trees-surround-house",
+    "tokens" : [
+      "Trees",
+      "surround",
+      "the",
+      "house"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "survey"
+    ],
+    "en" : "I like this survey",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "DC9F1B41-6D10-5EEE-B7D2-E23C5637C76B",
+    "ja" : "わたしは この アンケートが すきだ",
+    "sourceID" : "like-this-survey",
+    "tokens" : [
+      "I",
+      "like",
+      "this",
+      "survey"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "animal",
+      "survive"
+    ],
+    "en" : "The animals survive here",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "3581E1D3-0EFC-5EB0-8028-BA98D5027F5C",
+    "ja" : "その どうぶつたちは ここで いきのこる",
+    "sourceID" : "animals-survive-here",
+    "tokens" : [
+      "The",
+      "animals",
+      "survive",
+      "here"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "need",
+      "some",
+      "tape"
+    ],
+    "en" : "I need some tape",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "B191D5E1-7007-5B5C-9751-E9733AF9B251",
+    "ja" : "わたしは テープが いる",
+    "sourceID" : "need-some-tape",
+    "tokens" : [
+      "I",
+      "need",
+      "some",
+      "tape"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "apples",
+      "taste",
+      "good"
+    ],
+    "en" : "The apples taste good",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "7B2DDA7A-7611-533B-9B6A-846C3D3C1FCA",
+    "ja" : "その りんごは おいしい",
+    "sourceID" : "apples-taste-good",
+    "tokens" : [
+      "The",
+      "apples",
+      "taste",
+      "good"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "taxi"
+    ],
+    "en" : "I see a taxi",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "61A1F937-CF4E-525F-A8D8-302FCA1CA5E5",
+    "ja" : "わたしは タクシーを みる",
+    "sourceID" : "see-a-taxi",
+    "tokens" : [
+      "I",
+      "see",
+      "a",
+      "taxi"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tear",
+      "paper"
+    ],
+    "en" : "I tear the paper",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "C990949C-D97B-5573-85E2-3E8DAE8584B3",
+    "ja" : "わたしは かみを やぶる",
+    "sourceID" : "tear-the-paper",
+    "tokens" : [
+      "I",
+      "tear",
+      "the",
+      "paper"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "technique"
+    ],
+    "en" : "This is a technique",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "EF4584FB-8C4E-5CDC-A658-D4FBF7FFA953",
+    "ja" : "これは テクニックだ",
+    "sourceID" : "is-a-technique",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "technique"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "use",
+      "telephone"
+    ],
+    "en" : "I use the telephone",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "0E11F0C6-4AC9-5770-B399-5B8B2AE314D2",
+    "ja" : "わたしは でんわを つかう",
+    "sourceID" : "use-the-telephone",
+    "tokens" : [
+      "I",
+      "use",
+      "the",
+      "telephone"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "temperature",
+      "high"
+    ],
+    "en" : "The temperature is high",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "DFE03EA5-10A4-5CB0-8635-DE79DCB95FD2",
+    "ja" : "おんどが たかい",
+    "sourceID" : "temperature-is-high",
+    "tokens" : [
+      "The",
+      "temperature",
+      "is",
+      "high"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "text"
+    ],
+    "en" : "I read the text",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "F4D92C3C-1C38-54BA-AD54-3EB0C6B349DE",
+    "ja" : "わたしは ぶんを よむ",
+    "sourceID" : "read-the-text",
+    "tokens" : [
+      "I",
+      "read",
+      "the",
+      "text"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "threat"
+    ],
+    "en" : "I see a threat",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "C13783B9-7E9A-5B97-9138-3E3C6B5BD0EC",
+    "ja" : "わたしは きけんを みる",
+    "sourceID" : "see-a-threat",
+    "tokens" : [
+      "I",
+      "see",
+      "a",
+      "threat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ticket"
+    ],
+    "en" : "I have a ticket",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "F699A43B-8E7B-5F55-90E7-88C89D89C91C",
+    "ja" : "わたしには チケットが ある",
+    "sourceID" : "have-a-ticket",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "ticket"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "title"
+    ],
+    "en" : "I like the title",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "49FE12DE-222C-579F-A413-043E893AC9BD",
+    "ja" : "わたしは その タイトルが すきだ",
+    "sourceID" : "like-the-title",
+    "tokens" : [
+      "I",
+      "like",
+      "the",
+      "title"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "use",
+      "tool"
+    ],
+    "en" : "I use a tool",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "6C9A2F84-4DED-53A5-A99B-4C5DA25980F4",
+    "ja" : "わたしは どうぐを つかう",
+    "sourceID" : "use-a-tool",
+    "tokens" : [
+      "I",
+      "use",
+      "a",
+      "tool"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "topic",
+      "fun"
+    ],
+    "en" : "The topic is fun",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "23D03DCA-3DBA-5ED1-A021-29B53F5712D9",
+    "ja" : "その トピックは たのしい",
+    "sourceID" : "topic-is-fun",
+    "tokens" : [
+      "The",
+      "topic",
+      "is",
+      "fun"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "totally",
+      "safe"
+    ],
+    "en" : "We are totally safe",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "A03FE85B-E11B-59F7-B384-47A3C4DB9496",
+    "ja" : "わたしたちは まったく あんぜんだ",
+    "sourceID" : "are-totally-safe",
+    "tokens" : [
+      "We",
+      "are",
+      "totally",
+      "safe"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "game",
+      "tough"
+    ],
+    "en" : "The game is tough",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "CFCAD995-06A8-5BA4-9F38-714EFED607C8",
+    "ja" : "その ゲームは むずかしい",
+    "sourceID" : "game-is-tough",
+    "tokens" : [
+      "The",
+      "game",
+      "is",
+      "tough"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "join",
+      "tour"
+    ],
+    "en" : "I join a tour",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "2F08046D-DB45-55A5-9B85-3A74EC2A97D2",
+    "ja" : "わたしは ツアーに さんかする",
+    "sourceID" : "join-a-tour",
+    "tokens" : [
+      "I",
+      "join",
+      "a",
+      "tour"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tourist",
+      "happy"
+    ],
+    "en" : "The tourist is happy",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "131D9F72-2546-5FDD-AA72-CF7294BBBA4B",
+    "ja" : "その かんこうきゃくは うれしい",
+    "sourceID" : "tourist-is-happy",
+    "tokens" : [
+      "The",
+      "tourist",
+      "is",
+      "happy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tradition"
+    ],
+    "en" : "This is a tradition",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "E5600CF3-8682-5E69-BE0D-7653832DFEBA",
+    "ja" : "これは でんとうだ",
+    "sourceID" : "is-a-tradition",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "tradition"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "food",
+      "traditional"
+    ],
+    "en" : "The food is traditional",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "B8D35FA9-82B7-5C80-946C-40959F6FD159",
+    "ja" : "この たべものは むかしから ある",
+    "sourceID" : "food-is-traditional",
+    "tokens" : [
+      "The",
+      "food",
+      "is",
+      "traditional"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "bad",
+      "traffic"
+    ],
+    "en" : "I see bad traffic",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "74C27B42-9CD5-53BE-9C05-A6D0DC881F46",
+    "ja" : "わたしは くるまの じゅうたいを みる",
+    "sourceID" : "see-bad-traffic",
+    "tokens" : [
+      "I",
+      "see",
+      "bad",
+      "traffic"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "transfer",
+      "water"
+    ],
+    "en" : "I transfer the water",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A0F89B7C-733C-5DA5-A2A1-F0704FAF9CA8",
+    "ja" : "わたしは みずを うつす",
+    "sourceID" : "transfer-the-water",
+    "tokens" : [
+      "I",
+      "transfer",
+      "the",
+      "water"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "transport",
+      "apples"
+    ],
+    "en" : "We transport the apples",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "AEDBEF0E-9BBC-5B7F-9C49-B9205E831B16",
+    "ja" : "わたしたちは りんごを はこぶ",
+    "sourceID" : "transport-the-apples",
+    "tokens" : [
+      "We",
+      "transport",
+      "the",
+      "apples"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "trend"
+    ],
+    "en" : "This is a trend",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "68456D03-FA4F-5957-85CD-EF9639DFC476",
+    "ja" : "これは はやり だ",
+    "sourceID" : "is-a-trend",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "trend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "start",
+      "trial"
+    ],
+    "en" : "I start the trial",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "584F52DA-667D-5529-9A47-B07866470100",
+    "ja" : "わたしは おためしを はじめる",
+    "sourceID" : "start-the-trial",
+    "tokens" : [
+      "I",
+      "start",
+      "the",
+      "trial"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "troop"
+    ],
+    "en" : "I see a troop",
+    "gradeBand" : 3,
+    "grammar" : "articles",
+    "id" : "E96D5982-FBF3-58B9-9E95-979550A6606C",
+    "ja" : "わたしは さるの むれを みる",
+    "sourceID" : "see-a-troop",
+    "tokens" : [
+      "I",
+      "see",
+      "a",
+      "troop"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "trust",
+      "dog"
+    ],
+    "en" : "I trust my dog",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "C8174A4A-6430-5F4B-B1F0-497642DE8FF8",
+    "ja" : "わたしは いぬを しんじる",
+    "sourceID" : "trust-my-dog",
+    "tokens" : [
+      "I",
+      "trust",
+      "my",
+      "dog"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tell",
+      "truth"
+    ],
+    "en" : "I tell the truth",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "9015ED95-791A-59BF-9DA8-A90230E62EB7",
+    "ja" : "わたしは ほんとうの ことを いう",
+    "sourceID" : "tell-the-truth",
+    "tokens" : [
+      "I",
+      "tell",
+      "the",
+      "truth"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "unfortunately",
+      "cold"
+    ],
+    "en" : "Unfortunately it is cold",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "5AF20136-0F82-521F-8597-21B863155ADB",
+    "ja" : "ざんねんながら とても さむい",
+    "sourceID" : "unfortunately-is-cold",
+    "tokens" : [
+      "Unfortunately",
+      "it",
+      "is",
+      "cold"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "form",
+      "union"
+    ],
+    "en" : "They form a union",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "95932C89-8467-5818-AC0B-63ECA828E748",
+    "ja" : "かれらは くみあいを つくる",
+    "sourceID" : "form-a-union",
+    "tokens" : [
+      "They",
+      "form",
+      "a",
+      "union"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "university",
+      "big"
+    ],
+    "en" : "The university is big",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "1E5D34B0-143D-522C-B0C8-81A8721C9C1D",
+    "ja" : "だいがくは とても おおきい",
+    "sourceID" : "university-is-big",
+    "tokens" : [
+      "The",
+      "university",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sleep",
+      "unless",
+      "play"
+    ],
+    "en" : "I sleep unless you play",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "C3B781A1-0B9A-566A-B25F-DA64141297A6",
+    "ja" : "あなたが あそばない かぎり わたしは ねる",
+    "sourceID" : "sleep-unless-play",
+    "tokens" : [
+      "I",
+      "sleep",
+      "unless",
+      "you",
+      "play"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "user"
+    ],
+    "en" : "I am a user",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "9DE917A6-BC65-59AE-80C9-7C71AEC0B2E7",
+    "ja" : "わたしは ユーザー だ",
+    "sourceID" : "am-a-user",
+    "tokens" : [
+      "I",
+      "am",
+      "a",
+      "user"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "usual",
+      "spot"
+    ],
+    "en" : "This is my usual spot",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "4124F7B7-345A-54AC-909D-BAF51D0EC2C1",
+    "ja" : "これは いつもの ばしょ だ",
+    "sourceID" : "is-usual-spot",
+    "tokens" : [
+      "This",
+      "is",
+      "my",
+      "usual",
+      "spot"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "score",
+      "variable"
+    ],
+    "en" : "The score is variable",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "DB9C6AF9-BDAD-5A69-ABE8-3FF8D2B84831",
+    "ja" : "てんすうは よく かわる",
+    "sourceID" : "score-is-variable",
+    "tokens" : [
+      "The",
+      "score",
+      "is",
+      "variable"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "color",
+      "vary",
+      "lot"
+    ],
+    "en" : "The colors vary a lot",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "E471CF94-C73E-5655-8FAB-7A767118A998",
+    "ja" : "いろは たくさん かわる",
+    "sourceID" : "colors-vary-lot",
+    "tokens" : [
+      "The",
+      "colors",
+      "vary",
+      "a",
+      "lot"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "vehicle",
+      "fast"
+    ],
+    "en" : "That vehicle is fast",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "334DDEAC-A86C-54D7-860A-70D1F175EDE2",
+    "ja" : "あの のりものは はやい",
+    "sourceID" : "vehicle-is-fast",
+    "tokens" : [
+      "That",
+      "vehicle",
+      "is",
+      "fast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "watch",
+      "video"
+    ],
+    "en" : "I watch a video",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "FAFF6EDD-CCEA-5733-8EFA-A809AD06595C",
+    "ja" : "わたしは ビデオを みる",
+    "sourceID" : "watch-a-video",
+    "tokens" : [
+      "I",
+      "watch",
+      "a",
+      "video"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "violence",
+      "bad"
+    ],
+    "en" : "Violence is bad",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "97ED32F3-CE61-5CEE-BC24-8203E72F9D94",
+    "ja" : "ぼうりょくは わるい",
+    "sourceID" : "violence-is-bad",
+    "tokens" : [
+      "Violence",
+      "is",
+      "bad"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "visitor",
+      "come"
+    ],
+    "en" : "A visitor comes here",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "A7DD21CF-B834-5D02-BDA3-4A86FF1E832D",
+    "ja" : "おきゃくさんが ここに くる",
+    "sourceID" : "visitor-comes-here",
+    "tokens" : [
+      "A",
+      "visitor",
+      "comes",
+      "here"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "volume",
+      "loud"
+    ],
+    "en" : "The volume is loud",
+    "gradeBand" : 5,
+    "grammar" : "beVerb",
+    "id" : "B583167E-E4A2-56BC-A9AA-F641170BA13A",
+    "ja" : "おとが とても おおきい",
+    "sourceID" : "volume-is-loud",
+    "tokens" : [
+      "The",
+      "volume",
+      "is",
+      "loud"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "voter",
+      "like"
+    ],
+    "en" : "The voter likes this",
+    "gradeBand" : 3,
+    "grammar" : "demonstratives",
+    "id" : "A96F4A56-1F58-5BC7-9A1F-7BF59820797F",
+    "ja" : "えらぶ ひとは これが すき だ",
+    "sourceID" : "voter-likes-this",
+    "tokens" : [
+      "The",
+      "voter",
+      "likes",
+      "this"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "warn",
+      "friend"
+    ],
+    "en" : "I warn my friends",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "719E4B89-C534-5F82-9B1A-19D10CE0018D",
+    "ja" : "わたしは ともだちに ちゅうい する",
+    "sourceID" : "warn-my-friends",
+    "tokens" : [
+      "I",
+      "warn",
+      "my",
+      "friends"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "wave"
+    ],
+    "en" : "I wave to you",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "77F22B73-E587-5C89-BB33-F2E608927EE7",
+    "ja" : "わたしは あなたに てを ふる",
+    "sourceID" : "wave-to-you",
+    "tokens" : [
+      "I",
+      "wave",
+      "to",
+      "you"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "toy",
+      "weapon"
+    ],
+    "en" : "This is a toy weapon",
+    "gradeBand" : 4,
+    "grammar" : "demonstratives",
+    "id" : "62309E80-62F4-5E42-9909-2AA092BB0690",
+    "ja" : "これは おもちゃの ぶき だよ",
+    "sourceID" : "this-is-a-toy-weapon",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "toy",
+      "weapon"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "weight",
+      "heavy"
+    ],
+    "en" : "The weight is very heavy",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "9382F565-C52C-5F44-A39B-7FC27E97A5A9",
+    "ja" : "その おもりは とても おもい",
+    "sourceID" : "the-weight-is-very-heavy",
+    "tokens" : [
+      "The",
+      "weight",
+      "is",
+      "very",
+      "heavy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "run",
+      "whereas",
+      "cat",
+      "sleep"
+    ],
+    "en" : "Dogs run whereas cats sleep",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "121CA00D-EE1A-557F-9E00-56BF3842C903",
+    "ja" : "いぬは はしる けど ねこは ねる",
+    "sourceID" : "dogs-run-whereas-cats-sleep",
+    "tokens" : [
+      "Dogs",
+      "run",
+      "whereas",
+      "cats",
+      "sleep"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "adult",
+      "drink",
+      "red",
+      "wine"
+    ],
+    "en" : "Adults drink the red wine",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "D2BC8F06-1D5C-5856-9E4C-E6377D50B98C",
+    "ja" : "おとなは あかい ワインを のむ",
+    "sourceID" : "adults-drink-the-red-wine",
+    "tokens" : [
+      "Adults",
+      "drink",
+      "the",
+      "red",
+      "wine"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "wonderful",
+      "toy"
+    ],
+    "en" : "This is a wonderful toy",
+    "gradeBand" : 4,
+    "grammar" : "demonstratives",
+    "id" : "3D11F827-578F-565B-A60E-049F30EC493A",
+    "ja" : "これは すてきな おもちゃ だよ",
+    "sourceID" : "this-is-a-wonderful-toy",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "wonderful",
+      "toy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "writer",
+      "read",
+      "book"
+    ],
+    "en" : "The writer reads a book",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "CB0F02CE-4EC5-5D21-8EE5-D1DA2D66E4F1",
+    "ja" : "さっかは ほんを よむ",
+    "sourceID" : "the-writer-reads-a-book",
+    "tokens" : [
+      "The",
+      "writer",
+      "reads",
+      "a",
+      "book"
+    ]
   }
 ]
