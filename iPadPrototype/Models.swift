@@ -325,6 +325,16 @@ enum ParentReviewDecision: String, Equatable, Codable, Sendable {
             return language.text(japanese: "直そう", english: "Needs Fix")
         }
     }
+
+    /// 同期コア（`SpellingSyncCore`）の親採点状態へ写す。
+    /// 網羅 switch にして、将来ケースが増えたときにコンパイルで気づけるようにする（rawValue で黙って写さない）。
+    var reviewState: ParentReviewState {
+        switch self {
+        case .unreviewed: return .unreviewed
+        case .approved: return .approved
+        case .needsPractice: return .needsPractice
+        }
+    }
 }
 
 struct DrawingCanvasSize: Equatable, Codable, Sendable {
@@ -397,14 +407,7 @@ extension SpellingAttempt {
         case .timeExpired: decisionState = .timeExpired
         }
 
-        let reviewState: ParentReviewState
-        switch parentReviewDecision {
-        case .unreviewed: reviewState = .unreviewed
-        case .approved: reviewState = .approved
-        case .needsPractice: reviewState = .needsPractice
-        }
-
-        return ChildGrading.outcome(decision: decisionState, parentReview: reviewState)
+        return ChildGrading.outcome(decision: decisionState, parentReview: parentReviewDecision.reviewState)
     }
 
     /// 本人が実際に手を動かして書いたか。
