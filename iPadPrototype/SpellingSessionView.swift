@@ -45,6 +45,11 @@ struct SpellingSessionView: View {
     @State private var didShowSpeakerHint = false
     @State private var pendingTestGradeCount = 0
     @State private var shouldShowTestResultsAfterGrading = false
+    /// テスト結果画面からの「その場採点」導線。親ゲート → 採点 → そのまま復習。
+    @State private var showingGradingGate = false
+    @State private var showingInlineGrading = false
+    @State private var inlineReviewWords: [SpellingWord] = []
+    @State private var showingInlineReview = false
     @State private var measuredWritingCanvasSize: CGSize = .zero
     @State private var compactPracticeDrawings: [UUID: PKDrawing] = [:]
     @State private var compactPracticeCanvasSizes: [UUID: CGSize] = [:]
@@ -383,6 +388,29 @@ struct SpellingSessionView: View {
                 .padding(.horizontal, 34)
                 .padding(.top, 24)
                 .padding(.bottom, 28)
+            } else if showingInlineReview {
+                // 採点で「直そう」になった単語を、その場で子が手書き復習する（同じ書き問題を review モードで）。
+                SpellingSessionView(
+                    mode: .review,
+                    words: inlineReviewWords,
+                    onRequestClose: { goHome() }
+                )
+                .transition(.opacity)
+            } else if showingInlineGrading {
+                SessionInlineGradingView(
+                    attempts: sessionAttempts,
+                    language: language,
+                    onFinished: { fixWords in
+                        startInlineReviewOrFinish(fixWords: fixWords)
+                    },
+                    onCancel: {
+                        withAnimation(.easeInOut(duration: 0.18)) { showingInlineGrading = false }
+                    }
+                )
+                .transition(.opacity)
+                .padding(.horizontal, 34)
+                .padding(.top, 24)
+                .padding(.bottom, 28)
             } else if showingTestResults {
                 TestSessionResultsView(
                     attempts: sessionAttempts,
@@ -390,7 +418,8 @@ struct SpellingSessionView: View {
                     language: language,
                     onDone: {
                         goHome()
-                    }
+                    },
+                    onGrade: mode == .test ? { showingGradingGate = true } : nil
                 )
                 .transition(.opacity)
                 .padding(.horizontal, 34)
@@ -549,6 +578,32 @@ struct SpellingSessionView: View {
                 return
             }
             measuredWritingCanvasSize = size
+        }
+        // 採点は親の操作。子の誤操作で開かないよう「かんたんな大人ゲート」の奥に隠す。
+        .sheet(isPresented: $showingGradingGate) {
+            ParentGateView {
+                showingGradingGate = false
+                withAnimation(.easeInOut(duration: 0.18)) { showingInlineGrading = true }
+            }
+        }
+    }
+
+    /// 採点完了後の分岐：直そう単語があればその場で子の復習へ、なければ結果画面へ戻る。
+    private func startInlineReviewOrFinish(fixWords: [String]) {
+        // 出題順の綴りをこのセッションの SpellingWord に戻す（id/訳/例文ヒントを保つ）。
+        let matched = fixWords.map { word in
+            sessionWords.first { $0.text.caseInsensitiveCompare(word) == .orderedSame }
+                ?? SpellingWord(text: word)
+        }
+        guard !matched.isEmpty else {
+            // ぜんぶOK：復習なしで結果画面へ戻る。
+            withAnimation(.easeInOut(duration: 0.18)) { showingInlineGrading = false }
+            return
+        }
+        inlineReviewWords = matched
+        withAnimation(.easeInOut(duration: 0.18)) {
+            showingInlineGrading = false
+            showingInlineReview = true
         }
     }
 
@@ -3576,6 +3631,8 @@ private struct TestSessionResultsView: View {
     var perfectBonusCoins: Int? = nil
     var language: AppLanguage
     var onDone: () -> Void
+    /// 親がその場で採点する導線（親ゲートの奥へ）。nil のときは出さない。
+    var onGrade: (() -> Void)? = nil
 
     @State private var showingCompletionCelebration = false
     @State private var celebrationSeed = 0
@@ -3700,16 +3757,35 @@ private struct TestSessionResultsView: View {
                     }
                 }
 
-                Button(action: onDone) {
-                    Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
-                        .font(.title3.weight(.bold))
-                        .frame(minWidth: 240)
-                        .padding(.vertical, 14)
-                        .contentShape(RoundedRectangle(cornerRadius: 8))
+                VStack(spacing: 10) {
+                    Button(action: onDone) {
+                        Label(language.text(japanese: "ホームにもどる", english: "Back Home"), systemImage: "house.fill")
+                            .font(.title3.weight(.bold))
+                            .frame(minWidth: 240)
+                            .padding(.vertical, 14)
+                            .contentShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .contentShape(RoundedRectangle(cornerRadius: 8))
+                    .tapFeedback()
+
+                    // 採点は「管理」＝親の操作。子の画面では控えめに、親ゲートの奥へ隠す。
+                    if let onGrade, !attempts.isEmpty {
+                        Button(action: onGrade) {
+                            Label(
+                                language.text(japanese: "おうちのひとが さいてん する", english: "Grown-up: grade now"),
+                                systemImage: "person.badge.shield.checkmark"
+                            )
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 14)
+                            .contentShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .tapFeedback()
+                    }
                 }
-                .buttonStyle(.borderedProminent)
-                .contentShape(RoundedRectangle(cornerRadius: 8))
-                .tapFeedback()
             }
         }
         .onAppear {

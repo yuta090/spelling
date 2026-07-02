@@ -7805,6 +7805,121 @@ private struct ParentGradingSessionCard: View {
     }
 }
 
+/// テスト直後に「その場で」採点する画面（親ゲートの奥に出す）。
+/// 既存の採点カード（`ParentAttemptGradingCard`）をそのまま再利用し、対象はこのセッションの答案だけ。
+/// 採点完了すると、親が「直そう」にした単語（出題順・重複なし）を `onFinished` に渡す
+/// → 呼び出し側でそのまま子の復習（かき）へつなぐ。空なら復習なしで完了。
+struct SessionInlineGradingView: View {
+    @EnvironmentObject private var model: AppModel
+    let attempts: [SpellingAttempt]
+    let language: AppLanguage
+    /// 採点完了時に呼ぶ。引数は「直そう」にした単語（正規化前の綴り・出題順・重複なし）。
+    var onFinished: ([String]) -> Void
+    /// 採点せずに閉じる（結果画面へ戻る）。
+    var onCancel: () -> Void
+
+    // 下書き：採点完了を押すまでモデルには保存しない。未指定はデフォルトOK扱い。
+    @State private var decisionDrafts: [UUID: ParentReviewDecision] = [:]
+    @State private var exampleDrafts: [UUID: Data] = [:]
+
+    private func draftDecision(for id: UUID, current: ParentReviewDecision) -> ParentReviewDecision {
+        decisionDrafts[id] ?? (current == .unreviewed ? .approved : current)
+    }
+
+    private var fixCount: Int {
+        attempts.filter { draftDecision(for: $0.id, current: $0.parentReviewDecision) == .needsPractice }.count
+    }
+
+    private var gradingColumns: [GridItem] {
+        [
+            GridItem(.flexible(minimum: 250), spacing: 10, alignment: .top),
+            GridItem(.flexible(minimum: 250), spacing: 10, alignment: .top)
+        ]
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
+                Label(language.text(japanese: "テストの採点", english: "Grade this test"), systemImage: "checkmark.seal")
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(ParentPalette.ink)
+
+                Spacer()
+
+                Button(action: onCancel) {
+                    Label(language.text(japanese: "とじる", english: "Close"), systemImage: "xmark")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        .background(Color.white.opacity(0.7))
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .tapFeedback()
+            }
+
+            Text(language.text(
+                japanese: "ぜんぶOKがデフォルトです。直すものだけ「直そう」にして、採点完了を押してください。",
+                english: "Everything defaults to OK. Mark only the ones to fix, then tap Done."
+            ))
+            .font(.callout.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+
+            ScrollView {
+                LazyVGrid(columns: gradingColumns, alignment: .leading, spacing: 10) {
+                    ForEach(attempts) { attempt in
+                        ParentAttemptGradingCard(
+                            attempt: attempt,
+                            language: language,
+                            decision: draftDecision(for: attempt.id, current: attempt.parentReviewDecision),
+                            exampleData: exampleDrafts[attempt.id] ?? attempt.parentExampleDrawingData,
+                            setDecision: { decisionDrafts[attempt.id] = $0 },
+                            setExample: { exampleDrafts[attempt.id] = $0 }
+                        )
+                    }
+                }
+                .padding(.bottom, 4)
+                .animation(.easeInOut(duration: 0.18), value: decisionDrafts)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            Button(action: complete) {
+                Label(
+                    fixCount > 0
+                        ? language.text(japanese: "採点完了 → いっしょに なおそう（\(fixCount)こ）", english: "Done → fix together (\(fixCount))")
+                        : language.text(japanese: "ぜんぶOKで採点完了", english: "Mark all OK & Done"),
+                    systemImage: fixCount > 0 ? "pencil.and.scribble" : "checkmark.seal.fill"
+                )
+                .font(.headline.weight(.heavy))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(fixCount > 0 ? ParentPalette.warning : ParentPalette.success)
+            .tapFeedback(scale: 0.96, bounce: true)
+        }
+    }
+
+    private func complete() {
+        var gradedItems: [SessionGrading.GradedItem] = []
+        for attempt in attempts {
+            let decision = draftDecision(for: attempt.id, current: attempt.parentReviewDecision)
+            let example = exampleDrafts[attempt.id] ?? attempt.parentExampleDrawingData
+            model.updateAttemptParentReview(
+                attempt,
+                decision: decision,
+                exampleDrawingData: decision == .needsPractice ? example : nil
+            )
+            gradedItems.append(
+                SessionGrading.GradedItem(word: attempt.word, decision: decision.reviewState)
+            )
+        }
+        onFinished(SessionGrading.wordsNeedingPractice(gradedItems))
+    }
+}
+
 private struct GradingCountPill: View {
     var title: String
     var value: Int
