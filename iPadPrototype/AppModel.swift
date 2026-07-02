@@ -1538,9 +1538,18 @@ final class AppModel: ObservableObject {
     /// attempts 同期カーソル（プロファイル別・pull は profile_id で絞る）。`childScopedKeys` 済み。
     private let attemptCursorsKey = "spellingTrainer.sync.attemptCursors"
     /// 同期由来の attempts 反映が、編集トリガ（requestSync）を再帰的に誘発しないためのフラグ。
+    /// （親採点=reviews の反映も `attempts` 配列へ書き戻すため、この同じフラグで didSet を抑止する。）
     private var isApplyingMergedAttempts = false
     /// 手書き画像のダウンロードに失敗した答案 id（セッション限りの負キャッシュ・404 連打防止）。
     private var attemptDrawingDownloadMisses: Set<UUID> = []
+
+    /// 採点同期（reviews・親判定＋見本画像）の 1 サイクルを回すコーディネータ（pull→merge→画像DL／UL→push）。
+    private lazy var reviewSyncCoordinator = ReviewSyncCoordinator()
+    /// reviews 同期のサイドカー／カーソル（プロファイル別・pull は profile_id で絞る）。`childScopedKeys` 済み。
+    private let reviewSidecarKey = "spellingTrainer.sync.reviewSidecar"
+    private let reviewCursorsKey = "spellingTrainer.sync.reviewCursors"
+    /// 見本画像のダウンロードに失敗した答案 id（セッション限りの負キャッシュ・404 連打防止）。
+    private var reviewExampleDownloadMisses: Set<UUID> = []
 
     /// 同期サイクルが対象とするアクティブプロファイル（サイクル開始時に捕捉する）。台帳は常に1人以上いる。
     var activeProfileIDForSync: UUID { profileRegistry.activeProfileID }
@@ -1825,6 +1834,185 @@ final class AppModel: ObservableObject {
         }
     }
 
+    // MARK: - reviews 同期（親採点＋見本画像 / SpellingSyncCore）
+
+    /// reviews の 1 サイクル同期（世帯未選択なら何もしない）。
+    /// `ReviewSyncCoordinator` がアクティブプロファイルを捕捉し、profile_id で pull を絞り、
+    /// 見本画像の DL/UL を挟んで push する。reviews は attempt を FK 参照するため `syncNow` では
+    /// attempts の後に回す。スコープ・ガードは words/attempts と共通（`canContinueWordSync`）。
+    func syncReviews(householdID: UUID?) async throws {
+        try await reviewSyncCoordinator.sync(appModel: self, householdID: householdID)
+    }
+
+    /// 指定プロファイルの reviews 同期状態（サイドカー＋カーソル）を **そのプロファイルのスコープから** 読む。
+    func loadReviewSyncState(profileID: UUID) -> ReviewSyncState {
+        guard let scoped = profileScopedStore else {
+            return ReviewSyncState(
+                sidecar: persistenceStore.load(ReviewSidecarStore.self, key: reviewSidecarKey) ?? ReviewSidecarStore(),
+                cursors: persistenceStore.load(SyncCursors.self, key: reviewCursorsKey) ?? SyncCursors()
+            )
+        }
+        let decoder = JSONDecoder()
+        let sidecar = scoped.loadScoped(reviewSidecarKey, profileID: profileID)
+            .flatMap { try? decoder.decode(ReviewSidecarStore.self, from: $0) } ?? ReviewSidecarStore()
+        let cursors = scoped.loadScoped(reviewCursorsKey, profileID: profileID)
+            .flatMap { try? decoder.decode(SyncCursors.self, from: $0) } ?? SyncCursors()
+        return ReviewSyncState(sidecar: sidecar, cursors: cursors)
+    }
+
+    /// 指定プロファイルの reviews 同期状態を **そのプロファイルのスコープへ** 保存する。
+    func saveReviewSyncState(_ state: ReviewSyncState, profileID: UUID) {
+        guard let scoped = profileScopedStore else {
+            persistenceStore.save(state.sidecar, key: reviewSidecarKey)
+            persistenceStore.save(state.cursors, key: reviewCursorsKey)
+            return
+        }
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(state.sidecar) {
+            scoped.saveScoped(data, key: reviewSidecarKey, profileID: profileID)
+        }
+        if let data = try? encoder.encode(state.cursors) {
+            scoped.saveScoped(data, key: reviewCursorsKey, profileID: profileID)
+        }
+    }
+
+    /// 親採点済みの答案 → 同期素材（`LocalReview`）。**採点済み（`.unreviewed` 以外）だけ**を素材にする
+    /// （未採点は review 行を作らない。採点取消＝`.unreviewed` へ戻すとサイドカーが tombstone 化して削除同期される）。
+    /// `id` は決定的（`ReviewIdentity.reviewID(forAttempt:)`）。見本バイトがある採点にだけ決定論パスを付ける
+    /// （アップロードはコーディネータが push 前に行う）。`reviewedBy` はローカルに保持しないため nil で送る
+    /// （サーバ `reviewed_by` は情報列・RLS は世帯メンバー判定のみ）。
+    func localReviewsForSync(householdID: UUID, profileID: UUID) -> [LocalReview] {
+        attempts.compactMap { attempt in
+            guard attempt.parentReviewDecision != .unreviewed else { return nil }
+            let hasExample = attempt.parentExampleDrawingData != nil || attempt.parentExamplePath != nil
+            let path = hasExample
+                ? DrawingStoragePath.review(householdID: householdID, profileID: profileID, attemptID: attempt.id)
+                : nil
+            let payload = ReviewPayload(
+                attemptID: attempt.id,
+                decision: attempt.parentReviewDecision.syncDecision,
+                exampleStoragePath: path,
+                reviewedBy: nil,
+                reviewedAt: attempt.parentReviewedAt
+            )
+            return LocalReview(payload: payload, createdAt: attempt.parentReviewedAt ?? attempt.date)
+        }
+    }
+
+    /// マージ後の review（tombstone 含む）をローカル答案へ反映する（`attemptID` で対応づけ）。
+    /// **tombstone も渡す**（`LastWriteWins.live` で除外しない）——理由は下記の resurrection 防止。
+    ///
+    /// - 生存レコード: 親判定・採点時刻・見本パスをリモート権威で上書き（別端末の採点を伝搬）。表示/SRS 用
+    ///   `decision` も親判定へ写し、リモート採点を子端末の SRS 復習キューへ反映する（ローカル採点と同じ冪等ガード）。
+    /// - **別の採点イベント**（`reviewedAt` が変化）なら、同じ決定論パスに差し替わった新しい見本を取り直すため
+    ///   ローカルの見本バイトを破棄する（reviews は attempts と違い**可変**＝画像も差し替わりうる）。
+    /// - **tombstone（採点取消）**: ローカルも未採点へ戻す。これをしないと (a) 取消が他端末へ伝わらず、
+    ///   (b) 生存扱いのまま次サイクルで再 push され、tombstone を LWW で上書き＝取消が全端末で復活する。
+    func applyMergedReviews(_ merged: [ReviewRecord]) {
+        guard !merged.isEmpty else { return }
+        var byAttempt: [UUID: ReviewRecord] = [:]
+        for record in merged { byAttempt[record.payload.attemptID] = record }
+
+        var updated = attempts
+        var didChange = false
+        for index in updated.indices {
+            guard let record = byAttempt[updated[index].id] else { continue }
+            var copy = updated[index]
+
+            if record.sync.deletedAt != nil {
+                // 採点取消の反映（ローカル取消 `updateAttemptParentReview(.unreviewed)` と同じ最終状態）。
+                let alreadyCleared = copy.parentReviewDecision == .unreviewed
+                    && copy.parentExampleDrawingData == nil
+                    && copy.parentExamplePath == nil
+                    && copy.parentReviewedAt == nil
+                if alreadyCleared { continue }
+                copy.parentReviewDecision = .unreviewed
+                copy.parentExampleDrawingData = nil
+                copy.parentExamplePath = nil
+                copy.parentReviewedAt = nil
+                reviewExampleDownloadMisses.remove(copy.id)
+                if reflectParentReviewToSRS(word: copy.word, wordID: copy.wordID, decision: .unreviewed) {
+                    copy.srsReflectedParentDecision = .unreviewed
+                }
+            } else {
+                let decision = ParentReviewDecision(sync: record.payload.decision)
+                let gradingChanged = copy.parentReviewedAt != record.payload.reviewedAt
+                copy.parentReviewDecision = decision
+                copy.parentReviewedAt = record.payload.reviewedAt
+                copy.parentExamplePath = record.payload.exampleStoragePath ?? copy.parentExamplePath
+                // 別イベントの見本は差し替わりうる → バイト列を捨てて後追いDLで取り直す。
+                if gradingChanged, record.payload.exampleStoragePath != nil {
+                    copy.parentExampleDrawingData = nil
+                    reviewExampleDownloadMisses.remove(copy.id)
+                }
+                switch decision {
+                case .approved: copy.decision = .autoCorrect
+                case .needsPractice: copy.decision = .autoIncorrect
+                case .unreviewed: break
+                }
+                if decision != copy.srsReflectedParentDecision,
+                   reflectParentReviewToSRS(word: copy.word, wordID: copy.wordID, decision: decision) {
+                    copy.srsReflectedParentDecision = decision
+                }
+            }
+
+            if copy != updated[index] {
+                updated[index] = copy
+                didChange = true
+            }
+        }
+        guard didChange else { return }
+        isApplyingMergedAttempts = true
+        attempts = updated
+        isApplyingMergedAttempts = false
+    }
+
+    /// push 対象の親見本を Storage へアップロードする（push の前にコーディネータが呼ぶ）。
+    /// **失敗したら throw する**：画像が上がっていないのに行だけ push すると `parent_example_path` が
+    /// 実体の無いパスを指す（download 404 の温床）。throw で push を中止すれば high-water が進まず、
+    /// 次サイクルで丸ごと再試行される（整合を保つ）。見本バイトが無い採点（OK 判定など）は送るものが無い。
+    func uploadReviewExamples(_ records: [ReviewRecord], storage: DrawingStorage) async throws {
+        let bytesByID = Dictionary(
+            attempts.compactMap { a in a.parentExampleDrawingData.map { (a.id, $0) } },
+            uniquingKeysWith: { first, _ in first }
+        )
+        for record in records {
+            guard let path = record.payload.exampleStoragePath,
+                  let data = bytesByID[record.payload.attemptID] else { continue }
+            try await storage.upload(data, to: path)
+        }
+    }
+
+    /// リモート由来でバイト列が無い見本（`parentExamplePath` 有り・`parentExampleDrawingData` 無し）の
+    /// 画像を後追いダウンロードする。ベストエフォート（失敗＝次サイクルで再試行）。取得できたものだけ反映する。
+    /// DL の await 中にプロファイル切替が起きたら、書き戻し前に捕捉スコープ一致を確認して混ぜない。
+    func downloadMissingReviewExamples(storage: DrawingStorage, householdID: UUID, profileID: UUID) async {
+        let pending = attempts.filter {
+            $0.parentExampleDrawingData == nil && $0.parentExamplePath != nil
+                && !reviewExampleDownloadMisses.contains($0.id)
+        }
+        guard !pending.isEmpty else { return }
+        var fetched: [UUID: Data] = [:]
+        for attempt in pending {
+            guard let path = attempt.parentExamplePath else { continue }
+            if let data = try? await storage.download(path) { fetched[attempt.id] = data }
+            else { reviewExampleDownloadMisses.insert(attempt.id) }
+        }
+        guard !fetched.isEmpty else { return }
+        guard canContinueWordSync(householdID: householdID, profileID: profileID) else { return }
+        let updated = attempts.map { attempt -> SpellingAttempt in
+            guard let data = fetched[attempt.id] else { return attempt }
+            var copy = attempt
+            copy.parentExampleDrawingData = data
+            return copy
+        }
+        if updated != attempts {
+            isApplyingMergedAttempts = true
+            attempts = updated
+            isApplyingMergedAttempts = false
+        }
+    }
+
     // MARK: 自動同期トリガ（前面化／編集後／サインイン・世帯確定時）
 
     /// アクティブ世帯の供給元。アプリ起動時に `SyncSession` を注入する（未設定なら同期は無効）。
@@ -1865,6 +2053,12 @@ final class AppModel: ObservableObject {
         do { try await syncAttempts(householdID: household) }
         catch {
             TelemetryCoordinator.shared.record(.syncPushFailed, payload: ["op": .string("syncAttempts")])
+        }
+        // 親採点同期（reviews）。**attempts の後**に回す（reviews.attempt_id が attempts を FK 参照する
+        // ため、先に attempt 行がサーバに存在している必要がある）。失敗は次トリガで回収。
+        do { try await syncReviews(householdID: household) }
+        catch {
+            TelemetryCoordinator.shared.record(.syncPushFailed, payload: ["op": .string("syncReviews")])
         }
     }
 

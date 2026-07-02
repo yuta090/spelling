@@ -48,7 +48,9 @@ public enum ProfileKeyScope {
         "spellingTrainer.aiJudgeConfig",            // DEBUG のみ。AI判定の実行パラメータ（子ども別に持つ）
         "spellingTrainer.sync.wordSidecar",         // 同期簿記はプロファイル別（Phase 5：子ごとに独立した dirty 基準/tombstone 台帳）
         "spellingTrainer.sync.cursors",             // 同上：pull/push カーソルも子ごとに独立
-        "spellingTrainer.sync.attemptCursors"       // 採点同期(attempts)の pull/push カーソル（子ごと。pull は profile_id で絞るため）
+        "spellingTrainer.sync.attemptCursors",      // 採点同期(attempts)の pull/push カーソル（子ごと。pull は profile_id で絞るため）
+        "spellingTrainer.sync.reviewSidecar",       // 採点同期(reviews)のサイドカー（子ごと：親採点の dirty 基準/tombstone 台帳）
+        "spellingTrainer.sync.reviewCursors"        // 採点同期(reviews)の pull/push カーソル（子ごと。pull は profile_id で絞るため）
     ]
 
     /// 世帯/端末グローバル（prefix しない）キー。
