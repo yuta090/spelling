@@ -68,6 +68,14 @@ final class ProfileKeyScopeTests: XCTestCase {
         }
     }
 
+    func testWireActivationFlagIsGlobal() {
+        // Phase 5b: 「全プロファイルの同期簿記を一度リセットした」端末フラグ。端末単位（子で分けない）。
+        // 旧 wordRemoteOwner キーは owner ゲート撤去に伴い削除済み（回帰防止で不在も固定）。
+        XCTAssertTrue(ProfileKeyScope.globalKeys.contains("spellingTrainer.sync.profileScopedWireActivated.v1"))
+        XCTAssertFalse(ProfileKeyScope.globalKeys.contains("spellingTrainer.sync.wordRemoteOwnerProfileID"))
+        XCTAssertFalse(ProfileKeyScope.childScopedKeys.contains("spellingTrainer.sync.wordRemoteOwnerProfileID"))
+    }
+
     func testCoreChildDataKeysAreScoped() {
         // 代表的な子データが子スコープであることを固定。
         for key in ["spellingTrainer.words", "spellingTrainer.attempts",

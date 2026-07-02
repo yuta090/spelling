@@ -27,12 +27,19 @@ final class SyncEngine {
     }
 
     /// 1ページ分を `sync_version > cursor` の昇順で取得する。
-    /// - Parameter cursor: 前回同期で得た最大 sync_version（初回は 0）
-    func pullPage<T: SyncedRow>(_ type: T.Type, since cursor: Int) async throws -> Page<T> {
-        let rows: [T] = try await service.client
+    /// - Parameters:
+    ///   - cursor: 前回同期で得た最大 sync_version（初回は 0）
+    ///   - profileID: 指定すると `profile_id = profileID` に絞る（Phase 5b: 親認証は世帯の全子行が
+    ///     見えるため、RLS 任せにせずクエリ側で明示フィルタして他児データの混入を防ぐ）。`nil` は絞らない。
+    func pullPage<T: SyncedRow>(_ type: T.Type, since cursor: Int, profileID: UUID? = nil) async throws -> Page<T> {
+        var query = service.client
             .from(T.table)
             .select()
             .gt("sync_version", value: cursor)
+        if let profileID {
+            query = query.eq("profile_id", value: profileID.uuidString)
+        }
+        let rows: [T] = try await query
             .order("sync_version", ascending: true)
             .limit(pageSize)
             .execute()
@@ -42,12 +49,12 @@ final class SyncEngine {
         return Page(rows: rows, nextCursor: nextCursor, hasMore: rows.count == pageSize)
     }
 
-    /// 最終ページまで全ページを取得する（tombstone含む）。
-    func pullAll<T: SyncedRow>(_ type: T.Type, since cursor: Int) async throws -> (rows: [T], nextCursor: Int) {
+    /// 最終ページまで全ページを取得する（tombstone含む）。`profileID` で 1 プロファイルに絞れる。
+    func pullAll<T: SyncedRow>(_ type: T.Type, since cursor: Int, profileID: UUID? = nil) async throws -> (rows: [T], nextCursor: Int) {
         var all: [T] = []
         var c = cursor
         while true {
-            let page = try await pullPage(type, since: c)
+            let page = try await pullPage(type, since: c, profileID: profileID)
             all.append(contentsOf: page.rows)
             c = page.nextCursor
             if !page.hasMore { break }

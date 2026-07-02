@@ -16,7 +16,10 @@ public struct WordPullPage: Sendable {
 /// テストはフェイクで差し替える。コアは SDK を知らないので wire 型 `WordRow` を通貨にする。
 public protocol WordSyncTransport: Sendable {
     /// `sync_version > cursor` の差分を全ページ取得する（tombstone 含む）。
-    func pullAll(table: String, since cursor: Int) async throws -> WordPullPage
+    /// `profileID` を渡すと **そのプロファイルの行だけ** に絞る（Phase 5b: 親認証は世帯の全子行が
+    /// 見えるため、RLS 任せにせずクエリ側で profile_id を明示フィルタして他児データの混入を防ぐ）。
+    /// `nil` は絞り込みなし（後方互換・テスト用）。
+    func pullAll(table: String, since cursor: Int, profileID: UUID?) async throws -> WordPullPage
     /// 未送信行を upsert する（サーバー LWW ガード前提）。
     func push(table: String, rows: [WordRow]) async throws
 }
