@@ -11,6 +11,9 @@ public protocol ProfileScopedRawStore: AnyObject, Sendable {
     func rawSave(_ data: Data, key: String)
     /// 書き込み完了を待つ同期保存。移行のバリア（コピー完了を保証してから台帳を確定）に使う。
     func rawSaveBlocking(_ data: Data, key: String)
+    /// キーに対応する値を削除する（プロファイル削除時の孤児データ purge に使う）。
+    /// フォールバック退避先（UserDefaults 等）も併せて掃除すること。
+    func rawRemove(_ key: String)
 }
 
 /// `UserDataStore` を**プロファイル単位に名前空間化**するラッパ（設計 §3 の核心）。
@@ -56,6 +59,49 @@ public final class ProfileScopedStore: @unchecked Sendable {
     /// アクティブプロファイルのスコープでバイト列を保存する（非同期でよい）。
     public func save(_ data: Data, key: String) {
         base.rawSave(data, key: scopedKey(key))
+    }
+
+    // MARK: - 明示プロファイルスコープ I/O（同期簿記など「現在アクティブ」に依存させたくない用途）
+
+    /// **指定した** `profileID` のスコープでバイト列を読む（アクティブ prefix に依存しない）。
+    /// 同期コーディネータが、サイクル開始時に捕捉したプロファイルへ確実に読み書きするために使う
+    /// （pull の await 中に切替が起きても、捕捉したプロファイルの簿記を別スコープへ書かない）。
+    public func loadScoped(_ key: String, profileID: UUID) -> Data? {
+        base.rawLoad(ProfileKeyScope.scopedKey(key, profileID: profileID))
+    }
+
+    /// **指定した** `profileID` のスコープでバイト列を保存する（アクティブ prefix に依存しない）。
+    public func saveScoped(_ data: Data, key: String, profileID: UUID) {
+        base.rawSave(data, key: ProfileKeyScope.scopedKey(key, profileID: profileID))
+    }
+
+    /// 旧・世帯グローバルだったキー（prefix 無し）を、**指定プロファイル**のスコープへ一度だけ移す（冪等）。
+    /// Phase 5 で子スコープへ移した同期簿記（サイドカー/カーソル）の初回移行に使う。移行先は
+    /// 「世帯 NULL ストリームのオーナー」に固定する（アクティブが別プロファイルでも取り違えない）。
+    /// - 冪等: 移行先が既にあればスキップ。
+    /// - グローバル分類のままのキー（`dest == key`）は対象外。
+    public func migrateGlobalKeys(_ keys: Set<String>, into profileID: UUID) {
+        for key in keys {
+            let dest = ProfileKeyScope.scopedKey(key, profileID: profileID)
+            guard dest != key else { continue }
+            guard base.rawLoad(dest) == nil else { continue }   // 冪等
+            guard let data = base.rawLoad(key) else { continue } // 旧グローバル値が無ければ何もしない
+            // バリア（`rawSaveBlocking`）：着地を待ってから続行する。これで **起動直後の初回同期が
+            // 空サイドカー（cursor 0）で走り、ローカル語が now スタンプで墓石に勝って復活する**事故を防ぐ。
+            base.rawSaveBlocking(data, key: dest)
+        }
+    }
+
+    /// 指定プロファイルの **子スコープ全キー** を削除する（プロファイル削除時の孤児データ prefix 一括 purge）。
+    /// グローバルキーは `scopedKey` が prefix しないため対象に入らない（`keys` は子スコープキーのみ渡す）。
+    /// 退避先（UserDefaults 等）も含めて掃除するのは `base.rawRemove` の責務。
+    public func purgeProfile(_ profileID: UUID, keys: Set<String> = ProfileKeyScope.childScopedKeys) {
+        for key in keys {
+            let scoped = ProfileKeyScope.scopedKey(key, profileID: profileID)
+            // 子スコープキーは必ず prefix される。万一グローバル分類のキーが混ざっても素通しキーは消さない。
+            guard scoped != key else { continue }
+            base.rawRemove(scoped)
+        }
     }
 
     /// 既存の単一子データ（prefix 無しキー）を、アクティブプロファイルのスコープへ一度だけコピーする。

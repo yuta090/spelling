@@ -37,33 +37,24 @@ struct WordsSupabaseTransport: WordSyncTransport {
     }
 }
 
-/// `AppModel` を `WordLocalSink` に適合させるアダプタ。
-/// `planAndApply` は @MainActor かつ内部に await を持たないので、読取〜反映が原子的になる
-/// （同期中に入ったローカル編集を stale なマージで上書きしない）。
-@MainActor
-struct AppModelWordSink: WordLocalSink {
-    let model: AppModel
-
-    func planAndApply(_ makePlan: @Sendable ([LocalWord]) -> WordSyncReducer.Plan) async -> WordSyncReducer.Plan {
-        let plan = makePlan(model.localWordsForSync())
-        model.applyMergedWords(LastWriteWins.live(plan.merged))
-        return plan
-    }
-}
-
 /// `words` 同期の **薄い I/O コーディネータ**。
 ///
 /// 手順（pull→merge→push）と判断は `SpellingSyncCore`（`WordSyncRunner`/`WordSyncReducer`、TDD 済）に
-/// 寄せ、ここは「ポートの組み立て」「多重実行ガード」「`UserDataStore` への永続化」だけに保つ
+/// 寄せ、ここは「トランスポート呼び出し」「多重実行ガード」「スコープ・ガード」「反映/永続化の委譲」だけに保つ
 /// （CLAUDE.md: アプリ本体は薄く）。
-/// 設計: docs/supabase-adapter-design.md §7.5
+///
+/// **同期状態はプロファイル別**（Phase 5）。サイクル開始時に「アクティブプロファイル」を捕捉し、
+/// 同期簿記（サイドカー/カーソル）は `AppModel` 経由で **その捕捉プロファイルのスコープに明示的に**
+/// 読み書きする（アクティブ prefix に依存しない）。pull/push の await 中に切替が入ったら、捕捉した
+/// スコープ `(household, profile)` が現在と一致するかを再確認し、一致しなければ副作用（反映・state 前進・
+/// push）ごと破棄する（他児スコープを汚さない）。原子性が要点の「localWords 読取 → merge → 反映 → 永続化」
+/// は await を挟まず同期に連続実行する。
+/// 設計: docs/supabase-adapter-design.md §7.5, docs/multi-child-profiles-design-2026-07-01.md §6
 @MainActor
 final class WordSyncCoordinator {
     private let transport: any WordSyncTransport
-    private let store: UserDataStore
     private let now: () -> Date
 
-    private var state: WordSyncState
     /// 多重実行ガード（pull の await 中に再入して二重反映しないため）。
     private var isSyncing = false
     /// 実行中に届いた同期要求の取りこぼし防止。実行後にもう一度だけ回す。
@@ -71,22 +62,14 @@ final class WordSyncCoordinator {
     /// 取りこぼし分の再実行に使う最新の世帯。
     private var pendingRerunHousehold: UUID?
 
-    private let sidecarKey = "spellingTrainer.sync.wordSidecar"
-    private let cursorsKey = "spellingTrainer.sync.cursors"
     private let table = WordDTO.table   // "words"
 
     init(
-        persistenceStore: UserDataStore,
         transport: (any WordSyncTransport)? = nil,
         now: @escaping () -> Date = Date.init
     ) {
-        self.store = persistenceStore
         self.transport = transport ?? WordsSupabaseTransport(engine: SyncEngine())
         self.now = now
-        self.state = WordSyncState(
-            sidecar: persistenceStore.load(WordSidecarStore.self, key: sidecarKey) ?? WordSidecarStore(),
-            cursors: persistenceStore.load(SyncCursors.self, key: cursorsKey) ?? SyncCursors()
-        )
     }
 
     /// 1 サイクル同期する。世帯未選択（`householdID == nil`）なら何もしない。
@@ -113,25 +96,35 @@ final class WordSyncCoordinator {
     }
 
     private func runOneCycle(appModel: AppModel, householdID: UUID) async throws {
-        let sink = AppModelWordSink(model: appModel)
+        // このサイクルが対象とするスコープ（世帯＋プロファイル）を捕捉する。以後の副作用は
+        // すべてこの捕捉スコープに対して行い、await 境界ごとに現在と一致するか確認する。
+        let profileID = appModel.activeProfileIDForSync
+        // 同期を今の構成で走らせてよいか（現状：複数プロファイル中はリモート同期を据え置く＝サーバ
+        // プロファイル provisioning は Phase 5b。詳細は AppModel.isSyncSafeForActiveProfile）。
+        guard appModel.canContinueWordSync(householdID: householdID, profileID: profileID) else { return }
 
-        // 複数プロファイル中はサイクルを一切走らせない。世帯グローバルな sync 簿記
-        // （`sync.cursors`/`sync.wordSidecar`）のまま別プロファイルへ push/tombstone すると他児の
-        // 単語を壊すため（設計§6・レビュー指摘①。プロファイル別の本対応は Phase 5）。
-        // 各 await 境界（開始・pull後・push後）で再確認する：切替は必ず2人以上の状態でしか起きず、
-        // 一度2人以上になれば切替が絡む間は常に不成立なので、in-flight でも pendingRerun 再実行でも
-        // この不変条件が破れ、副作用（反映・state前進・push）を確実に止められる。
-        guard appModel.isSyncSafeForActiveProfile else { return }
+        // 捕捉プロファイルの同期簿記を明示スコープで読む（アクティブ prefix に依存しない）。
+        var state = appModel.loadWordSyncState(profileID: profileID)
+        let key = WordSyncRunner.cursorKey(table: table, householdID: householdID)
 
-        // フェーズ1: pull→（原子的に）merge＋反映（pull 由来はここで確定・永続化。push 失敗でも保持）。
-        let outcome = try await WordSyncRunner.pullAndMerge(
+        // フェーズ1a: pull（await）。
+        let page = try await transport.pullAll(table: table, since: state.cursors.pullCursor(for: key))
+
+        // pull の await 中に切替（or 世帯変更・複数化）が入っていたら、ここで打ち切る。
+        // カーソルも state も前進させない（次サイクルで捕捉し直す）。
+        guard appModel.canContinueWordSync(householdID: householdID, profileID: profileID) else { return }
+
+        // フェーズ1b: 最新ローカル読取 → merge → 反映 → 永続化。**await を挟まず同期に連続実行**するので
+        // その間に切替（MainActor 上の activateProfile）は割り込めない＝原子的。
+        // ※ wire は当面 profileID=nil（世帯スコープ・NULL）。サーバ側 profile 別化は Phase 5b。
+        let localWords = appModel.localWordsForSync()
+        let outcome = WordSyncRunner.merge(
             table: table, householdID: householdID, state: state,
-            transport: transport, sink: sink, now: now()
+            page: page, localWords: localWords, now: now(), profileID: nil
         )
-        // pull の await 中に切替が入っていたら、state 前進も push も捨てる（他児スコープを汚さない）。
-        guard appModel.isSyncSafeForActiveProfile else { return }
+        appModel.applyMergedWords(outcome.live)
         state = outcome.state
-        persist()
+        appModel.saveWordSyncState(state, profileID: profileID)
 
         // フェーズ2: push（送れた分だけ high-water 前進）。
         guard !outcome.toPush.isEmpty else { return }
@@ -140,12 +133,7 @@ final class WordSyncCoordinator {
             toPush: outcome.toPush, transport: transport
         )
         // push の await 中に切替が入っていたら high-water の永続化は次サイクルへ委ねる（重複送信は冪等）。
-        guard appModel.isSyncSafeForActiveProfile else { return }
-        persist()
-    }
-
-    private func persist() {
-        store.save(state.sidecar, key: sidecarKey)
-        store.save(state.cursors, key: cursorsKey)
+        guard appModel.canContinueWordSync(householdID: householdID, profileID: profileID) else { return }
+        appModel.saveWordSyncState(state, profileID: profileID)
     }
 }

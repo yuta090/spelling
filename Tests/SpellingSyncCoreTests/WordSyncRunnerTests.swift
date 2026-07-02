@@ -1,46 +1,24 @@
 import XCTest
 @testable import SpellingSyncCore
 
-/// `WordSyncRunner` の同期手順（pull→merge→push）を、フェイクのトランスポート/シンクで
-/// `swift test` だけで自動検証する。アプリ側 I/O 層の手順バグ（世帯ごとカーソル・
-/// pull 後にローカル再読込・送れた分だけ high-water 前進）をここで捕まえる。
+/// `WordSyncRunner` の同期手順（merge→push）を `swift test` だけで自動検証する。
+/// `merge` は純関数（pull 済みページ＋最新ローカル＋現状態 → 新 state / 反映 live / 送信対象）なので
+/// フェイクなしで直接検証できる。`push` の I/O だけフェイクのトランスポートで包む。
 private final class FakeTransport: WordSyncTransport, @unchecked Sendable {
     var page: WordPullPage
     var pushError: Error?
-    /// pull が呼ばれた時点で実行するフック（pull 後にローカルが変わる状況の再現に使う）。
-    var onPull: (@Sendable () -> Void)?
 
-    private(set) var pulledSince: Int?
     private(set) var pushCallCount = 0
     private(set) var pushedRows: [WordRow] = []
 
-    init(page: WordPullPage) { self.page = page }
+    init(page: WordPullPage = WordPullPage(rows: [], nextCursor: 0)) { self.page = page }
 
-    func pullAll(table: String, since cursor: Int) async throws -> WordPullPage {
-        pulledSince = cursor
-        onPull?()
-        return page
-    }
+    func pullAll(table: String, since cursor: Int) async throws -> WordPullPage { page }
 
     func push(table: String, rows: [WordRow]) async throws {
         pushCallCount += 1
         if let pushError { throw pushError }
         pushedRows = rows
-    }
-}
-
-private final class FakeSink: WordLocalSink, @unchecked Sendable {
-    var localWords: [LocalWord]
-    private(set) var planCallCount = 0
-    private(set) var appliedLive: [WordSyncRecord]?
-
-    init(localWords: [LocalWord]) { self.localWords = localWords }
-
-    func planAndApply(_ makePlan: @Sendable ([LocalWord]) -> WordSyncReducer.Plan) async -> WordSyncReducer.Plan {
-        planCallCount += 1
-        let plan = makePlan(localWords)
-        appliedLive = LastWriteWins.live(plan.merged)
-        return plan
     }
 }
 
@@ -65,6 +43,9 @@ final class WordSyncRunnerTests: XCTestCase {
         LocalWord(id: id, payload: WordPayload(text: text, promptText: "", source: "parent", stepID: nil, displayOrder: 0), createdAt: t0)
     }
 
+    private func page(_ rows: [WordRow], next: Int) -> WordPullPage { WordPullPage(rows: rows, nextCursor: next) }
+    private var key: String { WordSyncRunner.cursorKey(table: table, householdID: household) }
+
     func testCursorKeyIsPerHousehold() {
         XCTAssertNotEqual(
             WordSyncRunner.cursorKey(table: table, householdID: household),
@@ -72,42 +53,32 @@ final class WordSyncRunnerTests: XCTestCase {
         )
     }
 
-    func testPullAndMergeAppliesRemoteAndAdvancesCursor() async throws {
-        let transport = FakeTransport(page: WordPullPage(rows: [wordRow(id1, "dog", updatedAt: at(5))], nextCursor: 42))
-        let sink = FakeSink(localWords: [])
-        let outcome = try await WordSyncRunner.pullAndMerge(
+    func testMergeAppliesRemoteAndAdvancesCursor() {
+        let outcome = WordSyncRunner.merge(
             table: table, householdID: household, state: WordSyncState(),
-            transport: transport, sink: sink, now: at(10)
+            page: page([wordRow(id1, "dog", updatedAt: at(5))], next: 42),
+            localWords: [], now: at(10)
         )
-        XCTAssertEqual(transport.pulledSince, 0)
-        XCTAssertEqual(sink.planCallCount, 1, "読取〜反映は 1 回の原子的呼び出し")
-        XCTAssertEqual(sink.appliedLive?.map(\.id), [id1], "リモート行が UI に反映される")
-        let key = WordSyncRunner.cursorKey(table: table, householdID: household)
+        XCTAssertEqual(outcome.live.map(\.id), [id1], "リモート行が反映 live に載る")
         XCTAssertEqual(outcome.state.cursors.pullCursor(for: key), 42)
         XCTAssertTrue(outcome.toPush.isEmpty, "リモートのみは送り返さない")
     }
 
-    func testPullAndMergeReadsLocalAfterPull() async throws {
-        // pull 後にローカルへ新語が増える状況。merge がその新語を拾えば「pull 後に読んだ」証拠。
-        let transport = FakeTransport(page: WordPullPage(rows: [], nextCursor: 0))
-        let sink = FakeSink(localWords: [])
-        let fresh = localWord(id1, "fresh")
-        transport.onPull = { sink.localWords = [fresh] }
-        let outcome = try await WordSyncRunner.pullAndMerge(
+    func testMergeIncludesLocalWordsAsToPush() {
+        // 呼び出し側が pull 後に読んだ最新ローカルを渡すと、その新語が送信対象になる。
+        let outcome = WordSyncRunner.merge(
             table: table, householdID: household, state: WordSyncState(),
-            transport: transport, sink: sink, now: at(10)
+            page: page([], next: 0), localWords: [localWord(id1, "fresh")], now: at(10)
         )
-        XCTAssertEqual(sink.planCallCount, 1)
-        XCTAssertEqual(outcome.toPush.map(\.id), [id1], "pull 後に読んだローカル新語が送信対象になる")
+        XCTAssertEqual(outcome.toPush.map(\.id), [id1])
+        XCTAssertEqual(outcome.live.map(\.id), [id1])
     }
 
     func testPushEncodesRowsAndAdvancesHighWater() async throws {
-        // ローカル新語 → pullAndMerge で toPush に乗る → push で送信＆high-water 前進。
-        let transport = FakeTransport(page: WordPullPage(rows: [], nextCursor: 0))
-        let sink = FakeSink(localWords: [localWord(id1, "cat")])
-        let merged = try await WordSyncRunner.pullAndMerge(
+        let transport = FakeTransport()
+        let merged = WordSyncRunner.merge(
             table: table, householdID: household, state: WordSyncState(),
-            transport: transport, sink: sink, now: at(10)
+            page: page([], next: 0), localWords: [localWord(id1, "cat")], now: at(10)
         )
         XCTAssertEqual(merged.toPush.map(\.id), [id1])
 
@@ -117,12 +88,11 @@ final class WordSyncRunnerTests: XCTestCase {
         )
         XCTAssertEqual(transport.pushCallCount, 1)
         XCTAssertEqual(transport.pushedRows.map(\.id), [id1])
-        let key = WordSyncRunner.cursorKey(table: table, householdID: household)
         XCTAssertEqual(newState.cursors.pushedThrough(for: key), at(10))
     }
 
     func testPushEmptyIsNoOp() async throws {
-        let transport = FakeTransport(page: WordPullPage(rows: [], nextCursor: 0))
+        let transport = FakeTransport()
         let state = WordSyncState()
         let newState = try await WordSyncRunner.push(
             table: table, householdID: household, state: state, toPush: [], transport: transport
@@ -132,14 +102,12 @@ final class WordSyncRunnerTests: XCTestCase {
     }
 
     func testPushFailurePropagatesAndDoesNotAdvanceHighWater() async throws {
-        let transport = FakeTransport(page: WordPullPage(rows: [], nextCursor: 0))
+        let transport = FakeTransport()
         transport.pushError = PushFailed()
-        let sink = FakeSink(localWords: [localWord(id1, "cat")])
-        let merged = try await WordSyncRunner.pullAndMerge(
+        let merged = WordSyncRunner.merge(
             table: table, householdID: household, state: WordSyncState(),
-            transport: transport, sink: sink, now: at(10)
+            page: page([], next: 0), localWords: [localWord(id1, "cat")], now: at(10)
         )
-        let key = WordSyncRunner.cursorKey(table: table, householdID: household)
         XCTAssertNil(merged.state.cursors.pushedThrough(for: key), "push 前は high-water 未設定")
         do {
             _ = try await WordSyncRunner.push(
@@ -148,20 +116,19 @@ final class WordSyncRunnerTests: XCTestCase {
             )
             XCTFail("push は失敗を伝播すべき")
         } catch is PushFailed {
-            // 期待通り。high-water は呼び出し側に返らない（前進しない）。
+            // 期待通り。high-water は前進しない。
         }
     }
 
     func testPushFailureKeepsRecordPushableNextCycle() async throws {
         // push が失敗してフェーズ1 state を永続化しても、未送信のローカル変更は
         // 次サイクルで再び toPush に乗ること（サイドカー基準を push 成功後にだけ前進させる保証）。
-        let transport = FakeTransport(page: WordPullPage(rows: [], nextCursor: 0))
+        let transport = FakeTransport()
         transport.pushError = PushFailed()
-        let sink = FakeSink(localWords: [localWord(id1, "cat")])
 
-        let first = try await WordSyncRunner.pullAndMerge(
+        let first = WordSyncRunner.merge(
             table: table, householdID: household, state: WordSyncState(),
-            transport: transport, sink: sink, now: at(10)
+            page: page([], next: 0), localWords: [localWord(id1, "cat")], now: at(10)
         )
         XCTAssertEqual(first.toPush.map(\.id), [id1], "初回は送信対象に乗る")
         do {
@@ -173,21 +140,20 @@ final class WordSyncRunnerTests: XCTestCase {
         } catch is PushFailed {}
 
         // フェーズ1で確定した state（toPush は基準前進していない）を引き継いで再実行。
-        let second = try await WordSyncRunner.pullAndMerge(
+        let second = WordSyncRunner.merge(
             table: table, householdID: household, state: first.state,
-            transport: transport, sink: sink, now: at(20)
+            page: page([], next: 0), localWords: [localWord(id1, "cat")], now: at(20)
         )
         XCTAssertEqual(second.toPush.map(\.id), [id1], "push 失敗後の次サイクルで再送対象に残る")
     }
 
     func testSuccessfulPushDoesNotRePushNextCycle() async throws {
         // push 成功後はサイドカー基準が前進し、次サイクルで同じレコードを再送（churn）しないこと。
-        let transport = FakeTransport(page: WordPullPage(rows: [], nextCursor: 0))
-        let sink = FakeSink(localWords: [localWord(id1, "cat")])
+        let transport = FakeTransport()
 
-        let first = try await WordSyncRunner.pullAndMerge(
+        let first = WordSyncRunner.merge(
             table: table, householdID: household, state: WordSyncState(),
-            transport: transport, sink: sink, now: at(10)
+            page: page([], next: 0), localWords: [localWord(id1, "cat")], now: at(10)
         )
         XCTAssertEqual(first.toPush.map(\.id), [id1])
         let afterPush = try await WordSyncRunner.push(
@@ -195,10 +161,32 @@ final class WordSyncRunnerTests: XCTestCase {
             toPush: first.toPush, transport: transport
         )
 
-        let second = try await WordSyncRunner.pullAndMerge(
+        let second = WordSyncRunner.merge(
             table: table, householdID: household, state: afterPush,
-            transport: transport, sink: sink, now: at(20)
+            page: page([], next: 0), localWords: [localWord(id1, "cat")], now: at(20)
         )
         XCTAssertTrue(second.toPush.isEmpty, "送信成功済みのレコードは再送しない")
+    }
+
+    /// 別プロファイルの行でカーソルが世帯最大まで前進しても、後から来る自プロファイルの行を取りこぼさない。
+    /// （サーバ採番 `sync_version` は世帯共通ストリーム。`pull since cursor` は全プロファイル行を返し、
+    ///  呼び出し側がスコープするので、自プロファイルは高いカーソルからでも新しい自行だけを正しく拾う。）
+    func testCursorAdvancePastOtherRowsStillPullsOwnLaterRows() {
+        // 1) 別プロファイル相当の行（id2）だけを含むページでカーソルを 100 まで前進。
+        let s1 = WordSyncRunner.merge(
+            table: table, householdID: household, state: WordSyncState(),
+            page: page([wordRow(id2, "sibling", updatedAt: at(5))], next: 100),
+            localWords: [], now: at(10)
+        )
+        XCTAssertEqual(s1.state.cursors.pullCursor(for: key), 100)
+
+        // 2) その後、自プロファイルの行（id1）が sync_version 150 で届く。高いカーソルからでも拾える。
+        let s2 = WordSyncRunner.merge(
+            table: table, householdID: household, state: s1.state,
+            page: page([wordRow(id1, "mine", updatedAt: at(20))], next: 150),
+            localWords: [], now: at(25)
+        )
+        XCTAssertTrue(s2.live.contains { $0.id == id1 }, "後から来た自プロファイル行を反映する")
+        XCTAssertEqual(s2.state.cursors.pullCursor(for: key), 150)
     }
 }
