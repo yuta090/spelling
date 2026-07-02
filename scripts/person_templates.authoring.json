@@ -11121,5 +11121,6985 @@
       "young"
     ],
     "fallbackJa": "その ねこは わかい"
+  },
+  {
+    "id": "like-the-air",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "air"
+    ],
+    "ja": "わたしは くうきが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "air"
+    ],
+    "fallbackJa": "わたしは くうきが すき"
+  },
+  {
+    "id": "arrive-at-school",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "arrive",
+      "at",
+      "school"
+    ],
+    "ja": "わたしは がっこうに つく",
+    "fallbackEn": [
+      "I",
+      "arrive",
+      "at",
+      "school"
+    ],
+    "fallbackJa": "わたしは がっこうに つく"
+  },
+  {
+    "id": "like-this-art",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "this",
+      "art"
+    ],
+    "ja": "わたしは この アートが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "this",
+      "art"
+    ],
+    "fallbackJa": "わたしは この アートが すき"
+  },
+  {
+    "id": "read-an-article",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "read",
+      "an",
+      "article"
+    ],
+    "ja": "わたしは きじを よむ",
+    "fallbackEn": [
+      "I",
+      "read",
+      "an",
+      "article"
+    ],
+    "fallbackJa": "わたしは きじを よむ"
+  },
+  {
+    "id": "attack-the-monster",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "attack",
+      "the",
+      "monster"
+    ],
+    "ja": "わたしは モンスターを こうげきする",
+    "fallbackEn": [
+      "I",
+      "attack",
+      "the",
+      "monster"
+    ],
+    "fallbackJa": "わたしは モンスターを こうげきする"
+  },
+  {
+    "id": "baby-is-small",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "baby",
+      "is",
+      "small"
+    ],
+    "ja": "あかちゃんは ちいさい",
+    "fallbackEn": [
+      "The",
+      "baby",
+      "is",
+      "small"
+    ],
+    "fallbackJa": "あかちゃんは ちいさい"
+  },
+  {
+    "id": "balance-the-blocks",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "balance",
+      "the",
+      "blocks"
+    ],
+    "ja": "わたしは ブロックの バランスを とる",
+    "fallbackEn": [
+      "I",
+      "balance",
+      "the",
+      "blocks"
+    ],
+    "fallbackJa": "わたしは ブロックの バランスを とる"
+  },
+  {
+    "id": "this-is-a-bank",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "bank"
+    ],
+    "ja": "これは ぎんこう だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "bank"
+    ],
+    "fallbackJa": "これは ぎんこう だよ"
+  },
+  {
+    "id": "eat-a-chocolate-bar",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "eat",
+      "a",
+      "chocolate",
+      "bar"
+    ],
+    "ja": "わたしは チョコバーを たべる",
+    "fallbackEn": [
+      "I",
+      "eat",
+      "a",
+      "chocolate",
+      "bar"
+    ],
+    "fallbackJa": "わたしは チョコバーを たべる"
+  },
+  {
+    "id": "flower-is-beautiful",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "flower",
+      "is",
+      "beautiful"
+    ],
+    "ja": "その はなは きれい だよ",
+    "fallbackEn": [
+      "The",
+      "flower",
+      "is",
+      "beautiful"
+    ],
+    "fallbackJa": "その はなは きれい だよ"
+  },
+  {
+    "id": "have-a-bed",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "bed"
+    ],
+    "ja": "わたしは ベッドを もっている",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "bed"
+    ],
+    "fallbackJa": "わたしは ベッドを もっている"
+  },
+  {
+    "id": "he-is-my-brother",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "He",
+      "is",
+      "my",
+      "brother"
+    ],
+    "ja": "かれは わたしの おにいちゃん だよ",
+    "fallbackEn": [
+      "He",
+      "is",
+      "my",
+      "brother"
+    ],
+    "fallbackJa": "かれは わたしの おにいちゃん だよ"
+  },
+  {
+    "id": "have-one-cent",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "one",
+      "cent"
+    ],
+    "ja": "わたしは いちセントを もっている",
+    "fallbackEn": [
+      "I",
+      "have",
+      "one",
+      "cent"
+    ],
+    "fallbackJa": "わたしは いちセントを もっている"
+  },
+  {
+    "id": "go-to-church",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "go",
+      "to",
+      "church"
+    ],
+    "ja": "わたしたちは きょうかいに いく",
+    "fallbackEn": [
+      "We",
+      "go",
+      "to",
+      "church"
+    ],
+    "fallbackJa": "わたしたちは きょうかいに いく"
+  },
+  {
+    "id": "clock-is-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "clock",
+      "is",
+      "big"
+    ],
+    "ja": "その とけいは おおきい",
+    "fallbackEn": [
+      "The",
+      "clock",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "その とけいは おおきい"
+  },
+  {
+    "id": "like-my-clothes",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "my",
+      "clothes"
+    ],
+    "ja": "わたしは わたしの ふくが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "my",
+      "clothes"
+    ],
+    "fallbackJa": "わたしは わたしの ふくが すき"
+  },
+  {
+    "id": "join-a-club",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "join",
+      "a",
+      "club"
+    ],
+    "ja": "わたしは クラブに はいる",
+    "fallbackEn": [
+      "I",
+      "join",
+      "a",
+      "club"
+    ],
+    "fallbackJa": "わたしは クラブに はいる"
+  },
+  {
+    "id": "like-the-college",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "like",
+      "the",
+      "college"
+    ],
+    "ja": "わたしたちは だいがくが すき",
+    "fallbackEn": [
+      "We",
+      "like",
+      "the",
+      "college"
+    ],
+    "fallbackJa": "わたしたちは だいがくが すき"
+  },
+  {
+    "id": "room-is-dark",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "room",
+      "is",
+      "dark"
+    ],
+    "ja": "その へやは くらい",
+    "fallbackEn": [
+      "The",
+      "room",
+      "is",
+      "dark"
+    ],
+    "fallbackJa": "その へやは くらい"
+  },
+  {
+    "id": "she-is-a-daughter",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "She",
+      "is",
+      "a",
+      "daughter"
+    ],
+    "ja": "かのじょは むすめ だよ",
+    "fallbackEn": [
+      "She",
+      "is",
+      "a",
+      "daughter"
+    ],
+    "fallbackJa": "かのじょは むすめ だよ"
+  },
+  {
+    "id": "plant-is-dead",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "plant",
+      "is",
+      "dead"
+    ],
+    "ja": "その しょくぶつは しんでいる",
+    "fallbackEn": [
+      "The",
+      "plant",
+      "is",
+      "dead"
+    ],
+    "fallbackJa": "その しょくぶつは しんでいる"
+  },
+  {
+    "id": "death-is-very-sad",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Death",
+      "is",
+      "very",
+      "sad"
+    ],
+    "ja": "しは とても かなしい",
+    "fallbackEn": [
+      "Death",
+      "is",
+      "very",
+      "sad"
+    ],
+    "fallbackJa": "しは とても かなしい"
+  },
+  {
+    "id": "water-is-deep",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "water",
+      "is",
+      "deep"
+    ],
+    "ja": "その みずは ふかい",
+    "fallbackEn": [
+      "The",
+      "water",
+      "is",
+      "deep"
+    ],
+    "fallbackJa": "その みずは ふかい"
+  },
+  {
+    "id": "doctor-is-nice",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "doctor",
+      "is",
+      "nice"
+    ],
+    "ja": "おいしゃさんは やさしい だよ",
+    "fallbackEn": [
+      "The",
+      "doctor",
+      "is",
+      "nice"
+    ],
+    "fallbackJa": "おいしゃさんは やさしい だよ"
+  },
+  {
+    "id": "have-a-dream",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "dream"
+    ],
+    "ja": "わたしには ゆめが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "dream"
+    ],
+    "fallbackJa": "わたしには ゆめが ある"
+  },
+  {
+    "id": "like-this-dress",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "this",
+      "dress"
+    ],
+    "ja": "わたしは この ドレスが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "this",
+      "dress"
+    ],
+    "fallbackJa": "わたしは この ドレスが すき"
+  },
+  {
+    "id": "drop-the-ball",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "drop",
+      "the",
+      "ball"
+    ],
+    "ja": "わたしは ボールを おとす",
+    "fallbackEn": [
+      "I",
+      "drop",
+      "the",
+      "ball"
+    ],
+    "fallbackJa": "わたしは ボールを おとす"
+  },
+  {
+    "id": "this-is-a-drug",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "drug"
+    ],
+    "ja": "これは くすり です",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "drug"
+    ],
+    "fallbackJa": "これは くすり です"
+  },
+  {
+    "id": "earn-a-coin",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "earn",
+      "a",
+      "coin"
+    ],
+    "ja": "わたしは コインを かせぐ",
+    "fallbackEn": [
+      "I",
+      "earn",
+      "a",
+      "coin"
+    ],
+    "fallbackJa": "わたしは コインを かせぐ"
+  },
+  {
+    "id": "this-is-an-election",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "an",
+      "election"
+    ],
+    "ja": "これは せんきょ です",
+    "fallbackEn": [
+      "This",
+      "is",
+      "an",
+      "election"
+    ],
+    "fallbackJa": "これは せんきょ です"
+  },
+  {
+    "id": "enter-the-room",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "enter",
+      "the",
+      "room"
+    ],
+    "ja": "わたしは へやに はいる",
+    "fallbackEn": [
+      "I",
+      "enter",
+      "the",
+      "room"
+    ],
+    "fallbackJa": "わたしは へやに はいる"
+  },
+  {
+    "id": "can-exercise-now",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "can",
+      "exercise",
+      "now"
+    ],
+    "ja": "わたしは いま うんどう できる",
+    "fallbackEn": [
+      "I",
+      "can",
+      "exercise",
+      "now"
+    ],
+    "fallbackJa": "わたしは いま うんどう できる"
+  },
+  {
+    "id": "this-is-a-facility",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "facility"
+    ],
+    "ja": "これは しせつ です",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "facility"
+    ],
+    "fallbackJa": "これは しせつ です"
+  },
+  {
+    "id": "the-factor-is-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "factor",
+      "is",
+      "big"
+    ],
+    "ja": "その げんいんは おおきい",
+    "fallbackEn": [
+      "The",
+      "factor",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "その げんいんは おおきい"
+  },
+  {
+    "id": "fail-the-test",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "fail",
+      "the",
+      "test"
+    ],
+    "ja": "わたしは テストに おちる",
+    "fallbackEn": [
+      "I",
+      "fail",
+      "the",
+      "test"
+    ],
+    "fallbackJa": "わたしは テストに おちる"
+  },
+  {
+    "id": "i-have-a-fear",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "fear"
+    ],
+    "ja": "わたしは きょうふを かんじる",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "fear"
+    ],
+    "fallbackJa": "わたしは きょうふを かんじる"
+  },
+  {
+    "id": "this-feature-is-new",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "feature",
+      "is",
+      "new"
+    ],
+    "ja": "この きのうは あたらしい",
+    "fallbackEn": [
+      "This",
+      "feature",
+      "is",
+      "new"
+    ],
+    "fallbackJa": "この きのうは あたらしい"
+  },
+  {
+    "id": "this-is-a-female",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "female"
+    ],
+    "ja": "これは めす です",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "female"
+    ],
+    "fallbackJa": "これは めす です"
+  },
+  {
+    "id": "run-in-the-field",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "run",
+      "in",
+      "the",
+      "field"
+    ],
+    "ja": "わたしは のはらを はしる",
+    "fallbackEn": [
+      "I",
+      "run",
+      "in",
+      "the",
+      "field"
+    ],
+    "fallbackJa": "わたしは のはらを はしる"
+  },
+  {
+    "id": "fight-a-monster",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "fight",
+      "a",
+      "monster"
+    ],
+    "ja": "わたしたちは モンスターと たたかう",
+    "fallbackEn": [
+      "We",
+      "fight",
+      "a",
+      "monster"
+    ],
+    "fallbackJa": "わたしたちは モンスターと たたかう"
+  },
+  {
+    "id": "open-the-file",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "open",
+      "the",
+      "file"
+    ],
+    "ja": "わたしは ファイルを ひらく",
+    "fallbackEn": [
+      "I",
+      "open",
+      "the",
+      "file"
+    ],
+    "fallbackJa": "わたしは ファイルを ひらく"
+  },
+  {
+    "id": "fill-the-cup",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "fill",
+      "the",
+      "cup"
+    ],
+    "ja": "わたしは コップを みたす",
+    "fallbackEn": [
+      "I",
+      "fill",
+      "the",
+      "cup"
+    ],
+    "fallbackJa": "わたしは コップを みたす"
+  },
+  {
+    "id": "this-is-the-final",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "the",
+      "final"
+    ],
+    "ja": "これは さいご です",
+    "fallbackEn": [
+      "This",
+      "is",
+      "the",
+      "final"
+    ],
+    "fallbackJa": "これは さいご です"
+  },
+  {
+    "id": "we-finally-win",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "finally",
+      "win"
+    ],
+    "ja": "わたしたちは ついに かつ",
+    "fallbackEn": [
+      "We",
+      "finally",
+      "win"
+    ],
+    "fallbackJa": "わたしたちは ついに かつ"
+  },
+  {
+    "id": "the-financial-game-is-fun",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "financial",
+      "game",
+      "is",
+      "fun"
+    ],
+    "ja": "おかねの ゲームは たのしい",
+    "fallbackEn": [
+      "The",
+      "financial",
+      "game",
+      "is",
+      "fun"
+    ],
+    "fallbackJa": "おかねの ゲームは たのしい"
+  },
+  {
+    "id": "the-fire-is-hot",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "fire",
+      "is",
+      "hot"
+    ],
+    "ja": "ひは あつい",
+    "fallbackEn": [
+      "The",
+      "fire",
+      "is",
+      "hot"
+    ],
+    "fallbackJa": "ひは あつい"
+  },
+  {
+    "id": "the-bed-is-firm",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "bed",
+      "is",
+      "firm"
+    ],
+    "ja": "ベッドは かたい",
+    "fallbackEn": [
+      "The",
+      "bed",
+      "is",
+      "firm"
+    ],
+    "fallbackJa": "ベッドは かたい"
+  },
+  {
+    "id": "the-shoes-fit-well",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "shoes",
+      "fit",
+      "well"
+    ],
+    "ja": "くつが ぴったり あう",
+    "fallbackEn": [
+      "The",
+      "shoes",
+      "fit",
+      "well"
+    ],
+    "fallbackJa": "くつが ぴったり あう"
+  },
+  {
+    "id": "sit-on-the-floor",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "sit",
+      "on",
+      "the",
+      "floor"
+    ],
+    "ja": "わたしは ゆかに すわる",
+    "fallbackEn": [
+      "I",
+      "sit",
+      "on",
+      "the",
+      "floor"
+    ],
+    "fallbackJa": "わたしは ゆかに すわる"
+  },
+  {
+    "id": "focus-on-the-game",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "focus",
+      "on",
+      "the",
+      "game"
+    ],
+    "ja": "わたしは ゲームに しゅうちゅう する",
+    "fallbackEn": [
+      "I",
+      "focus",
+      "on",
+      "the",
+      "game"
+    ],
+    "fallbackJa": "わたしは ゲームに しゅうちゅう する"
+  },
+  {
+    "id": "i-like-foreign-food",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "foreign",
+      "food"
+    ],
+    "ja": "わたしは がいこくの たべものが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "foreign",
+      "food"
+    ],
+    "fallbackJa": "わたしは がいこくの たべものが すき"
+  },
+  {
+    "id": "i-forget-the-name",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "forget",
+      "the",
+      "name"
+    ],
+    "ja": "わたしは なまえを わすれる",
+    "fallbackEn": [
+      "I",
+      "forget",
+      "the",
+      "name"
+    ],
+    "fallbackJa": "わたしは なまえを わすれる"
+  },
+  {
+    "id": "he-is-a-former-teacher",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "He",
+      "is",
+      "a",
+      "former",
+      "teacher"
+    ],
+    "ja": "かれは もと せんせい です",
+    "fallbackEn": [
+      "He",
+      "is",
+      "a",
+      "former",
+      "teacher"
+    ],
+    "fallbackJa": "かれは もと せんせい です"
+  },
+  {
+    "id": "i-open-the-front-door",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "open",
+      "the",
+      "front",
+      "door"
+    ],
+    "ja": "わたしは まえの ドアを あける",
+    "fallbackEn": [
+      "I",
+      "open",
+      "the",
+      "front",
+      "door"
+    ],
+    "fallbackJa": "わたしは まえの ドアを あける"
+  },
+  {
+    "id": "the-robot-has-a-function",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "robot",
+      "has",
+      "a",
+      "function"
+    ],
+    "ja": "その ロボットには きのうが ある",
+    "fallbackEn": [
+      "The",
+      "robot",
+      "has",
+      "a",
+      "function"
+    ],
+    "fallbackJa": "その ロボットには きのうが ある"
+  },
+  {
+    "id": "i-gain-new-friends",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "gain",
+      "new",
+      "friends"
+    ],
+    "ja": "わたしは あたらしい ともだちを える",
+    "fallbackEn": [
+      "I",
+      "gain",
+      "new",
+      "friends"
+    ],
+    "fallbackJa": "わたしは あたらしい ともだちを える"
+  },
+  {
+    "id": "we-like-the-garden",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "like",
+      "the",
+      "garden"
+    ],
+    "ja": "わたしたちは にわが すき",
+    "fallbackEn": [
+      "We",
+      "like",
+      "the",
+      "garden"
+    ],
+    "fallbackJa": "わたしたちは にわが すき"
+  },
+  {
+    "id": "i-generally-eat-apples",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "generally",
+      "eat",
+      "apples"
+    ],
+    "ja": "わたしは たいてい りんごを たべる",
+    "fallbackEn": [
+      "I",
+      "generally",
+      "eat",
+      "apples"
+    ],
+    "fallbackJa": "わたしは たいてい りんごを たべる"
+  },
+  {
+    "id": "i-have-a-goal",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "goal"
+    ],
+    "ja": "わたしには もくひょうが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "goal"
+    ],
+    "fallbackJa": "わたしには もくひょうが ある"
+  },
+  {
+    "id": "i-sit-on-the-ground",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "sit",
+      "on",
+      "the",
+      "ground"
+    ],
+    "ja": "わたしは じめんに すわる",
+    "fallbackEn": [
+      "I",
+      "sit",
+      "on",
+      "the",
+      "ground"
+    ],
+    "fallbackJa": "わたしは じめんに すわる"
+  },
+  {
+    "id": "the-growth-is-fast",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "growth",
+      "is",
+      "fast"
+    ],
+    "ja": "その せいちょうは はやい",
+    "fallbackEn": [
+      "The",
+      "growth",
+      "is",
+      "fast"
+    ],
+    "fallbackJa": "その せいちょうは はやい"
+  },
+  {
+    "id": "i-can-guess-the-color",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "can",
+      "guess",
+      "the",
+      "color"
+    ],
+    "ja": "わたしは いろを あてることが できる",
+    "fallbackEn": [
+      "I",
+      "can",
+      "guess",
+      "the",
+      "color"
+    ],
+    "fallbackJa": "わたしは いろを あてることが できる"
+  },
+  {
+    "id": "he-is-a-nice-guy",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "He",
+      "is",
+      "a",
+      "nice",
+      "guy"
+    ],
+    "ja": "かれは いい ひと です",
+    "fallbackEn": [
+      "He",
+      "is",
+      "a",
+      "nice",
+      "guy"
+    ],
+    "fallbackJa": "かれは いい ひと です"
+  },
+  {
+    "id": "i-brush-my-hair",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "brush",
+      "my",
+      "hair"
+    ],
+    "ja": "わたしは かみを とかす",
+    "fallbackEn": [
+      "I",
+      "brush",
+      "my",
+      "hair"
+    ],
+    "fallbackJa": "わたしは かみを とかす"
+  },
+  {
+    "id": "good-health-is-important",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Good",
+      "health",
+      "is",
+      "important"
+    ],
+    "ja": "よい けんこうは たいせつ です",
+    "fallbackEn": [
+      "Good",
+      "health",
+      "is",
+      "important"
+    ],
+    "fallbackJa": "よい けんこうは たいせつ です"
+  },
+  {
+    "id": "i-draw-a-heart",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "draw",
+      "a",
+      "heart"
+    ],
+    "ja": "わたしは ハートを かく",
+    "fallbackEn": [
+      "I",
+      "draw",
+      "a",
+      "heart"
+    ],
+    "fallbackJa": "わたしは ハートを かく"
+  },
+  {
+    "id": "i-hit-the-ball",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "hit",
+      "the",
+      "ball"
+    ],
+    "ja": "わたしは ボールを うつ",
+    "fallbackEn": [
+      "I",
+      "hit",
+      "the",
+      "ball"
+    ],
+    "fallbackJa": "わたしは ボールを うつ"
+  },
+  {
+    "id": "today-is-a-holiday",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Today",
+      "is",
+      "a",
+      "holiday"
+    ],
+    "ja": "きょうは おやすみ です",
+    "fallbackEn": [
+      "Today",
+      "is",
+      "a",
+      "holiday"
+    ],
+    "fallbackJa": "きょうは おやすみ です"
+  },
+  {
+    "id": "this-is-a-hospital",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "hospital"
+    ],
+    "ja": "これは びょういん です",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "hospital"
+    ],
+    "fallbackJa": "これは びょういん です"
+  },
+  {
+    "id": "we-stay-in-a-hotel",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "stay",
+      "in",
+      "a",
+      "hotel"
+    ],
+    "ja": "わたしたちは ホテルに とまる",
+    "fallbackEn": [
+      "We",
+      "stay",
+      "in",
+      "a",
+      "hotel"
+    ],
+    "fallbackJa": "わたしたちは ホテルに とまる"
+  },
+  {
+    "id": "the-elephant-is-huge",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "elephant",
+      "is",
+      "huge"
+    ],
+    "ja": "その ゾウは おおきい",
+    "fallbackEn": [
+      "The",
+      "elephant",
+      "is",
+      "huge"
+    ],
+    "fallbackJa": "その ゾウは おおきい"
+  },
+  {
+    "id": "he-is-my-husband",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "He",
+      "is",
+      "my",
+      "husband"
+    ],
+    "ja": "かれは わたしの おっと です",
+    "fallbackEn": [
+      "He",
+      "is",
+      "my",
+      "husband"
+    ],
+    "fallbackJa": "かれは わたしの おっと です"
+  },
+  {
+    "id": "i-identify-the-bird",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "identify",
+      "the",
+      "bird"
+    ],
+    "ja": "わたしは その とりを みわける",
+    "fallbackEn": [
+      "I",
+      "identify",
+      "the",
+      "bird"
+    ],
+    "fallbackJa": "わたしは その とりを みわける"
+  },
+  {
+    "id": "i-see-an-image",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "an",
+      "image"
+    ],
+    "ja": "わたしは えを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "an",
+      "image"
+    ],
+    "fallbackJa": "わたしは えを みる"
+  },
+  {
+    "id": "i-imagine-a-big-house",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "imagine",
+      "a",
+      "big",
+      "house"
+    ],
+    "ja": "わたしは おおきな いえを そうぞうする",
+    "fallbackEn": [
+      "I",
+      "imagine",
+      "a",
+      "big",
+      "house"
+    ],
+    "fallbackJa": "わたしは おおきな いえを そうぞうする"
+  },
+  {
+    "id": "i-improve-my-game",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "improve",
+      "my",
+      "game"
+    ],
+    "ja": "わたしは げーむを うまく する",
+    "fallbackEn": [
+      "I",
+      "improve",
+      "my",
+      "game"
+    ],
+    "fallbackJa": "わたしは げーむを うまく する"
+  },
+  {
+    "id": "this-is-an-income",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "an",
+      "income"
+    ],
+    "ja": "これは おかね だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "an",
+      "income"
+    ],
+    "fallbackJa": "これは おかね だよ"
+  },
+  {
+    "id": "it-is-indeed-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "indeed",
+      "big"
+    ],
+    "ja": "それは ほんとうに おおきい",
+    "fallbackEn": [
+      "It",
+      "is",
+      "indeed",
+      "big"
+    ],
+    "fallbackJa": "それは ほんとうに おおきい"
+  },
+  {
+    "id": "i-indicate-the-box",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "indicate",
+      "the",
+      "box"
+    ],
+    "ja": "わたしは はこを さす",
+    "fallbackEn": [
+      "I",
+      "indicate",
+      "the",
+      "box"
+    ],
+    "fallbackJa": "わたしは はこを さす"
+  },
+  {
+    "id": "i-like-the-industry",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "industry"
+    ],
+    "ja": "わたしは おしごとが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "industry"
+    ],
+    "fallbackJa": "わたしは おしごとが すき"
+  },
+  {
+    "id": "i-have-an-influence",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "an",
+      "influence"
+    ],
+    "ja": "わたしは えいきょうが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "an",
+      "influence"
+    ],
+    "fallbackJa": "わたしは えいきょうが ある"
+  },
+  {
+    "id": "i-inform-my-mom",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "inform",
+      "my",
+      "mom"
+    ],
+    "ja": "わたしは ままに おしえる",
+    "fallbackEn": [
+      "I",
+      "inform",
+      "my",
+      "mom"
+    ],
+    "fallbackJa": "わたしは ままに おしえる"
+  },
+  {
+    "id": "the-dog-is-inside",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "dog",
+      "is",
+      "inside"
+    ],
+    "ja": "いぬは なかに いる",
+    "fallbackEn": [
+      "The",
+      "dog",
+      "is",
+      "inside"
+    ],
+    "fallbackJa": "いぬは なかに いる"
+  },
+  {
+    "id": "this-is-an-instance",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "an",
+      "instance"
+    ],
+    "ja": "これは ひとつの れい だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "an",
+      "instance"
+    ],
+    "fallbackJa": "これは ひとつの れい だよ"
+  },
+  {
+    "id": "i-read-this-instead",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "read",
+      "this",
+      "instead"
+    ],
+    "ja": "わたしは かわりに これを よむ",
+    "fallbackEn": [
+      "I",
+      "read",
+      "this",
+      "instead"
+    ],
+    "fallbackJa": "わたしは かわりに これを よむ"
+  },
+  {
+    "id": "the-game-is-international",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "game",
+      "is",
+      "international"
+    ],
+    "ja": "その げーむは いろんな くにの だよ",
+    "fallbackEn": [
+      "The",
+      "game",
+      "is",
+      "international"
+    ],
+    "fallbackJa": "その げーむは いろんな くにの だよ"
+  },
+  {
+    "id": "i-have-an-interview",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "an",
+      "interview"
+    ],
+    "ja": "わたしは めんせつを する",
+    "fallbackEn": [
+      "I",
+      "have",
+      "an",
+      "interview"
+    ],
+    "fallbackJa": "わたしは めんせつを する"
+  },
+  {
+    "id": "i-introduce-my-friend",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "introduce",
+      "my",
+      "friend"
+    ],
+    "ja": "わたしは ともだちを しょうかい する",
+    "fallbackEn": [
+      "I",
+      "introduce",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "わたしは ともだちを しょうかい する"
+  },
+  {
+    "id": "this-is-an-investment",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "an",
+      "investment"
+    ],
+    "ja": "これは たいせつな もの だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "an",
+      "investment"
+    ],
+    "fallbackJa": "これは たいせつな もの だよ"
+  },
+  {
+    "id": "i-find-an-item",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "find",
+      "an",
+      "item"
+    ],
+    "ja": "わたしは あいてむを みつける",
+    "fallbackEn": [
+      "I",
+      "find",
+      "an",
+      "item"
+    ],
+    "fallbackJa": "わたしは あいてむを みつける"
+  },
+  {
+    "id": "the-cat-cleans-itself",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "cleans",
+      "itself"
+    ],
+    "ja": "ねこは じぶんで きれいに する",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "cleans",
+      "itself"
+    ],
+    "fallbackJa": "ねこは じぶんで きれいに する"
+  },
+  {
+    "id": "i-have-a-key",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "key"
+    ],
+    "ja": "わたしは かぎを もつ",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "key"
+    ],
+    "fallbackJa": "わたしは かぎを もつ"
+  },
+  {
+    "id": "i-am-a-kid",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "a",
+      "kid"
+    ],
+    "ja": "わたしは こども だよ",
+    "fallbackEn": [
+      "I",
+      "am",
+      "a",
+      "kid"
+    ],
+    "fallbackJa": "わたしは こども だよ"
+  },
+  {
+    "id": "i-kill-the-monster",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "kill",
+      "the",
+      "monster"
+    ],
+    "ja": "わたしは もんすたーを たおす",
+    "fallbackEn": [
+      "I",
+      "kill",
+      "the",
+      "monster"
+    ],
+    "fallbackJa": "わたしは もんすたーを たおす"
+  },
+  {
+    "id": "knowledge-is-good",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Knowledge",
+      "is",
+      "good"
+    ],
+    "ja": "ちしきは いい もの だよ",
+    "fallbackEn": [
+      "Knowledge",
+      "is",
+      "good"
+    ],
+    "fallbackJa": "ちしきは いい もの だよ"
+  },
+  {
+    "id": "i-lack-a-pen",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "lack",
+      "a",
+      "pen"
+    ],
+    "ja": "わたしには ぺんが ない",
+    "fallbackEn": [
+      "I",
+      "lack",
+      "a",
+      "pen"
+    ],
+    "fallbackJa": "わたしには ぺんが ない"
+  },
+  {
+    "id": "i-land-the-plane",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "land",
+      "the",
+      "plane"
+    ],
+    "ja": "わたしは ひこうきを おろす",
+    "fallbackEn": [
+      "I",
+      "land",
+      "the",
+      "plane"
+    ],
+    "fallbackJa": "わたしは ひこうきを おろす"
+  },
+  {
+    "id": "i-am-a-leader",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "a",
+      "leader"
+    ],
+    "ja": "わたしは りーだー だよ",
+    "fallbackEn": [
+      "I",
+      "am",
+      "a",
+      "leader"
+    ],
+    "fallbackJa": "わたしは りーだー だよ"
+  },
+  {
+    "id": "i-lie-down",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "lie",
+      "down"
+    ],
+    "ja": "わたしは よこに なる",
+    "fallbackEn": [
+      "I",
+      "lie",
+      "down"
+    ],
+    "fallbackJa": "わたしは よこに なる"
+  },
+  {
+    "id": "it-is-likely-true",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "likely",
+      "true"
+    ],
+    "ja": "それは たぶん ほんとう だよ",
+    "fallbackEn": [
+      "It",
+      "is",
+      "likely",
+      "true"
+    ],
+    "fallbackJa": "それは たぶん ほんとう だよ"
+  },
+  {
+    "id": "i-have-a-limit",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "limit"
+    ],
+    "ja": "わたしは げんかいが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "limit"
+    ],
+    "fallbackJa": "わたしは げんかいが ある"
+  },
+  {
+    "id": "i-make-a-link",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "make",
+      "a",
+      "link"
+    ],
+    "ja": "わたしは リンクを つくる",
+    "fallbackEn": [
+      "I",
+      "make",
+      "a",
+      "link"
+    ],
+    "fallbackJa": "わたしは リンクを つくる"
+  },
+  {
+    "id": "this-is-a-list",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "list"
+    ],
+    "ja": "これは リスト です",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "list"
+    ],
+    "fallbackJa": "これは リスト です"
+  },
+  {
+    "id": "i-hate-this-loss",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "hate",
+      "this",
+      "loss"
+    ],
+    "ja": "わたしは この まけが きらいだ",
+    "fallbackEn": [
+      "I",
+      "hate",
+      "this",
+      "loss"
+    ],
+    "fallbackJa": "わたしは この まけが きらいだ"
+  },
+  {
+    "id": "the-machine-is-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "machine",
+      "is",
+      "big"
+    ],
+    "ja": "その マシンは おおきい",
+    "fallbackEn": [
+      "The",
+      "machine",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "その マシンは おおきい"
+  },
+  {
+    "id": "i-maintain-the-car",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "maintain",
+      "the",
+      "car"
+    ],
+    "ja": "わたしは くるまを ていれする",
+    "fallbackEn": [
+      "I",
+      "maintain",
+      "the",
+      "car"
+    ],
+    "fallbackJa": "わたしは くるまを ていれする"
+  },
+  {
+    "id": "the-cat-is-male",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "cat",
+      "is",
+      "male"
+    ],
+    "ja": "その ねこは おすだ",
+    "fallbackEn": [
+      "The",
+      "cat",
+      "is",
+      "male"
+    ],
+    "fallbackJa": "その ねこは おすだ"
+  },
+  {
+    "id": "i-manage-the-team",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "manage",
+      "the",
+      "team"
+    ],
+    "ja": "わたしは チームを まとめる",
+    "fallbackEn": [
+      "I",
+      "manage",
+      "the",
+      "team"
+    ],
+    "fallbackJa": "わたしは チームを まとめる"
+  },
+  {
+    "id": "i-like-the-management",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "management"
+    ],
+    "ja": "わたしは その かんりが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "management"
+    ],
+    "fallbackJa": "わたしは その かんりが すきだ"
+  },
+  {
+    "id": "the-manager-is-nice",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "manager",
+      "is",
+      "nice"
+    ],
+    "ja": "その マネージャーは やさしい",
+    "fallbackEn": [
+      "The",
+      "manager",
+      "is",
+      "nice"
+    ],
+    "fallbackJa": "その マネージャーは やさしい"
+  },
+  {
+    "id": "i-make-a-mark",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "make",
+      "a",
+      "mark"
+    ],
+    "ja": "わたしは しるしを つける",
+    "fallbackEn": [
+      "I",
+      "make",
+      "a",
+      "mark"
+    ],
+    "fallbackJa": "わたしは しるしを つける"
+  },
+  {
+    "id": "cats-can-marry",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Cats",
+      "can",
+      "marry"
+    ],
+    "ja": "ねこは けっこん できる",
+    "fallbackEn": [
+      "Cats",
+      "can",
+      "marry"
+    ],
+    "fallbackJa": "ねこは けっこん できる"
+  },
+  {
+    "id": "the-game-is-a-match",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "game",
+      "is",
+      "a",
+      "match"
+    ],
+    "ja": "その ゲームは しあいだ",
+    "fallbackEn": [
+      "The",
+      "game",
+      "is",
+      "a",
+      "match"
+    ],
+    "fallbackJa": "その ゲームは しあいだ"
+  },
+  {
+    "id": "this-material-is-soft",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "material",
+      "is",
+      "soft"
+    ],
+    "ja": "この そざいは やわらかい",
+    "fallbackEn": [
+      "This",
+      "material",
+      "is",
+      "soft"
+    ],
+    "fallbackJa": "この そざいは やわらかい"
+  },
+  {
+    "id": "i-measure-the-box",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "measure",
+      "the",
+      "box"
+    ],
+    "ja": "わたしは はこを はかる",
+    "fallbackEn": [
+      "I",
+      "measure",
+      "the",
+      "box"
+    ],
+    "fallbackJa": "わたしは はこを はかる"
+  },
+  {
+    "id": "the-size-is-medium",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "size",
+      "is",
+      "medium"
+    ],
+    "ja": "その サイズは ちゅうくらいだ",
+    "fallbackEn": [
+      "The",
+      "size",
+      "is",
+      "medium"
+    ],
+    "fallbackJa": "その サイズは ちゅうくらいだ"
+  },
+  {
+    "id": "i-have-a-memory",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "memory"
+    ],
+    "ja": "わたしは おもいでが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "memory"
+    ],
+    "fallbackJa": "わたしは おもいでが ある"
+  },
+  {
+    "id": "i-mention-the-dog",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "mention",
+      "the",
+      "dog"
+    ],
+    "ja": "わたしは いぬの ことを いう",
+    "fallbackEn": [
+      "I",
+      "mention",
+      "the",
+      "dog"
+    ],
+    "fallbackJa": "わたしは いぬの ことを いう"
+  },
+  {
+    "id": "i-send-a-message",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "send",
+      "a",
+      "message"
+    ],
+    "ja": "わたしは メッセージを おくる",
+    "fallbackEn": [
+      "I",
+      "send",
+      "a",
+      "message"
+    ],
+    "fallbackJa": "わたしは メッセージを おくる"
+  },
+  {
+    "id": "i-like-this-method",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "this",
+      "method"
+    ],
+    "ja": "わたしは この ほうほうが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "this",
+      "method"
+    ],
+    "fallbackJa": "わたしは この ほうほうが すきだ"
+  },
+  {
+    "id": "i-like-the-middle",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "middle"
+    ],
+    "ja": "わたしは まんなかが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "middle"
+    ],
+    "fallbackJa": "わたしは まんなかが すきだ"
+  },
+  {
+    "id": "i-run-a-mile",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "run",
+      "a",
+      "mile"
+    ],
+    "ja": "わたしは いちマイル はしる",
+    "fallbackEn": [
+      "I",
+      "run",
+      "a",
+      "mile"
+    ],
+    "fallbackJa": "わたしは いちマイル はしる"
+  },
+  {
+    "id": "the-military-is-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "military",
+      "is",
+      "big"
+    ],
+    "ja": "その ぐんたいは おおきい",
+    "fallbackEn": [
+      "The",
+      "military",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "その ぐんたいは おおきい"
+  },
+  {
+    "id": "this-toy-is-mine",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "toy",
+      "is",
+      "mine"
+    ],
+    "ja": "この おもちゃは わたしのものだ",
+    "fallbackEn": [
+      "This",
+      "toy",
+      "is",
+      "mine"
+    ],
+    "fallbackJa": "この おもちゃは わたしのものだ"
+  },
+  {
+    "id": "i-miss-the-dog",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "miss",
+      "the",
+      "dog"
+    ],
+    "ja": "わたしは いぬに あいたい",
+    "fallbackEn": [
+      "I",
+      "miss",
+      "the",
+      "dog"
+    ],
+    "fallbackJa": "わたしは いぬに あいたい"
+  },
+  {
+    "id": "house-is-modern",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "house",
+      "is",
+      "modern"
+    ],
+    "ja": "その いえは あたらしい",
+    "fallbackEn": [
+      "The",
+      "house",
+      "is",
+      "modern"
+    ],
+    "fallbackJa": "その いえは あたらしい"
+  },
+  {
+    "id": "see-the-movement",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "the",
+      "movement"
+    ],
+    "ja": "わたしは うごきを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "the",
+      "movement"
+    ],
+    "fallbackJa": "わたしは うごきを みる"
+  },
+  {
+    "id": "do-it-myself",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "do",
+      "it",
+      "myself"
+    ],
+    "ja": "わたし ひとりで やる",
+    "fallbackEn": [
+      "I",
+      "do",
+      "it",
+      "myself"
+    ],
+    "fallbackJa": "わたし ひとりで やる"
+  },
+  {
+    "id": "love-our-nation",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "love",
+      "our",
+      "nation"
+    ],
+    "ja": "わたしたちは わたしたちの くにが すきだ",
+    "fallbackEn": [
+      "We",
+      "love",
+      "our",
+      "nation"
+    ],
+    "fallbackJa": "わたしたちは わたしたちの くにが すきだ"
+  },
+  {
+    "id": "park-is-national",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "park",
+      "is",
+      "national"
+    ],
+    "ja": "その こうえんは こくりつだ",
+    "fallbackEn": [
+      "The",
+      "park",
+      "is",
+      "national"
+    ],
+    "fallbackJa": "その こうえんは こくりつだ"
+  },
+  {
+    "id": "color-is-natural",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "color",
+      "is",
+      "natural"
+    ],
+    "ja": "その いろは しぜんだ",
+    "fallbackEn": [
+      "The",
+      "color",
+      "is",
+      "natural"
+    ],
+    "fallbackJa": "その いろは しぜんだ"
+  },
+  {
+    "id": "like-nature",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "nature"
+    ],
+    "ja": "わたしは しぜんが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "nature"
+    ],
+    "fallbackJa": "わたしは しぜんが すきだ"
+  },
+  {
+    "id": "is-nearly-time",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "nearly",
+      "time"
+    ],
+    "ja": "もうすぐ じかんだ",
+    "fallbackEn": [
+      "It",
+      "is",
+      "nearly",
+      "time"
+    ],
+    "fallbackJa": "もうすぐ じかんだ"
+  },
+  {
+    "id": "food-is-necessary",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "food",
+      "is",
+      "necessary"
+    ],
+    "ja": "たべものは ひつようだ",
+    "fallbackEn": [
+      "The",
+      "food",
+      "is",
+      "necessary"
+    ],
+    "fallbackJa": "たべものは ひつようだ"
+  },
+  {
+    "id": "have-a-net",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "net"
+    ],
+    "ja": "わたしは あみを もっている",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "net"
+    ],
+    "fallbackJa": "わたしは あみを もっている"
+  },
+  {
+    "id": "use-a-network",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "use",
+      "a",
+      "network"
+    ],
+    "ja": "わたしは ねっとわーくを つかう",
+    "fallbackEn": [
+      "I",
+      "use",
+      "a",
+      "network"
+    ],
+    "fallbackJa": "わたしは ねっとわーくを つかう"
+  },
+  {
+    "id": "read-a-newspaper",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "read",
+      "a",
+      "newspaper"
+    ],
+    "ja": "わたしは しんぶんを よむ",
+    "fallbackEn": [
+      "I",
+      "read",
+      "a",
+      "newspaper"
+    ],
+    "fallbackJa": "わたしは しんぶんを よむ"
+  },
+  {
+    "id": "day-is-normal",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "day",
+      "is",
+      "normal"
+    ],
+    "ja": "ふつうの いちにちだ",
+    "fallbackEn": [
+      "The",
+      "day",
+      "is",
+      "normal"
+    ],
+    "fallbackJa": "ふつうの いちにちだ"
+  },
+  {
+    "id": "notice-the-bird",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "notice",
+      "the",
+      "bird"
+    ],
+    "ja": "わたしは とりに きづく",
+    "fallbackEn": [
+      "I",
+      "notice",
+      "the",
+      "bird"
+    ],
+    "fallbackJa": "わたしは とりに きづく"
+  },
+  {
+    "id": "this-is-an-object",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "an",
+      "object"
+    ],
+    "ja": "これは ものだ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "an",
+      "object"
+    ],
+    "fallbackJa": "これは ものだ"
+  },
+  {
+    "id": "observe-the-stars",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "observe",
+      "the",
+      "stars"
+    ],
+    "ja": "わたしは ほしを みる",
+    "fallbackEn": [
+      "I",
+      "observe",
+      "the",
+      "stars"
+    ],
+    "fallbackJa": "わたしは ほしを みる"
+  },
+  {
+    "id": "is-obviously-red",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "obviously",
+      "red"
+    ],
+    "ja": "それは あきらかに あかい",
+    "fallbackEn": [
+      "It",
+      "is",
+      "obviously",
+      "red"
+    ],
+    "fallbackJa": "それは あきらかに あかい"
+  },
+  {
+    "id": "events-occur-today",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "events",
+      "occur",
+      "today"
+    ],
+    "ja": "その できごとは きょう おきる",
+    "fallbackEn": [
+      "The",
+      "events",
+      "occur",
+      "today"
+    ],
+    "fallbackJa": "その できごとは きょう おきる"
+  },
+  {
+    "id": "see-the-officer",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "the",
+      "officer"
+    ],
+    "ja": "わたしは けいかんを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "the",
+      "officer"
+    ],
+    "fallbackJa": "わたしは けいかんを みる"
+  },
+  {
+    "id": "rule-is-official",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "rule",
+      "is",
+      "official"
+    ],
+    "ja": "その るーるは こうしきだ",
+    "fallbackEn": [
+      "The",
+      "rule",
+      "is",
+      "official"
+    ],
+    "fallbackJa": "その るーるは こうしきだ"
+  },
+  {
+    "id": "use-the-oil",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "use",
+      "the",
+      "oil"
+    ],
+    "ja": "わたしは あぶらを つかう",
+    "fallbackEn": [
+      "I",
+      "use",
+      "the",
+      "oil"
+    ],
+    "fallbackJa": "わたしは あぶらを つかう"
+  },
+  {
+    "id": "operate-the-toy",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "operate",
+      "the",
+      "toy"
+    ],
+    "ja": "わたしは おもちゃを うごかす",
+    "fallbackEn": [
+      "I",
+      "operate",
+      "the",
+      "toy"
+    ],
+    "fallbackJa": "わたしは おもちゃを うごかす"
+  },
+  {
+    "id": "watch-the-operation",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "watch",
+      "the",
+      "operation"
+    ],
+    "ja": "わたしは さぎょうを みる",
+    "fallbackEn": [
+      "I",
+      "watch",
+      "the",
+      "operation"
+    ],
+    "fallbackJa": "わたしは さぎょうを みる"
+  },
+  {
+    "id": "have-an-opinion",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "an",
+      "opinion"
+    ],
+    "ja": "わたしには いけんが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "an",
+      "opinion"
+    ],
+    "fallbackJa": "わたしには いけんが ある"
+  },
+  {
+    "id": "this-is-an-opportunity",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "an",
+      "opportunity"
+    ],
+    "ja": "これは ちゃんすだ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "an",
+      "opportunity"
+    ],
+    "fallbackJa": "これは ちゃんすだ"
+  },
+  {
+    "id": "i-like-this-option",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "this",
+      "option"
+    ],
+    "ja": "わたしは この オプションが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "this",
+      "option"
+    ],
+    "fallbackJa": "わたしは この オプションが すきだ"
+  },
+  {
+    "id": "this-is-the-original",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "the",
+      "original"
+    ],
+    "ja": "これは オリジナルの ものだ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "the",
+      "original"
+    ],
+    "fallbackJa": "これは オリジナルの ものだ"
+  },
+  {
+    "id": "i-read-the-page",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "read",
+      "the",
+      "page"
+    ],
+    "ja": "わたしは ページを よむ",
+    "fallbackEn": [
+      "I",
+      "read",
+      "the",
+      "page"
+    ],
+    "fallbackJa": "わたしは ページを よむ"
+  },
+  {
+    "id": "i-particularly-like-dogs",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "particularly",
+      "like",
+      "dogs"
+    ],
+    "ja": "わたしは とくに いぬが すきだ",
+    "fallbackEn": [
+      "I",
+      "particularly",
+      "like",
+      "dogs"
+    ],
+    "fallbackJa": "わたしは とくに いぬが すきだ"
+  },
+  {
+    "id": "i-am-very-patient",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "very",
+      "patient"
+    ],
+    "ja": "わたしは とても がまんづよい",
+    "fallbackEn": [
+      "I",
+      "am",
+      "very",
+      "patient"
+    ],
+    "fallbackJa": "わたしは とても がまんづよい"
+  },
+  {
+    "id": "i-draw-a-pattern",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "draw",
+      "a",
+      "pattern"
+    ],
+    "ja": "わたしは もようを かく",
+    "fallbackEn": [
+      "I",
+      "draw",
+      "a",
+      "pattern"
+    ],
+    "fallbackJa": "わたしは もようを かく"
+  },
+  {
+    "id": "i-perform-magic",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "perform",
+      "magic"
+    ],
+    "ja": "わたしは まじゅつを する",
+    "fallbackEn": [
+      "I",
+      "perform",
+      "magic"
+    ],
+    "fallbackJa": "わたしは まじゅつを する"
+  },
+  {
+    "id": "the-performance-is-good",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "performance",
+      "is",
+      "good"
+    ],
+    "ja": "その パフォーマンスは いい",
+    "fallbackEn": [
+      "The",
+      "performance",
+      "is",
+      "good"
+    ],
+    "fallbackJa": "その パフォーマンスは いい"
+  },
+  {
+    "id": "i-like-personal-space",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "personal",
+      "space"
+    ],
+    "ja": "わたしは じぶんの ばしょが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "personal",
+      "space"
+    ],
+    "fallbackJa": "わたしは じぶんの ばしょが すきだ"
+  },
+  {
+    "id": "i-take-a-photo",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "take",
+      "a",
+      "photo"
+    ],
+    "ja": "わたしは しゃしんを とる",
+    "fallbackEn": [
+      "I",
+      "take",
+      "a",
+      "photo"
+    ],
+    "fallbackJa": "わたしは しゃしんを とる"
+  },
+  {
+    "id": "i-pick-an-apple",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "pick",
+      "an",
+      "apple"
+    ],
+    "ja": "わたしは りんごを とる",
+    "fallbackEn": [
+      "I",
+      "pick",
+      "an",
+      "apple"
+    ],
+    "fallbackJa": "わたしは りんごを とる"
+  },
+  {
+    "id": "i-eat-a-piece",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "eat",
+      "a",
+      "piece"
+    ],
+    "ja": "わたしは いちぶを たべる",
+    "fallbackEn": [
+      "I",
+      "eat",
+      "a",
+      "piece"
+    ],
+    "fallbackJa": "わたしは いちぶを たべる"
+  },
+  {
+    "id": "i-am-a-player",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "a",
+      "player"
+    ],
+    "ja": "わたしは プレイヤーだ",
+    "fallbackEn": [
+      "I",
+      "am",
+      "a",
+      "player"
+    ],
+    "fallbackJa": "わたしは プレイヤーだ"
+  },
+  {
+    "id": "the-police-help-people",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "police",
+      "help",
+      "people"
+    ],
+    "ja": "けいさつは ひとを たすける",
+    "fallbackEn": [
+      "The",
+      "police",
+      "help",
+      "people"
+    ],
+    "fallbackJa": "けいさつは ひとを たすける"
+  },
+  {
+    "id": "the-dog-is-poor",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "dog",
+      "is",
+      "poor"
+    ],
+    "ja": "その いぬは かわいそうだ",
+    "fallbackEn": [
+      "The",
+      "dog",
+      "is",
+      "poor"
+    ],
+    "fallbackJa": "その いぬは かわいそうだ"
+  },
+  {
+    "id": "the-game-is-popular",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "game",
+      "is",
+      "popular"
+    ],
+    "ja": "その ゲームは にんきだ",
+    "fallbackEn": [
+      "The",
+      "game",
+      "is",
+      "popular"
+    ],
+    "fallbackJa": "その ゲームは にんきだ"
+  },
+  {
+    "id": "the-population-is-large",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "population",
+      "is",
+      "large"
+    ],
+    "ja": "その じんこうは おおい",
+    "fallbackEn": [
+      "The",
+      "population",
+      "is",
+      "large"
+    ],
+    "fallbackJa": "その じんこうは おおい"
+  },
+  {
+    "id": "i-am-very-positive",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "very",
+      "positive"
+    ],
+    "ja": "わたしは とても まえむきだ",
+    "fallbackEn": [
+      "I",
+      "am",
+      "very",
+      "positive"
+    ],
+    "fallbackJa": "わたしは とても まえむきだ"
+  },
+  {
+    "id": "i-see-the-post",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "the",
+      "post"
+    ],
+    "ja": "わたしは ポストを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "the",
+      "post"
+    ],
+    "fallbackJa": "わたしは ポストを みる"
+  },
+  {
+    "id": "i-have-great-potential",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "great",
+      "potential"
+    ],
+    "ja": "わたしには すごい さいのうが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "great",
+      "potential"
+    ],
+    "fallbackJa": "わたしには すごい さいのうが ある"
+  },
+  {
+    "id": "i-pound-the-dough",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "pound",
+      "the",
+      "dough"
+    ],
+    "ja": "わたしは きじを たたく",
+    "fallbackEn": [
+      "I",
+      "pound",
+      "the",
+      "dough"
+    ],
+    "fallbackJa": "わたしは きじを たたく"
+  },
+  {
+    "id": "i-prefer-red-apples",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "prefer",
+      "red",
+      "apples"
+    ],
+    "ja": "わたしは あかい りんごの ほうが すきだ",
+    "fallbackEn": [
+      "I",
+      "prefer",
+      "red",
+      "apples"
+    ],
+    "fallbackJa": "わたしは あかい りんごの ほうが すきだ"
+  },
+  {
+    "id": "i-prepare-the-food",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "prepare",
+      "the",
+      "food"
+    ],
+    "ja": "わたしは ごはんを じゅんびする",
+    "fallbackEn": [
+      "I",
+      "prepare",
+      "the",
+      "food"
+    ],
+    "fallbackJa": "わたしは ごはんを じゅんびする"
+  },
+  {
+    "id": "i-press-the-button",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "press",
+      "the",
+      "button"
+    ],
+    "ja": "わたしは ボタンを おす",
+    "fallbackEn": [
+      "I",
+      "press",
+      "the",
+      "button"
+    ],
+    "fallbackJa": "わたしは ボタンを おす"
+  },
+  {
+    "id": "i-feel-the-pressure",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "feel",
+      "the",
+      "pressure"
+    ],
+    "ja": "わたしは プレッシャーを かんじる",
+    "fallbackEn": [
+      "I",
+      "feel",
+      "the",
+      "pressure"
+    ],
+    "fallbackJa": "わたしは プレッシャーを かんじる"
+  },
+  {
+    "id": "like-previous-game",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "previous",
+      "game"
+    ],
+    "ja": "わたしは まえの ゲームが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "previous",
+      "game"
+    ],
+    "fallbackJa": "わたしは まえの ゲームが すきだ"
+  },
+  {
+    "id": "private-room",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "private",
+      "room"
+    ],
+    "ja": "これは プライベートな へやだ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "private",
+      "room"
+    ],
+    "fallbackJa": "これは プライベートな へやだ"
+  },
+  {
+    "id": "school-production",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "school",
+      "production"
+    ],
+    "ja": "わたしは がっこうの げきが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "school",
+      "production"
+    ],
+    "fallbackJa": "わたしは がっこうの げきが すきだ"
+  },
+  {
+    "id": "professional-cook",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "She",
+      "is",
+      "a",
+      "professional",
+      "cook"
+    ],
+    "ja": "かのじょは プロの りょうりにんだ",
+    "fallbackEn": [
+      "She",
+      "is",
+      "a",
+      "professional",
+      "cook"
+    ],
+    "fallbackJa": "かのじょは プロの りょうりにんだ"
+  },
+  {
+    "id": "make-profit",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "They",
+      "make",
+      "a",
+      "profit"
+    ],
+    "ja": "かれらは りえきを だす",
+    "fallbackEn": [
+      "They",
+      "make",
+      "a",
+      "profit"
+    ],
+    "fallbackJa": "かれらは りえきを だす"
+  },
+  {
+    "id": "promise-you",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "promise",
+      "you"
+    ],
+    "ja": "わたしは あなたに やくそくする",
+    "fallbackEn": [
+      "I",
+      "promise",
+      "you"
+    ],
+    "fallbackJa": "わたしは あなたに やくそくする"
+  },
+  {
+    "id": "my-property",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "my",
+      "property"
+    ],
+    "ja": "これは わたしの ものだ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "my",
+      "property"
+    ],
+    "fallbackJa": "これは わたしの ものだ"
+  },
+  {
+    "id": "see-proposal",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "the",
+      "proposal"
+    ],
+    "ja": "わたしは ていあんを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "the",
+      "proposal"
+    ],
+    "fallbackJa": "わたしは ていあんを みる"
+  },
+  {
+    "id": "propose-game",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "They",
+      "propose",
+      "a",
+      "game"
+    ],
+    "ja": "かれらは ゲームを ていあんする",
+    "fallbackEn": [
+      "They",
+      "propose",
+      "a",
+      "game"
+    ],
+    "fallbackJa": "かれらは ゲームを ていあんする"
+  },
+  {
+    "id": "prove-it",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "can",
+      "prove",
+      "it"
+    ],
+    "ja": "わたしは それを しょうめいできる",
+    "fallbackEn": [
+      "I",
+      "can",
+      "prove",
+      "it"
+    ],
+    "fallbackJa": "わたしは それを しょうめいできる"
+  },
+  {
+    "id": "pull-red-wagon",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "pull",
+      "the",
+      "red",
+      "wagon"
+    ],
+    "ja": "わたしは あかい ワゴンを ひっぱる",
+    "fallbackEn": [
+      "I",
+      "pull",
+      "the",
+      "red",
+      "wagon"
+    ],
+    "fallbackJa": "わたしは あかい ワゴンを ひっぱる"
+  },
+  {
+    "id": "purchase-new-toy",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "purchase",
+      "a",
+      "new",
+      "toy"
+    ],
+    "ja": "わたしは あたらしい おもちゃを かう",
+    "fallbackEn": [
+      "I",
+      "purchase",
+      "a",
+      "new",
+      "toy"
+    ],
+    "fallbackJa": "わたしは あたらしい おもちゃを かう"
+  },
+  {
+    "id": "good-purpose",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "It",
+      "has",
+      "a",
+      "good",
+      "purpose"
+    ],
+    "ja": "それには よい もくてきが ある",
+    "fallbackEn": [
+      "It",
+      "has",
+      "a",
+      "good",
+      "purpose"
+    ],
+    "fallbackJa": "それには よい もくてきが ある"
+  },
+  {
+    "id": "push-heavy-door",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "push",
+      "the",
+      "heavy",
+      "door"
+    ],
+    "ja": "わたしは おもい ドアを おす",
+    "fallbackEn": [
+      "I",
+      "push",
+      "the",
+      "heavy",
+      "door"
+    ],
+    "fallbackJa": "わたしは おもい ドアを おす"
+  },
+  {
+    "id": "quality-is-good",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "quality",
+      "is",
+      "very",
+      "good"
+    ],
+    "ja": "ひんしつは とても よい",
+    "fallbackEn": [
+      "The",
+      "quality",
+      "is",
+      "very",
+      "good"
+    ],
+    "fallbackJa": "ひんしつは とても よい"
+  },
+  {
+    "id": "have-quarter",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "quarter"
+    ],
+    "ja": "わたしには クォーターが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "quarter"
+    ],
+    "fallbackJa": "わたしには クォーターが ある"
+  },
+  {
+    "id": "run-quickly",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "run",
+      "very",
+      "quickly"
+    ],
+    "ja": "わたしは とても はやく はしる",
+    "fallbackEn": [
+      "I",
+      "run",
+      "very",
+      "quickly"
+    ],
+    "fallbackJa": "わたしは とても はやく はしる"
+  },
+  {
+    "id": "watch-car-race",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "watch",
+      "the",
+      "car",
+      "race"
+    ],
+    "ja": "わたしたちは くるまの レースを みる",
+    "fallbackEn": [
+      "We",
+      "watch",
+      "the",
+      "car",
+      "race"
+    ],
+    "fallbackJa": "わたしたちは くるまの レースを みる"
+  },
+  {
+    "id": "raise-hand",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "raise",
+      "my",
+      "hand"
+    ],
+    "ja": "わたしは てを あげる",
+    "fallbackEn": [
+      "I",
+      "raise",
+      "my",
+      "hand"
+    ],
+    "fallbackJa": "わたしは てを あげる"
+  },
+  {
+    "id": "mountain-range",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "a",
+      "mountain",
+      "range"
+    ],
+    "ja": "わたしは やまなみを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "a",
+      "mountain",
+      "range"
+    ],
+    "fallbackJa": "わたしは やまなみを みる"
+  },
+  {
+    "id": "recent-movie",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "recent",
+      "movie"
+    ],
+    "ja": "わたしは さいきんの えいがが すきだ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "recent",
+      "movie"
+    ],
+    "fallbackJa": "わたしは さいきんの えいがが すきだ"
+  },
+  {
+    "id": "feel-happy-recently",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "feel",
+      "happy",
+      "recently"
+    ],
+    "ja": "わたしは さいきん うれしい",
+    "fallbackEn": [
+      "I",
+      "feel",
+      "happy",
+      "recently"
+    ],
+    "fallbackJa": "わたしは さいきん うれしい"
+  },
+  {
+    "id": "reduce-waste",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "reduce",
+      "the",
+      "waste"
+    ],
+    "ja": "わたしたちは ごみを へらす",
+    "fallbackEn": [
+      "We",
+      "reduce",
+      "the",
+      "waste"
+    ],
+    "fallbackJa": "わたしたちは ごみを へらす"
+  },
+  {
+    "id": "refer-to-book",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "refer",
+      "to",
+      "the",
+      "book"
+    ],
+    "ja": "わたしは ほんを さんこうにする",
+    "fallbackEn": [
+      "I",
+      "refer",
+      "to",
+      "the",
+      "book"
+    ],
+    "fallbackJa": "わたしは ほんを さんこうにする"
+  },
+  {
+    "id": "reference-book",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "reference",
+      "book"
+    ],
+    "ja": "これは さんこうしょだ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "reference",
+      "book"
+    ],
+    "fallbackJa": "これは さんこうしょだ"
+  },
+  {
+    "id": "the-mirror-reflects-light",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "mirror",
+      "reflects",
+      "light"
+    ],
+    "ja": "かがみは ひかりを はんしゃする",
+    "fallbackEn": [
+      "The",
+      "mirror",
+      "reflects",
+      "light"
+    ],
+    "fallbackJa": "かがみは ひかりを はんしゃする"
+  },
+  {
+    "id": "i-regard-the-dog",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "regard",
+      "the",
+      "dog"
+    ],
+    "ja": "わたしは いぬを みつめる",
+    "fallbackEn": [
+      "I",
+      "regard",
+      "the",
+      "dog"
+    ],
+    "fallbackJa": "わたしは いぬを みつめる"
+  },
+  {
+    "id": "this-region-is-cold",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "region",
+      "is",
+      "cold"
+    ],
+    "ja": "この ちいきは さむい",
+    "fallbackEn": [
+      "This",
+      "region",
+      "is",
+      "cold"
+    ],
+    "fallbackJa": "この ちいきは さむい"
+  },
+  {
+    "id": "i-relate-to-you",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "relate",
+      "to",
+      "you"
+    ],
+    "ja": "わたしは あなたの きもちが わかる",
+    "fallbackEn": [
+      "I",
+      "relate",
+      "to",
+      "you"
+    ],
+    "fallbackJa": "わたしは あなたの きもちが わかる"
+  },
+  {
+    "id": "the-relation-is-good",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "relation",
+      "is",
+      "good"
+    ],
+    "ja": "その かんけいは いい",
+    "fallbackEn": [
+      "The",
+      "relation",
+      "is",
+      "good"
+    ],
+    "fallbackJa": "その かんけいは いい"
+  },
+  {
+    "id": "i-release-the-bird",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "release",
+      "the",
+      "bird"
+    ],
+    "ja": "わたしは とりを にがす",
+    "fallbackEn": [
+      "I",
+      "release",
+      "the",
+      "bird"
+    ],
+    "fallbackJa": "わたしは とりを にがす"
+  },
+  {
+    "id": "i-represent-the-team",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "represent",
+      "the",
+      "team"
+    ],
+    "ja": "わたしは チームを だいひょうする",
+    "fallbackEn": [
+      "I",
+      "represent",
+      "the",
+      "team"
+    ],
+    "fallbackJa": "わたしは チームを だいひょうする"
+  },
+  {
+    "id": "i-request-an-apple",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "request",
+      "an",
+      "apple"
+    ],
+    "ja": "わたしは りんごを おねがいする",
+    "fallbackEn": [
+      "I",
+      "request",
+      "an",
+      "apple"
+    ],
+    "fallbackJa": "わたしは りんごを おねがいする"
+  },
+  {
+    "id": "water-is-a-resource",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Water",
+      "is",
+      "a",
+      "resource"
+    ],
+    "ja": "みずは しげん だ",
+    "fallbackEn": [
+      "Water",
+      "is",
+      "a",
+      "resource"
+    ],
+    "fallbackJa": "みずは しげん だ"
+  },
+  {
+    "id": "i-respect-my-mom",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "respect",
+      "my",
+      "mom"
+    ],
+    "ja": "わたしは ママを そんけいする",
+    "fallbackEn": [
+      "I",
+      "respect",
+      "my",
+      "mom"
+    ],
+    "fallbackJa": "わたしは ママを そんけいする"
+  },
+  {
+    "id": "the-response-is-good",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "response",
+      "is",
+      "good"
+    ],
+    "ja": "その へんじは いい",
+    "fallbackEn": [
+      "The",
+      "response",
+      "is",
+      "good"
+    ],
+    "fallbackJa": "その へんじは いい"
+  },
+  {
+    "id": "i-rest-in-bed",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "rest",
+      "in",
+      "bed"
+    ],
+    "ja": "わたしは ベッドで やすむ",
+    "fallbackEn": [
+      "I",
+      "rest",
+      "in",
+      "bed"
+    ],
+    "fallbackJa": "わたしは ベッドで やすむ"
+  },
+  {
+    "id": "this-is-a-restaurant",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "restaurant"
+    ],
+    "ja": "ここは レストラン だ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "restaurant"
+    ],
+    "fallbackJa": "ここは レストラン だ"
+  },
+  {
+    "id": "i-review-the-book",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "review",
+      "the",
+      "book"
+    ],
+    "ja": "わたしは ほんを みなおす",
+    "fallbackEn": [
+      "I",
+      "review",
+      "the",
+      "book"
+    ],
+    "fallbackJa": "わたしは ほんを みなおす"
+  },
+  {
+    "id": "i-have-a-ring",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "ring"
+    ],
+    "ja": "わたしは ゆびわを もっている",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "ring"
+    ],
+    "fallbackJa": "わたしは ゆびわを もっている"
+  },
+  {
+    "id": "the-risk-is-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "risk",
+      "is",
+      "big"
+    ],
+    "ja": "その きけんは おおきい",
+    "fallbackEn": [
+      "The",
+      "risk",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "その きけんは おおきい"
+  },
+  {
+    "id": "the-road-is-long",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "road",
+      "is",
+      "long"
+    ],
+    "ja": "その みちは ながい",
+    "fallbackEn": [
+      "The",
+      "road",
+      "is",
+      "long"
+    ],
+    "fallbackJa": "その みちは ながい"
+  },
+  {
+    "id": "the-ball-is-round",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "ball",
+      "is",
+      "round"
+    ],
+    "ja": "ボールは まるい",
+    "fallbackEn": [
+      "The",
+      "ball",
+      "is",
+      "round"
+    ],
+    "fallbackJa": "ボールは まるい"
+  },
+  {
+    "id": "i-want-a-sample",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "a",
+      "sample"
+    ],
+    "ja": "わたしは サンプルが ほしい",
+    "fallbackEn": [
+      "I",
+      "want",
+      "a",
+      "sample"
+    ],
+    "fallbackJa": "わたしは サンプルが ほしい"
+  },
+  {
+    "id": "i-like-science-class",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "science",
+      "class"
+    ],
+    "ja": "わたしは りかの じゅぎょうが すき だ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "science",
+      "class"
+    ],
+    "fallbackJa": "わたしは りかの じゅぎょうが すき だ"
+  },
+  {
+    "id": "i-score-a-goal",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "score",
+      "a",
+      "goal"
+    ],
+    "ja": "わたしは ゴールを きめる",
+    "fallbackEn": [
+      "I",
+      "score",
+      "a",
+      "goal"
+    ],
+    "fallbackJa": "わたしは ゴールを きめる"
+  },
+  {
+    "id": "i-touch-the-screen",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "touch",
+      "the",
+      "screen"
+    ],
+    "ja": "わたしは がめんを さわる",
+    "fallbackEn": [
+      "I",
+      "touch",
+      "the",
+      "screen"
+    ],
+    "fallbackJa": "わたしは がめんを さわる"
+  },
+  {
+    "id": "i-search-for-toys",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "search",
+      "for",
+      "toys"
+    ],
+    "ja": "わたしは おもちゃを さがす",
+    "fallbackEn": [
+      "I",
+      "search",
+      "for",
+      "toys"
+    ],
+    "fallbackJa": "わたしは おもちゃを さがす"
+  },
+  {
+    "id": "the-season-is-fall",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "season",
+      "is",
+      "fall"
+    ],
+    "ja": "きせつは あき だ",
+    "fallbackEn": [
+      "The",
+      "season",
+      "is",
+      "fall"
+    ],
+    "fallbackJa": "きせつは あき だ"
+  },
+  {
+    "id": "this-is-my-seat",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "my",
+      "seat"
+    ],
+    "ja": "これは わたしの せき だ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "my",
+      "seat"
+    ],
+    "fallbackJa": "これは わたしの せき だ"
+  },
+  {
+    "id": "this-is-my-section",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "my",
+      "section"
+    ],
+    "ja": "ここは わたしの ばしょ だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "my",
+      "section"
+    ],
+    "fallbackJa": "ここは わたしの ばしょ だよ"
+  },
+  {
+    "id": "i-seek-the-ball",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "seek",
+      "the",
+      "ball"
+    ],
+    "ja": "わたしは ボールを さがす",
+    "fallbackEn": [
+      "I",
+      "seek",
+      "the",
+      "ball"
+    ],
+    "fallbackJa": "わたしは ボールを さがす"
+  },
+  {
+    "id": "i-separate-the-toys",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "separate",
+      "the",
+      "toys"
+    ],
+    "ja": "わたしは おもちゃを わける",
+    "fallbackEn": [
+      "I",
+      "separate",
+      "the",
+      "toys"
+    ],
+    "fallbackJa": "わたしは おもちゃを わける"
+  },
+  {
+    "id": "i-read-a-series",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "read",
+      "a",
+      "series"
+    ],
+    "ja": "わたしは シリーズを よむ",
+    "fallbackEn": [
+      "I",
+      "read",
+      "a",
+      "series"
+    ],
+    "fallbackJa": "わたしは シリーズを よむ"
+  },
+  {
+    "id": "the-boy-is-serious",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "boy",
+      "is",
+      "serious"
+    ],
+    "ja": "その おとこのこは まじめ だよ",
+    "fallbackEn": [
+      "The",
+      "boy",
+      "is",
+      "serious"
+    ],
+    "fallbackJa": "その おとこのこは まじめ だよ"
+  },
+  {
+    "id": "i-serve-the-food",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "serve",
+      "the",
+      "food"
+    ],
+    "ja": "わたしは ごはんを だす",
+    "fallbackEn": [
+      "I",
+      "serve",
+      "the",
+      "food"
+    ],
+    "fallbackJa": "わたしは ごはんを だす"
+  },
+  {
+    "id": "we-shall-eat-the-cake",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "shall",
+      "eat",
+      "the",
+      "cake"
+    ],
+    "ja": "わたしたちは ケーキを たべる",
+    "fallbackEn": [
+      "We",
+      "shall",
+      "eat",
+      "the",
+      "cake"
+    ],
+    "fallbackJa": "わたしたちは ケーキを たべる"
+  },
+  {
+    "id": "i-read-the-sign",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "read",
+      "the",
+      "sign"
+    ],
+    "ja": "わたしは かんばんを よむ",
+    "fallbackEn": [
+      "I",
+      "read",
+      "the",
+      "sign"
+    ],
+    "fallbackJa": "わたしは かんばんを よむ"
+  },
+  {
+    "id": "it-is-a-significant-day",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "a",
+      "significant",
+      "day"
+    ],
+    "ja": "それは たいせつな ひ だよ",
+    "fallbackEn": [
+      "It",
+      "is",
+      "a",
+      "significant",
+      "day"
+    ],
+    "fallbackJa": "それは たいせつな ひ だよ"
+  },
+  {
+    "id": "the-cats-are-similar",
+    "category": "daily",
+    "grammar": "plurals",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "cats",
+      "are",
+      "similar"
+    ],
+    "ja": "その ねこたちは にている",
+    "fallbackEn": [
+      "The",
+      "cats",
+      "are",
+      "similar"
+    ],
+    "fallbackJa": "その ねこたちは にている"
+  },
+  {
+    "id": "the-game-is-simple",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "game",
+      "is",
+      "simple"
+    ],
+    "ja": "その ゲームは かんたん だよ",
+    "fallbackEn": [
+      "The",
+      "game",
+      "is",
+      "simple"
+    ],
+    "fallbackJa": "その ゲームは かんたん だよ"
+  },
+  {
+    "id": "i-simply-like-it",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "simply",
+      "like",
+      "it"
+    ],
+    "ja": "わたしは それが ただ すき",
+    "fallbackEn": [
+      "I",
+      "simply",
+      "like",
+      "it"
+    ],
+    "fallbackJa": "わたしは それが ただ すき"
+  },
+  {
+    "id": "i-see-a-single-star",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "a",
+      "single",
+      "star"
+    ],
+    "ja": "わたしは ひとつの ほしを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "a",
+      "single",
+      "star"
+    ],
+    "fallbackJa": "わたしは ひとつの ほしを みる"
+  },
+  {
+    "id": "my-sister-is-tall",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "My",
+      "sister",
+      "is",
+      "tall"
+    ],
+    "ja": "わたしの あねは せがたかい",
+    "fallbackEn": [
+      "My",
+      "sister",
+      "is",
+      "tall"
+    ],
+    "fallbackJa": "わたしの あねは せがたかい"
+  },
+  {
+    "id": "this-is-the-site",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "the",
+      "site"
+    ],
+    "ja": "ここは その ばしょ だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "the",
+      "site"
+    ],
+    "fallbackJa": "ここは その ばしょ だよ"
+  },
+  {
+    "id": "the-size-is-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "size",
+      "is",
+      "big"
+    ],
+    "ja": "おおきさは おおきい よ",
+    "fallbackEn": [
+      "The",
+      "size",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "おおきさは おおきい よ"
+  },
+  {
+    "id": "i-have-a-skill",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "skill"
+    ],
+    "ja": "わたしには とくぎが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "skill"
+    ],
+    "fallbackJa": "わたしには とくぎが ある"
+  },
+  {
+    "id": "you-have-a-nice-smile",
+    "category": "daily",
+    "grammar": "articles",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "You",
+      "have",
+      "a",
+      "nice",
+      "smile"
+    ],
+    "ja": "あなたは いい えがお だね",
+    "fallbackEn": [
+      "You",
+      "have",
+      "a",
+      "nice",
+      "smile"
+    ],
+    "fallbackJa": "あなたは いい えがお だね"
+  },
+  {
+    "id": "society-is-very-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Society",
+      "is",
+      "very",
+      "big"
+    ],
+    "ja": "しゃかいは とても おおきい",
+    "fallbackEn": [
+      "Society",
+      "is",
+      "very",
+      "big"
+    ],
+    "fallbackJa": "しゃかいは とても おおきい"
+  },
+  {
+    "id": "this-is-the-solution",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "the",
+      "solution"
+    ],
+    "ja": "これが こたえ だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "the",
+      "solution"
+    ],
+    "fallbackJa": "これが こたえ だよ"
+  },
+  {
+    "id": "somebody-is-here",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Somebody",
+      "is",
+      "here"
+    ],
+    "ja": "だれかが ここに いる",
+    "fallbackEn": [
+      "Somebody",
+      "is",
+      "here"
+    ],
+    "fallbackJa": "だれかが ここに いる"
+  },
+  {
+    "id": "he-is-my-son",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "He",
+      "is",
+      "my",
+      "son"
+    ],
+    "ja": "かれは わたしの むすこ だよ",
+    "fallbackEn": [
+      "He",
+      "is",
+      "my",
+      "son"
+    ],
+    "fallbackJa": "かれは わたしの むすこ だよ"
+  },
+  {
+    "id": "this-is-the-source",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "the",
+      "source"
+    ],
+    "ja": "これが その みなもと だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "the",
+      "source"
+    ],
+    "fallbackJa": "これが その みなもと だよ"
+  },
+  {
+    "id": "space-is-very-dark",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Space",
+      "is",
+      "very",
+      "dark"
+    ],
+    "ja": "うちゅうは とても くらい",
+    "fallbackEn": [
+      "Space",
+      "is",
+      "very",
+      "dark"
+    ],
+    "fallbackJa": "うちゅうは とても くらい"
+  },
+  {
+    "id": "i-like-this-specific-book",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "this",
+      "specific",
+      "book"
+    ],
+    "ja": "わたしは この とくべつな ほんが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "this",
+      "specific",
+      "book"
+    ],
+    "fallbackJa": "わたしは この とくべつな ほんが すき"
+  },
+  {
+    "id": "this-is-a-stage",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "stage"
+    ],
+    "ja": "これは すてーじ だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "stage"
+    ],
+    "fallbackJa": "これは すてーじ だよ"
+  },
+  {
+    "id": "this-is-standard",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "standard"
+    ],
+    "ja": "これは ふつう だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "standard"
+    ],
+    "fallbackJa": "これは ふつう だよ"
+  },
+  {
+    "id": "i-make-a-statement",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "make",
+      "a",
+      "statement"
+    ],
+    "ja": "わたしは いけんを いうよ",
+    "fallbackEn": [
+      "I",
+      "make",
+      "a",
+      "statement"
+    ],
+    "fallbackJa": "わたしは いけんを いうよ"
+  },
+  {
+    "id": "i-take-a-step",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "take",
+      "a",
+      "step"
+    ],
+    "ja": "わたしは いっぽを ふみだす",
+    "fallbackEn": [
+      "I",
+      "take",
+      "a",
+      "step"
+    ],
+    "fallbackJa": "わたしは いっぽを ふみだす"
+  },
+  {
+    "id": "we-have-stock",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "have",
+      "stock"
+    ],
+    "ja": "わたしたちには ざいこが ある",
+    "fallbackEn": [
+      "We",
+      "have",
+      "stock"
+    ],
+    "fallbackJa": "わたしたちには ざいこが ある"
+  },
+  {
+    "id": "i-like-the-store",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "store"
+    ],
+    "ja": "わたしは おみせが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "store"
+    ],
+    "fallbackJa": "わたしは おみせが すき"
+  },
+  {
+    "id": "i-have-a-strategy",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "strategy"
+    ],
+    "ja": "わたしには さくせんが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "strategy"
+    ],
+    "fallbackJa": "わたしには さくせんが ある"
+  },
+  {
+    "id": "i-see-a-street",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "a",
+      "street"
+    ],
+    "ja": "わたしは みちを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "a",
+      "street"
+    ],
+    "fallbackJa": "わたしは みちを みる"
+  },
+  {
+    "id": "i-can-strike-it",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "can",
+      "strike",
+      "it"
+    ],
+    "ja": "わたしは それを うてるよ",
+    "fallbackEn": [
+      "I",
+      "can",
+      "strike",
+      "it"
+    ],
+    "fallbackJa": "わたしは それを うてるよ"
+  },
+  {
+    "id": "i-build-a-structure",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "build",
+      "a",
+      "structure"
+    ],
+    "ja": "わたしは たてものを たてる",
+    "fallbackEn": [
+      "I",
+      "build",
+      "a",
+      "structure"
+    ],
+    "fallbackJa": "わたしは たてものを たてる"
+  },
+  {
+    "id": "i-have-good-stuff",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "good",
+      "stuff"
+    ],
+    "ja": "わたしには いいものが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "good",
+      "stuff"
+    ],
+    "fallbackJa": "わたしには いいものが ある"
+  },
+  {
+    "id": "i-like-this-style",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "this",
+      "style"
+    ],
+    "ja": "わたしは この すたいるが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "this",
+      "style"
+    ],
+    "fallbackJa": "わたしは この すたいるが すき"
+  },
+  {
+    "id": "i-want-success",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "want",
+      "success"
+    ],
+    "ja": "わたしは せいこう したい",
+    "fallbackEn": [
+      "I",
+      "want",
+      "success"
+    ],
+    "fallbackJa": "わたしは せいこう したい"
+  },
+  {
+    "id": "i-am-very-successful",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "very",
+      "successful"
+    ],
+    "ja": "わたしは とても せいこう している",
+    "fallbackEn": [
+      "I",
+      "am",
+      "very",
+      "successful"
+    ],
+    "fallbackJa": "わたしは とても せいこう している"
+  },
+  {
+    "id": "it-happens-suddenly",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "It",
+      "happens",
+      "suddenly"
+    ],
+    "ja": "それは きゅうに おきる",
+    "fallbackEn": [
+      "It",
+      "happens",
+      "suddenly"
+    ],
+    "fallbackJa": "それは きゅうに おきる"
+  },
+  {
+    "id": "i-suffer-a-lot",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "suffer",
+      "a",
+      "lot"
+    ],
+    "ja": "わたしは とても くるしい",
+    "fallbackEn": [
+      "I",
+      "suffer",
+      "a",
+      "lot"
+    ],
+    "fallbackJa": "わたしは とても くるしい"
+  },
+  {
+    "id": "i-have-a-supply",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "supply"
+    ],
+    "ja": "わたしには よびが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "supply"
+    ],
+    "fallbackJa": "わたしには よびが ある"
+  },
+  {
+    "id": "i-suppose-so",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "suppose",
+      "so"
+    ],
+    "ja": "わたしは そう おもう",
+    "fallbackEn": [
+      "I",
+      "suppose",
+      "so"
+    ],
+    "fallbackJa": "わたしは そう おもう"
+  },
+  {
+    "id": "it-is-a-surprise",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "It",
+      "is",
+      "a",
+      "surprise"
+    ],
+    "ja": "それは びっくり だよ",
+    "fallbackEn": [
+      "It",
+      "is",
+      "a",
+      "surprise"
+    ],
+    "fallbackJa": "それは びっくり だよ"
+  },
+  {
+    "id": "i-see-the-target",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "the",
+      "target"
+    ],
+    "ja": "わたしは まとを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "the",
+      "target"
+    ],
+    "fallbackJa": "わたしは まとを みる"
+  },
+  {
+    "id": "this-is-a-task",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "task"
+    ],
+    "ja": "これは おしごと だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "task"
+    ],
+    "fallbackJa": "これは おしごと だよ"
+  },
+  {
+    "id": "i-pay-a-tax",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "pay",
+      "a",
+      "tax"
+    ],
+    "ja": "わたしは ぜいきんを はらう",
+    "fallbackEn": [
+      "I",
+      "pay",
+      "a",
+      "tax"
+    ],
+    "fallbackJa": "わたしは ぜいきんを はらう"
+  },
+  {
+    "id": "i-teach-my-cat",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "teach",
+      "my",
+      "cat"
+    ],
+    "ja": "わたしは ねこに おしえる",
+    "fallbackEn": [
+      "I",
+      "teach",
+      "my",
+      "cat"
+    ],
+    "fallbackJa": "わたしは ねこに おしえる"
+  },
+  {
+    "id": "i-like-technology",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "technology"
+    ],
+    "ja": "わたしは てくのろじーが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "technology"
+    ],
+    "fallbackJa": "わたしは てくのろじーが すき"
+  },
+  {
+    "id": "i-watch-the-television",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "watch",
+      "the",
+      "television"
+    ],
+    "ja": "わたしは てれびを みる",
+    "fallbackEn": [
+      "I",
+      "watch",
+      "the",
+      "television"
+    ],
+    "fallbackJa": "わたしは てれびを みる"
+  },
+  {
+    "id": "i-tend-garden",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "tend",
+      "the",
+      "garden"
+    ],
+    "ja": "わたしは にわの せわを する",
+    "fallbackEn": [
+      "I",
+      "tend",
+      "the",
+      "garden"
+    ],
+    "fallbackJa": "わたしは にわの せわを する"
+  },
+  {
+    "id": "they-wash-themselves",
+    "category": "daily",
+    "grammar": "pronouns",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "They",
+      "wash",
+      "themselves"
+    ],
+    "ja": "かれらは じぶんで あらう",
+    "fallbackEn": [
+      "They",
+      "wash",
+      "themselves"
+    ],
+    "fallbackJa": "かれらは じぶんで あらう"
+  },
+  {
+    "id": "have-a-theory",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "a",
+      "theory"
+    ],
+    "ja": "わたしには かんがえが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "a",
+      "theory"
+    ],
+    "fallbackJa": "わたしには かんがえが ある"
+  },
+  {
+    "id": "therefore-i-go",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Therefore",
+      "I",
+      "go",
+      "home"
+    ],
+    "ja": "だから わたしは いえに かえる",
+    "fallbackEn": [
+      "Therefore",
+      "I",
+      "go",
+      "home"
+    ],
+    "fallbackJa": "だから わたしは いえに かえる"
+  },
+  {
+    "id": "play-throughout-day",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "play",
+      "throughout",
+      "the",
+      "day"
+    ],
+    "ja": "わたしたちは いちにちじゅう あそぶ",
+    "fallbackEn": [
+      "We",
+      "play",
+      "throughout",
+      "the",
+      "day"
+    ],
+    "fallbackJa": "わたしたちは いちにちじゅう あそぶ"
+  },
+  {
+    "id": "throw-the-ball",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "throw",
+      "the",
+      "ball"
+    ],
+    "ja": "わたしは ボールを なげる",
+    "fallbackEn": [
+      "I",
+      "throw",
+      "the",
+      "ball"
+    ],
+    "fallbackJa": "わたしは ボールを なげる"
+  },
+  {
+    "id": "thus-cat-sleeps",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "Thus",
+      "the",
+      "cat",
+      "sleeps"
+    ],
+    "ja": "こうして ねこは ねむる",
+    "fallbackEn": [
+      "Thus",
+      "the",
+      "cat",
+      "sleeps"
+    ],
+    "fallbackJa": "こうして ねこは ねむる"
+  },
+  {
+    "id": "total-is-five",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "total",
+      "is",
+      "five"
+    ],
+    "ja": "ごうけいは いつつ だ",
+    "fallbackEn": [
+      "The",
+      "total",
+      "is",
+      "five"
+    ],
+    "fallbackJa": "ごうけいは いつつ だ"
+  },
+  {
+    "id": "touch-the-cat",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "touch",
+      "the",
+      "cat"
+    ],
+    "ja": "わたしは ねこに さわる",
+    "fallbackEn": [
+      "I",
+      "touch",
+      "the",
+      "cat"
+    ],
+    "fallbackJa": "わたしは ねこに さわる"
+  },
+  {
+    "id": "run-on-track",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "run",
+      "on",
+      "the",
+      "track"
+    ],
+    "ja": "わたしは トラックを はしる",
+    "fallbackEn": [
+      "I",
+      "run",
+      "on",
+      "the",
+      "track"
+    ],
+    "fallbackJa": "わたしは トラックを はしる"
+  },
+  {
+    "id": "trade-our-toys",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "trade",
+      "our",
+      "toys"
+    ],
+    "ja": "わたしたちは おもちゃを こうかんする",
+    "fallbackEn": [
+      "We",
+      "trade",
+      "our",
+      "toys"
+    ],
+    "fallbackJa": "わたしたちは おもちゃを こうかんする"
+  },
+  {
+    "id": "travel-by-train",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "travel",
+      "by",
+      "train"
+    ],
+    "ja": "わたしは でんしゃで りょこうを する",
+    "fallbackEn": [
+      "I",
+      "travel",
+      "by",
+      "train"
+    ],
+    "fallbackJa": "わたしは でんしゃで りょこうを する"
+  },
+  {
+    "id": "a-sweet-treat",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "sweet",
+      "treat"
+    ],
+    "ja": "これは あまい おやつ だ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "sweet",
+      "treat"
+    ],
+    "fallbackJa": "これは あまい おやつ だ"
+  },
+  {
+    "id": "treatment-is-good",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "treatment",
+      "is",
+      "good"
+    ],
+    "ja": "この ちりょうは よい",
+    "fallbackEn": [
+      "This",
+      "treatment",
+      "is",
+      "good"
+    ],
+    "fallbackJa": "この ちりょうは よい"
+  },
+  {
+    "id": "like-this-trip",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "this",
+      "trip"
+    ],
+    "ja": "わたしは この りょこうが すき だ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "this",
+      "trip"
+    ],
+    "fallbackJa": "わたしは この りょこうが すき だ"
+  },
+  {
+    "id": "i-have-trouble",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "have",
+      "trouble"
+    ],
+    "ja": "わたしは もんだいが ある",
+    "fallbackEn": [
+      "I",
+      "have",
+      "trouble"
+    ],
+    "fallbackJa": "わたしは もんだいが ある"
+  },
+  {
+    "id": "story-is-true",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "story",
+      "is",
+      "true"
+    ],
+    "ja": "この おはなしは ほんとう だ",
+    "fallbackEn": [
+      "This",
+      "story",
+      "is",
+      "true"
+    ],
+    "fallbackJa": "この おはなしは ほんとう だ"
+  },
+  {
+    "id": "is-one-unit",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "one",
+      "unit"
+    ],
+    "ja": "これは ひとつの ユニット だ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "one",
+      "unit"
+    ],
+    "fallbackJa": "これは ひとつの ユニット だ"
+  },
+  {
+    "id": "wish-upon-star",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "wish",
+      "upon",
+      "a",
+      "star"
+    ],
+    "ja": "わたしは ほしに ねがいを かける",
+    "fallbackEn": [
+      "I",
+      "wish",
+      "upon",
+      "a",
+      "star"
+    ],
+    "fallbackJa": "わたしは ほしに ねがいを かける"
+  },
+  {
+    "id": "robot-is-useful",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "robot",
+      "is",
+      "useful"
+    ],
+    "ja": "この ロボットは べんり だ",
+    "fallbackEn": [
+      "This",
+      "robot",
+      "is",
+      "useful"
+    ],
+    "fallbackJa": "この ロボットは べんり だ"
+  },
+  {
+    "id": "usually-eat-apples",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "usually",
+      "eat",
+      "apples"
+    ],
+    "ja": "わたしは たいてい りんごを たべる",
+    "fallbackEn": [
+      "I",
+      "usually",
+      "eat",
+      "apples"
+    ],
+    "fallbackJa": "わたしは たいてい りんごを たべる"
+  },
+  {
+    "id": "like-the-variety",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "variety"
+    ],
+    "ja": "わたしは いろいろな しゅるいが すき だ",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "variety"
+    ],
+    "fallbackJa": "わたしは いろいろな しゅるいが すき だ"
+  },
+  {
+    "id": "see-various-birds",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "see",
+      "various",
+      "birds"
+    ],
+    "ja": "わたしは いろいろな とりを みる",
+    "fallbackEn": [
+      "I",
+      "see",
+      "various",
+      "birds"
+    ],
+    "fallbackJa": "わたしは いろいろな とりを みる"
+  },
+  {
+    "id": "new-version",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "the",
+      "new",
+      "version"
+    ],
+    "ja": "これは あたらしい バージョン だ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "the",
+      "new",
+      "version"
+    ],
+    "fallbackJa": "これは あたらしい バージョン だ"
+  },
+  {
+    "id": "live-in-village",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "live",
+      "in",
+      "a",
+      "village"
+    ],
+    "ja": "わたしは むらに すむ",
+    "fallbackEn": [
+      "I",
+      "live",
+      "in",
+      "a",
+      "village"
+    ],
+    "fallbackJa": "わたしは むらに すむ"
+  },
+  {
+    "id": "like-your-voice",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "your",
+      "voice"
+    ],
+    "ja": "あなたの こえが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "your",
+      "voice"
+    ],
+    "fallbackJa": "あなたの こえが すき"
+  },
+  {
+    "id": "we-vote-for-this",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "vote",
+      "for",
+      "this"
+    ],
+    "ja": "わたしたちは これに きめる",
+    "fallbackEn": [
+      "We",
+      "vote",
+      "for",
+      "this"
+    ],
+    "fallbackJa": "わたしたちは これに きめる"
+  },
+  {
+    "id": "this-is-a-wall",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "a",
+      "wall"
+    ],
+    "ja": "これは かべ だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "a",
+      "wall"
+    ],
+    "fallbackJa": "これは かべ だよ"
+  },
+  {
+    "id": "like-the-weekend",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "like",
+      "the",
+      "weekend"
+    ],
+    "ja": "わたしは しゅうまつが すき",
+    "fallbackEn": [
+      "I",
+      "like",
+      "the",
+      "weekend"
+    ],
+    "fallbackJa": "わたしは しゅうまつが すき"
+  },
+  {
+    "id": "can-do-whatever",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "You",
+      "can",
+      "do",
+      "whatever"
+    ],
+    "ja": "なにを しても いいよ",
+    "fallbackEn": [
+      "You",
+      "can",
+      "do",
+      "whatever"
+    ],
+    "fallbackJa": "なにを しても いいよ"
+  },
+  {
+    "id": "know-whom-i-like",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "know",
+      "whom",
+      "I",
+      "like"
+    ],
+    "ja": "わたしは だれが すきか わかる",
+    "fallbackEn": [
+      "I",
+      "know",
+      "whom",
+      "I",
+      "like"
+    ],
+    "fallbackJa": "わたしは だれが すきか わかる"
+  },
+  {
+    "id": "river-is-wide",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "river",
+      "is",
+      "wide"
+    ],
+    "ja": "その かわは ひろい",
+    "fallbackEn": [
+      "The",
+      "river",
+      "is",
+      "wide"
+    ],
+    "fallbackJa": "その かわは ひろい"
+  },
+  {
+    "id": "loves-his-wife",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "He",
+      "loves",
+      "his",
+      "wife"
+    ],
+    "ja": "かれは おくさんが すき",
+    "fallbackEn": [
+      "He",
+      "loves",
+      "his",
+      "wife"
+    ],
+    "fallbackJa": "かれは おくさんが すき"
+  },
+  {
+    "id": "make-a-wish",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "make",
+      "a",
+      "wish"
+    ],
+    "ja": "わたしは ねがいごとを する",
+    "fallbackEn": [
+      "I",
+      "make",
+      "a",
+      "wish"
+    ],
+    "fallbackJa": "わたしは ねがいごとを する"
+  },
+  {
+    "id": "wonder-about-this",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "wonder",
+      "about",
+      "this"
+    ],
+    "ja": "わたしは これが ふしぎだ",
+    "fallbackEn": [
+      "I",
+      "wonder",
+      "about",
+      "this"
+    ],
+    "fallbackJa": "わたしは これが ふしぎだ"
+  },
+  {
+    "id": "is-a-worker",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "She",
+      "is",
+      "a",
+      "worker"
+    ],
+    "ja": "かのじょは はたらく ひと だよ",
+    "fallbackEn": [
+      "She",
+      "is",
+      "a",
+      "worker"
+    ],
+    "fallbackJa": "かのじょは はたらく ひと だよ"
+  },
+  {
+    "id": "worry-about-you",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "worry",
+      "about",
+      "you"
+    ],
+    "ja": "わたしは あなたの ことが しんぱい",
+    "fallbackEn": [
+      "I",
+      "worry",
+      "about",
+      "you"
+    ],
+    "fallbackJa": "わたしは あなたの ことが しんぱい"
+  },
+  {
+    "id": "is-worth-a-lot",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "worth",
+      "a",
+      "lot"
+    ],
+    "ja": "これは とても かちが ある",
+    "fallbackEn": [
+      "This",
+      "is",
+      "worth",
+      "a",
+      "lot"
+    ],
+    "fallbackJa": "これは とても かちが ある"
+  },
+  {
+    "id": "answer-is-wrong",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "answer",
+      "is",
+      "wrong"
+    ],
+    "ja": "その こたえは ちがうよ",
+    "fallbackEn": [
+      "The",
+      "answer",
+      "is",
+      "wrong"
+    ],
+    "fallbackJa": "その こたえは ちがうよ"
+  },
+  {
+    "id": "can-see-yourself",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "You",
+      "can",
+      "see",
+      "yourself"
+    ],
+    "ja": "じぶんを みる ことが できるよ",
+    "fallbackEn": [
+      "You",
+      "can",
+      "see",
+      "yourself"
+    ],
+    "fallbackJa": "じぶんを みる ことが できるよ"
   }
 ]
