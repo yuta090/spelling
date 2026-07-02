@@ -57,13 +57,21 @@ public struct LocalWord: Equatable, Sendable {
     }
 }
 
-/// 世帯スコープのフィルタ（プル取得分の隔離・プッシュ前の自衛）。
+/// 世帯（＋任意でプロファイル）スコープのフィルタ（プル取得分の隔離・プッシュ前の自衛）。
 public enum SyncScope {
-    /// `householdID` が一致するレコードだけを残す。
+    /// `householdID`（と、指定時は `profileID`）が一致するレコードだけを残す。
     /// アクティブ世帯が `nil`（未選択）なら **空**（スコープ無し＝同期対象なし）。
-    public static func scoped<R: SyncableRecord>(_ records: [R], householdID: UUID?) -> [R] {
+    ///
+    /// `profileID` を渡すと **プロファイル一致も要求** する（Phase 5b の防御的スコープ）。pull は
+    /// クエリ側で `profile_id` を絞る（`SyncEngine`）が、親認証は世帯の全子行にアクセスできるため、
+    /// 万一クエリを跨いだ行が混ざっても reducer が他児レコードを取り込まない belt になる。
+    /// `nil` はプロファイル絞りなし（後方互換：レビュー/アテンプト等・単一プロファイル文脈）。
+    public static func scoped<R: SyncableRecord>(_ records: [R], householdID: UUID?, profileID: UUID? = nil) -> [R] {
         guard let householdID else { return [] }
-        return records.filter { $0.sync.householdID == householdID }
+        return records.filter { record in
+            record.sync.householdID == householdID
+                && (profileID == nil || record.sync.profileID == profileID)
+        }
     }
 }
 

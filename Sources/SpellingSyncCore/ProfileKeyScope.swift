@@ -58,7 +58,7 @@ public enum ProfileKeyScope {
         "spellingTrainer.debugAIJudgeOnTest",       // DEBUG のみ。端末のデバッグトグル（他 debug フラグと同じく端末単位）
         "spellingTrainer.migratedFromSwiftData.v1", // 端末の移行フラグ
         "spellingTrainer.sync.activeHouseholdID",   // 「今どの世帯か」は端末単位（子で分けない）
-        "spellingTrainer.sync.wordRemoteOwnerProfileID", // 世帯NULLストリームのオーナー（元の単一子）。端末単位・再割当なし（Phase 5）
+        "spellingTrainer.sync.profileScopedWireActivated.v1", // Phase 5b 起動時に一度だけ全プロファイルの同期簿記をリセットした端末フラグ
         "spellingTrainer.profiles",                 // 台帳そのもの（端末）
         "spellingTrainer.activeProfileID",
         "spellingTrainer.migratedToProfiles.v1"     // プロファイル移行フラグ

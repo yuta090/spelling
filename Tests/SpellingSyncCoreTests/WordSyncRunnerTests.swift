@@ -13,7 +13,7 @@ private final class FakeTransport: WordSyncTransport, @unchecked Sendable {
 
     init(page: WordPullPage = WordPullPage(rows: [], nextCursor: 0)) { self.page = page }
 
-    func pullAll(table: String, since cursor: Int) async throws -> WordPullPage { page }
+    func pullAll(table: String, since cursor: Int, profileID: UUID?) async throws -> WordPullPage { page }
 
     func push(table: String, rows: [WordRow]) async throws {
         pushCallCount += 1

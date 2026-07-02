@@ -22,7 +22,7 @@ public enum WordSyncReducer {
     /// pull 済みリモート行・ローカル単語・サイドカーから、統合結果と送信対象を決める。
     ///
     /// 手順:
-    /// 1. リモートをアクティブ世帯でスコープ（別世帯の混入・誤削除を防ぐ）。
+    /// 1. リモートをアクティブ世帯＋プロファイルでスコープ（別世帯・別児の混入・誤削除を防ぐ）。
     /// 2. サイドカーでローカルを射影（新規採番・内容変化・消滅の墓石化）。
     /// 3. `LastWriteWins.reconcile` で id ごとに統合。
     /// 4. **送信不要なレコードを除外**:
@@ -48,7 +48,7 @@ public enum WordSyncReducer {
         profileID: UUID?,
         pushedThrough: Date?
     ) -> Plan {
-        let scopedRemote = SyncScope.scoped(remote, householdID: householdID)
+        let scopedRemote = SyncScope.scoped(remote, householdID: householdID, profileID: profileID)
         let local = store.project(
             localWords: localWords,
             now: now,

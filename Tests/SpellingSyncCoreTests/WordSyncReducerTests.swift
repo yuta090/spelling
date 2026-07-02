@@ -286,6 +286,22 @@ final class WordSyncReducerTests: XCTestCase {
         XCTAssertEqual(plan.merged.map(\.id), [id1], "別世帯のリモート行は混入しない")
     }
 
+    func testRemoteFromOtherProfileSameHouseholdIsIgnored() {
+        // Phase 5b の防御的スコープ: pull はクエリで profile_id を絞るが、親認証は世帯の全子行に
+        // アクセスできる。万一 **同一世帯・別プロファイル** の行が混ざっても reducer が取り込まない。
+        let otherProfile = UUID(uuidString: "DDDDDDDD-0000-0000-0000-000000000000")!
+        let siblingMeta = SyncMetadata(
+            id: id2, householdID: household, profileID: otherProfile, createdAt: t0, updatedAt: at(50)
+        )
+        let remote = [WordSyncRecord(sync: siblingMeta, payload: payload("sibling"))]
+        let local = [LocalWord(id: id1, payload: payload("cat"), createdAt: t0)]
+        let plan = WordSyncReducer.plan(
+            localWords: local, remote: remote, store: WordSidecarStore(),
+            now: at(10), householdID: household, profileID: profile, pushedThrough: nil
+        )
+        XCTAssertEqual(plan.merged.map(\.id), [id1], "同一世帯でも別プロファイルのリモート行は混入しない")
+    }
+
     func testIngestedRemoteIsNotEchoedOnLaterCycle() {
         // 取り込み済みのリモート行を、次サイクル（pull 無し）で送り返さない（high-water を
         // リモートの updatedAt まで進めて新規ローカル語を恒久的に弾く事故を防ぐ）。

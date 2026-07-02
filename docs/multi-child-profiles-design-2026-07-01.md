@@ -263,6 +263,22 @@ final class ProfileScopedStore: UserDataStore {  // @unchecked Sendable
 
 **Phase 5b（延期・要サーバ）**: `public.profiles` へローカル子を provisioning（id＝ローカル UUID／household 紐付け）＋既存 `profile_id=NULL` words の backfill／移行 ＋ wire で `profile_id` 有効化 → **複数子の同時リモート同期**を解禁。オーナーゲートは撤去。
 
+### Phase 5b 実装状況（2026-07-02・codex Architect＋Code Reviewer = APPROVE）
+
+ユーザ選択＝**クリーンスレート**（未リリース＝実ユーザー無し。旧・世帯 NULL ストリームは破棄）。5a の `WordRemoteOwner`／owner ゲート／global→owner 移行を**丸ごと撤去**し、「**常に provision → `profile_id` 付き push**」の最小構成へ。
+
+**設計核（現状配線の再確認で単純化）**: `words` 同期は **親認証時のみ**走る（`SpellingTrainerApp.configureSync` が `isSignedIn && !isAnonymous` の親にだけ世帯を返す）。親は RLS `has_access` で世帯の**全子**にアクセスできるので、Architect が懸念した「親 vs 子端末の非対称」は既に親側に固定済み。よって 5b のゲートは「親認証（＝世帯あり）＋アクティブ profile を provision 済み」だけで足りる。
+
+**実装済み**:
+- **サーバ migration（クリーンスレート）** `20260702000001_words_profile_required_rb8x.sql`: ①`profile_id IS NULL` の words/step_word_memberships を物理削除 → ②`profiles(household_id, id)` に unique → ③`words` の単独FKを **複合FK `(household_id, profile_id) → profiles(household_id, id)` on delete cascade** へ張り替え（世帯×プロファイル整合を宣言的に保証＝Architect 指摘のギャップ解消）→ ④`words.profile_id` を **NOT NULL** 化 → ⑤新 pull 形状に合う複合 index `words(profile_id, sync_version)`。SQL 制約テスト（NOT NULL／複合FK／正常INSERT）追加＝`scripts/db/test.sh` green。
+- **provisioning**: Core `ProfileProvisioner` port＋`ProvisionedProfile`（ローカル `ChildProfile.id` をそのまま `profiles.id` に使う＝クライアント権威 ID・`updatedAt` は生成時刻＝安定）。app `ProfilesSupabaseProvisioner`（`SyncEngine.push([ProfileUpsert])`）。`WordSyncCoordinator` がサイクル冒頭で **捕捉プロファイルを provision してから** words を pull/push（FK 充足）。provision の await 後も `canContinueWordSync` で打ち切り。
+- **プロファイル別 pull フィルタ**: `SyncEngine.pullPage/pullAll` に `profileID` を追加し `.eq("profile_id", …)`。親認証は世帯の全子行が見えるため **RLS 任せにせずクエリで絞る**（他児データ混入防止）。さらに reducer `SyncScope.scoped(_, householdID:, profileID:)` で**同一世帯・別児レコードを取り込まない belt**（防御的スコープ・Core テスト追加）。
+- **wire に実 `profile_id` を刻む**: コーディネータが `merge(..., profileID: profileID)` を渡す。`WordSync.project` は**新規エントリにのみ** profileID を刻むため、5a 由来の旧サイドカー（`profile_id=nil` 基準）が残ると再 push も刻印もされない → **起動時に一度だけ全プロファイルの同期簿記をリセット**（空サイドカー＋カーソル0・グローバル冪等フラグ `spellingTrainer.sync.profileScopedWireActivated.v1`）。ローカル語が「新規」として `profile_id` 付きで再 push され、頭から pull し直す。
+- **ゲート撤去**: `isSyncSafeForActiveProfile`（owner 判定）を削除し、`canContinueWordSync` はスコープ一致（world＋profile）のみへ。`syncNow`／`requestSync`／`deleteProfile` の適格性判定は「世帯あり（＝親認証）」へ簡素化。`deleteProfile` はローカル孤児 purge を継続（サーバ側のプロファイル削除同期は本フェーズ範囲外）。
+- 検証: `swift test` **950 green**（`ProvisionedProfile.make`／防御スコープ／キー分類を Core で TDD）＋ `scripts/db/test.sh` ALL PASSED ＋ `xcodebuild` BUILD SUCCEEDED（明示 derivedDataPath で clean build）。
+
+**5b でも未対応（延期）**: プロファイル削除のサーバ同期（削除した子の `words` はサーバに残る）。子端末（匿名ペアリング）経路での複数子同期（設計上、子端末は自プロファイル1つのみ＝ハードRLS通り）。**Phase 6＝課金**（Apple ブロック中）。
+
 ---
 
 ## 10. テスト観点（Core・TDD）
