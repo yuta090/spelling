@@ -2486,6 +2486,9 @@ private struct PracticeCoinFountain: View {
                         .opacity(opacity)
                 }
             }
+            // 粒（最大80枚）を Metal で1レイヤーに合成して描く。粒ごとの個別レイヤー合成は
+            // A12 世代（iPad mini 5 等）でコマ落ちするため必須の最適化。
+            .drawingGroup()
             .allowsHitTesting(false)
             .accessibilityHidden(true)
             .onAppear {
@@ -4635,6 +4638,8 @@ private struct SparkleBurst: View {
                         .animation(.easeOut(duration: 0.58).delay(item.delay), value: animate)
                 }
             }
+            // スパークル群を Metal で1レイヤーに合成（A12 世代のコマ落ち対策）。
+            .drawingGroup()
             .id(seed)
         }
         .allowsHitTesting(false)
