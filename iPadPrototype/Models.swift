@@ -456,6 +456,10 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
     var sessionID = UUID()
     var parentReviewDecision: ParentReviewDecision = .unreviewed
     var parentExampleDrawingData: Data?
+    /// 親のお手本画像の Supabase Storage キー（採点同期・reviews）。ローカルは `parentExampleDrawingData`
+    /// （バイト列）が権威で、これはリモート参照＝別端末で採点された見本を後追いダウンロードするために持つ。
+    /// パスは決定論（`DrawingStoragePath.review`）。ローカル採点時は nil（バイト列のみ持ちアップロード時に確定）。
+    var parentExamplePath: String?
     var parentReviewedAt: Date?
     /// この答案について「最後に SRS 復習キューへ反映した親判定」。判定が transition したときだけ
     /// 反映するためのスタンプ（同一判定の再採点・連打・古い答案の再コミットで、テスト経路が独立に
@@ -476,6 +480,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         case sessionID
         case parentReviewDecision
         case parentExampleDrawingData
+        case parentExamplePath
         case parentReviewedAt
         case srsReflectedParentDecision
     }
@@ -494,6 +499,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         sessionID: UUID = UUID(),
         parentReviewDecision: ParentReviewDecision = .unreviewed,
         parentExampleDrawingData: Data? = nil,
+        parentExamplePath: String? = nil,
         parentReviewedAt: Date? = nil,
         srsReflectedParentDecision: ParentReviewDecision = .unreviewed
     ) {
@@ -510,6 +516,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         self.sessionID = sessionID
         self.parentReviewDecision = parentReviewDecision
         self.parentExampleDrawingData = parentExampleDrawingData
+        self.parentExamplePath = parentExamplePath
         self.parentReviewedAt = parentReviewedAt
         self.srsReflectedParentDecision = srsReflectedParentDecision
     }
@@ -530,6 +537,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         sessionID = try container.decodeIfPresent(UUID.self, forKey: .sessionID) ?? id
         parentReviewDecision = try container.decodeIfPresent(ParentReviewDecision.self, forKey: .parentReviewDecision) ?? .unreviewed
         parentExampleDrawingData = try container.decodeIfPresent(Data.self, forKey: .parentExampleDrawingData)
+        parentExamplePath = try container.decodeIfPresent(String.self, forKey: .parentExamplePath)
         parentReviewedAt = try container.decodeIfPresent(Date.self, forKey: .parentReviewedAt)
         srsReflectedParentDecision = try container.decodeIfPresent(ParentReviewDecision.self, forKey: .srsReflectedParentDecision) ?? .unreviewed
     }

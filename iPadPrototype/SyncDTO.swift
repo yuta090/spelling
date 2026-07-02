@@ -120,6 +120,35 @@ struct AttemptDTO: SyncedRow {
     }
 }
 
+struct ReviewDTO: SyncedRow {
+    static let table = "reviews"
+    let id: UUID
+    let householdId: UUID
+    let profileId: UUID?
+    let attemptId: UUID
+    let parentDecision: String
+    let parentExamplePath: String?
+    let reviewedBy: UUID?
+    let reviewedAt: String?
+    let updatedAt: String
+    let deletedAt: String?
+    let syncVersion: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case householdId = "household_id"
+        case profileId = "profile_id"
+        case attemptId = "attempt_id"
+        case parentDecision = "parent_decision"
+        case parentExamplePath = "parent_example_path"
+        case reviewedBy = "reviewed_by"
+        case reviewedAt = "reviewed_at"
+        case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
+        case syncVersion = "sync_version"
+    }
+}
+
 // MARK: - プッシュ用ペイロード（upsert）
 //
 // サーバー管理列（sync_version / server_changed_at / created_at）は **送らない**（トリガが採番）。
@@ -183,6 +212,33 @@ struct AttemptUpsert: UpsertRow {
         case autoDecision = "auto_decision"
         case drawingPath = "drawing_path"
         case submittedAt = "submitted_at"
+        case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
+    }
+}
+
+struct ReviewUpsert: UpsertRow {
+    static let table = "reviews"
+    let id: UUID
+    let householdId: UUID
+    let profileId: UUID?
+    let attemptId: UUID
+    let parentDecision: String
+    let parentExamplePath: String?
+    let reviewedBy: UUID?
+    let reviewedAt: String?
+    let updatedAt: String
+    let deletedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case householdId = "household_id"
+        case profileId = "profile_id"
+        case attemptId = "attempt_id"
+        case parentDecision = "parent_decision"
+        case parentExamplePath = "parent_example_path"
+        case reviewedBy = "reviewed_by"
+        case reviewedAt = "reviewed_at"
         case updatedAt = "updated_at"
         case deletedAt = "deleted_at"
     }
