@@ -43,10 +43,10 @@ struct ParentGuideView: View {
             ),
             Card(
                 systemImage: "chart.bar.fill",
-                title: language.text(japanese: "③ 記録を見る・採点する", english: "③ Records & grading"),
+                title: language.text(japanese: "③ きろくを見る・つける", english: "③ Records & grading"),
                 body: language.text(
-                    japanese: "「結果を見る」で進み具合を、「採点」で手書きの丸つけができます。",
-                    english: "See progress in “Records”, and check handwriting in “Grading”."
+                    japanese: "「きろく」で進み具合を、「つける」で手書きの丸つけと学校テストの入力ができます。",
+                    english: "See progress in “Records”, and grade handwriting or enter school test scores in “Grade”."
                 )
             )
         ]
