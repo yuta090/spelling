@@ -434,6 +434,11 @@ extension SpellingAttempt {
 struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
     var id = UUID()
     var word: String
+    /// 出題された語の ID（テスト経路が `sessionWords` から確定して持たせる）。
+    /// 親採点を SRS 復習キューへ反映する際、綴りが複数ステップに存在しても正しい語を特定するために使う
+    /// （テスト経路 `recordSpellingTestResults` と同じ精度に揃える）。旧データ・ID不明時は nil で
+    /// 正規化テキスト照合にフォールバックする。
+    var wordID: UUID?
     var recognizedText: String
     var decision: GradeDecision
     var drawingData: Data?
@@ -443,10 +448,15 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
     var parentReviewDecision: ParentReviewDecision = .unreviewed
     var parentExampleDrawingData: Data?
     var parentReviewedAt: Date?
+    /// この答案について「最後に SRS 復習キューへ反映した親判定」。判定が transition したときだけ
+    /// 反映するためのスタンプ（同一判定の再採点・連打・古い答案の再コミットで、テスト経路が独立に
+    /// 進めた復習状態を上書きしないための冪等ガード）。旧データは `.unreviewed`（未反映）で復元される。
+    var srsReflectedParentDecision: ParentReviewDecision = .unreviewed
 
     enum CodingKeys: String, CodingKey {
         case id
         case word
+        case wordID
         case recognizedText
         case decision
         case drawingData
@@ -456,11 +466,13 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         case parentReviewDecision
         case parentExampleDrawingData
         case parentReviewedAt
+        case srsReflectedParentDecision
     }
 
     init(
         id: UUID = UUID(),
         word: String,
+        wordID: UUID? = nil,
         recognizedText: String,
         decision: GradeDecision,
         drawingData: Data? = nil,
@@ -469,10 +481,12 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         sessionID: UUID = UUID(),
         parentReviewDecision: ParentReviewDecision = .unreviewed,
         parentExampleDrawingData: Data? = nil,
-        parentReviewedAt: Date? = nil
+        parentReviewedAt: Date? = nil,
+        srsReflectedParentDecision: ParentReviewDecision = .unreviewed
     ) {
         self.id = id
         self.word = word
+        self.wordID = wordID
         self.recognizedText = recognizedText
         self.decision = decision
         self.drawingData = drawingData
@@ -482,12 +496,14 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         self.parentReviewDecision = parentReviewDecision
         self.parentExampleDrawingData = parentExampleDrawingData
         self.parentReviewedAt = parentReviewedAt
+        self.srsReflectedParentDecision = srsReflectedParentDecision
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         word = try container.decode(String.self, forKey: .word)
+        wordID = try container.decodeIfPresent(UUID.self, forKey: .wordID)
         recognizedText = try container.decodeIfPresent(String.self, forKey: .recognizedText) ?? ""
         decision = try container.decodeIfPresent(GradeDecision.self, forKey: .decision) ?? .needsReview
         drawingData = try container.decodeIfPresent(Data.self, forKey: .drawingData)
@@ -497,6 +513,7 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         parentReviewDecision = try container.decodeIfPresent(ParentReviewDecision.self, forKey: .parentReviewDecision) ?? .unreviewed
         parentExampleDrawingData = try container.decodeIfPresent(Data.self, forKey: .parentExampleDrawingData)
         parentReviewedAt = try container.decodeIfPresent(Date.self, forKey: .parentReviewedAt)
+        srsReflectedParentDecision = try container.decodeIfPresent(ParentReviewDecision.self, forKey: .srsReflectedParentDecision) ?? .unreviewed
     }
 }
 

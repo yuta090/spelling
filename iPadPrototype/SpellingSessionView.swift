@@ -1476,6 +1476,7 @@ struct SpellingSessionView: View {
         stopTimer()
         let attempt = model.addAttempt(
             word: currentWord.text,
+            wordID: currentWord.id,
             recognizedText: "",
             decision: .needsReview,
             drawingData: drawingCapture.latestDrawing.dataRepresentation(),
@@ -1566,6 +1567,7 @@ struct SpellingSessionView: View {
             decision = .timeExpired
             let attempt = model.addAttempt(
                 word: currentWord.text,
+                wordID: currentWord.id,
                 recognizedText: "",
                 decision: .timeExpired,
                 drawingData: latestDrawing.dataRepresentation(),
@@ -1598,6 +1600,7 @@ struct SpellingSessionView: View {
         let isFinalWord = index == sessionWords.count - 1
         enqueueTestGrade(
             word: submittedWord,
+            wordID: currentWord.id,
             drawingData: submittedDrawingData,
             canvasSize: submittedCanvasSize,
             submittedAt: submittedAt
@@ -1614,7 +1617,7 @@ struct SpellingSessionView: View {
         }
     }
 
-    private func enqueueTestGrade(word: String, drawingData: Data, canvasSize: DrawingCanvasSize?, submittedAt: Date) {
+    private func enqueueTestGrade(word: String, wordID: UUID, drawingData: Data, canvasSize: DrawingCanvasSize?, submittedAt: Date) {
         pendingTestGradeCount += 1
         let recognitionLanguage = model.settings.language
         let settings = model.settings
@@ -1631,6 +1634,7 @@ struct SpellingSessionView: View {
             await MainActor.run {
                 let attempt = model.addAttempt(
                     word: word,
+                    wordID: wordID,
                     recognizedText: result.recognizedText,
                     decision: result.decision,
                     drawingData: drawingData,

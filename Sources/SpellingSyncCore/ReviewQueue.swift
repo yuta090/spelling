@@ -130,6 +130,36 @@ public enum ReviewQueue {
         return base + Array(injected)
     }
 
+    /// 指定 id の項目をキューから外す（純粋・冪等）。不在なら無変更。
+    /// 親採点「OK」の卒業扱いに使う（相対増分でない＝何度呼んでも「不在」に収束）。
+    public static func remove(_ states: [ReviewItemState], itemID: UUID) -> [ReviewItemState] {
+        states.filter { $0.id != itemID }
+    }
+
+    /// 親採点1件を復習キューへ反映する（純粋・**set-like で冪等**）。
+    /// - `.needsPractice`（直そう）: `apply(correct:false)` ＝ 未登録なら box1 で登録、登録済みなら box1 にリセット。
+    ///   何回・どのステップで呼んでも box1 に収束するため、テスト経路と同一ステップで同一項目に適用されても
+    ///   box が多重に上がらない。
+    /// - `.approved`（OK）: `remove` ＝ 「親が正解と断言＝間違い復習から卒業」。不在に収束。
+    /// - `.unreviewed`: 無変更。
+    /// 相対増分（box+1）を一切使わないため、`apply` の「1ステップ1項目1回」契約に依存しない。
+    /// 呼び出し側は **ステップを進めない**（テスト経路の時計を乱さない）。
+    public static func applyParentReview(
+        _ states: [ReviewItemState],
+        itemID: UUID,
+        decision: ParentReviewState,
+        step: Int
+    ) -> [ReviewItemState] {
+        switch decision {
+        case .needsPractice:
+            return apply(states, itemID: itemID, correct: false, step: step)
+        case .approved:
+            return remove(states, itemID: itemID)
+        case .unreviewed:
+            return states
+        }
+    }
+
     /// 習得済み（卒業）項目を取り除く（任意の掃除）。
     public static func pruneMastered(_ states: [ReviewItemState], currentStep: Int) -> [ReviewItemState] {
         states.filter { !isMastered($0, currentStep: currentStep) }

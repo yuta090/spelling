@@ -1883,6 +1883,7 @@ final class AppModel: ObservableObject {
     @discardableResult
     func addAttempt(
         word: String,
+        wordID: UUID? = nil,
         recognizedText: String,
         decision: GradeDecision,
         drawingData: Data? = nil,
@@ -1892,6 +1893,7 @@ final class AppModel: ObservableObject {
     ) -> SpellingAttempt {
         let attempt = SpellingAttempt(
             word: normalize(word),
+            wordID: wordID,
             recognizedText: normalize(recognizedText),
             decision: decision,
             drawingData: drawingData,
@@ -1917,6 +1919,8 @@ final class AppModel: ObservableObject {
             return
         }
 
+        let previouslyReflected = attempts[index].srsReflectedParentDecision
+
         var updatedAttempts = attempts
         updatedAttempts[index].parentReviewDecision = parentDecision
         if let exampleDrawingData {
@@ -1935,7 +1939,48 @@ final class AppModel: ObservableObject {
             break
         }
 
+        // 親採点を SRS 復習キューへ反映する。判定が前回反映値から変化したときだけ動く（冪等）。
+        // 同一判定の再採点・トグル連打・古い答案の再コミットでは走らず、テスト経路が独立に進めた
+        // 復習状態を上書きしない。実際に反映（またはリセット）できたときだけスタンプを更新する
+        // ＝写像不可（削除済み等）で no-op のときはスタンプを立てず、後で写像可能になれば再発火できる。
+        if parentDecision != previouslyReflected,
+           reflectParentReviewToSRS(word: updatedAttempts[index].word,
+                                    wordID: updatedAttempts[index].wordID,
+                                    decision: parentDecision) {
+            updatedAttempts[index].srsReflectedParentDecision = parentDecision
+        }
+
         attempts = updatedAttempts
+    }
+
+    /// 親採点1件を SRS 復習キュー（`spellingReviewStates`）へ反映する薄いグルー。反映（またはリセット）
+    /// できたら true（＝スタンプ更新可）。写像できない（削除済み・子由来）なら false（スタンプは据え置き）。
+    /// - 反映は純粋関数 `ReviewQueue.applyParentReview` に委譲（直そう=box1 登録/リセット・OK=削除・
+    ///   set-like で冪等）。**ステップは進めない**（テスト経路の時計を乱さない）。
+    /// - `.unreviewed` は反映すべき状態が無い（リセット）ので何もせず true。
+    private func reflectParentReviewToSRS(word: String, wordID: UUID?, decision parentDecision: ParentReviewDecision) -> Bool {
+        guard parentDecision != .unreviewed else { return true }
+        guard let id = resolveReviewWordID(word: word, wordID: wordID) else { return false }
+        spellingReviewStates = ReviewQueue.applyParentReview(
+            spellingReviewStates,
+            itemID: id,
+            decision: parentDecision.reviewState,
+            step: spellingReviewStep
+        )
+        return true
+    }
+
+    /// 採点対象語を SRS キューの語IDへ解決する。テスト経路が確定させた `wordID` を最優先し（綴りが
+    /// 複数ステップに存在しても正しい語を特定）、無ければ正規化テキストで `words` を引く（旧データ互換）。
+    /// 子由来語・生存しない語は復習対象外なので nil。`recordSpellingTestResults` と同じ「親由来・生存語のみ」条件。
+    private func resolveReviewWordID(word: String, wordID: UUID?) -> UUID? {
+        if let wordID {
+            guard let matched = words.first(where: { $0.id == wordID }), !isChildWord(matched) else { return nil }
+            return wordID
+        }
+        let byText = Dictionary(words.map { (normalize($0.text), $0) }, uniquingKeysWith: { first, _ in first })
+        guard let matched = byText[normalize(word)], !isChildWord(matched) else { return nil }
+        return matched.id
     }
 
     func updatePracticeSampleParentReview(_ sample: PracticeSample, decision parentDecision: ParentReviewDecision, exampleDrawingData: Data? = nil) {
