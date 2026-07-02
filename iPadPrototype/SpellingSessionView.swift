@@ -749,6 +749,9 @@ struct SpellingSessionView: View {
                         style: .full,
                         onSpeak: { speech.speak($0, language: "en-US") }
                     )
+                    // 語ごとに View を作り直して @State（意味・例文キャッシュ）を確実に捨てる。
+                    // onChange の発火漏れがあっても前の語のヒントが残らない（stale 表示の構造的排除）。
+                    .id("practice-hint-\(currentWord.id)")
                 }
             }
         }
