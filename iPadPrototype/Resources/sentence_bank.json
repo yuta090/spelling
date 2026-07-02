@@ -36195,5 +36195,755 @@
       "a",
       "bike"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "tennis"
+    ],
+    "en" : "She played tennis",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "3A1F4679-174D-5C7C-9B3F-F7644EA43A02",
+    "ja" : "かのじょは テニスを した",
+    "sourceID" : "n3-play-played-tennis-f",
+    "tokens" : [
+      "She",
+      "played",
+      "tennis"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat",
+      "breakfast"
+    ],
+    "en" : "He ate breakfast",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "43FF0786-D11E-55B1-9974-F8DCB40A5598",
+    "ja" : "かれは あさごはんを たべた",
+    "sourceID" : "n3-daily-ate-breakfast-f",
+    "tokens" : [
+      "He",
+      "ate",
+      "breakfast"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "write",
+      "letter"
+    ],
+    "en" : "She wrote a letter",
+    "gradeBand" : 1,
+    "grammar" : "pastSimple",
+    "id" : "4E450B2D-E638-5C77-A624-DDDB1196D1A2",
+    "ja" : "かのじょは てがみを かいた",
+    "sourceID" : "n3-school-wrote-a-letter-f",
+    "tokens" : [
+      "She",
+      "wrote",
+      "a",
+      "letter"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "catch",
+      "fish"
+    ],
+    "en" : "He caught a fish",
+    "gradeBand" : 2,
+    "grammar" : "pastSimple",
+    "id" : "EA468F68-9299-57C0-A627-18F53409A2CE",
+    "ja" : "かれは さかなを つかまえた",
+    "sourceID" : "n3-play-caught-a-fish-f",
+    "tokens" : [
+      "He",
+      "caught",
+      "a",
+      "fish"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "clean",
+      "room"
+    ],
+    "en" : "She cleaned her room",
+    "gradeBand" : 2,
+    "grammar" : "pastSimple",
+    "id" : "9F8A0384-7EB5-56DB-8F7C-36A67E78259D",
+    "ja" : "かのじょは へやを そうじした",
+    "sourceID" : "n3-home-cleaned-room-f",
+    "tokens" : [
+      "She",
+      "cleaned",
+      "her",
+      "room"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "drew",
+      "picture"
+    ],
+    "en" : "He drew a picture",
+    "gradeBand" : 3,
+    "grammar" : "pastSimple",
+    "id" : "ACBB0CF9-604C-511B-B2E6-EDDDAF650839",
+    "ja" : "かれは えを かいた",
+    "sourceID" : "n3-play-drew-a-picture-f",
+    "tokens" : [
+      "He",
+      "drew",
+      "a",
+      "picture"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "drink",
+      "milk"
+    ],
+    "en" : "She drank milk",
+    "gradeBand" : 4,
+    "grammar" : "pastSimple",
+    "id" : "7F706F05-CA75-5457-8515-3AA8954FAD03",
+    "ja" : "かのじょは ぎゅうにゅうを のんだ",
+    "sourceID" : "n3-daily-drank-milk-f",
+    "tokens" : [
+      "She",
+      "drank",
+      "milk"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "park"
+    ],
+    "en" : "He went to the park",
+    "gradeBand" : 2,
+    "grammar" : "pastSimple",
+    "id" : "FEA61EFD-7B54-5D95-ACA8-1AF4D7A6D012",
+    "ja" : "かれは こうえんに いった",
+    "sourceID" : "n3-play-went-to-park-f",
+    "tokens" : [
+      "He",
+      "went",
+      "to",
+      "the",
+      "park"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "cook",
+      "dinner"
+    ],
+    "en" : "She cooked dinner",
+    "gradeBand" : 3,
+    "grammar" : "pastSimple",
+    "id" : "D8FD8FB9-88C2-5C9C-8038-8CB004165446",
+    "ja" : "かのじょは ばんごはんを つくった",
+    "sourceID" : "n3-daily-cooked-dinner-f",
+    "tokens" : [
+      "She",
+      "cooked",
+      "dinner"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sing",
+      "song"
+    ],
+    "en" : "He sang a song",
+    "gradeBand" : 2,
+    "grammar" : "pastSimple",
+    "id" : "CF7069C3-9345-5A77-B8D6-8C286EB24210",
+    "ja" : "かれは うたを うたった",
+    "sourceID" : "n3-play-sang-a-song-f",
+    "tokens" : [
+      "He",
+      "sang",
+      "a",
+      "song"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "watered",
+      "flower"
+    ],
+    "en" : "She watered the flowers",
+    "gradeBand" : 3,
+    "grammar" : "pastSimple",
+    "id" : "F302CFA6-CBB0-5A69-94CB-8CE9B1C600B8",
+    "ja" : "かのじょは はなに みずを あげた",
+    "sourceID" : "n3-home-watered-flowers-f",
+    "tokens" : [
+      "She",
+      "watered",
+      "the",
+      "flowers"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "rode",
+      "train"
+    ],
+    "en" : "He rode a train",
+    "gradeBand" : 3,
+    "grammar" : "pastSimple",
+    "id" : "9543E716-4F29-5851-9DE4-6BA527693F01",
+    "ja" : "かれは でんしゃに のった",
+    "sourceID" : "n3-play-rode-a-train-f",
+    "tokens" : [
+      "He",
+      "rode",
+      "a",
+      "train"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "young"
+    ],
+    "en" : "She is younger than me",
+    "gradeBand" : 1,
+    "grammar" : "comparativeEr",
+    "id" : "55AC41B7-5124-5B4A-99D4-261747AC5C4D",
+    "ja" : "かのじょは わたしより としした",
+    "sourceID" : "n3-cmp-younger-than-me-f",
+    "tokens" : [
+      "She",
+      "is",
+      "younger",
+      "than",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "run",
+      "fast"
+    ],
+    "en" : "He runs faster than me",
+    "gradeBand" : 2,
+    "grammar" : "comparativeEr",
+    "id" : "5475E099-C29B-50DF-B24C-AF49F79756AE",
+    "ja" : "かれは わたしより はやく はしる",
+    "sourceID" : "n3-cmp-runs-faster-f",
+    "tokens" : [
+      "He",
+      "runs",
+      "faster",
+      "than",
+      "me"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "live"
+    ],
+    "en" : "Where does she live",
+    "gradeBand" : 1,
+    "grammar" : "whQuestion",
+    "id" : "2BE9F17B-87AD-52CD-86CB-19A9D1A264E9",
+    "ja" : "かのじょは どこに すんでいるの？",
+    "sourceID" : "n3-q-where-live-f",
+    "tokens" : [
+      "Where",
+      "does",
+      "she",
+      "live"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like"
+    ],
+    "en" : "What does he like",
+    "gradeBand" : 1,
+    "grammar" : "whQuestion",
+    "id" : "F3B9D76A-41FC-5BFE-A38D-F57985DC75F8",
+    "ja" : "かれは なにが すきなの？",
+    "sourceID" : "n3-q-what-like-f",
+    "tokens" : [
+      "What",
+      "does",
+      "he",
+      "like"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "eat"
+    ],
+    "en" : "What did she eat",
+    "gradeBand" : 1,
+    "grammar" : "whQuestion",
+    "id" : "F84C8306-E537-5EA0-8579-EA3B884F8656",
+    "ja" : "かのじょは なにを たべたの？",
+    "sourceID" : "n3-q-what-eat-f",
+    "tokens" : [
+      "What",
+      "did",
+      "she",
+      "eat"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "close",
+      "window"
+    ],
+    "en" : "Close the window",
+    "gradeBand" : 2,
+    "grammar" : "imperative",
+    "id" : "69EA260E-1AE4-5C80-9E57-4006E3A912FD",
+    "ja" : "まどを しめてね",
+    "sourceID" : "n3-imp-close-window",
+    "tokens" : [
+      "Close",
+      "the",
+      "window"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "draw",
+      "picture"
+    ],
+    "en" : "Draw a picture",
+    "gradeBand" : 2,
+    "grammar" : "imperative",
+    "id" : "58490532-D229-56A0-80BD-BD81CA3A9649",
+    "ja" : "えを かいてね",
+    "sourceID" : "n3-imp-draw-picture",
+    "tokens" : [
+      "Draw",
+      "a",
+      "picture"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "friend"
+    ],
+    "en" : "I played with my friend",
+    "gradeBand" : 1,
+    "grammar" : "pastSimple",
+    "id" : "1EAEF88F-043D-5DFE-A922-DCCF41FCB70B",
+    "ja" : "わたしは ともだちと あそんだ",
+    "sourceID" : "n3-self-played-with-f",
+    "tokens" : [
+      "I",
+      "played",
+      "with",
+      "my",
+      "friend"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "tennis"
+    ],
+    "en" : "He will play tennis",
+    "gradeBand" : 4,
+    "grammar" : "willGoingTo",
+    "id" : "CE9A62A3-1E17-542F-B714-9F63468BFC72",
+    "ja" : "かれは テニスを するよ",
+    "sourceID" : "n4-fut-play-tennis-f",
+    "tokens" : [
+      "He",
+      "will",
+      "play",
+      "tennis"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "visit",
+      "grandmother"
+    ],
+    "en" : "She will visit her grandmother",
+    "gradeBand" : 5,
+    "grammar" : "willGoingTo",
+    "id" : "FFF21C9E-9565-55A4-A6D2-9E0D1A9BE96E",
+    "ja" : "かのじょは おばあちゃんに あいに いく",
+    "sourceID" : "n4-fut-visit-grandma-f",
+    "tokens" : [
+      "She",
+      "will",
+      "visit",
+      "her",
+      "grandmother"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "teacher"
+    ],
+    "en" : "He will be a teacher",
+    "gradeBand" : 2,
+    "grammar" : "willGoingTo",
+    "id" : "9D195FD8-7958-5658-B05A-AA8566B2E9C5",
+    "ja" : "かれは せんせいに なる",
+    "sourceID" : "n4-fut-be-teacher-f",
+    "tokens" : [
+      "He",
+      "will",
+      "be",
+      "a",
+      "teacher"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "swim"
+    ],
+    "en" : "She is going to swim",
+    "gradeBand" : 3,
+    "grammar" : "willGoingTo",
+    "id" : "43D5BA50-EDCD-5F88-9A60-01E59C4B7F32",
+    "ja" : "かのじょは およぐよ",
+    "sourceID" : "n4-fut-going-to-swim-f",
+    "tokens" : [
+      "She",
+      "is",
+      "going",
+      "to",
+      "swim"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "doctor"
+    ],
+    "en" : "He wants to be a doctor",
+    "gradeBand" : 2,
+    "grammar" : "infinitive",
+    "id" : "3874DAA2-64CE-5C4C-941F-592962175476",
+    "ja" : "かれは いしゃに なりたい",
+    "sourceID" : "n4-inf-want-be-doctor-f",
+    "tokens" : [
+      "He",
+      "wants",
+      "to",
+      "be",
+      "a",
+      "doctor"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "play"
+    ],
+    "en" : "She wants to play with you",
+    "gradeBand" : 1,
+    "grammar" : "infinitive",
+    "id" : "EE201D50-947A-54AC-83F4-53B94F77C273",
+    "ja" : "かのじょは あなたと あそびたい",
+    "sourceID" : "n4-inf-want-play-with-you-f",
+    "tokens" : [
+      "She",
+      "wants",
+      "to",
+      "play",
+      "with",
+      "you"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "sing"
+    ],
+    "en" : "He likes to sing",
+    "gradeBand" : 2,
+    "grammar" : "infinitive",
+    "id" : "247E0111-1A34-5E47-8F6C-B254684EFFA5",
+    "ja" : "かれは うたうのが すき",
+    "sourceID" : "n4-inf-like-to-sing-f",
+    "tokens" : [
+      "He",
+      "likes",
+      "to",
+      "sing"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "want",
+      "eat",
+      "cake"
+    ],
+    "en" : "She wants to eat cake",
+    "gradeBand" : 5,
+    "grammar" : "infinitive",
+    "id" : "FC21D111-D162-503E-B164-0C873F65CFE1",
+    "ja" : "かのじょは ケーキが たべたい",
+    "sourceID" : "n4-inf-want-eat-cake-f",
+    "tokens" : [
+      "She",
+      "wants",
+      "to",
+      "eat",
+      "cake"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "bed"
+    ],
+    "en" : "He should go to bed",
+    "gradeBand" : 2,
+    "grammar" : "shouldModal",
+    "id" : "0943D345-B99F-5DFD-9E7F-E3A986C47625",
+    "ja" : "かれは もう ねた ほうが いい",
+    "sourceID" : "n4-should-go-to-bed-f",
+    "tokens" : [
+      "He",
+      "should",
+      "go",
+      "to",
+      "bed"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "read",
+      "book"
+    ],
+    "en" : "She should read this book",
+    "gradeBand" : 1,
+    "grammar" : "shouldModal",
+    "id" : "2D2BA456-D47A-5D8A-95F4-663D23956B56",
+    "ja" : "かのじょは この ほんを よんだ ほうが いい",
+    "sourceID" : "n4-should-read-book-f",
+    "tokens" : [
+      "She",
+      "should",
+      "read",
+      "this",
+      "book"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "drink",
+      "water"
+    ],
+    "en" : "He should drink water",
+    "gradeBand" : 2,
+    "grammar" : "shouldModal",
+    "id" : "3CEF41C7-BFA7-541E-B531-BC0A409767B3",
+    "ja" : "かれは みずを のんだ ほうが いい",
+    "sourceID" : "n4-should-drink-water-f",
+    "tokens" : [
+      "He",
+      "should",
+      "drink",
+      "water"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "study"
+    ],
+    "en" : "He has to study",
+    "gradeBand" : 1,
+    "grammar" : "haveToNeedTo",
+    "id" : "02BF740C-5254-5789-ABE9-E3D9ABEA1A0D",
+    "ja" : "かれは べんきょう しないと いけない",
+    "sourceID" : "n5-have-to-study-f",
+    "tokens" : [
+      "He",
+      "has",
+      "to",
+      "study"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "home"
+    ],
+    "en" : "She has to go home",
+    "gradeBand" : 1,
+    "grammar" : "haveToNeedTo",
+    "id" : "874BA0EE-BEC4-5AA1-A482-0727219B2024",
+    "ja" : "かのじょは もう いえに かえらないと いけない",
+    "sourceID" : "n5-have-to-go-home-f",
+    "tokens" : [
+      "She",
+      "has",
+      "to",
+      "go",
+      "home"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "clean",
+      "room"
+    ],
+    "en" : "He has to clean his room",
+    "gradeBand" : 2,
+    "grammar" : "haveToNeedTo",
+    "id" : "22BAEFB7-5C53-5179-90A5-FCD263E1C739",
+    "ja" : "かれは へやを そうじしないと いけない",
+    "sourceID" : "n5-have-to-clean-room-f",
+    "tokens" : [
+      "He",
+      "has",
+      "to",
+      "clean",
+      "his",
+      "room"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "read",
+      "book"
+    ],
+    "en" : "She likes reading books",
+    "gradeBand" : 1,
+    "grammar" : "gerund",
+    "id" : "279605EF-9578-50D0-B24C-288FA9F31E1D",
+    "ja" : "かのじょは ほんを よむのが すき",
+    "sourceID" : "n5-ger-likes-reading-f",
+    "tokens" : [
+      "She",
+      "likes",
+      "reading",
+      "books"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "good",
+      "swim"
+    ],
+    "en" : "He is good at swimming",
+    "gradeBand" : 3,
+    "grammar" : "gerund",
+    "id" : "1CD18200-7C4A-5F16-AB0F-87178D407171",
+    "ja" : "かれは およぐのが とくい",
+    "sourceID" : "n5-ger-good-at-swimming-f",
+    "tokens" : [
+      "He",
+      "is",
+      "good",
+      "at",
+      "swimming"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "like",
+      "sing"
+    ],
+    "en" : "She likes singing",
+    "gradeBand" : 2,
+    "grammar" : "gerund",
+    "id" : "41AB36A1-C42B-51EE-99C9-E5BC6028B1C9",
+    "ja" : "かのじょは うたうのが すき",
+    "sourceID" : "n5-ger-likes-singing-f",
+    "tokens" : [
+      "She",
+      "likes",
+      "singing"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "finish",
+      "homework"
+    ],
+    "en" : "He has finished his homework",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "D40D3ED9-3B97-5D72-8E34-29BBE187E702",
+    "ja" : "かれは しゅくだいを おわらせた",
+    "sourceID" : "n5-pp-finished-homework-f",
+    "tokens" : [
+      "He",
+      "has",
+      "finished",
+      "his",
+      "homework"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "see",
+      "movie"
+    ],
+    "en" : "She has seen that movie",
+    "gradeBand" : 2,
+    "grammar" : "presentPerfect",
+    "id" : "C61816DB-1DDA-54A3-BF2C-E52F099AFF70",
+    "ja" : "かのじょは あの えいがを みた ことが ある",
+    "sourceID" : "n5-pp-seen-movie-f",
+    "tokens" : [
+      "She",
+      "has",
+      "seen",
+      "that",
+      "movie"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "never",
+      "eat",
+      "natto"
+    ],
+    "en" : "He has never eaten natto",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "CB7F925C-5B37-5B13-8EF6-57E3246935B7",
+    "ja" : "かれは なっとうを たべた ことが ない",
+    "sourceID" : "n5-pp-never-eaten-natto-f",
+    "tokens" : [
+      "He",
+      "has",
+      "never",
+      "eaten",
+      "natto"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "make",
+      "cake"
+    ],
+    "en" : "She has made a cake",
+    "gradeBand" : 5,
+    "grammar" : "presentPerfect",
+    "id" : "ECB9CAE8-369A-5986-8F02-6316642B6070",
+    "ja" : "かのじょは ケーキを つくった ことが ある",
+    "sourceID" : "n5-pp-made-cake-f",
+    "tokens" : [
+      "She",
+      "has",
+      "made",
+      "a",
+      "cake"
+    ]
   }
 ]
