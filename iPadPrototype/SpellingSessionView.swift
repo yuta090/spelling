@@ -192,6 +192,14 @@ struct SpellingSessionView: View {
         return baseHeight * CGFloat(model.settings.writingAreaSize.heightMultiplier)
     }
 
+    /// 書く欄の下限高さ。iPad mini など縦が狭い端末では、上限（writingCanvasHeight）
+    /// のままだと画面をはみ出しコントロールが切れるため、VStack が自動で縮められるよう
+    /// 下限つきの可変高さにする。書きにくくならない範囲の最小を確保する（設定が小さいと
+    /// 上限自体が小さいので、上限を超えないよう min で丸める）。
+    private var writingCanvasMinHeight: CGFloat {
+        min(writingCanvasHeight, 176)
+    }
+
     private var writingCanvasMaxWidth: CGFloat {
         CGFloat(model.settings.writingAreaSize.singleCanvasMaxWidth)
     }
@@ -504,7 +512,7 @@ struct SpellingSessionView: View {
                         )
                         .id(canvasResetID)
                         .frame(maxWidth: writingCanvasMaxWidth)
-                        .frame(height: writingCanvasHeight)
+                        .frame(minHeight: writingCanvasMinHeight, maxHeight: writingCanvasHeight)
                         .background(
                             GeometryReader { proxy in
                                 Color.clear
