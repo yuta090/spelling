@@ -9,6 +9,8 @@ final class DrawingCapture: ObservableObject {
 
 @MainActor
 private func configurePencilCanvas(_ canvas: PKCanvasView, isInputEnabled: Bool) {
+    // ダークモードでも線が白に反転しないよう、キャンバスは常にライト外観で描画する
+    canvas.overrideUserInterfaceStyle = .light
     canvas.backgroundColor = .clear
     canvas.isOpaque = false
     canvas.drawingPolicy = .anyInput
@@ -52,7 +54,7 @@ struct PencilCanvasView: UIViewRepresentable {
     func makeUIView(context: Context) -> PKCanvasView {
         let canvas = FixedCoordinatePKCanvasView()
         canvas.delegate = context.coordinator
-        canvas.tool = PKInkingTool(.pen, color: .label, width: 7)
+        canvas.tool = PKInkingTool(.pen, color: .black, width: 7)
         configurePencilCanvas(canvas, isInputEnabled: isInputEnabled)
         return canvas
     }
@@ -91,9 +93,19 @@ extension PKDrawing {
         case leftAnchored
     }
 
+    /// PKDrawing.image(from:scale:) は現在の外観（ダークモード）で色を反転するため、
+    /// 白背景に合成する用途では常にライト外観でレンダリングする。
+    private func lightModeImage(from rect: CGRect, scale: CGFloat) -> UIImage {
+        var rendered = UIImage()
+        UITraitCollection(userInterfaceStyle: .light).performAsCurrent {
+            rendered = image(from: rect, scale: scale)
+        }
+        return rendered
+    }
+
     func spellingImage(defaultBounds: CGRect, scale: CGFloat = 3) -> UIImage {
         let drawingBounds = bounds.isNull || bounds.isEmpty ? defaultBounds : bounds.insetBy(dx: -90, dy: -70)
-        let strokeImage = image(from: drawingBounds, scale: scale)
+        let strokeImage = lightModeImage(from: drawingBounds, scale: scale)
         let renderer = UIGraphicsImageRenderer(size: strokeImage.size)
         return renderer.image { context in
             UIColor.white.setFill()
@@ -151,7 +163,7 @@ extension PKDrawing {
             drawingBounds = drawingBounds.expanded(toAspectRatio: resolvedTargetAspectRatio, horizontalAlignment: horizontalAlignment)
         }
 
-        let strokeImage = image(from: drawingBounds, scale: scale)
+        let strokeImage = lightModeImage(from: drawingBounds, scale: scale)
         let renderer = UIGraphicsImageRenderer(size: strokeImage.size)
 
         return renderer.image { context in
