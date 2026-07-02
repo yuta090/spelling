@@ -74,4 +74,16 @@ final class PracticePraiseTests: XCTestCase {
     func test_phrase_englishPool() {
         XCTAssertEqual(PracticePraise.phrase(index: 0, japanese: false), PracticePraise.english[0])
     }
+
+    // 採点完了などの「大きなごほうび表示」で飽きないよう、十分な数の言い回しを用意しておく。
+    func test_pools_haveAtLeastTenPhrases() {
+        XCTAssertGreaterThanOrEqual(PracticePraise.japanese.count, 10)
+        XCTAssertGreaterThanOrEqual(PracticePraise.english.count, 10)
+    }
+
+    // 重複した言い回しがあると「ランダム感」が薄れるので、各プールはユニークにしておく。
+    func test_pools_haveNoDuplicates() {
+        XCTAssertEqual(Set(PracticePraise.japanese).count, PracticePraise.japanese.count)
+        XCTAssertEqual(Set(PracticePraise.english).count, PracticePraise.english.count)
+    }
 }

@@ -13,7 +13,13 @@ public enum PracticePraise {
         "いいね！",
         "やったね！",
         "かっこいい！",
-        "てんさい！"
+        "てんさい！",
+        "がんばったね！",
+        "はなまる！",
+        "パーフェクト！",
+        "だいせいこう！",
+        "よくできました！",
+        "さいこう！"
     ]
 
     public static let english: [String] = [
@@ -24,7 +30,13 @@ public enum PracticePraise {
         "You got it!",
         "Wonderful!",
         "Cool!",
-        "Superstar!"
+        "Superstar!",
+        "Well done!",
+        "Fantastic!",
+        "Perfect!",
+        "Amazing!",
+        "Brilliant!",
+        "You rock!"
     ]
 
     /// index に対応するほめ言葉（範囲外は剰余で巡回）。空配列でも安全に空文字を返す。
