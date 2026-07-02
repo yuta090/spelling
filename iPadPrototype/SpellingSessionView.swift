@@ -6,6 +6,7 @@ struct SpellingSessionView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
     @StateObject private var speech = SpeechPlayer()
+    @StateObject private var sounds = SoundPlayer()
     @StateObject private var drawingCapture = DrawingCapture()
 
     let mode: SessionMode
@@ -72,6 +73,12 @@ struct SpellingSessionView: View {
     @State private var roundCheerMessage = ""
     /// キャラの相棒のバウンド（書けたびに跳ねる）。
     @State private var mascotPop = false
+    /// レアの回はバウンドをひときわ大きくする。
+    @State private var mascotPopIsBig = false
+    /// レア大当たり中は跳ねを大きく・完了演出に紙吹雪＋コイン2倍。
+    @State private var isRareCelebration = false
+    /// 直前に出したほめ言葉（同じ言葉を連続で出さないために覚えておく）。
+    @State private var lastPraisePhrase: String?
 
     /// お手本フェードにかける秒数。
     private let guideFadeDuration: Double = 7
@@ -552,7 +559,9 @@ struct SpellingSessionView: View {
                     style: practiceCelebrationStyle,
                     language: language,
                     seed: sparkleSeed,
-                    coinReward: practiceCelebrationCoinReward
+                    coinReward: practiceCelebrationCoinReward,
+                    isRare: isRareCelebration,
+                    title: roundCheerMessage
                 )
                     .transition(.opacity)
                     .zIndex(4)
@@ -786,8 +795,8 @@ struct SpellingSessionView: View {
     private var practiceMascot: some View {
         RewardCharacterAvatar(character: HomeRewardCharacter.character(id: model.selectedCharacterID))
             .frame(width: 84, height: 84)
-            .scaleEffect(mascotPop ? 1.18 : 1.0)
-            .rotationEffect(.degrees(mascotPop ? 6 : 0))
+            .scaleEffect(mascotPop ? (mascotPopIsBig ? 1.36 : 1.18) : 1.0)
+            .rotationEffect(.degrees(mascotPop ? (mascotPopIsBig ? 10 : 6) : 0))
             .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
             .accessibilityHidden(true)
     }
@@ -1150,6 +1159,7 @@ struct SpellingSessionView: View {
                 if mode == .practice {
                     onPracticeCompleted()
                 }
+                sounds.play(.fanfare)
                 withAnimation(.easeInOut(duration: 0.18)) {
                     showingPracticeReview = true
                 }
@@ -1223,28 +1233,31 @@ struct SpellingSessionView: View {
         savePracticeDrawingIfNeeded()
 
         let isFinal = isLastPracticeRepeat
-        // 毎回：スタイルを引き直し、キャラを跳ねさせ、ランダムなほめ言葉を声で。
+        // 毎回：文脈に合うほめ言葉（レア判定つき）を引き、スタイルを引き直し、キャラを跳ねさせる。
+        let plan = drawCheerPlan()
         practiceCelebrationStyle = PracticeCelebrationStyle.random()
         sparkleSeed += 1
-        bounceMascot()
-        speakRandomPraise()
+        bounceMascot(big: plan.isRare)
 
         if isFinal {
-            // 最後の回＝単語完了：コイン付与＋コイン演出。
-            model.awardPracticeCoins()
-            practiceCelebrationCoinReward = AppModel.practiceCoinReward
+            // 最後の回＝単語完了：コイン付与＋コイン演出（レアなら2倍＋紙吹雪）。
+            model.awardPracticeCoins(AppModel.practiceCoinReward * plan.coinMultiplier)
+            practiceCelebrationCoinReward = AppModel.practiceCoinReward * plan.coinMultiplier
             completedPracticeWordCount = practicedWordCountInSession()
+            sounds.play(plan.isRare ? .rare : .coin)
             withAnimation(.easeOut(duration: 0.16)) {
                 showingSparkles = true
             }
         } else {
             // 中間の回＝コインは出さず、中央に大きくほめ言葉＋キラキラ。
+            sounds.play(.sparkle)
             withAnimation(.spring(response: 0.28, dampingFraction: 0.6)) {
                 showingRoundCheer = true
             }
         }
 
-        let dwell: UInt64 = isFinal ? 1_250_000_000 : 780_000_000
+        // レアは音とお祝いが長いぶん、少しだけ長く見せる。
+        let dwell: UInt64 = plan.isRare ? 1_700_000_000 : (isFinal ? 1_250_000_000 : 780_000_000)
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: dwell)
             withAnimation(.easeIn(duration: 0.18)) {
@@ -1256,23 +1269,31 @@ struct SpellingSessionView: View {
         }
     }
 
-    /// ランダムなほめ言葉を選び、中央表示用に保持しつつ声で読み上げる。
-    private func speakRandomPraise() {
-        let count = language == .japanese ? PracticePraise.japanese.count : PracticePraise.english.count
-        let index = count > 0 ? Int.random(in: 0..<count) : 0
-        let phrase = PracticePraise.phrase(index: index, japanese: language == .japanese)
-        roundCheerMessage = phrase
-        speech.speak(phrase, language: language == .japanese ? "ja-JP" : "en-US",
+    /// この回のお祝いプランを引く（文脈フレーズ＋レア判定）。フレーズは中央表示用に保持しつつ声で読み上げる。
+    private func drawCheerPlan() -> PracticeCheer.Plan {
+        var rng = SystemRandomNumberGenerator()
+        let plan = PracticeCheer.plan(
+            round: practiceRepeatIndex,
+            totalRounds: practiceRepetitionCount,
+            japanese: language == .japanese,
+            previousPhrase: lastPraisePhrase,
+            using: &rng)
+        lastPraisePhrase = plan.phrase
+        roundCheerMessage = plan.phrase
+        isRareCelebration = plan.isRare
+        speech.speak(plan.phrase, language: language == .japanese ? "ja-JP" : "en-US",
                      rate: model.settings.speechRate)
+        return plan
     }
 
-    /// キャラの相棒を「ぽん！」と跳ねさせる（書けたびの反応）。
-    private func bounceMascot() {
+    /// キャラの相棒を「ぽん！」と跳ねさせる（書けたびの反応）。レアの時はひときわ大きく。
+    private func bounceMascot(big: Bool = false) {
+        mascotPopIsBig = big
         withAnimation(.spring(response: 0.24, dampingFraction: 0.42)) {
             mascotPop = true
         }
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 340_000_000)
+            try? await Task.sleep(nanoseconds: big ? 460_000_000 : 340_000_000)
             withAnimation(.spring(response: 0.42, dampingFraction: 0.7)) {
                 mascotPop = false
             }
@@ -1292,27 +1313,31 @@ struct SpellingSessionView: View {
 
         isAdvancing = true
         let isFinal = isLastPracticeRepeat
-        // 2列レイアウトでも1回書くごとに派手演出：スタイル引き直し・キャラ跳ね・ランダムほめ言葉。
+        // 2列レイアウトでも1回書くごとに派手演出：文脈ほめ言葉（レア判定つき）・スタイル引き直し・キャラ跳ね。
+        // レア抽選は「お祝い1回につき1/8」＝2列ではバッチ単位（単語単位ではない）。完了演出が
+        // バッチで1回しか出ない以上、子から見た体感頻度を通常レイアウトと揃えるための意図的な仕様。
+        let plan = drawCheerPlan()
         practiceCelebrationStyle = PracticeCelebrationStyle.random()
         sparkleSeed += 1
-        bounceMascot()
-        speakRandomPraise()
+        bounceMascot(big: plan.isRare)
 
         if isFinal {
             let completedWords = compactPracticeWords.count
-            model.awardPracticeCoins(AppModel.practiceCoinReward * completedWords)
-            practiceCelebrationCoinReward = AppModel.practiceCoinReward * completedWords
+            model.awardPracticeCoins(AppModel.practiceCoinReward * completedWords * plan.coinMultiplier)
+            practiceCelebrationCoinReward = AppModel.practiceCoinReward * completedWords * plan.coinMultiplier
             completedPracticeWordCount = practicedWordCountInSession()
+            sounds.play(plan.isRare ? .rare : .coin)
             withAnimation(.easeOut(duration: 0.16)) {
                 showingSparkles = true
             }
         } else {
+            sounds.play(.sparkle)
             withAnimation(.spring(response: 0.28, dampingFraction: 0.6)) {
                 showingRoundCheer = true
             }
         }
 
-        let dwell: UInt64 = isFinal ? 1_050_000_000 : 780_000_000
+        let dwell: UInt64 = plan.isRare ? 1_700_000_000 : (isFinal ? 1_050_000_000 : 780_000_000)
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: dwell)
             withAnimation(.easeIn(duration: 0.18)) {
@@ -1335,6 +1360,7 @@ struct SpellingSessionView: View {
             if mode == .practice {
                 onPracticeCompleted()
             }
+            sounds.play(.fanfare)
             withAnimation(.easeInOut(duration: 0.18)) {
                 showingPracticeReview = true
             }
@@ -1662,6 +1688,8 @@ struct SpellingSessionView: View {
         }
 
         stopTimer()
+        // テストは正誤演出を出さないぶん、送りの「ポン」で手応えだけ返す。
+        sounds.play(.pop)
 
         let submittedAt = Date()
         let submittedDrawingData = submittedDrawing.dataRepresentation()
@@ -1741,6 +1769,7 @@ struct SpellingSessionView: View {
            ChildGrading.isAchieved(satisfied: sessionAttempts.map { $0.satisfiesAchievement }) {
             testPerfectBonus = model.awardPerfectTestBonusIfEligible(wordCount: sessionAttempts.count)
         }
+        sounds.play(.fanfare)
         withAnimation(.easeInOut(duration: 0.18)) {
             showingTestResults = true
         }
@@ -2274,6 +2303,10 @@ private struct PracticeWordCelebrationOverlay: View {
     var language: AppLanguage
     var seed: Int
     var coinReward: Int
+    /// レア大当たり：紙吹雪を足し、レア専用フレーズを大きく出す。
+    var isRare: Bool = false
+    /// 中央に出すフレーズ（空ならスタイル既定の一言）。声で読み上げた言葉と揃える。
+    var title: String = ""
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var animateCoin = false
 
@@ -2288,6 +2321,12 @@ private struct PracticeWordCelebrationOverlay: View {
     var body: some View {
         ZStack {
             SparkleBurst(seed: seed, variant: style.burstVariant)
+
+            // レア大当たり：多色バースト＋紙吹雪を重ねて「特別な1回」にする。
+            if isRare {
+                PuzzleCelebration(pieces: 34, radius: 320)
+                    .zIndex(7)
+            }
 
             // 獲得したコインが大量に噴き出して降りそそぐ演出（カードより少し上から湧く）。
             PracticeCoinFountain(reward: coinReward)
@@ -2323,7 +2362,7 @@ private struct PracticeWordCelebrationOverlay: View {
                 }
                 .frame(width: 140, height: 94)
 
-                Text(style.title(language: language))
+                Text(title.isEmpty ? style.title(language: language) : title)
                     .font(.system(size: 46, weight: .heavy, design: .rounded))
                     .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
                     .lineLimit(1)

@@ -12,6 +12,8 @@
 		0A1001032D00000100000001 /* GuidedWritingCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002032D00000100000001 /* GuidedWritingCanvas.swift */; };
 		0A1001042D00000100000001 /* PencilCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002042D00000100000001 /* PencilCanvasView.swift */; };
 		0A1001052D00000100000001 /* SpeechPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002052D00000100000001 /* SpeechPlayer.swift */; };
+		FACE0000000000000000SD01 /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000SD02 /* SoundPlayer.swift */; };
+		FACE0000000000000000SD03 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000SD04 /* sounds */; };
 		0A1001062D00000100000001 /* VisionTextRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002062D00000100000001 /* VisionTextRecognizer.swift */; };
 		0A1001072D00000100000001 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002072D00000100000001 /* Models.swift */; };
 		0A1001082D00000100000001 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1002082D00000100000001 /* AppModel.swift */; };
@@ -84,6 +86,8 @@
 		0A1002032D00000100000001 /* GuidedWritingCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidedWritingCanvas.swift; sourceTree = "<group>"; };
 		0A1002042D00000100000001 /* PencilCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilCanvasView.swift; sourceTree = "<group>"; };
 		0A1002052D00000100000001 /* SpeechPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechPlayer.swift; sourceTree = "<group>"; };
+		FACE0000000000000000SD02 /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
+		FACE0000000000000000SD04 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources/sounds; sourceTree = "<group>"; };
 		0A1002062D00000100000001 /* VisionTextRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionTextRecognizer.swift; sourceTree = "<group>"; };
 		0A1002072D00000100000001 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		0A1002082D00000100000001 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
@@ -190,9 +194,11 @@
 				FACE0000000000000000CE12 /* confusables_sound.build.csv */,
 				FACE0000000000000000CE16 /* sentence_bank.json */,
 				FACE0000000000000000AV02 /* avatars */,
+				FACE0000000000000000SD04 /* sounds */,
 				0A1002032D00000100000001 /* GuidedWritingCanvas.swift */,
 				0A1002042D00000100000001 /* PencilCanvasView.swift */,
 				0A1002052D00000100000001 /* SpeechPlayer.swift */,
+				FACE0000000000000000SD02 /* SoundPlayer.swift */,
 				0A1002062D00000100000001 /* VisionTextRecognizer.swift */,
 				0A1002072D00000100000001 /* Models.swift */,
 				FACE0000000000000000CF02 /* SupabaseConfig.swift */,
@@ -359,6 +365,7 @@
 				FACE0000000000000000CE11 /* confusables_sound.build.csv in Resources */,
 				FACE0000000000000000CE15 /* sentence_bank.json in Resources */,
 				FACE0000000000000000AV01 /* avatars in Resources */,
+				FACE0000000000000000SD03 /* sounds in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,6 +428,7 @@
 				0A1001032D00000100000001 /* GuidedWritingCanvas.swift in Sources */,
 				0A1001042D00000100000001 /* PencilCanvasView.swift in Sources */,
 				0A1001052D00000100000001 /* SpeechPlayer.swift in Sources */,
+				FACE0000000000000000SD01 /* SoundPlayer.swift in Sources */,
 				0A1001062D00000100000001 /* VisionTextRecognizer.swift in Sources */,
 				0A1001022D00000100000001 /* TestSessionView.swift in Sources */,
 				146A097F4736A06C17EB0137 /* OpenRouterClient.swift in Sources */,
