@@ -7119,5 +7119,357 @@
       "with",
       "mom"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "find",
+      "shell"
+    ],
+    "en" : "I find a shell",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "41B9C8CD-3E15-51D1-B7D5-AE39B1845115",
+    "ja" : "わたしは かいがらを みつける",
+    "sourceID" : "i-find-a-shell",
+    "tokens" : [
+      "I",
+      "find",
+      "a",
+      "shell"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "change",
+      "shoe"
+    ],
+    "en" : "I change my shoes",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "3E0CACDA-2009-5FCB-97B1-8C93AADA55A2",
+    "ja" : "わたしは くつを はきかえる",
+    "sourceID" : "i-change-my-shoes",
+    "tokens" : [
+      "I",
+      "change",
+      "my",
+      "shoes"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "love",
+      "mom"
+    ],
+    "en" : "I love my mom",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "39BE8161-8F9C-52F7-B6BB-6165D00A40C8",
+    "ja" : "わたしは ママが だいすき",
+    "sourceID" : "i-love-my-mom",
+    "tokens" : [
+      "I",
+      "love",
+      "my",
+      "mom"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "game",
+      "great"
+    ],
+    "en" : "This game is great",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "232C5933-4371-5C13-8E27-5EE6ABB3C94A",
+    "ja" : "この ゲームは すごい",
+    "sourceID" : "this-game-is-great",
+    "tokens" : [
+      "This",
+      "game",
+      "is",
+      "great"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "dog",
+      "large"
+    ],
+    "en" : "The dog is large",
+    "gradeBand" : 2,
+    "grammar" : "beVerb",
+    "id" : "05B12E79-8EC7-5A63-99B1-561E4D9BC658",
+    "ja" : "その いぬは おおきい",
+    "sourceID" : "the-dog-is-large",
+    "tokens" : [
+      "The",
+      "dog",
+      "is",
+      "large"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "bag",
+      "different"
+    ],
+    "en" : "My bag is different",
+    "gradeBand" : 3,
+    "grammar" : "beVerb",
+    "id" : "93833976-E209-5E40-9DF8-F914F7D4F63B",
+    "ja" : "わたしの かばんは ちがう",
+    "sourceID" : "my-bag-is-different",
+    "tokens" : [
+      "My",
+      "bag",
+      "is",
+      "different"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "month",
+      "fun"
+    ],
+    "en" : "This month is fun",
+    "gradeBand" : 2,
+    "grammar" : "demonstratives",
+    "id" : "8D17380D-61E2-5F2C-8E7B-4555288E2479",
+    "ja" : "こんげつは たのしい",
+    "sourceID" : "this-month-is-fun",
+    "tokens" : [
+      "This",
+      "month",
+      "is",
+      "fun"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tell",
+      "time"
+    ],
+    "en" : "I can tell time",
+    "gradeBand" : 1,
+    "grammar" : "canModal",
+    "id" : "7D4A1921-6BE9-564C-8D93-F7D1902AD1B8",
+    "ja" : "わたしは じかんが わかる",
+    "sourceID" : "i-can-tell-time",
+    "tokens" : [
+      "I",
+      "can",
+      "tell",
+      "time"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "question"
+    ],
+    "en" : "I have a question",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "D6B22352-40F7-521E-BE99-6D70E8485CAA",
+    "ja" : "わたしは しつもんが ある",
+    "sourceID" : "i-have-a-question",
+    "tokens" : [
+      "I",
+      "have",
+      "a",
+      "question"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "big",
+      "thing"
+    ],
+    "en" : "That is a big thing",
+    "gradeBand" : 1,
+    "grammar" : "demonstratives",
+    "id" : "A33D3A8A-B0DE-556A-9AD0-F2C64B722349",
+    "ja" : "あれは おおきな ものだ",
+    "sourceID" : "that-is-a-big-thing",
+    "tokens" : [
+      "That",
+      "is",
+      "a",
+      "big",
+      "thing"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "big",
+      "number"
+    ],
+    "en" : "This is a big number",
+    "gradeBand" : 1,
+    "grammar" : "demonstratives",
+    "id" : "62E51E65-80E5-5B46-83E8-3D76A80A4CB0",
+    "ja" : "これは おおきな すうじだ",
+    "sourceID" : "this-is-a-big-number",
+    "tokens" : [
+      "This",
+      "is",
+      "a",
+      "big",
+      "number"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "next"
+    ],
+    "en" : "I am next",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "74F62564-E5E0-53EE-A68B-3779271673BF",
+    "ja" : "つぎは わたしだ",
+    "sourceID" : "i-am-next",
+    "tokens" : [
+      "I",
+      "am",
+      "next"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go",
+      "back",
+      "home"
+    ],
+    "en" : "I go back home",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "81F1D893-8A51-5527-9229-768ACA9AA252",
+    "ja" : "わたしは いえに かえる",
+    "sourceID" : "i-go-back-home",
+    "tokens" : [
+      "I",
+      "go",
+      "back",
+      "home"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "sit"
+    ],
+    "en" : "I sit down",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "A9F1FE50-8446-52B0-B367-0098CDF32ACA",
+    "ja" : "わたしは すわる",
+    "sourceID" : "i-sit-down",
+    "tokens" : [
+      "I",
+      "sit",
+      "down"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "go"
+    ],
+    "en" : "We go out",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "657F084F-6139-50AE-9C4C-C75C307A5BB2",
+    "ja" : "わたしたちは そとに でる",
+    "sourceID" : "we-go-out",
+    "tokens" : [
+      "We",
+      "go",
+      "out"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "begin",
+      "game"
+    ],
+    "en" : "We begin the game",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "D1E90E22-4100-57A7-A7DB-C2D56D984D77",
+    "ja" : "わたしたちは ゲームを はじめる",
+    "sourceID" : "we-begin-the-game",
+    "tokens" : [
+      "We",
+      "begin",
+      "the",
+      "game"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "first"
+    ],
+    "en" : "I am first",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "47F6CC99-F1E9-53B5-8B91-8F51B70D2D6E",
+    "ja" : "わたしが さいしょだ",
+    "sourceID" : "i-am-first",
+    "tokens" : [
+      "I",
+      "am",
+      "first"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "play",
+      "again"
+    ],
+    "en" : "We play again",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "01CD9BA3-3CD2-584A-8E0F-C8EEDEA19E5B",
+    "ja" : "わたしたちは また あそぶ",
+    "sourceID" : "we-play-again",
+    "tokens" : [
+      "We",
+      "play",
+      "again"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "group"
+    ],
+    "en" : "We are a group",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "C0A43FB9-7ACF-53BD-8CC3-5BD16FF05DD6",
+    "ja" : "わたしたちは グループだ",
+    "sourceID" : "we-are-a-group",
+    "tokens" : [
+      "We",
+      "are",
+      "a",
+      "group"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "know",
+      "order"
+    ],
+    "en" : "I know the order",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "32378D89-4687-57AD-82AF-780D1383A641",
+    "ja" : "わたしは じゅんばんが わかる",
+    "sourceID" : "i-know-the-order",
+    "tokens" : [
+      "I",
+      "know",
+      "the",
+      "order"
+    ]
   }
 ]
