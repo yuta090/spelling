@@ -23,8 +23,28 @@ struct ParentGateView: View {
     @State private var entry = ""
     @State private var shake: CGFloat = 0
     @State private var wrongCount = 0
+    #if DEBUG
+    @State private var didAutoPass = false
+    #endif
 
     var body: some View {
+        #if DEBUG
+        // デバッグビルドでは大人ゲートの計算を省略し、そのまま通す。
+        // （開発中は保護者メニュー／採点を毎回開くので、毎回の暗算をなくす。効果は DEBUG のみ。）
+        // onAppear は再挿入で複数回呼ばれ得るので、通過は一度だけに絞る。
+        Color.clear
+            .frame(width: 1, height: 1)
+            .onAppear {
+                guard !didAutoPass else { return }
+                didAutoPass = true
+                onPass()
+            }
+        #else
+        gateBody
+        #endif
+    }
+
+    private var gateBody: some View {
         VStack(spacing: 22) {
             Text("おうちのひとに きいてね")
                 .font(.headline)
