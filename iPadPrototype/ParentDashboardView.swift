@@ -7208,6 +7208,11 @@ private struct TestSettingsPanel: View {
                     .font(.subheadline.weight(.bold))
             }
             .tint(ParentPalette.primary)
+            Toggle(isOn: $model.debugSkipParentGate) {
+                Text(language.text(japanese: "大人ゲートの計算を省略", english: "Skip parent-gate math"))
+                    .font(.subheadline.weight(.bold))
+            }
+            .tint(ParentPalette.primary)
 
             Divider()
             BenchExportRow()
