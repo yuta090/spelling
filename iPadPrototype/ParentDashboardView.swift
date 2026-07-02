@@ -46,12 +46,6 @@ struct ParentDashboardView: View {
                         }
                     }
                     ParentSectionSwitcher(selectedSection: $selectedSection, language: language)
-                    // 記録タブは自分の単語（personal）のステップに紐づくのでここで固定表示。
-                    // 単語タブのステップカードは「コース選択の下」に置く（コース→ステップの順）ため
-                    // selectedPanel(.words) 側へ移した。
-                    if selectedSection == .records {
-                        ParentCurrentStepCard(language: language, track: .personal)
-                    }
 
                     GeometryReader { proxy in
                         ScrollView {
@@ -98,13 +92,30 @@ struct ParentDashboardView: View {
     private func selectedPanel(width: CGFloat) -> some View {
         switch selectedSection {
         case .overview:
-            ParentOverviewPanel(
-                language: language,
-                onTapReview: { showingReviewDetail = true },
-                onRegisterWords: { selectedSection = .words }
-            )
+            // 「きろく」タブ＝“見る”の一本化。上にひと目サマリー（旧「ようす」）、
+            // その下に旧「結果を見る」の明細（現在ステップ・ステップ別結果・その他の記録）を畳んで統合する。
+            VStack(spacing: 14) {
+                ParentOverviewPanel(
+                    language: language,
+                    onTapReview: { showingReviewDetail = true },
+                    onRegisterWords: { selectedSection = .words }
+                )
+
+                // データが無いうちは歓迎の空状態だけを見せ、記録側の空表示は重ねない。
+                // hasActivity は子のアプリ学習イベントのみ。親が学校テスト結果だけ入力した場合も
+                // 記録を見られるよう、学校テスト結果があれば明細を出す。
+                if model.overviewStats().hasActivity || !model.schoolTestResults.isEmpty {
+                    ParentCurrentStepCard(language: language, track: .personal)
+                    ParentRecordsWorkspace(language: language)
+                }
+            }
+            .frame(maxWidth: 900, alignment: .top)
         case .grading:
-            ParentGradingPanel(language: language)
+            // 「つける」タブ＝“書く”の一本化。アプリ答案の採点に、学校の紙テスト結果の入力を同居させる。
+            VStack(spacing: 14) {
+                ParentGradingPanel(language: language)
+                SchoolTestResultPanel(language: language)
+            }
         case .words:
             // 「何を練習するか」＝コース選択を先頭に置き、その下に「うちのれんしゅう」の単語登録を常時出す。
             // コースは旧「レベル」の発展形＝単語“管理”の一部なので、設定ではなくこのタブに集約する（CLAUDE.md 親側方針）。
@@ -132,8 +143,6 @@ struct ParentDashboardView: View {
                     }
                 }
             }
-        case .records:
-            ParentRecordsWorkspace(language: language)
         case .cast:
             ParentCastPanel(language: language)
                 .frame(maxWidth: 820, alignment: .topLeading)
@@ -834,7 +843,6 @@ private enum ParentSection: String, CaseIterable, Identifiable {
     case overview
     case grading
     case words
-    case records
     case cast
     case settings
 
@@ -843,13 +851,11 @@ private enum ParentSection: String, CaseIterable, Identifiable {
     func title(language: AppLanguage) -> String {
         switch self {
         case .overview:
-            return language.text(japanese: "ようす", english: "Overview")
+            return language.text(japanese: "きろく", english: "Records")
         case .grading:
-            return language.text(japanese: "採点", english: "Grade")
+            return language.text(japanese: "つける", english: "Grade")
         case .words:
             return language.text(japanese: "コース・単語", english: "Course & Words")
-        case .records:
-            return language.text(japanese: "結果を見る", english: "Results")
         case .cast:
             return language.text(japanese: "なかま", english: "Cast")
         case .settings:
@@ -860,13 +866,11 @@ private enum ParentSection: String, CaseIterable, Identifiable {
     func subtitle(language: AppLanguage) -> String {
         switch self {
         case .overview:
-            return language.text(japanese: "ぜんたい", english: "At a glance")
+            return language.text(japanese: "ようす と 結果", english: "Status & results")
         case .grading:
-            return language.text(japanese: "大きく見てOK", english: "Review clearly")
+            return language.text(japanese: "答案と学校テスト", english: "Answers & school test")
         case .words:
             return language.text(japanese: "コースと単語", english: "Course & words")
-        case .records:
-            return language.text(japanese: "学校とアプリ", english: "School & app")
         case .cast:
             return language.text(japanese: "例文に名前", english: "Names in lines")
         case .settings:
@@ -877,13 +881,11 @@ private enum ParentSection: String, CaseIterable, Identifiable {
     var systemImage: String {
         switch self {
         case .overview:
-            return "sparkles"
+            return "chart.bar.xaxis"
         case .grading:
             return "checkmark.seal.fill"
         case .words:
             return "books.vertical.fill"
-        case .records:
-            return "chart.bar.xaxis"
         case .cast:
             return "person.2.fill"
         case .settings:
@@ -1367,7 +1369,9 @@ private enum ParentRecordDetailSheet: String, Identifiable {
     }
 }
 
-/// 親向け「学習レポート」カード。直近7/30日の頑張りを数字で見せる（採点感より努力を肯定する）。
+/// 親向け「期間レポート」カード（スリム版）。直近7/30日の頑張りを数字で見せる（努力を肯定する）。
+/// 連続日数・おぼえた語は上段のひと目サマリー（ParentOverviewPanel）と重複するため出さず、
+/// サマリーに無い「回数・とりくんだ語・学習日数」＋期間切替だけを残す。
 /// 集計は純粋ロジック `SpellingSyncCore.LearningReportBuilder`（AppModel.learningReport 経由）。
 private struct LearningReportCard: View {
     @EnvironmentObject private var model: AppModel
@@ -1378,7 +1382,7 @@ private struct LearningReportCard: View {
         // 1回だけ集計する（body 内で複数回参照しても再集計しないように local に保持）。
         let report = model.learningReport(days: days)
         ParentPanel(
-            title: language.text(japanese: "学習レポート", english: "Learning Report"),
+            title: language.text(japanese: "期間レポート", english: "Period Report"),
             systemImage: "chart.bar.fill",
             tint: ParentPalette.primary,
             showsHeader: true
@@ -1396,19 +1400,11 @@ private struct LearningReportCard: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 } else {
-                    HStack(spacing: 8) {
-                        Image(systemName: "flame.fill").foregroundStyle(.orange)
-                        Text(language.text(japanese: "\(report.currentStreakDays)日 れんぞく学習", english: "\(report.currentStreakDays)-day streak"))
-                            .font(.title3.weight(.heavy))
-                            .foregroundStyle(ParentPalette.ink)
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 10)], spacing: 10) {
+                        metric(report.totalEvents, label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"))
+                        metric(report.distinctWords, label: language.text(japanese: "とりくんだ語", english: "Words worked on"))
+                        metric(report.activeDays, label: language.text(japanese: "学習した日数", english: "Active days"))
                     }
-                }
-
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 10)], spacing: 10) {
-                    metric(report.totalEvents, label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"))
-                    metric(report.distinctWords, label: language.text(japanese: "とりくんだ語", english: "Words worked on"))
-                    metric(report.learnedWords, label: language.text(japanese: "おぼえた語", english: "Words learned"))
-                    metric(report.activeDays, label: language.text(japanese: "学習した日数", english: "Active days"))
                 }
             }
         }
@@ -1455,6 +1451,8 @@ private struct ParentRecordsWorkspace: View {
 
     var body: some View {
         VStack(spacing: 14) {
+            // 期間レポート（スリム版）。連続日数・おぼえた語は上段サマリーと重複するため出さず、
+            // サマリーに無い「回数・とりくんだ語・学習日数」＋7/30日切替だけを残す。
             LearningReportCard(language: language)
                 .environmentObject(model)
 
