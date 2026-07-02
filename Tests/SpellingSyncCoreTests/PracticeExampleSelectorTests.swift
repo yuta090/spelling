@@ -32,11 +32,13 @@ final class PracticeExampleSelectorTests: XCTestCase {
         XCTAssertNil(PracticeExampleSelector.example(for: "elephant", in: bank, policy: tierA))
     }
 
-    /// 段階a（漢字maxGrade=0＝ひらがな主体）では、和訳に配当外漢字を含む文は除外する。
-    func testExcludesSentenceWithKanjiBeyondTierAGate() {
+    /// 段階a（漢字maxGrade=0）でも、和訳に配当外漢字を含む文を除外しない（§13.3 改訂2026-07-02）。
+    /// 漢字は「捨てる」でなく表示側でルビ（「勉強」は表示時にふりがなが付く）。難度は語彙bandで担保。
+    func testIncludesSentenceWithOverGradeKanjiForRuby() {
         let bank = [item("I study hard", ja: "しっかり 勉強する", band: 1, lemmas: ["study", "hard"])]
-        XCTAssertNil(PracticeExampleSelector.example(for: "study", in: bank, policy: tierA),
-                     "「勉強」は段階aの漢字ゲート(maxGrade=0)を超えるので除外される")
+        XCTAssertEqual(PracticeExampleSelector.example(for: "study", in: bank, policy: tierA)?.en,
+                       "I study hard",
+                       "「勉強」入りでも却下しない（表示側でルビ）")
     }
 
     /// 候補が複数あるとき、決定論的に並ぶ（学年band低い→短い→英文アルファベット順）。

@@ -93,13 +93,14 @@ final class ContentPolicyTests: XCTestCase {
         XCTAssertEqual(out.map(\.en), ["x"])
     }
 
-    // 漢字の壁：許可学年を超える漢字を含む和訳は落とす。
-    func testKanjiWall() {
+    // 漢字は「捨てる」でなくルビ（§13.3 改訂2026-07-02）：超過漢字を含む和訳でも却下しない。
+    // 難度は語彙band で担保し、表示側 rubySegments が当該学年以上の漢字にふりがなを振る。
+    func testKanjiDoesNotRejectAdmission() {
         let hira = item("a", ja: "ねこ", band: 1, lemmas: ["cat"])
-        let kanji = item("b", ja: "図書館", band: 1, lemmas: ["cat"])  // 難しめの漢字
+        let kanji = item("b", ja: "図書館", band: 1, lemmas: ["cat"])  // 超過漢字入りでも通す
         let out = ContentPolicy.admissiblePool([hira, kanji],
-            policy: policy(kanji: 0), knownLemmas: ["cat"])  // maxGrade 0=ひらがな
-        XCTAssertEqual(out.map(\.en), ["a"])
+            policy: policy(kanji: 0), knownLemmas: ["cat"])  // maxGrade 0 でも却下しない
+        XCTAssertEqual(out.map(\.en), ["a", "b"], "漢字では却下しない（表示側でルビ）")
     }
 
     // ジャンル：humor が無効なら humor 文を除外（nil は useful 扱い）。
