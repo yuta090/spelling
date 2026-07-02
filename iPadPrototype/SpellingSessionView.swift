@@ -2628,17 +2628,17 @@ private struct CanvasEditControls: View {
     var body: some View {
         HStack(spacing: 10) {
             CanvasEditButton(
-                title: language.text(japanese: "1つもどす", english: "Undo"),
-                systemImage: "arrow.uturn.backward",
-                isEnabled: canUndo,
-                action: undo
-            )
-
-            CanvasEditButton(
                 title: language.text(japanese: "ぜんぶ消す", english: "Clear All"),
                 systemImage: "eraser.fill",
                 isEnabled: canClear,
                 action: clearAll
+            )
+
+            CanvasEditButton(
+                title: language.text(japanese: "1つもどす", english: "Undo"),
+                systemImage: "arrow.uturn.backward",
+                isEnabled: canUndo,
+                action: undo
             )
         }
         .accessibilityElement(children: .contain)
