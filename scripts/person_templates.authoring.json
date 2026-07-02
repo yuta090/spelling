@@ -43593,5 +43593,1852 @@
       "happy"
     ],
     "fallbackJa": "ふたりは うれしそう"
+  },
+  {
+    "id": "n2-neg-natto-friend",
+    "category": "daily",
+    "grammar": "negation",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "natto"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "doesn't",
+      "like",
+      "natto"
+    ],
+    "ja": "{f}は なっとうが にがて",
+    "fallbackEn": [
+      "She",
+      "doesn't",
+      "like",
+      "natto"
+    ],
+    "fallbackJa": "かのじょは なっとうが にがて"
+  },
+  {
+    "id": "n2-neg-cry-friend",
+    "category": "daily",
+    "grammar": "negation",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cry"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "doesn't",
+      "cry"
+    ],
+    "ja": "{f}は なかない",
+    "fallbackEn": [
+      "He",
+      "doesn't",
+      "cry"
+    ],
+    "fallbackJa": "かれは なかない"
+  },
+  {
+    "id": "n2-neg-scared-friend",
+    "category": "play",
+    "grammar": "negation",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "dog"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "not",
+      "scared",
+      "of",
+      "dogs"
+    ],
+    "ja": "{f}は いぬが こわくない",
+    "fallbackEn": [
+      "She",
+      "is",
+      "not",
+      "scared",
+      "of",
+      "dogs"
+    ],
+    "fallbackJa": "かのじょは いぬが こわくない"
+  },
+  {
+    "id": "n2-q-athome-friend",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "home"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "Is",
+      "{f:name}",
+      "at",
+      "home?"
+    ],
+    "ja": "{f}は いえに いる？",
+    "fallbackEn": [
+      "Is",
+      "she",
+      "at",
+      "home?"
+    ],
+    "fallbackJa": "かのじょは いえに いる？"
+  },
+  {
+    "id": "n2-q-likedogs-friend",
+    "category": "daily",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "dog"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "Does",
+      "{f:name}",
+      "like",
+      "dogs?"
+    ],
+    "ja": "{f}は いぬが すき？",
+    "fallbackEn": [
+      "Does",
+      "he",
+      "like",
+      "dogs?"
+    ],
+    "fallbackJa": "かれは いぬが すき？"
+  },
+  {
+    "id": "n2-q-coming-friend",
+    "category": "play",
+    "grammar": "yesNoQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "come"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "Is",
+      "{f:name}",
+      "coming",
+      "too?"
+    ],
+    "ja": "{f}も くる？",
+    "fallbackEn": [
+      "Is",
+      "she",
+      "coming",
+      "too?"
+    ],
+    "fallbackJa": "かのじょも くる？"
+  },
+  {
+    "id": "n2-wh-where-friend",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "Where",
+      "is",
+      "{f:name}?"
+    ],
+    "ja": "{f}は どこ？",
+    "fallbackEn": [
+      "Where",
+      "is",
+      "he?"
+    ],
+    "fallbackJa": "かれは どこ？"
+  },
+  {
+    "id": "n2-wh-whatlike-friend",
+    "category": "school",
+    "grammar": "whQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "like"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "What",
+      "does",
+      "{f:name}",
+      "like?"
+    ],
+    "ja": "{f}は なにが すき？",
+    "fallbackEn": [
+      "What",
+      "does",
+      "she",
+      "like?"
+    ],
+    "fallbackJa": "かのじょは なにが すき？"
+  },
+  {
+    "id": "n2-wh-howold-friend",
+    "category": "daily",
+    "grammar": "whQuestion",
+    "gradeBand": 2,
+    "contentLemmas": [],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "How",
+      "old",
+      "is",
+      "{f:name}?"
+    ],
+    "ja": "{f}は なんさい？",
+    "fallbackEn": [
+      "How",
+      "old",
+      "is",
+      "he?"
+    ],
+    "fallbackJa": "かれは なんさい？"
+  },
+  {
+    "id": "n2-freq-reads-friend",
+    "category": "school",
+    "grammar": "frequencyAdverb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "read",
+      "book"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "often",
+      "reads",
+      "books"
+    ],
+    "ja": "{f}は よく 本を よむ",
+    "fallbackEn": [
+      "She",
+      "often",
+      "reads",
+      "books"
+    ],
+    "fallbackJa": "かのじょは よく 本を よむ"
+  },
+  {
+    "id": "n2-freq-sings-friend",
+    "category": "daily",
+    "grammar": "frequencyAdverb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "sing"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "sometimes",
+      "sings"
+    ],
+    "ja": "{f}は ときどき うたう",
+    "fallbackEn": [
+      "He",
+      "sometimes",
+      "sings"
+    ],
+    "fallbackJa": "かれは ときどき うたう"
+  },
+  {
+    "id": "n2-freq-late-friend",
+    "category": "school",
+    "grammar": "frequencyAdverb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "late"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "never",
+      "late"
+    ],
+    "ja": "{f}は ぜったい ちこくしない",
+    "fallbackEn": [
+      "He",
+      "is",
+      "never",
+      "late"
+    ],
+    "fallbackJa": "かれは ぜったい ちこくしない"
+  },
+  {
+    "id": "n2-ps-eats-bread-friend",
+    "category": "home",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "eat",
+      "bread"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "eats",
+      "bread"
+    ],
+    "ja": "{f}は パンを たべる",
+    "fallbackEn": [
+      "She",
+      "eats",
+      "bread"
+    ],
+    "fallbackJa": "かのじょは パンを たべる"
+  },
+  {
+    "id": "n2-ps-cooks-friend",
+    "category": "home",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cook"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "cooks",
+      "very",
+      "well"
+    ],
+    "ja": "{f}は りょうりが とても じょうず",
+    "fallbackEn": [
+      "She",
+      "cooks",
+      "very",
+      "well"
+    ],
+    "fallbackJa": "かのじょは りょうりが とても じょうず"
+  },
+  {
+    "id": "n2-ps-paints-friend",
+    "category": "school",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "paint",
+      "picture"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "paints",
+      "a",
+      "picture"
+    ],
+    "ja": "{f}は えを かく",
+    "fallbackEn": [
+      "He",
+      "paints",
+      "a",
+      "picture"
+    ],
+    "fallbackJa": "かれは えを かく"
+  },
+  {
+    "id": "n2-ps-dances-friend",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "dance"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "dances",
+      "every",
+      "day"
+    ],
+    "ja": "{f}は まいにち おどる",
+    "fallbackEn": [
+      "She",
+      "dances",
+      "every",
+      "day"
+    ],
+    "fallbackJa": "かのじょは まいにち おどる"
+  },
+  {
+    "id": "n2-ps-likes-cats-friend",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "like",
+      "cat"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "likes",
+      "cats"
+    ],
+    "ja": "{f}は ねこが すき",
+    "fallbackEn": [
+      "She",
+      "likes",
+      "cats"
+    ],
+    "fallbackJa": "かのじょは ねこが すき"
+  },
+  {
+    "id": "n2-ps-has-bird-friend",
+    "category": "home",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "bird"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "has",
+      "a",
+      "bird"
+    ],
+    "ja": "{f}は とりを かっている",
+    "fallbackEn": [
+      "He",
+      "has",
+      "a",
+      "bird"
+    ],
+    "fallbackJa": "かれは とりを かっている"
+  },
+  {
+    "id": "n2-be-funny-friend",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "funny"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "funny"
+    ],
+    "ja": "{f}は おもしろい",
+    "fallbackEn": [
+      "He",
+      "is",
+      "funny"
+    ],
+    "fallbackJa": "かれは おもしろい"
+  },
+  {
+    "id": "n2-be-brave-friend",
+    "category": "play",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "brave"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "brave"
+    ],
+    "ja": "{f}は ゆうきが ある",
+    "fallbackEn": [
+      "She",
+      "is",
+      "brave"
+    ],
+    "fallbackJa": "かのじょは ゆうきが ある"
+  },
+  {
+    "id": "n2-be-quiet-friend",
+    "category": "school",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "quiet"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "quiet",
+      "today"
+    ],
+    "ja": "{f}は きょう しずかだ",
+    "fallbackEn": [
+      "He",
+      "is",
+      "quiet",
+      "today"
+    ],
+    "fallbackJa": "かれは きょう しずかだ"
+  },
+  {
+    "id": "n2-be-hungry-friend",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "hungry"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "hungry"
+    ],
+    "ja": "{f}は おなかが すいた",
+    "fallbackEn": [
+      "She",
+      "is",
+      "hungry"
+    ],
+    "fallbackJa": "かのじょは おなかが すいた"
+  },
+  {
+    "id": "n2-be-sleepy-friend",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "sleepy"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "sleepy"
+    ],
+    "ja": "{f}は ねむそう",
+    "fallbackEn": [
+      "He",
+      "is",
+      "sleepy"
+    ],
+    "fallbackJa": "かれは ねむそう"
+  },
+  {
+    "id": "n2-can-swim-friend",
+    "category": "play",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "swim"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "can",
+      "swim",
+      "fast"
+    ],
+    "ja": "{f}は はやく およげる",
+    "fallbackEn": [
+      "He",
+      "can",
+      "swim",
+      "fast"
+    ],
+    "fallbackJa": "かれは はやく およげる"
+  },
+  {
+    "id": "n2-can-cook-friend",
+    "category": "home",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cook",
+      "egg"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "can",
+      "cook",
+      "eggs"
+    ],
+    "ja": "{f}は たまごりょうりが できる",
+    "fallbackEn": [
+      "She",
+      "can",
+      "cook",
+      "eggs"
+    ],
+    "fallbackJa": "かのじょは たまごりょうりが できる"
+  },
+  {
+    "id": "n2-can-climb-friend",
+    "category": "play",
+    "grammar": "canModal",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "climb",
+      "tree"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "can",
+      "climb",
+      "trees"
+    ],
+    "ja": "{f}は 木に のぼれる",
+    "fallbackEn": [
+      "He",
+      "can",
+      "climb",
+      "trees"
+    ],
+    "fallbackJa": "かれは 木に のぼれる"
+  },
+  {
+    "id": "n2-can-draw-friend",
+    "category": "school",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "draw"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "can",
+      "draw",
+      "well"
+    ],
+    "ja": "{f}は えが じょうずに かける",
+    "fallbackEn": [
+      "She",
+      "can",
+      "draw",
+      "well"
+    ],
+    "fallbackJa": "かのじょは えが じょうずに かける"
+  },
+  {
+    "id": "n2-pc-cooking-friend",
+    "category": "home",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "cook"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "cooking",
+      "now"
+    ],
+    "ja": "{f}は いま りょうりしている",
+    "fallbackEn": [
+      "She",
+      "is",
+      "cooking",
+      "now"
+    ],
+    "fallbackJa": "かのじょは いま りょうりしている"
+  },
+  {
+    "id": "n2-pc-drawing-friend",
+    "category": "school",
+    "grammar": "presentContinuous",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "draw",
+      "picture"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "drawing",
+      "a",
+      "picture"
+    ],
+    "ja": "{f}は えを かいている",
+    "fallbackEn": [
+      "He",
+      "is",
+      "drawing",
+      "a",
+      "picture"
+    ],
+    "fallbackJa": "かれは えを かいている"
+  },
+  {
+    "id": "n2-pc-dancing-friend",
+    "category": "play",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "dance"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "dancing"
+    ],
+    "ja": "{f}は おどっている",
+    "fallbackEn": [
+      "She",
+      "is",
+      "dancing"
+    ],
+    "fallbackJa": "かのじょは おどっている"
+  },
+  {
+    "id": "n2-pc-sleeping-friend",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "sleep"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "sleeping",
+      "now"
+    ],
+    "ja": "{f}は いま ねむっている",
+    "fallbackEn": [
+      "He",
+      "is",
+      "sleeping",
+      "now"
+    ],
+    "fallbackJa": "かれは いま ねむっている"
+  },
+  {
+    "id": "n2-pc-eating-apple-friend",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "eat",
+      "apple"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "eating",
+      "an",
+      "apple"
+    ],
+    "ja": "{f}は りんごを たべている",
+    "fallbackEn": [
+      "She",
+      "is",
+      "eating",
+      "an",
+      "apple"
+    ],
+    "fallbackJa": "かのじょは りんごを たべている"
+  },
+  {
+    "id": "n2-pt-went-zoo-friend",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "zoo"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "went",
+      "to",
+      "the",
+      "zoo"
+    ],
+    "ja": "{f}は どうぶつえんへ 行った",
+    "fallbackEn": [
+      "She",
+      "went",
+      "to",
+      "the",
+      "zoo"
+    ],
+    "fallbackJa": "かのじょは どうぶつえんへ 行った"
+  },
+  {
+    "id": "n2-pt-made-cake-friend",
+    "category": "home",
+    "grammar": "pastSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "make",
+      "cake"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "made",
+      "a",
+      "cake"
+    ],
+    "ja": "{f}は ケーキを つくった",
+    "fallbackEn": [
+      "She",
+      "made",
+      "a",
+      "cake"
+    ],
+    "fallbackJa": "かのじょは ケーキを つくった"
+  },
+  {
+    "id": "n2-pt-found-key-friend",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "find",
+      "key"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "found",
+      "a",
+      "key"
+    ],
+    "ja": "{f}は かぎを みつけた",
+    "fallbackEn": [
+      "He",
+      "found",
+      "a",
+      "key"
+    ],
+    "fallbackJa": "かれは かぎを みつけた"
+  },
+  {
+    "id": "n2-pt-won-race-friend",
+    "category": "play",
+    "grammar": "pastSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "win",
+      "race"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "won",
+      "the",
+      "race"
+    ],
+    "ja": "{f}は かけっこで かった",
+    "fallbackEn": [
+      "He",
+      "won",
+      "the",
+      "race"
+    ],
+    "fallbackJa": "かれは かけっこで かった"
+  },
+  {
+    "id": "n2-pt-gave-gift-friend",
+    "category": "daily",
+    "grammar": "pastSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "give",
+      "gift"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "gave",
+      "me",
+      "a",
+      "gift"
+    ],
+    "ja": "{f}は わたしに プレゼントを くれた",
+    "fallbackEn": [
+      "She",
+      "gave",
+      "me",
+      "a",
+      "gift"
+    ],
+    "fallbackJa": "かのじょは わたしに プレゼントを くれた"
+  },
+  {
+    "id": "n2-cmp-kinder-friend",
+    "category": "daily",
+    "grammar": "comparativeEr",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "kind"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "kinder",
+      "than",
+      "me"
+    ],
+    "ja": "{f}は わたしより やさしい",
+    "fallbackEn": [
+      "She",
+      "is",
+      "kinder",
+      "than",
+      "me"
+    ],
+    "fallbackJa": "かのじょは わたしより やさしい"
+  },
+  {
+    "id": "n2-cmp-stronger-friend",
+    "category": "play",
+    "grammar": "comparativeEr",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "strong"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "stronger",
+      "than",
+      "me"
+    ],
+    "ja": "{f}は わたしより ちからもち",
+    "fallbackEn": [
+      "He",
+      "is",
+      "stronger",
+      "than",
+      "me"
+    ],
+    "fallbackJa": "かれは わたしより ちからもち"
+  },
+  {
+    "id": "n2-obj-help-friend",
+    "category": "school",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "help"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "I",
+      "help",
+      "{f:object}",
+      "every",
+      "day"
+    ],
+    "ja": "わたしは まいにち {f}を 手つだう",
+    "fallbackEn": [
+      "I",
+      "help",
+      "him",
+      "every",
+      "day"
+    ],
+    "fallbackJa": "わたしは まいにち かれを 手つだう"
+  },
+  {
+    "id": "n2-obj-wait-friend",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "wait"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "I",
+      "wait",
+      "for",
+      "{f:object}"
+    ],
+    "ja": "わたしは {f}を まつ",
+    "fallbackEn": [
+      "I",
+      "wait",
+      "for",
+      "her"
+    ],
+    "fallbackJa": "わたしは かのじょを まつ"
+  },
+  {
+    "id": "n2-pos-room-friend",
+    "category": "home",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "room",
+      "big"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:posdet}",
+      "room",
+      "is",
+      "big"
+    ],
+    "ja": "{f}の へやは 大きい",
+    "fallbackEn": [
+      "His",
+      "room",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "かれの へやは 大きい"
+  },
+  {
+    "id": "n2-pos-dog-friend",
+    "category": "home",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "dog",
+      "big"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:posdet}",
+      "dog",
+      "is",
+      "big"
+    ],
+    "ja": "{f}の いぬは 大きい",
+    "fallbackEn": [
+      "Her",
+      "dog",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "かのじょの いぬは 大きい"
+  },
+  {
+    "id": "n2-pos-shoes-friend",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "new"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:posdet}",
+      "shoes",
+      "are",
+      "new"
+    ],
+    "ja": "{f}の くつは あたらしい",
+    "fallbackEn": [
+      "His",
+      "shoes",
+      "are",
+      "new"
+    ],
+    "fallbackJa": "かれの くつは あたらしい"
+  },
+  {
+    "id": "n2-two-singing",
+    "category": "daily",
+    "grammar": "presentContinuous",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "sing",
+      "song"
+    ],
+    "slots": [
+      {
+        "key": "f1",
+        "role": "friend",
+        "gender": "girl"
+      },
+      {
+        "key": "f2",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f1:name}",
+      "and",
+      "{f2:name}",
+      "are",
+      "singing"
+    ],
+    "ja": "{f1}と {f2}は うたっている",
+    "fallbackEn": [
+      "They",
+      "are",
+      "singing"
+    ],
+    "fallbackJa": "ふたりは うたっている"
+  },
+  {
+    "id": "n2-two-friends-be",
+    "category": "school",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "friend"
+    ],
+    "slots": [
+      {
+        "key": "f1",
+        "role": "friend",
+        "gender": "boy"
+      },
+      {
+        "key": "f2",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f1:name}",
+      "and",
+      "{f2:name}",
+      "are",
+      "friends"
+    ],
+    "ja": "{f1}と {f2}は ともだち",
+    "fallbackEn": [
+      "They",
+      "are",
+      "friends"
+    ],
+    "fallbackJa": "ふたりは ともだち"
+  },
+  {
+    "id": "n2-two-playing-tag",
+    "category": "play",
+    "grammar": "presentContinuous",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "play"
+    ],
+    "slots": [
+      {
+        "key": "f1",
+        "role": "friend",
+        "gender": "girl"
+      },
+      {
+        "key": "f2",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f1:name}",
+      "and",
+      "{f2:name}",
+      "are",
+      "playing",
+      "tag"
+    ],
+    "ja": "{f1}と {f2}は おにごっこを している",
+    "fallbackEn": [
+      "They",
+      "are",
+      "playing",
+      "tag"
+    ],
+    "fallbackJa": "ふたりは おにごっこを している"
+  },
+  {
+    "id": "n2-self-sat-with-friend",
+    "category": "school",
+    "grammar": "pastSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "sit"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "I",
+      "sat",
+      "with",
+      "{f:name}"
+    ],
+    "ja": "わたしは {f}と すわった",
+    "fallbackEn": [
+      "I",
+      "sat",
+      "with",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "わたしは ともだちと すわった"
+  },
+  {
+    "id": "n2-self-ate-with-friend",
+    "category": "home",
+    "grammar": "pastSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "eat",
+      "lunch"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "I",
+      "ate",
+      "lunch",
+      "with",
+      "{f:name}"
+    ],
+    "ja": "わたしは {f}と おひるを たべた",
+    "fallbackEn": [
+      "I",
+      "ate",
+      "lunch",
+      "with",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "わたしは ともだちと おひるを たべた"
+  },
+  {
+    "id": "n2-self-walk-with-friend",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "walk"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "I",
+      "walk",
+      "with",
+      "{f:name}"
+    ],
+    "ja": "わたしは {f}と あるく",
+    "fallbackEn": [
+      "I",
+      "walk",
+      "with",
+      "my",
+      "friend"
+    ],
+    "fallbackJa": "わたしは ともだちと あるく"
+  },
+  {
+    "id": "n2-child-letsgo",
+    "category": "play",
+    "grammar": "imperative",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "go"
+    ],
+    "slots": [
+      {
+        "key": "c",
+        "role": "child"
+      }
+    ],
+    "en": [
+      "{c:vocative},",
+      "let's",
+      "go"
+    ],
+    "ja": "{c}、いこう",
+    "fallbackEn": [
+      "Let's",
+      "go"
+    ],
+    "fallbackJa": "いこう"
+  },
+  {
+    "id": "n2-child-dinner",
+    "category": "home",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [
+      "dinner"
+    ],
+    "slots": [
+      {
+        "key": "c",
+        "role": "child"
+      }
+    ],
+    "en": [
+      "{c:vocative},",
+      "dinner",
+      "is",
+      "ready"
+    ],
+    "ja": "{c}、ごはんだよ",
+    "fallbackEn": [
+      "Dinner",
+      "is",
+      "ready"
+    ],
+    "fallbackJa": "ごはんだよ"
+  },
+  {
+    "id": "n2-child-goodjob",
+    "category": "school",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [
+      {
+        "key": "c",
+        "role": "child"
+      }
+    ],
+    "en": [
+      "{c:vocative},",
+      "good",
+      "job!"
+    ],
+    "ja": "{c}、よく できたね！",
+    "fallbackEn": [
+      "Good",
+      "job!"
+    ],
+    "fallbackJa": "よく できたね！"
+  },
+  {
+    "id": "n2-child-becareful",
+    "category": "daily",
+    "grammar": "imperative",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [
+      {
+        "key": "c",
+        "role": "child"
+      }
+    ],
+    "en": [
+      "{c:vocative},",
+      "be",
+      "careful"
+    ],
+    "ja": "{c}、きをつけて",
+    "fallbackEn": [
+      "Be",
+      "careful"
+    ],
+    "fallbackJa": "きをつけて"
+  },
+  {
+    "id": "n2-weather-likes-rain-friend",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "like",
+      "rain"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "likes",
+      "rainy",
+      "days"
+    ],
+    "ja": "{f}は あめの 日が すき",
+    "fallbackEn": [
+      "She",
+      "likes",
+      "rainy",
+      "days"
+    ],
+    "fallbackJa": "かのじょは あめの 日が すき"
+  },
+  {
+    "id": "n2-food-loves-pizza-friend",
+    "category": "home",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "pizza"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "loves",
+      "pizza"
+    ],
+    "ja": "{f}は ピザが だいすき",
+    "fallbackEn": [
+      "He",
+      "loves",
+      "pizza"
+    ],
+    "fallbackJa": "かれは ピザが だいすき"
+  },
+  {
+    "id": "n2-food-wants-icecream-friend",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "want"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "wants",
+      "ice",
+      "cream"
+    ],
+    "ja": "{f}は アイスが ほしい",
+    "fallbackEn": [
+      "She",
+      "wants",
+      "ice",
+      "cream"
+    ],
+    "fallbackJa": "かのじょは アイスが ほしい"
+  },
+  {
+    "id": "n2-school-answers-friend",
+    "category": "school",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "answer"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "knows",
+      "the",
+      "answer"
+    ],
+    "ja": "{f}は こたえが わかる",
+    "fallbackEn": [
+      "He",
+      "knows",
+      "the",
+      "answer"
+    ],
+    "fallbackJa": "かれは こたえが わかる"
+  },
+  {
+    "id": "n2-school-raises-hand-friend",
+    "category": "school",
+    "grammar": "presentContinuous",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "hand"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "is",
+      "raising",
+      "her",
+      "hand"
+    ],
+    "ja": "{f}は 手を あげている",
+    "fallbackEn": [
+      "She",
+      "is",
+      "raising",
+      "her",
+      "hand"
+    ],
+    "fallbackJa": "かのじょは 手を あげている"
+  },
+  {
+    "id": "n2-play-kicks-ball-friend",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "kick",
+      "ball"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "boy"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "kicks",
+      "the",
+      "ball"
+    ],
+    "ja": "{f}は ボールを ける",
+    "fallbackEn": [
+      "He",
+      "kicks",
+      "the",
+      "ball"
+    ],
+    "fallbackJa": "かれは ボールを ける"
+  },
+  {
+    "id": "n2-play-rides-bike-friend",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 2,
+    "contentLemmas": [
+      "ride",
+      "bike"
+    ],
+    "slots": [
+      {
+        "key": "f",
+        "role": "friend",
+        "gender": "girl"
+      }
+    ],
+    "en": [
+      "{f:name}",
+      "rides",
+      "a",
+      "bike"
+    ],
+    "ja": "{f}は じてんしゃに のる",
+    "fallbackEn": [
+      "She",
+      "rides",
+      "a",
+      "bike"
+    ],
+    "fallbackJa": "かのじょは じてんしゃに のる"
   }
 ]
