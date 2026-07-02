@@ -249,6 +249,20 @@ final class ProfileScopedStore: UserDataStore {  // @unchecked Sendable
 
 **Phase 3 でも未対応（延期）**: 正式な子ランチャー（顔ピッカー・Netflix式）＋親ゲート管理（追加/改名/削除/並べ替え/アバター）→ Phase 3後半/4。同期のプロファイル別本対応 → Phase 5。課金 → Phase 6（Apple）。
 
+### Phase 5a 実装状況（2026-07-02・codex Code Reviewer = APPROVE・3巡）
+
+ユーザ選択＝「**端末側を正しく仕上げる／リモート複数同期はサーバ準備待ち**」。**端末側の同期プロファイル別化を本対応**し、`isSyncSafeForActiveProfile`（count<=1）の暫定 hard-disable を **オーナーゲート**へ置換した。
+
+**実装済み**:
+- **同期簿記をプロファイル別スコープ化**: `spellingTrainer.sync.wordSidecar` / `.cursors` を `childScopedKeys` へ移動。`WordSyncCoordinator` はサイクル開始時に捕捉した `profileID` へ `ProfileScopedStore.loadScoped/saveScoped`（アクティブ prefix 非依存）で明示 I/O。これで「削除で単一子の identity が別プロファイルへ変わっても、共有グローバルサイドカーが他児の語を墓石化する」潜在データ損失を封じる。
+- **`pullAndMerge(sink:)` → 純関数 `merge(page, localWords, state, now, profileID)` へ分割**（`WordLocalSink` 撤去）。原子性はコーディネータが「localWords 読取 → merge → 反映 → 永続化」を **await 無し同期**で連続実行して担保。
+- **in-cycle ガードを `count<=1` から スコープ一致 `canContinueWordSync(household, profile)` へ**（全 await 境界で捕捉スコープと現在の一致を確認）。`syncCycleDepth`／add-block は撤去（スコープ・ガードが代替）。
+- **`deleteProfile` でローカル孤児 prefix 一括 purge**（`ProfileScopedStore.purgeProfile` ＋ `ProfileScopedRawStore.rawRemove` 新設・UserDefaults 退避先も掃除）。
+- **★設計核（レビュー2巡で確定）＝世帯 NULL ストリームのオーナー**: サーバ FK `words.profile_id → profiles(id)` ＋ **profiles 行の provisioning 未実装**のため、wire は当面 `profile_id = NULL`（世帯スコープ）。この世帯 NULL ストリームは**元の単一子（オーナー）**のデータなので、別の子が pull/push すると交差汚染・墓石化する。→ `WordRemoteOwner.resolve`（最古 `createdAt`・**再割り当てしない**）＋ `isSyncSafeForActiveProfile` を「**オーナーがアクティブな時だけ**」に変更。オーナー削除後はリモート同期停止（5b まで）。旧 global 簿記 → オーナースコープの移行は **バリア（`rawSaveBlocking`）** で空 state 初回同期（resurrection）を防ぐ。
+- 検証: `swift test` **933 green**（`WordRemoteOwner`／`merge`／`purge`／`migrateGlobalKeys` を Core で TDD）＋ `xcodebuild` BUILD SUCCEEDED（app 本体は XCTest 無のためビルド＋レビュー）。
+
+**Phase 5b（延期・要サーバ）**: `public.profiles` へローカル子を provisioning（id＝ローカル UUID／household 紐付け）＋既存 `profile_id=NULL` words の backfill／移行 ＋ wire で `profile_id` 有効化 → **複数子の同時リモート同期**を解禁。オーナーゲートは撤去。
+
 ---
 
 ## 10. テスト観点（Core・TDD）
