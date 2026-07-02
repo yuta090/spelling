@@ -8423,5 +8423,443 @@
       "tree."
     ],
     "fallbackJa": "ソラが しゃべる 木を 見つけたよ"
+  },
+  {
+    "id": "i-give-a-toy",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "give",
+      "a",
+      "toy"
+    ],
+    "ja": "わたしは おもちゃを あげる",
+    "fallbackEn": [
+      "I",
+      "give",
+      "a",
+      "toy"
+    ],
+    "fallbackJa": "わたしは おもちゃを あげる"
+  },
+  {
+    "id": "i-get-a-gift",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "get",
+      "a",
+      "gift"
+    ],
+    "ja": "ぼくは プレゼントを もらう",
+    "fallbackEn": [
+      "I",
+      "get",
+      "a",
+      "gift"
+    ],
+    "fallbackJa": "ぼくは プレゼントを もらう"
+  },
+  {
+    "id": "i-put-it-here",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "put",
+      "it",
+      "here"
+    ],
+    "ja": "わたしは ここに それを おく",
+    "fallbackEn": [
+      "I",
+      "put",
+      "it",
+      "here"
+    ],
+    "fallbackJa": "わたしは ここに それを おく"
+  },
+  {
+    "id": "i-hold-a-ball",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "hold",
+      "a",
+      "ball"
+    ],
+    "ja": "ぼくは ボールを もつ",
+    "fallbackEn": [
+      "I",
+      "hold",
+      "a",
+      "ball"
+    ],
+    "fallbackJa": "ぼくは ボールを もつ"
+  },
+  {
+    "id": "i-hear-a-bird",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "hear",
+      "a",
+      "bird"
+    ],
+    "ja": "とりの こえが きこえる",
+    "fallbackEn": [
+      "I",
+      "hear",
+      "a",
+      "bird"
+    ],
+    "fallbackJa": "とりの こえが きこえる"
+  },
+  {
+    "id": "i-say-hello",
+    "category": "greeting",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "say",
+      "hello"
+    ],
+    "ja": "わたしは こんにちはと いう",
+    "fallbackEn": [
+      "I",
+      "say",
+      "hello"
+    ],
+    "fallbackJa": "わたしは こんにちはと いう"
+  },
+  {
+    "id": "i-tell-a-story",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "tell",
+      "a",
+      "story"
+    ],
+    "ja": "ぼくは おはなしを する",
+    "fallbackEn": [
+      "I",
+      "tell",
+      "a",
+      "story"
+    ],
+    "fallbackJa": "ぼくは おはなしを する"
+  },
+  {
+    "id": "i-ask-my-mom",
+    "category": "home",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "ask",
+      "my",
+      "mom"
+    ],
+    "ja": "わたしは ママに きく",
+    "fallbackEn": [
+      "I",
+      "ask",
+      "my",
+      "mom"
+    ],
+    "fallbackJa": "わたしは ママに きく"
+  },
+  {
+    "id": "i-can-move-it",
+    "category": "daily",
+    "grammar": "canModal",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "can",
+      "move",
+      "it"
+    ],
+    "ja": "ぼくは それを うごかせる",
+    "fallbackEn": [
+      "I",
+      "can",
+      "move",
+      "it"
+    ],
+    "fallbackJa": "ぼくは それを うごかせる"
+  },
+  {
+    "id": "i-build-a-house",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "build",
+      "a",
+      "house"
+    ],
+    "ja": "わたしは おうちを つくる",
+    "fallbackEn": [
+      "I",
+      "build",
+      "a",
+      "house"
+    ],
+    "fallbackJa": "わたしは おうちを つくる"
+  },
+  {
+    "id": "we-start-a-game",
+    "category": "play",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "We",
+      "start",
+      "a",
+      "game"
+    ],
+    "ja": "ぼくたちは ゲームを はじめる",
+    "fallbackEn": [
+      "We",
+      "start",
+      "a",
+      "game"
+    ],
+    "fallbackJa": "ぼくたちは ゲームを はじめる"
+  },
+  {
+    "id": "i-pay-the-money",
+    "category": "daily",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "pay",
+      "the",
+      "money"
+    ],
+    "ja": "わたしは おかねを はらう",
+    "fallbackEn": [
+      "I",
+      "pay",
+      "the",
+      "money"
+    ],
+    "fallbackJa": "わたしは おかねを はらう"
+  },
+  {
+    "id": "i-am-a-child",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "am",
+      "a",
+      "child"
+    ],
+    "ja": "ぼくは こども だよ",
+    "fallbackEn": [
+      "I",
+      "am",
+      "a",
+      "child"
+    ],
+    "fallbackJa": "ぼくは こども だよ"
+  },
+  {
+    "id": "he-is-a-man",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "He",
+      "is",
+      "a",
+      "man"
+    ],
+    "ja": "あのひとは おとこのひと だよ",
+    "fallbackEn": [
+      "He",
+      "is",
+      "a",
+      "man"
+    ],
+    "fallbackJa": "あのひとは おとこのひと だよ"
+  },
+  {
+    "id": "she-is-a-woman",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "She",
+      "is",
+      "a",
+      "woman"
+    ],
+    "ja": "あのひとは おんなのひと だよ",
+    "fallbackEn": [
+      "She",
+      "is",
+      "a",
+      "woman"
+    ],
+    "fallbackJa": "あのひとは おんなのひと だよ"
+  },
+  {
+    "id": "this-is-my-money",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "my",
+      "money"
+    ],
+    "ja": "これは わたしの おかね だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "my",
+      "money"
+    ],
+    "fallbackJa": "これは わたしの おかね だよ"
+  },
+  {
+    "id": "my-name-is-ken",
+    "category": "greeting",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "My",
+      "name",
+      "is",
+      "Ken"
+    ],
+    "ja": "ぼくの なまえは ケン だよ",
+    "fallbackEn": [
+      "My",
+      "name",
+      "is",
+      "Ken"
+    ],
+    "fallbackJa": "ぼくの なまえは ケン だよ"
+  },
+  {
+    "id": "the-world-is-big",
+    "category": "daily",
+    "grammar": "beVerb",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "The",
+      "world",
+      "is",
+      "big"
+    ],
+    "ja": "せかいは おおきい",
+    "fallbackEn": [
+      "The",
+      "world",
+      "is",
+      "big"
+    ],
+    "fallbackJa": "せかいは おおきい"
+  },
+  {
+    "id": "this-is-my-job",
+    "category": "daily",
+    "grammar": "demonstratives",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "This",
+      "is",
+      "my",
+      "job"
+    ],
+    "ja": "これは わたしの おしごと だよ",
+    "fallbackEn": [
+      "This",
+      "is",
+      "my",
+      "job"
+    ],
+    "fallbackJa": "これは わたしの おしごと だよ"
+  },
+  {
+    "id": "i-work-with-mom",
+    "category": "home",
+    "grammar": "presentSimple",
+    "gradeBand": 1,
+    "contentLemmas": [],
+    "slots": [],
+    "en": [
+      "I",
+      "work",
+      "with",
+      "mom"
+    ],
+    "ja": "ぼくは ママと はたらく",
+    "fallbackEn": [
+      "I",
+      "work",
+      "with",
+      "mom"
+    ],
+    "fallbackJa": "ぼくは ママと はたらく"
   }
 ]
