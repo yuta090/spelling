@@ -9,6 +9,12 @@ import SpellingSyncCore
 // - 未成年実名のため **ローカル保存のみ**（同期しない・解析に送らない）。
 // - 名前は綴り練習の出題語にしない（resolver 側で contentLemmas から除外済み）。
 // - アバターは新しい見た目を増やさず、既存キャラ図鑑(HomeRewardCharacter)から選ぶ。
+//
+// 画面の狙い（UX）：
+// - 子のキャラ（オンボーディングで選択済み）と名前は最初から分かっている。
+//   → ヒーローで「◯◯の名前が問題に登場する」を名前入り例文つきで先に見せ、
+//     登録はかな・ローマ字・アバターをプリフィルして「確認して保存するだけ」にする。
+// - 例文中の名前はキャラ色でハイライトし、「自分の名前で問題が作られる」を一目で伝える。
 
 private enum CastPalette {
     static let primary = Color(red: 0.17, green: 0.45, blue: 0.24)
@@ -16,6 +22,7 @@ private enum CastPalette {
     static let surface = Color.white.opacity(0.92)
     static let surfaceTint = Color(red: 0.97, green: 0.99, blue: 0.97)
     static let ink = Color(red: 0.12, green: 0.22, blue: 0.34)
+    static let spark = Color(red: 0.98, green: 0.72, blue: 0.18)
 }
 
 // MARK: - 本体
@@ -34,47 +41,8 @@ struct ParentCastPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            intro
-
-            // 本人
-            castSection(
-                title: language.text(japanese: "本人", english: "Child"),
-                systemImage: "person.fill"
-            ) {
-                if let child {
-                    personRow(child)
-                } else {
-                    addButton(
-                        label: language.text(japanese: "本人を登録", english: "Add child"),
-                        systemImage: "person.badge.plus"
-                    ) {
-                        editing = CastDraft(role: .child)
-                    }
-                }
-            }
-
-            // 友達（複数）
-            castSection(
-                title: language.text(japanese: "ともだち", english: "Friends"),
-                systemImage: "person.2.fill"
-            ) {
-                if friends.isEmpty {
-                    Text(language.text(japanese: "まだいません。追加すると例文に名前が出ます。",
-                                       english: "None yet. Add friends to see their names in lines."))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(friends) { personRow($0) }
-                }
-                addButton(
-                    label: language.text(japanese: "ともだちを追加", english: "Add friend"),
-                    systemImage: "plus.circle.fill"
-                ) {
-                    editing = CastDraft(role: .friend)
-                }
-            }
-
-            // 例文セットのプレビュー（親側ツール・子フローには出さない）
+            heroCard
+            castGridSection
             previewSection
         }
         .sheet(item: $editing) { draft in
@@ -84,27 +52,277 @@ struct ParentCastPanel: View {
         }
     }
 
-    // MARK: 部品
+    // MARK: ヒーロー（子のキャラ＋名前入り例文で「登録したい」を先に作る）
 
-    private var intro: some View {
-        HStack(spacing: 8) {
-            Text(language.text(japanese: "例文に名前を出す", english: "Names in example lines"))
-                .font(.title3.weight(.heavy))
-                .foregroundStyle(CastPalette.ink)
-            ParentInfoButton(
-                title: language.text(japanese: "例文に名前を出す", english: "Names in example lines"),
-                message: language.text(
-                    japanese: "登録した友達の名前が「Yuki likes apples」のように例文に登場します。本人は「Yuta, look!」のような呼びかけで出ます。",
-                    english: "Registered friends appear in lines like “Yuki likes apples.” The child appears as a call, e.g. “Yuta, look!”"
-                ),
-                tint: CastPalette.primary
-            )
-            Spacer(minLength: 0)
+    /// ヒーローに出すキャラ。登録済みならそのアバター、未登録でも子が選んだ現行キャラを使う。
+    private var heroCharacter: HomeRewardCharacter {
+        HomeRewardCharacter.character(id: child?.avatarCharacterID ?? model.selectedCharacterID)
+    }
+
+    /// ヒーローで呼ぶ子の名前（登録済み > プロフィール名 > 汎称）。
+    private var heroName: String {
+        let registered = child?.displayNameJa.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if !registered.isEmpty { return registered }
+        let profile = model.childName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !profile.isEmpty { return profile }
+        return language.text(japanese: "お子さん", english: "Your child")
+    }
+
+    /// ヒーロー例文の元になる Cast。未登録の間はプロフィール名から見本キャストを組む。
+    private var heroCast: Cast {
+        if hasActiveCast { return model.cast }
+        let kana = model.childName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let romaji = KanaRomaji.romanize(kana)
+        return Cast(people: [
+            CastPerson(role: .child, gender: .unspecified,
+                       displayNameJa: kana.isEmpty ? "ゆき" : kana,
+                       romaji: romaji.isEmpty ? "Yuki" : romaji,
+                       avatarCharacterID: model.selectedCharacterID),
+            // 見本用の友達1人（登録を促すための例。実データには入れない）。
+            CastPerson(role: .friend, gender: .boy,
+                       displayNameJa: "れん",
+                       romaji: "Ren",
+                       avatarCharacterID: HomeRewardCharacter.defaultID),
+        ])
+    }
+
+    /// ヒーローの吹き出しに出す1文（名前が実際に入っている文を優先して選ぶ）。
+    private var heroItem: SentenceItem? {
+        let cast = heroCast
+        let items = PersonalizedSessionBuilder.build(
+            templates: templates, cast: cast, category: nil, count: 8, seed: 0xCA_FE_F0_0D
+        )
+        let names = castNames(cast)
+        return items.first { item in
+            CastNameHighlighter.segments(in: item.en, names: names).contains(where: \.isName)
+        } ?? items.first
+    }
+
+    private var heroCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 14) {
+                RewardCharacterAvatar(character: heroCharacter)
+                    .frame(width: 92, height: 92)
+                    .shadow(color: heroCharacter.primary.opacity(0.25), radius: 10, x: 0, y: 5)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Text(language.text(japanese: "\(heroName)の名前が、英語の問題に登場！",
+                                           english: "\(heroName)'s name shows up in the questions!"))
+                            .font(.title3.weight(.heavy))
+                            .foregroundStyle(CastPalette.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                        ParentInfoButton(
+                            title: language.text(japanese: "なかまと例文", english: "Cast & lines"),
+                            message: language.text(
+                                japanese: "登録した友達の名前が「Yuki likes apples.」のように例文へ入ります。本人は「Yuta, look!」のような呼びかけで登場します。名前はこの iPad の中だけに保存され、送信されません。",
+                                english: "Registered friends appear in lines like “Yuki likes apples.” The child appears as a call, e.g. “Yuta, look!” Names stay on this iPad only and are never uploaded."
+                            ),
+                            tint: CastPalette.primary
+                        )
+                        Spacer(minLength: 0)
+                    }
+
+                    if let item = heroItem {
+                        heroBubble(item)
+                    }
+                }
+            }
+
+            if child == nil {
+                Button {
+                    editing = makeChildDraft()
+                } label: {
+                    Label(language.text(japanese: "\(heroName)を登録して名前入りにする",
+                                        english: "Add \(heroName) to personalize"),
+                          systemImage: "wand.and.stars")
+                        .font(.headline.weight(.heavy))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 13)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(CastPalette.primary)
+                .tapFeedback()
+
+                Text(language.text(japanese: "名前とキャラはもう入っています。確認して保存するだけです。",
+                                   english: "Name and character are already filled in — just review and save."))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            } else if friends.isEmpty {
+                Text(language.text(japanese: "つぎは、ともだちを追加すると会話の例文がにぎやかになります。",
+                                   english: "Next, add friends to make the dialogue lines livelier."))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(CastPalette.primarySoft)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .padding(16)
+        .background(
+            LinearGradient(colors: [heroCharacter.secondary.opacity(0.32), CastPalette.primarySoft],
+                           startPoint: .topLeading, endPoint: .bottomTrailing)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(alignment: .topTrailing) {
+            Image(systemName: "sparkles")
+                .font(.title3)
+                .foregroundStyle(CastPalette.spark)
+                .padding(10)
+        }
+    }
+
+    private func heroBubble(_ item: SentenceItem) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            castHighlightedText(item.en, cast: heroCast, baseColor: CastPalette.ink)
+                .font(.headline.weight(.bold))
+            castHighlightedText(item.ja, cast: heroCast, baseColor: .secondary)
+                .font(.subheadline)
+            if !hasActiveCast {
+                Text(language.text(japanese: "※ 見本です。登録すると本物の名前で作られます。",
+                                   english: "Sample — register to use real names."))
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 10)
+        .padding(.leading, 22)
+        .padding(.trailing, 12)
+        .background(BubbleWithTail().fill(Color.white.opacity(0.95)))
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    /// 子の登録ドラフト。プロフィールの名前・選択中キャラをプリフィルして「保存するだけ」にする。
+    private func makeChildDraft() -> CastDraft {
+        var draft = CastDraft(role: .child)
+        draft.displayNameJa = model.childName.trimmingCharacters(in: .whitespacesAndNewlines)
+        draft.romaji = KanaRomaji.romanize(draft.displayNameJa)
+        draft.avatarCharacterID = model.selectedCharacterID
+        return draft
+    }
+
+    /// 友達の新規ドラフト。まだ使われていないキャラをプリフィルする（全員おなじ顔を避ける）。
+    private func makeFriendDraft() -> CastDraft {
+        var draft = CastDraft(role: .friend)
+        let used = Set(model.cast.people.compactMap(\.avatarCharacterID))
+        draft.avatarCharacterID = HomeRewardCharacter.catalog
+            .first { model.unlockedCharacterIDs.contains($0.id) && !used.contains($0.id) }?
+            .id
+        return draft
+    }
+
+    // MARK: なかま一覧（アバター前面のカードグリッド）
+
+    private var castGridSection: some View {
+        castSection(
+            title: language.text(japanese: "とうじょうする なかま", english: "Cast"),
+            systemImage: "person.2.fill"
+        ) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 10)], spacing: 10) {
+                if let child {
+                    personCard(child)
+                } else {
+                    addCard(label: language.text(japanese: "本人を登録", english: "Add child"),
+                            systemImage: "person.badge.plus") {
+                        editing = makeChildDraft()
+                    }
+                }
+                ForEach(friends) { personCard($0) }
+                addCard(label: language.text(japanese: "ともだちを追加", english: "Add friend"),
+                        systemImage: "plus.circle.fill") {
+                    editing = makeFriendDraft()
+                }
+            }
+
+            if friends.count < 3 {
+                Label(language.text(japanese: "ともだちが増えるほど、例文のバリエーションが増えます。",
+                                    english: "More friends, more variety in the lines."),
+                      systemImage: "sparkles")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(CastPalette.primary)
+            }
+
+            Label(language.text(japanese: "名前はこの iPad の中だけに保存されます（送信しません）。",
+                                english: "Names are stored on this iPad only (never uploaded)."),
+                  systemImage: "lock.fill")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func personCard(_ person: CastPerson) -> some View {
+        let character = HomeRewardCharacter.character(id: person.avatarCharacterID ?? HomeRewardCharacter.defaultID)
+        return Button {
+            editing = CastDraft(person: person)
+        } label: {
+            VStack(spacing: 8) {
+                CastAvatarBadge(characterID: person.avatarCharacterID, size: 64)
+                Text(person.displayNameJa.isEmpty ? person.romaji : person.displayNameJa)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(CastPalette.ink)
+                    .lineLimit(1)
+                Text(person.romaji)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                HStack(spacing: 5) {
+                    if person.role == .child {
+                        roleChip(language.text(japanese: "本人", english: "Child"), color: CastPalette.primary)
+                    } else {
+                        genderChip(person.gender)
+                    }
+                    if !person.isActive {
+                        roleChip(language.text(japanese: "おやすみ", english: "Off"), color: .secondary)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 8)
+            .background(CastPalette.surfaceTint)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(character.primary.opacity(0.30), lineWidth: 1.5)
+            )
+            .opacity(person.isActive ? 1 : 0.55)
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+    }
+
+    private func addCard(label: String, systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(CastPalette.primary)
+                    .frame(width: 64, height: 64)
+                Text(label)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(CastPalette.primary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 8)
+            .background(CastPalette.primarySoft.opacity(0.5))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(CastPalette.primary.opacity(0.45),
+                            style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
+            )
+        }
+        .buttonStyle(.plain)
+        .tapFeedback()
+    }
+
+    private func roleChip(_ label: String, color: Color) -> some View {
+        Text(label)
+            .font(.caption2.weight(.bold))
+            .foregroundStyle(color)
+            .padding(.horizontal, 7).padding(.vertical, 2)
+            .background(color.opacity(0.14))
+            .clipShape(Capsule())
     }
 
     // MARK: 例文セットのプレビュー
@@ -136,10 +354,10 @@ struct ParentCastPanel: View {
     @ViewBuilder
     private var previewSection: some View {
         castSection(
-            title: language.text(japanese: "例文セットをみる", english: "Preview lines"),
+            title: language.text(japanese: "こんな問題が作られます", english: "Lines they'll see"),
             systemImage: "text.bubble.fill",
             info: (
-                title: language.text(japanese: "例文セットをみる", english: "Preview lines"),
+                title: language.text(japanese: "こんな問題が作られます", english: "Lines they'll see"),
                 message: language.text(
                     japanese: "カテゴリをえらぶと、登録したなかまの名前が入った例文セットを確認できます。",
                     english: "Pick a category to preview a set of example lines with your cast’s names."
@@ -210,18 +428,29 @@ struct ParentCastPanel: View {
     }
 
     private func sentenceRow(_ item: SentenceItem) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(item.en)
-                .font(.headline.weight(.bold))
-                .foregroundStyle(CastPalette.ink)
-            Text(item.ja)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        HStack(alignment: .top, spacing: 10) {
+            if let person = firstNamedPerson(in: item) {
+                CastAvatarBadge(characterID: person.avatarCharacterID, size: 34)
+            }
+            VStack(alignment: .leading, spacing: 3) {
+                castHighlightedText(item.en, cast: model.cast, baseColor: CastPalette.ink)
+                    .font(.headline.weight(.bold))
+                castHighlightedText(item.ja, cast: model.cast, baseColor: .secondary)
+                    .font(.subheadline)
+            }
+            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
         .background(CastPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    /// 英文の最初に名前が出る人（行の左に小さいアバターを添える）。
+    private func firstNamedPerson(in item: SentenceItem) -> CastPerson? {
+        let segments = CastNameHighlighter.segments(in: item.en, names: castNames(model.cast))
+        guard let name = segments.first(where: \.isName)?.text else { return nil }
+        return model.cast.people.first { $0.isActive && ($0.romaji == name || $0.displayNameJa == name) }
     }
 
     private func categoryLabel(_ category: SentenceCategory) -> String {
@@ -258,49 +487,6 @@ struct ParentCastPanel: View {
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
     }
 
-    private func personRow(_ person: CastPerson) -> some View {
-        Button {
-            editing = CastDraft(person: person)
-        } label: {
-            HStack(spacing: 32) {
-                CastAvatarBadge(characterID: person.avatarCharacterID, size: 46)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text(person.displayNameJa.isEmpty ? person.romaji : person.displayNameJa)
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(CastPalette.ink)
-                        if !person.isActive {
-                            Text(language.text(japanese: "おやすみ", english: "Off"))
-                                .font(.caption2.weight(.bold))
-                                .padding(.horizontal, 6).padding(.vertical, 2)
-                                .background(Color.secondary.opacity(0.18))
-                                .clipShape(Capsule())
-                        }
-                    }
-                    HStack(spacing: 6) {
-                        Text(person.romaji)
-                            .font(.subheadline.monospaced())
-                            .foregroundStyle(.secondary)
-                        if person.role == .friend {
-                            genderChip(person.gender)
-                        }
-                    }
-                }
-
-                Spacer(minLength: 0)
-                Image(systemName: "chevron.right")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.secondary)
-            }
-            .padding(10)
-            .background(CastPalette.surfaceTint)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-        .buttonStyle(.plain)
-        .tapFeedback()
-    }
-
     private func genderChip(_ gender: PersonGender) -> some View {
         let (label, color): (String, Color) = {
             switch gender {
@@ -309,24 +495,54 @@ struct ParentCastPanel: View {
             case .unspecified: return (language.text(japanese: "未設定", english: "—"), Color.secondary)
             }
         }()
-        return Text(label)
-            .font(.caption2.weight(.bold))
-            .foregroundStyle(color)
-            .padding(.horizontal, 7).padding(.vertical, 2)
-            .background(color.opacity(0.14))
-            .clipShape(Capsule())
+        return roleChip(label, color: color)
     }
+}
 
-    private func addButton(label: String, systemImage: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Label(label, systemImage: systemImage)
-                .font(.headline.weight(.bold))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 11)
+// MARK: - 名前ハイライト（純ロジック CastNameHighlighter の描画側）
+
+/// 例文中のなかま名をその人のキャラ色＋太字で光らせた Text を組む。
+/// 名前→人の解決は romaji / かな名の完全一致（文はテンプレ由来なので一致が保証される）。
+private func castHighlightedText(_ text: String, cast: Cast, baseColor: Color) -> Text {
+    let people = cast.people.filter { $0.isActive }
+    let names = people.flatMap { [$0.romaji, $0.displayNameJa] }.filter { !$0.isEmpty }
+    var result = Text(verbatim: "")
+    for segment in CastNameHighlighter.segments(in: text, names: names) {
+        if segment.isName,
+           let person = people.first(where: { $0.romaji == segment.text || $0.displayNameJa == segment.text }) {
+            let character = HomeRewardCharacter.character(id: person.avatarCharacterID ?? HomeRewardCharacter.defaultID)
+            result = result + Text(segment.text)
+                .foregroundColor(character.accent)
+                .fontWeight(.heavy)
+        } else {
+            result = result + Text(segment.text).foregroundColor(baseColor)
         }
-        .buttonStyle(.bordered)
-        .tint(CastPalette.primary)
-        .tapFeedback()
+    }
+    return result
+}
+
+/// ハイライト対象の名前一覧（active かつ romaji が空でない人の romaji・かな名）。
+private func castNames(_ cast: Cast) -> [String] {
+    cast.people
+        .filter { $0.isActive && !$0.romaji.isEmpty }
+        .flatMap { [$0.romaji, $0.displayNameJa] }
+}
+
+/// 左に小さなしっぽの付いた吹き出し（ヒーローのキャラが話している見た目にする）。
+private struct BubbleWithTail: Shape {
+    func path(in rect: CGRect) -> Path {
+        let tail: CGFloat = 10
+        var path = Path()
+        path.addRoundedRect(
+            in: CGRect(x: tail, y: 0, width: max(rect.width - tail, 0), height: rect.height),
+            cornerSize: CGSize(width: 12, height: 12)
+        )
+        let midY = min(rect.height * 0.5, 34)
+        path.move(to: CGPoint(x: tail + 2, y: midY - 8))
+        path.addLine(to: CGPoint(x: 0, y: midY))
+        path.addLine(to: CGPoint(x: tail + 2, y: midY + 8))
+        path.closeSubpath()
+        return path
     }
 }
 
@@ -338,10 +554,14 @@ private struct CastPersonEditorSheet: View {
     var language: AppLanguage
 
     @State private var draft: CastDraft
+    /// ローマ字欄を親が触ったら自動補完をやめる（手入力を上書きしない）。
+    @State private var romajiTouched: Bool
+    @FocusState private var romajiFocused: Bool
 
     init(language: AppLanguage, draft: CastDraft) {
         self.language = language
         _draft = State(initialValue: draft)
+        _romajiTouched = State(initialValue: draft.personID != nil)
     }
 
     private var isFriend: Bool { draft.role == .friend }
@@ -362,6 +582,7 @@ private struct CastPersonEditorSheet: View {
                     nameFields
                     if isFriend { genderField }
                     avatarField
+                    draftPreview
                     if isFriend { activeField }
                     if draft.personID != nil { deleteButton }
                 }
@@ -399,14 +620,26 @@ private struct CastPersonEditorSheet: View {
                 hint: language.text(japanese: "例：ゆき", english: "e.g. Yuki"),
                 text: $draft.displayNameJa
             )
+            .onChange(of: draft.displayNameJa) { newValue in
+                // かな入力に追従してローマ字を自動補完（親がローマ字欄を触るまで）。変換不能なら触らない。
+                guard !romajiTouched else { return }
+                let romanized = KanaRomaji.romanize(newValue)
+                if !romanized.isEmpty || newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    draft.romaji = romanized
+                }
+            }
             field(
                 title: language.text(japanese: "ローマ字（英文に出る綴り）", english: "Romaji (spelled in lines)"),
                 hint: "Yuki",
                 text: $draft.romaji
             )
+            .focused($romajiFocused)
+            .onChange(of: romajiFocused) { focused in
+                if focused { romajiTouched = true }
+            }
             Text(language.text(
-                japanese: "※ ローマ字は英字のみ・1語（例文では「Yuki」のまま出ます）。",
-                english: "Romaji: letters only, one word (appears as “Yuki”)."
+                japanese: "※ ローマ字は英字のみ・1語（例文では「Yuki」のまま出ます）。かなを入れると自動で入ります。",
+                english: "Romaji: letters only, one word (appears as “Yuki”). Auto-filled from kana."
             ))
             .font(.caption)
             .foregroundStyle(.secondary)
@@ -441,6 +674,60 @@ private struct CastPersonEditorSheet: View {
             CastAvatarPicker(selection: $draft.avatarCharacterID,
                              unlockedIDs: model.unlockedCharacterIDs,
                              language: language)
+        }
+    }
+
+    // MARK: この名前でどう出るか（保存前のライブプレビュー）
+
+    /// 入力途中のドラフトを既存 cast に合成し、その人の名前が入った例文を1つ選ぶ。
+    private var draftPreviewItem: (item: SentenceItem, cast: Cast)? {
+        let romaji = AppModel.normalizeRomaji(draft.romaji)
+        guard !romaji.isEmpty, romaji.allSatisfy({ $0.isLetter && $0.isASCII }) else { return nil }
+        let personID = draft.personID ?? draft.id
+        let person = CastPerson(
+            id: personID,
+            role: draft.role,
+            gender: draft.role == .child ? .unspecified : draft.gender,
+            displayNameJa: draft.displayNameJa.trimmingCharacters(in: .whitespacesAndNewlines),
+            romaji: romaji,
+            avatarCharacterID: draft.avatarCharacterID,
+            isActive: true
+        )
+        var people = model.cast.people.filter { $0.id != personID }
+        if person.role == .child { people.removeAll { $0.role == .child } }
+        people.append(person)
+        let cast = Cast(people: people)
+
+        let items = PersonalizedSessionBuilder.build(
+            templates: RealContentTemplates.cachedTemplates,
+            cast: cast, category: nil, count: 12, seed: 0xD1_2A_FF_07
+        )
+        let ownNames = [person.romaji, person.displayNameJa].filter { !$0.isEmpty }
+        let item = items.first { item in
+            CastNameHighlighter.segments(in: item.en, names: ownNames).contains(where: \.isName)
+        }
+        return item.map { ($0, cast) }
+    }
+
+    @ViewBuilder
+    private var draftPreview: some View {
+        if let preview = draftPreviewItem {
+            VStack(alignment: .leading, spacing: 6) {
+                Label(language.text(japanese: "こんなふうに出ます", english: "How it will look"),
+                      systemImage: "text.bubble")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(CastPalette.primary)
+                VStack(alignment: .leading, spacing: 3) {
+                    castHighlightedText(preview.item.en, cast: preview.cast, baseColor: CastPalette.ink)
+                        .font(.headline.weight(.bold))
+                    castHighlightedText(preview.item.ja, cast: preview.cast, baseColor: .secondary)
+                        .font(.subheadline)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+                .background(CastPalette.primarySoft.opacity(0.6))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
         }
     }
 
@@ -536,7 +823,7 @@ private struct CastAvatarPicker: View {
 
 /// 編集シートを駆動する一時状態。`personID == nil` は新規。
 private struct CastDraft: Identifiable {
-    let id = UUID()           // シート識別用
+    let id = UUID()           // シート識別用（新規時はライブプレビューの仮 person id にも使う）
     var personID: UUID?       // 既存人物 id（nil=新規）
     var role: CastRole
     var displayNameJa: String = ""
