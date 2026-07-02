@@ -196,7 +196,12 @@ final class AppModel: ObservableObject {
     }
 
     @Published var attempts: [SpellingAttempt] = [] {
-        didSet { guard !isReloadingProfile else { return }; saveAttempts() }
+        didSet {
+            guard !isReloadingProfile else { return }
+            saveAttempts()
+            // 新しい答案の自動同期（同期由来の反映では起こさない）。
+            if !isApplyingMergedAttempts { requestSync() }
+        }
     }
 
     @Published var practiceSamples: [PracticeSample] = [] {
@@ -1528,6 +1533,15 @@ final class AppModel: ObservableObject {
     private let wordSidecarKey = "spellingTrainer.sync.wordSidecar"
     private let wordCursorsKey = "spellingTrainer.sync.cursors"
 
+    /// 採点同期（attempts・append-only）の 1 サイクルを回すコーディネータ（pull→merge→画像DL／UL→push）。
+    private lazy var attemptSyncCoordinator = AttemptSyncCoordinator()
+    /// attempts 同期カーソル（プロファイル別・pull は profile_id で絞る）。`childScopedKeys` 済み。
+    private let attemptCursorsKey = "spellingTrainer.sync.attemptCursors"
+    /// 同期由来の attempts 反映が、編集トリガ（requestSync）を再帰的に誘発しないためのフラグ。
+    private var isApplyingMergedAttempts = false
+    /// 手書き画像のダウンロードに失敗した答案 id（セッション限りの負キャッシュ・404 連打防止）。
+    private var attemptDrawingDownloadMisses: Set<UUID> = []
+
     /// 同期サイクルが対象とするアクティブプロファイル（サイクル開始時に捕捉する）。台帳は常に1人以上いる。
     var activeProfileIDForSync: UUID { profileRegistry.activeProfileID }
 
@@ -1649,6 +1663,168 @@ final class AppModel: ObservableObject {
         try await wordSyncCoordinator.sync(appModel: self, householdID: householdID)
     }
 
+    // MARK: - attempts 同期（採点同期の土台 / SpellingSyncCore）
+
+    /// attempts の 1 サイクル同期（世帯未選択なら何もしない）。
+    /// `AttemptSyncCoordinator` がアクティブプロファイルを捕捉し、profile_id で pull を絞り、
+    /// 画像の DL/UL を挟んで push する。スコープ・ガードは words と共通（`canContinueWordSync`）。
+    func syncAttempts(householdID: UUID?) async throws {
+        try await attemptSyncCoordinator.sync(appModel: self, householdID: householdID)
+    }
+
+    /// 指定プロファイルの attempts 同期カーソルを **そのプロファイルのスコープから明示的に** 読む。
+    func loadAttemptSyncState(profileID: UUID) -> AttemptSyncState {
+        guard let scoped = profileScopedStore else {
+            return AttemptSyncState(
+                cursors: persistenceStore.load(SyncCursors.self, key: attemptCursorsKey) ?? SyncCursors()
+            )
+        }
+        let cursors = scoped.loadScoped(attemptCursorsKey, profileID: profileID)
+            .flatMap { try? JSONDecoder().decode(SyncCursors.self, from: $0) } ?? SyncCursors()
+        return AttemptSyncState(cursors: cursors)
+    }
+
+    /// 指定プロファイルの attempts 同期カーソルを **そのプロファイルのスコープへ明示的に** 保存する。
+    func saveAttemptSyncState(_ state: AttemptSyncState, profileID: UUID) {
+        guard let scoped = profileScopedStore else {
+            persistenceStore.save(state.cursors, key: attemptCursorsKey)
+            return
+        }
+        if let data = try? JSONEncoder().encode(state.cursors) {
+            scoped.saveScoped(data, key: attemptCursorsKey, profileID: profileID)
+        }
+    }
+
+    /// ローカル答案 → 同期レコード（`AttemptSyncRecord`）。attempt は append-only／作成後不変なので
+    /// `updatedAt = createdAt = date`、`deletedAt = nil`。`profileID`/`householdID` は同期文脈から刻む。
+    /// `mode` はローカルに持たないため "test" 固定で送る（採点対象＝テスト答案。ローカルでは未使用）。
+    /// `drawingPath` は手書きがある答案にだけ決定論パスを付ける（アップロードはコーディネータが push 前に行う）。
+    func localAttemptsForSync(householdID: UUID, profileID: UUID) -> [AttemptSyncRecord] {
+        attempts.map { attempt in
+            let hasDrawing = attempt.drawingData != nil || attempt.drawingPath != nil
+            let path = hasDrawing
+                ? DrawingStoragePath.attempt(householdID: householdID, profileID: profileID, attemptID: attempt.id)
+                : nil
+            return AttemptSyncRecord(
+                sync: SyncMetadata(
+                    id: attempt.id,
+                    householdID: householdID,
+                    profileID: profileID,
+                    createdAt: attempt.date,
+                    updatedAt: attempt.date,
+                    deletedAt: nil
+                ),
+                payload: AttemptSyncPayload(
+                    sessionID: attempt.sessionID,
+                    stepID: nil,                                  // ローカルに UUID step_id は無い（§7.5）
+                    wordID: attempt.wordID,
+                    expectedWord: attempt.word,
+                    mode: "test",
+                    recognizedText: attempt.recognizedText,
+                    ocrConfidence: nil,
+                    autoDecision: attempt.autoDecision.rawValue,   // 不変スナップショット（親採点で書き換わる decision は送らない）
+                    drawingPath: path,
+                    submittedAt: attempt.date
+                )
+            )
+        }
+    }
+
+    /// マージ後の attempts をローカルへ反映する（id で upsert）。
+    /// - append-only なので既存はほぼ不変。リモート由来の新規は取り込み、`drawingData` は後追いDL。
+    /// - `drawingData`/`canvasSize`／親採点（reviews は PR3）などのローカル固有値は既存を保持する。
+    /// - tombstone は取り込まない（attempt は削除しない前提の安全側）。
+    func applyMergedAttempts(_ merged: [AttemptSyncRecord]) {
+        let existingByID = Dictionary(attempts.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let mapped = merged
+            .filter { $0.sync.deletedAt == nil }
+            .sorted {
+                $0.payload.submittedAt != $1.payload.submittedAt
+                    ? $0.payload.submittedAt < $1.payload.submittedAt
+                    : $0.sync.id.uuidString < $1.sync.id.uuidString   // 同時刻は id で安定化（並び churn 防止）
+            }
+            .map { record -> SpellingAttempt in
+                let prior = existingByID[record.sync.id]
+                let auto = GradeDecision(rawValue: record.payload.autoDecision) ?? .needsReview
+                return SpellingAttempt(
+                    id: record.sync.id,
+                    word: record.payload.expectedWord,
+                    wordID: record.payload.wordID,
+                    recognizedText: record.payload.recognizedText,
+                    // decision（表示/SRS）はローカルの親採点上書きを保持。無ければ端末自動判定で初期化。
+                    decision: prior?.decision ?? auto,
+                    autoDecision: auto,                               // 端末自動判定の不変スナップショット
+                    drawingData: prior?.drawingData,                 // バイト列はローカル権威。無ければ後追いDL。
+                    canvasSize: prior?.canvasSize,                   // 未同期（ローカル表示用）
+                    drawingPath: record.payload.drawingPath ?? prior?.drawingPath,
+                    date: record.payload.submittedAt,
+                    sessionID: record.payload.sessionID,
+                    parentReviewDecision: prior?.parentReviewDecision ?? .unreviewed,   // 採点は PR3
+                    parentExampleDrawingData: prior?.parentExampleDrawingData,
+                    parentReviewedAt: prior?.parentReviewedAt,
+                    srsReflectedParentDecision: prior?.srsReflectedParentDecision ?? .unreviewed
+                )
+            }
+        // 防御: attempt は append-only（サーバも delete 不可）。万一 inbound tombstone が
+        // ローカルの生存答案を LWW で消しても、手書きバイト等のローカル値を失わないよう、
+        // mapped に現れないローカル答案は残す（=受信 tombstone で答案を消さない）。
+        let mappedIDs = Set(mapped.map(\.id))
+        let preserved = attempts.filter { !mappedIDs.contains($0.id) }
+        let result = mapped + preserved
+        if result != attempts {
+            isApplyingMergedAttempts = true
+            attempts = result
+            isApplyingMergedAttempts = false
+        }
+    }
+
+    /// push 対象のローカル手書きを Storage へアップロードする（push の前にコーディネータが呼ぶ）。
+    /// **失敗したら throw する**：画像が上がっていないのに行だけ push すると `drawing_path` が
+    /// 実体の無いパスを指し（download 404 の温床）、append-only ゆえ二度と再アップロードもされない。
+    /// throw で push を中止すれば high-water が進まず、次サイクルで丸ごと再試行される（整合を保つ）。
+    func uploadAttemptDrawings(_ records: [AttemptSyncRecord], storage: DrawingStorage) async throws {
+        let bytesByID = Dictionary(
+            attempts.compactMap { a in a.drawingData.map { (a.id, $0) } },
+            uniquingKeysWith: { first, _ in first }
+        )
+        for record in records {
+            guard let path = record.payload.drawingPath, let data = bytesByID[record.sync.id] else { continue }
+            try await storage.upload(data, to: path)
+        }
+    }
+
+    /// リモート由来でバイト列が無い答案（`drawingPath` 有り・`drawingData` 無し）の画像を後追いダウンロードする。
+    /// ベストエフォート（失敗＝次サイクルで再試行）。取得できたものだけまとめてローカルへ反映する。
+    /// ダウンロードの await 中にプロファイル切替が起きたら、書き戻し前に捕捉スコープ一致を確認して
+    /// 別プロファイルへ混ぜない（`attempts` の書込みは現在アクティブのスコープに落ちるため）。
+    func downloadMissingAttemptDrawings(storage: DrawingStorage, householdID: UUID, profileID: UUID) async {
+        // このセッションで取得に失敗した id は再試行しない（実体が無い画像の 404 連打を防ぐ）。
+        // アプリ再起動でクリアされるので、後から実体が上がれば次回起動時に再取得できる。
+        let pending = attempts.filter {
+            $0.drawingData == nil && $0.drawingPath != nil && !attemptDrawingDownloadMisses.contains($0.id)
+        }
+        guard !pending.isEmpty else { return }
+        var fetched: [UUID: Data] = [:]
+        for attempt in pending {
+            guard let path = attempt.drawingPath else { continue }
+            if let data = try? await storage.download(path) { fetched[attempt.id] = data }
+            else { attemptDrawingDownloadMisses.insert(attempt.id) }
+        }
+        guard !fetched.isEmpty else { return }
+        guard canContinueWordSync(householdID: householdID, profileID: profileID) else { return }
+        let updated = attempts.map { attempt -> SpellingAttempt in
+            guard let data = fetched[attempt.id] else { return attempt }
+            var copy = attempt
+            copy.drawingData = data
+            return copy
+        }
+        if updated != attempts {
+            isApplyingMergedAttempts = true
+            attempts = updated
+            isApplyingMergedAttempts = false
+        }
+    }
+
     // MARK: 自動同期トリガ（前面化／編集後／サインイン・世帯確定時）
 
     /// アクティブ世帯の供給元。アプリ起動時に `SyncSession` を注入する（未設定なら同期は無効）。
@@ -1684,6 +1860,11 @@ final class AppModel: ObservableObject {
             // バックグラウンド同期: 失敗は次トリガで回収。運用テレメトリにだけ薄く残す
             // （詳細メッセージや単語内容は送らない＝低カーディナリティのフラグのみ）。
             TelemetryCoordinator.shared.record(.syncPushFailed, payload: ["op": .string("syncWords")])
+        }
+        // 採点同期（attempts）。words とは独立に回す（片方の失敗でもう片方を止めない）。
+        do { try await syncAttempts(householdID: household) }
+        catch {
+            TelemetryCoordinator.shared.record(.syncPushFailed, payload: ["op": .string("syncAttempts")])
         }
     }
 

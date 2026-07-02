@@ -50,6 +50,8 @@
 		FACE0000000000000000CF09 /* SyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0A /* SyncSession.swift */; };
 		FACE0000000000000000CF0B /* SyncDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0C /* SyncDebugView.swift */; };
 		FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF0E /* WordSyncCoordinator.swift */; };
+		FACE0000000000000000AD10 /* DrawingStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000AD11 /* DrawingStorage.swift */; };
+		FACE0000000000000000AD12 /* AttemptSyncCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000AD13 /* AttemptSyncCoordinator.swift */; };
 		FACE0000000000000000CF0F /* SpellingSyncCore in Frameworks */ = {isa = PBXBuildFile; productRef = FACE0000000000000000CF10 /* SpellingSyncCore */; };
 		FACE0000000000000000CF13 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000CF14 /* OnboardingView.swift */; };
 		FACE0000000000000000FF7A /* ParentGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACE0000000000000000FF7B /* ParentGuideView.swift */; };
@@ -121,6 +123,8 @@
 		FACE0000000000000000CF0A /* SyncSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSession.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF0C /* SyncDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncDebugView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF0E /* WordSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordSyncCoordinator.swift; sourceTree = "<group>"; };
+		FACE0000000000000000AD11 /* DrawingStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingStorage.swift; sourceTree = "<group>"; };
+		FACE0000000000000000AD13 /* AttemptSyncCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttemptSyncCoordinator.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF14 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000FF7B /* ParentGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentGuideView.swift; sourceTree = "<group>"; };
 		FACE0000000000000000CF16 /* ParentGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentGateView.swift; sourceTree = "<group>"; };
@@ -212,6 +216,8 @@
 				FACE0000000000000000AE02 /* AnswerExplanationCard.swift */,
 				FACE0000000000000000CA04 /* ParentCastPanel.swift */,
 				FACE0000000000000000CF0E /* WordSyncCoordinator.swift */,
+				FACE0000000000000000AD11 /* DrawingStorage.swift */,
+				FACE0000000000000000AD13 /* AttemptSyncCoordinator.swift */,
 				FACE0000000000000000CF14 /* OnboardingView.swift */,
 				FACE0000000000000000FF7B /* ParentGuideView.swift */,
 				FACE0000000000000000CF16 /* ParentGateView.swift */,
@@ -392,6 +398,8 @@
 				FACE0000000000000000AE01 /* AnswerExplanationCard.swift in Sources */,
 				FACE0000000000000000CA03 /* ParentCastPanel.swift in Sources */,
 				FACE0000000000000000CF0D /* WordSyncCoordinator.swift in Sources */,
+				FACE0000000000000000AD10 /* DrawingStorage.swift in Sources */,
+				FACE0000000000000000AD12 /* AttemptSyncCoordinator.swift in Sources */,
 				FACE0000000000000000CF13 /* OnboardingView.swift in Sources */,
 				FACE0000000000000000FF7A /* ParentGuideView.swift in Sources */,
 				FACE0000000000000000CF15 /* ParentGateView.swift in Sources */,

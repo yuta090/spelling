@@ -440,9 +440,18 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
     /// 正規化テキスト照合にフォールバックする。
     var wordID: UUID?
     var recognizedText: String
+    /// 端末の採点表示。親採点で `.autoCorrect`/`.autoIncorrect` に**上書きされる**可変フィールド（UI/SRS用）。
     var decision: GradeDecision
+    /// 作成時の端末自動判定の**不変スナップショット**。親採点でも変えない＝採点同期(attempts.auto_decision)は
+    /// これを送る（`decision` は親判定で書き換わり、append-only の attempt に載せると整合が壊れるため分離）。
+    /// 親の採点結果は別行 `reviews`（PR3）で同期する。旧データは復号時に `decision` から埋める。
+    var autoDecision: GradeDecision
     var drawingData: Data?
     var canvasSize: DrawingCanvasSize?
+    /// 手書き画像の Supabase Storage キー（採点同期）。ローカルは `drawingData`（バイト列）が権威で、
+    /// これはリモート参照＝別端末から pull した答案の画像を後追いダウンロードするために持つ。
+    /// パスは決定論（`DrawingStoragePath`）。ローカル生成時は nil（バイト列のみ持ちアップロード時に確定）。
+    var drawingPath: String?
     var date = Date()
     var sessionID = UUID()
     var parentReviewDecision: ParentReviewDecision = .unreviewed
@@ -459,8 +468,10 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         case wordID
         case recognizedText
         case decision
+        case autoDecision
         case drawingData
         case canvasSize
+        case drawingPath
         case date
         case sessionID
         case parentReviewDecision
@@ -475,8 +486,10 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         wordID: UUID? = nil,
         recognizedText: String,
         decision: GradeDecision,
+        autoDecision: GradeDecision? = nil,
         drawingData: Data? = nil,
         canvasSize: DrawingCanvasSize? = nil,
+        drawingPath: String? = nil,
         date: Date = Date(),
         sessionID: UUID = UUID(),
         parentReviewDecision: ParentReviewDecision = .unreviewed,
@@ -489,8 +502,10 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         self.wordID = wordID
         self.recognizedText = recognizedText
         self.decision = decision
+        self.autoDecision = autoDecision ?? decision   // 未指定なら生成時の判定を不変スナップショットに採る
         self.drawingData = drawingData
         self.canvasSize = canvasSize
+        self.drawingPath = drawingPath
         self.date = date
         self.sessionID = sessionID
         self.parentReviewDecision = parentReviewDecision
@@ -506,8 +521,11 @@ struct SpellingAttempt: Identifiable, Equatable, Codable, Sendable {
         wordID = try container.decodeIfPresent(UUID.self, forKey: .wordID)
         recognizedText = try container.decodeIfPresent(String.self, forKey: .recognizedText) ?? ""
         decision = try container.decodeIfPresent(GradeDecision.self, forKey: .decision) ?? .needsReview
+        // 旧データは autoDecision を持たない → decision で埋める（pre-launch なので厳密復元は不要）。
+        autoDecision = try container.decodeIfPresent(GradeDecision.self, forKey: .autoDecision) ?? decision
         drawingData = try container.decodeIfPresent(Data.self, forKey: .drawingData)
         canvasSize = try container.decodeIfPresent(DrawingCanvasSize.self, forKey: .canvasSize)
+        drawingPath = try container.decodeIfPresent(String.self, forKey: .drawingPath)
         date = try container.decodeIfPresent(Date.self, forKey: .date) ?? Date()
         sessionID = try container.decodeIfPresent(UUID.self, forKey: .sessionID) ?? id
         parentReviewDecision = try container.decodeIfPresent(ParentReviewDecision.self, forKey: .parentReviewDecision) ?? .unreviewed
