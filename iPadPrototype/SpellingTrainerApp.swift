@@ -44,6 +44,10 @@ private struct RootView: View {
                 OnboardingView(session: session)
             }
         }
+            // アプリ全体を常にライト表示で固定する。子ども画面・保護者画面とも明るい配色を
+            // 前提にデザインしており（背景を白系でハードコード）、端末がダークモードだと
+            // 背景は白のまま文字だけ反転して「白背景に白文字」になり読めなくなるため。
+            .preferredColorScheme(.light)
             .task {
                 // 起動直後は scenePhase の .active 変化が来ないので、待ち処理より先に計測を開始する。
                 // beginUsageSession は冪等なので .active 変化と重なっても起点を落とさない。
