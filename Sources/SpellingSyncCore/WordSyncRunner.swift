@@ -1,10 +1,10 @@
 import Foundation
 
-/// `words` の 1 サイクル同期を **ポート越しに**実行する純粋オーケストレータ。
+/// `words` の 1 サイクル同期の**純粋オーケストレータ**（`merge` は純関数・`push` はトランスポート越し）。
 ///
-/// I/O（Supabase・UserDefaults・AppModel）は `WordSyncTransport`/`WordLocalSink` の
-/// 実装に逃がし、ここは「pull→plan→ingest→反映→push」の**手順だけ**を持つ。これにより
-/// 手順そのもの（世帯ごとカーソル・pull 後のローカル再読込・送れた分だけ high-water 前進）を
+/// I/O（Supabase）は `WordSyncTransport` に逃がし、ローカル読取〜反映の原子性は呼び出し側
+/// （コーディネータ）が `merge` の前後を await なしで同期実行して保つ。ここは「plan→ingest→カーソル前進」
+/// の**手順だけ**を持つ。これにより手順そのもの（世帯ごとカーソル・送れた分だけ high-water 前進）を
 /// アプリの XCTest ターゲット無しで `swift test` で検証できる。
 /// 設計: docs/supabase-adapter-design.md §7.5
 public enum WordSyncRunner {
@@ -17,52 +17,53 @@ public enum WordSyncRunner {
     public struct MergeOutcome: Sendable {
         /// pull 由来を確定したあとの状態（ingest 済み＋pull カーソル前進）。呼び出し側が永続化する。
         public let state: WordSyncState
+        /// UI へ反映する生存レコード（`LastWriteWins.live(merged)`）。呼び出し側が原子的に反映する。
+        public let live: [WordSyncRecord]
         /// 送信対象（`updatedAt` 昇順）。`push` フェーズに渡す。
         public let toPush: [WordSyncRecord]
 
-        public init(state: WordSyncState, toPush: [WordSyncRecord]) {
+        public init(state: WordSyncState, live: [WordSyncRecord], toPush: [WordSyncRecord]) {
             self.state = state
+            self.live = live
             self.toPush = toPush
         }
     }
 
-    /// フェーズ1: pull → （原子的に）plan＋UI 反映 → ingest → pull カーソル前進。
-    /// ローカル読取と反映は `sink.planAndApply` 内で **割り込み不可** に行うため、pull の await 中や
-    /// 計画中に入った編集を stale なマージで上書きしない。push が失敗しても、ここで返す `state` を
-    /// 永続化すれば取得済みデータは保持される。
+    /// フェーズ1（純粋）: pull 済みページ＋最新ローカル＋現状態 → plan → (新 state, 反映すべき live, toPush)。
+    ///
+    /// I/O を一切持たない **純関数**。呼び出し側（コーディネータ）が
+    /// 「pull(await) → スコープ再確認 → `localWords` 読取 → `merge` → `live` 反映 → 永続化」を
+    /// **await を挟まず同期**に連続実行することで原子性を保つ（pull の await 中に入った切替は、
+    /// コーディネータのスコープ・ガードで検出して副作用ごと破棄する）。これにより旧 `WordLocalSink`
+    /// のアクターホップ跨ぎ原子性トリックが不要になり、手順を `swift test` で純粋に検証できる。
     ///
     /// ⚠️ サイドカー基準は **pull で確定した分（`merged` − `toPush`）だけ**前進させる。送信対象
     /// （`toPush`）の基準前進は **push 成功後**（`push(...)` 内の ingest）に行う。フェーズ1で
     /// 送信対象まで ingest すると、push が失敗してこの state が永続化された場合に次サイクルの
     /// `project` が「変更なし」と誤判定し、未送信のローカル変更が二度と push されず取りこぼす。
-    public static func pullAndMerge(
+    public static func merge(
         table: String,
         householdID: UUID,
         state: WordSyncState,
-        transport: some WordSyncTransport,
-        sink: some WordLocalSink,
+        page: WordPullPage,
+        localWords: [LocalWord],
         now: Date,
         profileID: UUID? = nil
-    ) async throws -> MergeOutcome {
+    ) -> MergeOutcome {
         let key = cursorKey(table: table, householdID: householdID)
 
-        let page = try await transport.pullAll(table: table, since: state.cursors.pullCursor(for: key))
         let remote = page.rows.compactMap(WordWire.record(from:))
         let pushedThrough = state.cursors.pushedThrough(for: key)
-        let sidecar = state.sidecar
 
-        // 最新ローカルの読取・計画・反映を sink 側で原子的に行う。
-        let plan = await sink.planAndApply { localWords in
-            WordSyncReducer.plan(
-                localWords: localWords,
-                remote: remote,
-                store: sidecar,
-                now: now,
-                householdID: householdID,
-                profileID: profileID,
-                pushedThrough: pushedThrough
-            )
-        }
+        let plan = WordSyncReducer.plan(
+            localWords: localWords,
+            remote: remote,
+            store: state.sidecar,
+            now: now,
+            householdID: householdID,
+            profileID: profileID,
+            pushedThrough: pushedThrough
+        )
 
         // pull で確定した分（送信対象を除く）だけ基準を前進。送信対象は push 成功後に ingest する。
         let toPushIDs = Set(plan.toPush.map(\.id))
@@ -72,7 +73,7 @@ public enum WordSyncRunner {
         newState.sidecar.ingest(pullSettled)
         newState.cursors.advancePull(table: key, to: page.nextCursor)
 
-        return MergeOutcome(state: newState, toPush: plan.toPush)
+        return MergeOutcome(state: newState, live: LastWriteWins.live(plan.merged), toPush: plan.toPush)
     }
 
     /// フェーズ2: エンコード → push → （成功後に）サイドカー基準前進＋high-water 前進。

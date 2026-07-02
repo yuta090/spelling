@@ -45,7 +45,9 @@ public enum ProfileKeyScope {
         "spellingTrainer.selectedGrade",
         "spellingTrainer.cast",                     // 本人実名＝プロファイル別・ローカルのみ
         "spellingTrainer.aiJudgments",              // DEBUG のみ。子のテスト答案のAI採点記録＝子ども別
-        "spellingTrainer.aiJudgeConfig"             // DEBUG のみ。AI判定の実行パラメータ（子ども別に持つ）
+        "spellingTrainer.aiJudgeConfig",            // DEBUG のみ。AI判定の実行パラメータ（子ども別に持つ）
+        "spellingTrainer.sync.wordSidecar",         // 同期簿記はプロファイル別（Phase 5：子ごとに独立した dirty 基準/tombstone 台帳）
+        "spellingTrainer.sync.cursors"              // 同上：pull/push カーソルも子ごとに独立
     ]
 
     /// 世帯/端末グローバル（prefix しない）キー。
@@ -55,9 +57,8 @@ public enum ProfileKeyScope {
         "spellingTrainer.debugDisableDailyLimit",
         "spellingTrainer.debugAIJudgeOnTest",       // DEBUG のみ。端末のデバッグトグル（他 debug フラグと同じく端末単位）
         "spellingTrainer.migratedFromSwiftData.v1", // 端末の移行フラグ
-        "spellingTrainer.sync.activeHouseholdID",
-        "spellingTrainer.sync.wordSidecar",         // Phase 5 で (world,profile) 別に本対応
-        "spellingTrainer.sync.cursors",             // 同上
+        "spellingTrainer.sync.activeHouseholdID",   // 「今どの世帯か」は端末単位（子で分けない）
+        "spellingTrainer.sync.wordRemoteOwnerProfileID", // 世帯NULLストリームのオーナー（元の単一子）。端末単位・再割当なし（Phase 5）
         "spellingTrainer.profiles",                 // 台帳そのもの（端末）
         "spellingTrainer.activeProfileID",
         "spellingTrainer.migratedToProfiles.v1"     // プロファイル移行フラグ

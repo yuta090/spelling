@@ -545,6 +545,10 @@ final class AppModel: ObservableObject {
     /// 台帳（`profiles` キー）を実書き込みする生ストア。改名・切替で `persistRegistry()` が使う。
     /// フォールバック（名前空間化不可）時は nil＝台帳は永続化せずメモリ内のみ。
     private let profileRegistryStore: ProfileScopedRawStore?
+    /// 世帯 NULL ストリーム（`words.profile_id=NULL`）のオーナー（＝元の単一子）。**一度決めたら再割り当てしない**。
+    /// これがアクティブなときだけリモート同期を許す（Phase 5：詳細は `isSyncSafeForActiveProfile`）。
+    private var wordRemoteOwnerProfileID: UUID?
+    private let wordRemoteOwnerKey = "spellingTrainer.sync.wordRemoteOwnerProfileID"
     /// プロファイル再ロード中フラグ。true の間、子スコープ @Published の didSet（保存・派生修復・
     /// 同期要求）を止める。値は `loadChildScopedState()` が正規スコープから入れ直す（設計§4）。
     private var isReloadingProfile = false
@@ -624,6 +628,23 @@ final class AppModel: ObservableObject {
         #if DEBUG
         debugAIJudgeOnTest = persistenceStore.load(Bool.self, key: debugAIJudgeOnTestKey) ?? false
         #endif
+
+        // Phase 5: 世帯 NULL ストリームのオーナー（元の単一子）を解決・固定する（**再割り当てしない**）。
+        // これがアクティブなときだけリモート同期を許す＝別の子が世帯 NULL 行を取り込む/墓石化する事故を防ぐ。
+        let persistedOwner = persistenceStore.load(UUID.self, key: wordRemoteOwnerKey)
+        let resolvedOwner = WordRemoteOwner.resolve(current: persistedOwner, registry: profileRegistry)
+        wordRemoteOwnerProfileID = resolvedOwner
+        if let resolvedOwner, resolvedOwner != persistedOwner {
+            persistenceStore.save(resolvedOwner, key: wordRemoteOwnerKey)
+        }
+        // 旧・世帯グローバルだった同期簿記（サイドカー/カーソル）を、初回だけ **オーナー**スコープへ移す
+        // （冪等・着地済みならスキップ）。既存端末が「空サイドカーから全再 pull → ローカル語が now
+        // スタンプで墓石に勝つ」事故を避ける。
+        if let resolvedOwner, let scoped = profileScopedStore {
+            scoped.migrateGlobalKeys(
+                ["spellingTrainer.sync.wordSidecar", "spellingTrainer.sync.cursors"], into: resolvedOwner
+            )
+        }
 
         // 子スコープの全 @Published をアクティブプロファイルから読み込む（切替時と共用）。
         // 各プロパティは宣言時デフォルトで初期化済みなので、ここで正規スコープの値へ入れ替える。
@@ -776,11 +797,12 @@ final class AppModel: ObservableObject {
 
     /// 子プロファイルを1人追加する（親の「こどもを ふやす」用）。アクティブは変えない。作成した子の id を返す。
     /// 名前は前後空白を除いて保存（空も許容＝あとで改名できる）。
-    /// 同期サイクル進行中は追加しない（in-flight push が2人以上でサーバ到達する窓を作らない・設計§6／`isSyncSafeForActiveProfile`）。
+    /// 追加はアクティブプロファイルを変えないので、進行中の同期サイクル（捕捉プロファイル＝アクティブ）に
+    /// 干渉しない。もしサイクル進行中に人数が2人になっても、コーディネータは各 await 境界の
+    /// `canContinueWordSync`（適格性＝1人以下）で副作用を止めるため、in-flight push が混ざる窓は生じない。
     @discardableResult
     func addProfile(displayName: String) -> UUID? {
         guard profileScopedStore != nil else { return nil }   // フォールバック時は台帳を持たない
-        guard !isSyncCycleInFlight else { return nil }
         let profile = ChildProfile(
             displayName: displayName.trimmingCharacters(in: .whitespacesAndNewlines),
             createdAt: Date()
@@ -803,11 +825,12 @@ final class AppModel: ObservableObject {
 
     /// 子プロファイルを削除する（親の管理用）。最後の1人は消せない／未知IDは no-op。
     /// アクティブを消した場合は残りの先頭へ移り、スコープ差し替え＋再ロードする。
-    /// 削除は必ず2人以上の状態でしか起きない＝そのとき同期は hard-disable 中なので sync とは競合しない。
-    /// 注: 削除した子の `profiles/<id>/*` はストアに残る（孤児データ）。UUID は再利用しないので実害は無く、
-    /// プレフィックス一括削除の本対応は Phase 5（同期のプロファイル別化）でまとめて行う。
+    /// 削除は必ず2人以上の状態でしか起きない＝そのとき同期は据え置き中なので sync とは競合しない。
+    /// 削除後、消した子の `profiles/<id>/*`（同期簿記＝サイドカー/カーソルを含む）をローカルから
+    /// **prefix 一括 purge** する（Phase 5）。UUID は再利用しないので resurrection は起きない。
+    /// リモート行（`words.profile_id`）の掃除はサーバ側 provisioning（Phase 5b）で対応する。
     func deleteProfile(_ id: UUID) {
-        guard profileScopedStore != nil else { return }
+        guard let scoped = profileScopedStore else { return }
         let previousActive = profileRegistry.activeProfileID
         let updated = profileRegistry.removing(id)
         guard updated != profileRegistry else { return }   // 最後の1人／未知IDは no-op
@@ -816,10 +839,12 @@ final class AppModel: ObservableObject {
         if updated.activeProfileID != previousActive {
             applyActiveProfileChange()   // アクティブが移った → スコープ差し替え＆再ロード（内部で requestSync）
         } else if isSyncSafeForActiveProfile {
-            // 非アクティブを消して1人に戻った → 同期が再び安全に。無効中に溜めたアクティブ子の
+            // 非アクティブを消して1人に戻った → 同期が再び安全に。据え置き中に溜めたアクティブ子の
             // 編集をここでフラッシュ要求する（requestSync は安全でなければ内部で no-op）。
             requestSync()
         }
+        // 消した子のローカル孤児データを prefix 一括 purge（再スコープ後・アクティブは絶対に id でない）。
+        scoped.purgeProfile(id)
     }
 
     /// 子プロファイルの並べ替え（SwiftUI の `.onMove` 用）。アクティブ・人数は変えない。
@@ -1498,8 +1523,58 @@ final class AppModel: ObservableObject {
     // MARK: - words 同期（サイドカー方式 / SpellingSyncCore）
 
     /// `words` の 1 サイクル同期を回すコーディネータ（pull→merge→push）。
-    /// AppModel の永続化ストアを共有し、サイドカー/カーソルを端末に保存する。
-    private lazy var wordSyncCoordinator = WordSyncCoordinator(persistenceStore: persistenceStore)
+    /// 同期簿記はプロファイル別（Phase 5）。コーディネータは捕捉プロファイルのスコープへ
+    /// `loadWordSyncState`/`saveWordSyncState` 経由で読み書きする（AppModel が明示スコープ I/O を担う）。
+    private lazy var wordSyncCoordinator = WordSyncCoordinator()
+
+    /// 同期簿記キー（プロファイル別スコープ）。`ProfileKeyScope.childScopedKeys` にも登録済み。
+    private let wordSidecarKey = "spellingTrainer.sync.wordSidecar"
+    private let wordCursorsKey = "spellingTrainer.sync.cursors"
+
+    /// 同期サイクルが対象とするアクティブプロファイル（サイクル開始時に捕捉する）。台帳は常に1人以上いる。
+    var activeProfileIDForSync: UUID { profileRegistry.activeProfileID }
+
+    /// 同期を続行してよいか。捕捉スコープ `(household, profile)` が現在と一致し、かつ今の構成で安全なとき true。
+    /// コーディネータが pull/push の各 await 境界で確認する唯一のガード（切替が絡めば false になり副作用を止める）。
+    func canContinueWordSync(householdID: UUID, profileID: UUID) -> Bool {
+        isSyncSafeForActiveProfile
+            && householdIDProvider() == householdID
+            && profileRegistry.activeProfileID == profileID
+    }
+
+    /// 指定プロファイルの同期簿記（サイドカー＋カーソル）を **そのプロファイルのスコープから明示的に** 読む。
+    /// アクティブ prefix に依存しないので、pull の await 中に切替が起きても捕捉プロファイルの簿記を取り違えない。
+    func loadWordSyncState(profileID: UUID) -> WordSyncState {
+        guard let scoped = profileScopedStore else {
+            // 名前空間化不可のフォールバック（想定外）は素の store をそのまま使う。
+            return WordSyncState(
+                sidecar: persistenceStore.load(WordSidecarStore.self, key: wordSidecarKey) ?? WordSidecarStore(),
+                cursors: persistenceStore.load(SyncCursors.self, key: wordCursorsKey) ?? SyncCursors()
+            )
+        }
+        let decoder = JSONDecoder()
+        let sidecar = scoped.loadScoped(wordSidecarKey, profileID: profileID)
+            .flatMap { try? decoder.decode(WordSidecarStore.self, from: $0) } ?? WordSidecarStore()
+        let cursors = scoped.loadScoped(wordCursorsKey, profileID: profileID)
+            .flatMap { try? decoder.decode(SyncCursors.self, from: $0) } ?? SyncCursors()
+        return WordSyncState(sidecar: sidecar, cursors: cursors)
+    }
+
+    /// 指定プロファイルの同期簿記を **そのプロファイルのスコープへ明示的に** 保存する。
+    func saveWordSyncState(_ state: WordSyncState, profileID: UUID) {
+        guard let scoped = profileScopedStore else {
+            persistenceStore.save(state.sidecar, key: wordSidecarKey)
+            persistenceStore.save(state.cursors, key: wordCursorsKey)
+            return
+        }
+        let encoder = JSONEncoder()
+        if let data = try? encoder.encode(state.sidecar) {
+            scoped.saveScoped(data, key: wordSidecarKey, profileID: profileID)
+        }
+        if let data = try? encoder.encode(state.cursors) {
+            scoped.saveScoped(data, key: wordCursorsKey, profileID: profileID)
+        }
+    }
 
     /// UI 単語 → 同期素材（`LocalWord`）。
     /// - `displayOrder` は配列インデックス（並び順をそのまま順序に写す）。
@@ -1527,10 +1602,10 @@ final class AppModel: ObservableObject {
     /// - 墓石になった id は除外される（生存レコードのみ渡される前提）。
     /// - 並びは `displayOrder` 昇順（同値は id で安定化）。
     func applyMergedWords(_ live: [WordSyncRecord]) {
-        // 複数プロファイル中はローカルへ反映しない。pull の await 中に `activateProfile` で
-        // 2人以上へ切り替わっていたら、この merge を別プロファイルのスコープへ書き込まない
-        // （レビュー指摘・Critical）。1人なら従来どおり反映（切替は起きえない）。
-        // 取りこぼしは次トリガ／pendingRerun で回収される。
+        // コーディネータは pull 後のスコープ・ガード（`canContinueWordSync`）を通してから、await を挟まず
+        // 同期に「localWords 読取 → merge → ここで反映 → 永続化」を実行する。したがってこの反映は必ず
+        // 捕捉プロファイルのスコープ内で起きる。念のための belt として適格性も確認する（切替が絡めば
+        // そもそもコーディネータが手前で打ち切る）。取りこぼしは次トリガ／pendingRerun で回収される。
         guard isSyncSafeForActiveProfile else { return }
         let existingByID = Dictionary(words.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let mapped = live
@@ -1565,17 +1640,11 @@ final class AppModel: ObservableObject {
 
     /// `words` を 1 サイクル同期する（世帯未選択なら何もしない）。
     func syncWords(householdID: UUID?) async throws {
-        // 複数プロファイル中は同期を止める（世帯グローバルな同期簿記のままなので、子切替時に
-        // 他児の単語を誤って墓石化しうる。設計§6・レビュー指摘①）。`syncNow`/`requestSync` の
-        // 入口だけでなく唯一のチョークポイントであるここにも張り、DEBUG の手動同期直呼びも塞ぐ。
-        // 進行中サイクルの各境界（開始／pull後／push後）でも `WordSyncCoordinator` が同じ不変条件を
-        // 再確認するので、pull の await 中に切替が入っても他児スコープへ反映・push しない。
+        // リモート同期の適格性ゲート（現状：複数プロファイル中はリモート同期を据え置く）。詳細は
+        // `isSyncSafeForActiveProfile`。DEBUG の手動同期直呼びも含め、唯一のチョークポイントであるここで塞ぐ。
+        // 進行中サイクルの各 await 境界（pull後／push後）では `WordSyncCoordinator` が捕捉スコープ
+        // `(household, profile)` の一致（＋この適格性）を `canContinueWordSync` で再確認する。
         guard isSyncSafeForActiveProfile else { return }
-        // サイクル中はプロファイル人数を増やせないようにする（`debugAddTestProfile` がこれを見る）。
-        // これで push の await 中に count が 2 になり、A の push が「2人以上」でサーバへ届く窓を消す。
-        // カウンタ増減にして、重複呼び出しの defer が先行サイクル進行中に 0 へ落とさないようにする。
-        syncCycleDepth += 1
-        defer { syncCycleDepth -= 1 }
         try await wordSyncCoordinator.sync(appModel: self, householdID: householdID)
     }
 
@@ -1585,14 +1654,6 @@ final class AppModel: ObservableObject {
     private var householdIDProvider: () -> UUID? = { nil }
     /// 編集連打をまとめるためのデバウンス用タスク。
     private var pendingSyncTask: Task<Void, Never>?
-    /// 進行中の `syncWords` サイクル数（pull/push の await 含む）。プロファイル人数を増やす操作は
-    /// これが 0 でない間ブロックする＝サイクル中は `profiles.count` を不変に固定し、in-flight の
-    /// push/tombstone が「2人以上の状態でサーバへ届く」窓自体を作らない（設計§6・レビュー指摘①。
-    /// 本対応は Phase 5）。**カウンタにするのは重要**：`syncWords` は @MainActor async で再入しうるため、
-    /// 単純な Bool だと重複呼び出し側の `defer` が先行サイクルの push await 中にフラグを消してしまう。
-    private var syncCycleDepth = 0
-    /// 同期サイクルが1つ以上進行中か（人数増加をブロックする判定に使う）。
-    private var isSyncCycleInFlight: Bool { syncCycleDepth > 0 }
     /// `applyMergedWords` による `words` 更新が、編集トリガを再帰的に誘発しないためのフラグ。
     private var isApplyingMergedWords = false
 
@@ -1611,16 +1672,24 @@ final class AppModel: ObservableObject {
         self.householdIDProvider = householdIDProvider
     }
 
-    /// 同期を今のプロファイル構成で安全に走らせてよいか。
-    /// **子が2人以上いる間は同期を止める**（Phase 5 で同期をプロファイル別に本対応するまでの安全ネット）。
-    /// 同期簿記（`sync.cursors`/`sync.wordSidecar`）が世帯グローバルのままなので、複数プロファイルで
-    /// 同期すると子切替時に他児の単語を誤って墓石化しうる（設計 §6・レビュー指摘①）。1人なら従来通り安全。
-    /// **これが唯一の同期安全不変条件**：`syncWords` 入口・`applyMergedWords`・`WordSyncCoordinator`
-    /// の各サイクル境界（開始／pull後／push後）で必ずこれを確認する。切替は必ず2人以上の状態でしか
-    /// 起きない（＝切替が絡む間は常に false）ため、これを全境界で見れば in-flight／pendingRerun の
-    /// どの割り込みでも他児スコープへの反映・push・墓石化を止められる（coordinator から読むため internal）。
+    /// **リモート同期の適格性ゲート**（Phase 5）。**世帯 NULL ストリームのオーナー（元の単一子）が
+    /// アクティブなときだけ** リモート同期を許す。
+    ///
+    /// Phase 5 で同期簿記（サイドカー/カーソル）は **プロファイル別スコープ** になり、`WordSyncCoordinator`
+    /// は捕捉スコープ `(household, profile)` の一致を全 await 境界で確認するので、**ローカルは完全に隔離** され
+    /// 別プロファイルの単語を壊すことはない。ただし **サーバ側はまだプロファイル別でない**（`words.profile_id`
+    /// に対応する `profiles` 行の provisioning が未実装＝Phase 5b）。そのため wire は当面 `profile_id=NULL`
+    /// ＝世帯スコープで push/pull する。**この世帯 NULL ストリームは元の単一子（オーナー）のデータ**なので、
+    /// 別の子が pull すると他児の単語を取り込み、push すると他児の行を墓石化しうる。よって
+    /// **オーナー1人だけがリモート同期**でき、オーナーが削除されたらリモート同期は停止したままにする
+    /// （`WordRemoteOwner` は再割り当てしない）。オーナーがアクティブなら、他に子がいても同期は安全に走る
+    /// （他児は世帯 NULL ストリームに触れない）。複数子の同時リモート同期は Phase 5b（サーバ provisioning
+    /// ＋既存 NULL 行の移行）で解禁する。`syncWords` 入口・`WordSyncCoordinator` の各 await 境界
+    /// （`canContinueWordSync`）で確認する。
     var isSyncSafeForActiveProfile: Bool {
-        profileRegistry.profiles.count <= 1
+        // オーナー未解決（名前空間化不可のフォールバック等）は従来どおり単一子のみ許可。
+        guard let owner = wordRemoteOwnerProfileID else { return profileRegistry.profiles.count <= 1 }
+        return profileRegistry.activeProfileID == owner
     }
 
     /// 即時に 1 サイクル同期する（前面化・サインイン・世帯確定時など）。
@@ -2859,6 +2928,15 @@ extension AppPersistenceStore: ProfileScopedRawStore {
             }
         }
     }
+    /// キーの値を削除する（プロファイル削除時の孤児データ purge）。ファイル本体と UserDefaults 退避先の両方を掃除する。
+    func rawRemove(_ key: String) {
+        Self.persistenceQueue.async {
+            if let url = Self.storageURL(for: key, createDirectory: false) {
+                try? FileManager.default.removeItem(at: url)
+            }
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+    }
 }
 
 /// Core `ProfileScopedStore`（バイト列＋キー名前空間化）を、アプリの `UserDataStore`（型付き）境界に適合させる薄いアダプタ。
@@ -2935,6 +3013,10 @@ extension InMemoryUserDataStore: ProfileScopedRawStore {
     }
     func rawSaveBlocking(_ data: Data, key: String) {
         rawSave(data, key: key)
+    }
+    func rawRemove(_ key: String) {
+        lock.lock(); defer { lock.unlock() }
+        storage[key] = nil
     }
 }
 #endif

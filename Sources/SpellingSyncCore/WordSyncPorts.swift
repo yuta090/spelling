@@ -21,18 +21,9 @@ public protocol WordSyncTransport: Sendable {
     func push(table: String, rows: [WordRow]) async throws
 }
 
-/// ローカル（UI）側の境界。アプリは `AppModel` で実装する。
-///
-/// **原子性が要点**: 「最新ローカル読取 → `makePlan(local)` → 生存レコードを UI 反映」を
-/// **1 回の呼び出しで連続実行**し、その間に他のローカル編集を割り込ませない。
-/// 読取と反映を別メソッドに分けると、その隙（アクターのホップ）に入った編集を
-/// stale なマージ結果で上書きしてしまう（= 編集の取りこぼし）。実装は MainActor 上で
-/// 内部 await を挟まずに完結させること。
-public protocol WordLocalSink: Sendable {
-    /// `makePlan` に最新ローカルを渡して計画を作り、`LastWriteWins.live(plan.merged)` を反映し、
-    /// 作った plan を返す。読取〜反映は割り込み不可に保つ。
-    func planAndApply(_ makePlan: @Sendable ([LocalWord]) -> WordSyncReducer.Plan) async -> WordSyncReducer.Plan
-}
+/// ローカル読取〜反映の原子性は、コーディネータが `WordSyncRunner.merge`（純関数）の前後で
+/// **await を挟まず同期**に「localWords 読取 → merge → live 反映 → 永続化」を実行して保つ。
+/// 旧 `WordLocalSink`（アクターホップ跨ぎの原子性トリック）は不要になったため撤去した。
 
 /// 永続化する同期状態（サイドカー基準＋テーブル別カーソル/high-water）。
 /// アプリは `UserDataStore` に保存する。

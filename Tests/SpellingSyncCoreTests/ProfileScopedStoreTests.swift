@@ -22,6 +22,10 @@ private final class FakeRawStore: ProfileScopedRawStore, @unchecked Sendable {
         storage[key] = data
         blockingWrites.append(key)
     }
+    func rawRemove(_ key: String) {
+        lock.lock(); defer { lock.unlock() }
+        storage[key] = nil
+    }
 
     // テスト補助: JSON でセット/取得。
     func seed<T: Encodable>(_ value: T, key: String) {
@@ -92,6 +96,80 @@ final class ProfileScopedStoreTests: XCTestCase {
         store.setActiveProfileID(b)
         // サブスクは世帯単位＝全プロファイルで共有。
         XCTAssertEqual(string(store.load("spellingTrainer.cachedEntitlement")), "shared")
+    }
+
+    // MARK: 明示プロファイルスコープ I/O（同期簿記）
+
+    func testExplicitProfileScopeIsIndependentOfActive() {
+        // 同期コーディネータは「アクティブ prefix」ではなく「捕捉した profileID」で読み書きする。
+        // アクティブが別プロファイルに切り替わっても、捕捉したプロファイルへ確実に届く。
+        let base = FakeRawStore()
+        let a = UUID(), b = UUID()
+        let store = ProfileScopedStore(base: base, activeProfileID: b)  // アクティブは B
+
+        store.saveScoped(data("A-state"), key: "spellingTrainer.sync.cursors", profileID: a)
+
+        XCTAssertEqual(string(store.loadScoped("spellingTrainer.sync.cursors", profileID: a)), "A-state")
+        XCTAssertNil(store.loadScoped("spellingTrainer.sync.cursors", profileID: b), "B のスコープには書かない")
+        // 実キーは A の prefix。
+        XCTAssertEqual(string(base.storage["profiles/\(a.uuidString)/spellingTrainer.sync.cursors"]), "A-state")
+    }
+
+    // MARK: 旧グローバル同期簿記のオーナースコープ移行（バリア・冪等）
+
+    func testMigrateGlobalKeysCopiesIntoOwnerScopeAsBarrier() {
+        let base = FakeRawStore()
+        let owner = UUID()
+        let store = ProfileScopedStore(base: base, activeProfileID: UUID())  // アクティブはオーナーでない
+
+        // 旧・世帯グローバル（prefix 無し）に簿記がある状態。
+        base.rawSave(data("legacy-sidecar"), key: "spellingTrainer.sync.wordSidecar")
+
+        store.migrateGlobalKeys(["spellingTrainer.sync.wordSidecar"], into: owner)
+
+        // オーナースコープへ着地（バリア書き込みで記録される）。
+        XCTAssertEqual(string(base.storage["profiles/\(owner.uuidString)/spellingTrainer.sync.wordSidecar"]), "legacy-sidecar")
+        XCTAssertTrue(base.blockingWrites.contains("profiles/\(owner.uuidString)/spellingTrainer.sync.wordSidecar"),
+                      "バリア（rawSaveBlocking）で着地を待つ")
+    }
+
+    func testMigrateGlobalKeysIsIdempotent() {
+        let base = FakeRawStore()
+        let owner = UUID()
+        let store = ProfileScopedStore(base: base, activeProfileID: owner)
+        let dest = "profiles/\(owner.uuidString)/spellingTrainer.sync.cursors"
+
+        base.rawSave(data("legacy"), key: "spellingTrainer.sync.cursors")
+        base.rawSave(data("already-migrated"), key: dest)   // 既に移行済み
+
+        store.migrateGlobalKeys(["spellingTrainer.sync.cursors"], into: owner)
+
+        // 冪等：着地済みなら上書きしない。
+        XCTAssertEqual(string(base.storage[dest]), "already-migrated")
+    }
+
+    // MARK: プロファイル削除時の孤児データ purge
+
+    func testPurgeProfileRemovesOnlyThatProfilesChildScopedKeys() {
+        let base = FakeRawStore()
+        let a = UUID(), b = UUID()
+        let store = ProfileScopedStore(base: base, activeProfileID: a)
+
+        // A の子データ数点＋世帯グローバル。
+        store.save(data("A-words"), key: "spellingTrainer.words")
+        store.saveScoped(data("A-cursors"), key: "spellingTrainer.sync.cursors", profileID: a)
+        store.save(data("family"), key: "spellingTrainer.cachedEntitlement")   // グローバル
+        // B の子データ。
+        store.saveScoped(data("B-words"), key: "spellingTrainer.words", profileID: b)
+
+        store.purgeProfile(a)
+
+        // A の子スコープは全部消える。
+        XCTAssertNil(base.storage["profiles/\(a.uuidString)/spellingTrainer.words"])
+        XCTAssertNil(base.storage["profiles/\(a.uuidString)/spellingTrainer.sync.cursors"])
+        // グローバルと B は無傷。
+        XCTAssertEqual(string(base.storage["spellingTrainer.cachedEntitlement"]), "family")
+        XCTAssertEqual(string(base.storage["profiles/\(b.uuidString)/spellingTrainer.words"]), "B-words")
     }
 
     // MARK: 移行コピー（冪等・バリア）
@@ -233,6 +311,10 @@ private final class DroppingBlockingStore: ProfileScopedRawStore, @unchecked Sen
     }
     /// 着地しない（読み戻せない）。
     func rawSaveBlocking(_ data: Data, key: String) { /* drop */ }
+    func rawRemove(_ key: String) {
+        lock.lock(); defer { lock.unlock() }
+        storage[key] = nil
+    }
 
     func seed<T: Encodable>(_ value: T, key: String) {
         lock.lock(); defer { lock.unlock() }

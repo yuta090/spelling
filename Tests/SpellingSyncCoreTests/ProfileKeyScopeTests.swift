@@ -54,8 +54,18 @@ final class ProfileKeyScopeTests: XCTestCase {
     func testKeyCountsAreStable() {
         // キー追加/削除時に「どちらに分類するか」を意識的に決めさせる回帰トリップワイヤ。
         // 変更したらこの数を更新し、分類（子/グローバル）を必ずレビューする。
-        XCTAssertEqual(ProfileKeyScope.childScopedKeys.count, 37)
-        XCTAssertEqual(ProfileKeyScope.globalKeys.count, 11)
+        XCTAssertEqual(ProfileKeyScope.childScopedKeys.count, 39)
+        XCTAssertEqual(ProfileKeyScope.globalKeys.count, 10)
+    }
+
+    func testSyncBookkeepingKeysAreProfileScoped() {
+        // Phase 5: 同期簿記（サイドカー/カーソル）はプロファイル別。子を切り替え/削除しても
+        // 他児の dirty 基準・tombstone 台帳・カーソルを共有しない（世帯グローバルにすると
+        // 別プロファイルの単語を誤って墓石化しうる）。
+        for key in ["spellingTrainer.sync.wordSidecar", "spellingTrainer.sync.cursors"] {
+            XCTAssertTrue(ProfileKeyScope.childScopedKeys.contains(key), "\(key) は子スコープのはず")
+            XCTAssertFalse(ProfileKeyScope.globalKeys.contains(key), "\(key) は global であってはならない")
+        }
     }
 
     func testCoreChildDataKeysAreScoped() {
