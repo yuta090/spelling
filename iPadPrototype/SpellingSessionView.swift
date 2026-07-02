@@ -50,6 +50,12 @@ struct SpellingSessionView: View {
     @State private var showingInlineGrading = false
     @State private var inlineReviewWords: [SpellingWord] = []
     @State private var showingInlineReview = false
+    /// 採点後に子へ見せる「何問中何問せいかい」＋つぎの行動を選ぶ画面。
+    @State private var showingFinish = false
+    @State private var finishSummary: SessionGrading.ResultSummary?
+    /// 親ゲート通過後に採点モーダルを開く予約（sheet→fullScreenCover の同時提示を避け、
+    /// ゲートが閉じ切ってから開く）。
+    @State private var pendingOpenGrading = false
     @State private var measuredWritingCanvasSize: CGSize = .zero
     @State private var compactPracticeDrawings: [UUID: PKDrawing] = [:]
     @State private var compactPracticeCanvasSizes: [UUID: CGSize] = [:]
@@ -396,16 +402,16 @@ struct SpellingSessionView: View {
                     onRequestClose: { goHome() }
                 )
                 .transition(.opacity)
-            } else if showingInlineGrading {
-                SessionInlineGradingView(
-                    attempts: sessionAttempts,
+            } else if showingFinish, let summary = finishSummary {
+                TestFinishView(
+                    summary: summary,
+                    maxKanjiGrade: model.childMaxKanjiGrade,
                     language: language,
-                    onFinished: { fixWords in
-                        startInlineReviewOrFinish(fixWords: fixWords)
+                    onPractice: summary.needsPractice.isEmpty ? nil : {
+                        startPracticeForNeedsPractice(summary.needsPractice)
                     },
-                    onCancel: {
-                        withAnimation(.easeInOut(duration: 0.18)) { showingInlineGrading = false }
-                    }
+                    onRetryTest: { restartTest() },
+                    onDone: { goHome() }
                 )
                 .transition(.opacity)
                 .padding(.horizontal, 34)
@@ -580,31 +586,81 @@ struct SpellingSessionView: View {
             measuredWritingCanvasSize = size
         }
         // 採点は親の操作。子の誤操作で開かないよう「かんたんな大人ゲート」の奥に隠す。
-        .sheet(isPresented: $showingGradingGate) {
-            ParentGateView {
-                showingGradingGate = false
-                withAnimation(.easeInOut(duration: 0.18)) { showingInlineGrading = true }
+        // ゲート(sheet)が閉じ切ってから採点(fullScreenCover)を開く（同時提示の競合回避）。
+        .sheet(isPresented: $showingGradingGate, onDismiss: {
+            if pendingOpenGrading {
+                pendingOpenGrading = false
+                showingInlineGrading = true
             }
+        }) {
+            ParentGateView {
+                pendingOpenGrading = true
+                showingGradingGate = false
+            }
+        }
+        // 採点は「他の要素が出ない」専用モーダル（全画面）で行う。
+        .fullScreenCover(isPresented: $showingInlineGrading) {
+            SessionInlineGradingView(
+                attempts: sessionAttempts,
+                language: language,
+                onFinished: { summary in
+                    showingInlineGrading = false
+                    finishGrading(with: summary)
+                },
+                onCancel: {
+                    showingInlineGrading = false
+                }
+            )
+            // モーダル内容は環境を継承しないので model を明示注入（他モーダルと同様）。
+            .environmentObject(model)
         }
     }
 
-    /// 採点完了後の分岐：直そう単語があればその場で子の復習へ、なければ結果画面へ戻る。
-    private func startInlineReviewOrFinish(fixWords: [String]) {
-        // 出題順の綴りをこのセッションの SpellingWord に戻す（id/訳/例文ヒントを保つ）。
-        let matched = fixWords.map { word in
+    /// 採点完了 → 子へ「何問中何問せいかい」＋つぎの行動を選ぶ画面へ。
+    private func finishGrading(with summary: SessionGrading.ResultSummary) {
+        finishSummary = summary
+        withAnimation(.easeInOut(duration: 0.18)) {
+            showingTestResults = false
+            showingFinish = true
+        }
+    }
+
+    /// 「直そう」になった単語を、その場で子が手書き復習する（review モードで書き直す）。
+    private func startPracticeForNeedsPractice(_ words: [String]) {
+        let matched = words.map { word in
             sessionWords.first { $0.text.caseInsensitiveCompare(word) == .orderedSame }
                 ?? SpellingWord(text: word)
         }
         guard !matched.isEmpty else {
-            // ぜんぶOK：復習なしで結果画面へ戻る。
-            withAnimation(.easeInOut(duration: 0.18)) { showingInlineGrading = false }
+            goHome()
             return
         }
         inlineReviewWords = matched
         withAnimation(.easeInOut(duration: 0.18)) {
-            showingInlineGrading = false
+            showingFinish = false
             showingInlineReview = true
         }
+    }
+
+    /// 同じ単語セットでテストをやり直す（順番はシャッフルし直す）。
+    private func restartTest() {
+        sessionAttempts = []
+        testPerfectBonus = nil
+        finishSummary = nil
+        isChecking = false
+        replayCount = 0
+        index = 0
+        practiceRepeatIndex = 0
+        sessionID = UUID()
+        sessionWords = sessionWords.shuffled()
+        clearCanvas()
+        withAnimation(.easeInOut(duration: 0.18)) {
+            showingFinish = false
+            showingTestResults = false
+        }
+        resetTimer()
+        startTimerIfNeeded()
+        refreshGuideFade()
     }
 
     private var header: some View {
@@ -3801,6 +3857,183 @@ private struct TestSessionResultsView: View {
                 showingCompletionCelebration = true
             }
         }
+    }
+}
+
+/// 採点完了のあと、子へ「何問中何問せいかい」を見せて、つぎの行動を選ばせる画面。
+/// 文言は学年に合わせて `FuriganaText`（低学年はひらがな／高学年は漢字＋ふりがな）で出す。
+private struct TestFinishView: View {
+    let summary: SessionGrading.ResultSummary
+    let maxKanjiGrade: Int
+    let language: AppLanguage
+    /// 「直そう」の単語を練習する。全問正解のときは nil（ボタンを出さない）。
+    var onPractice: (() -> Void)?
+    var onRetryTest: () -> Void
+    var onDone: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var appear = false
+    @State private var celebrationSeed = 0
+    @State private var practiceSegments: [JapaneseReading.RubySegment] = []
+    @State private var retrySegments: [JapaneseReading.RubySegment] = []
+    @State private var doneSegments: [JapaneseReading.RubySegment] = []
+
+    private var allCorrect: Bool { summary.total > 0 && summary.needsPractice.isEmpty }
+    private var scoreTint: Color {
+        allCorrect ? Color(red: 0.20, green: 0.66, blue: 0.34) : Color(red: 0.24, green: 0.55, blue: 0.90)
+    }
+
+    var body: some View {
+        VStack(spacing: 30) {
+            Spacer(minLength: 0)
+            scoreBlock
+            choices
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            practiceSegments = JapaneseReading.rubySegments(
+                language.text(japanese: "練習で この 単語を やってみよう！", english: "Practice these words!"),
+                maxGrade: maxKanjiGrade
+            )
+            retrySegments = JapaneseReading.rubySegments(
+                language.text(japanese: "もう一度 テスト", english: "Test again"),
+                maxGrade: maxKanjiGrade
+            )
+            doneSegments = JapaneseReading.rubySegments(
+                language.text(japanese: "おわる", english: "Done"),
+                maxGrade: maxKanjiGrade
+            )
+            celebrationSeed += 1
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.72).delay(0.05)) {
+                appear = true
+            }
+        }
+    }
+
+    private var scoreBlock: some View {
+        ZStack {
+            if !reduceMotion {
+                SparkleBurst(seed: celebrationSeed, variant: allCorrect ? .stars : .sparkles)
+            }
+            VStack(spacing: 16) {
+                ScoreDots(correct: summary.correctCount, total: summary.total)
+                Text("\(summary.correctCount) / \(summary.total)")
+                    .font(.system(size: 40, weight: .black, design: .rounded).monospacedDigit())
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 8)
+                    .background(Capsule().fill(scoreTint.gradient))
+                    .shadow(color: scoreTint.opacity(0.4), radius: 10, y: 6)
+            }
+            .scaleEffect(appear ? 1 : 0.6)
+            .opacity(appear ? 1 : 0)
+        }
+        .frame(height: 250)
+    }
+
+    private var choices: some View {
+        VStack(spacing: 16) {
+            if let onPractice {
+                ChildChoiceButton(
+                    systemImage: "pencil.and.outline",
+                    segments: practiceSegments,
+                    language: language,
+                    tint: Color(red: 0.96, green: 0.55, blue: 0.15),
+                    action: onPractice
+                )
+            }
+            ChildChoiceButton(
+                systemImage: "arrow.clockwise.circle.fill",
+                segments: retrySegments,
+                language: language,
+                tint: Color(red: 0.28, green: 0.60, blue: 0.92),
+                action: onRetryTest
+            )
+            ChildChoiceButton(
+                systemImage: "house.fill",
+                segments: doneSegments,
+                language: language,
+                tint: Color(red: 0.42, green: 0.48, blue: 0.55),
+                action: onDone
+            )
+        }
+        .opacity(appear ? 1 : 0)
+        .offset(y: appear ? 0 : 24)
+    }
+}
+
+/// 正解数を「星の数」で見せる（子は横テキストを読まない＝数字より星が主役）。
+/// 星が多いときは1行あたりの数を抑えて折り返す。
+private struct ScoreDots: View {
+    let correct: Int
+    let total: Int
+    private let perRow = 8
+
+    private var dotSize: CGFloat { total > 12 ? 26 : (total > 6 ? 34 : 44) }
+    private var rows: [[Int]] {
+        guard total > 0 else { return [] }
+        return stride(from: 0, to: total, by: perRow).map { start in
+            Array(start..<min(start + perRow, total))
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 10) {
+            ForEach(rows, id: \.self) { row in
+                HStack(spacing: 12) {
+                    ForEach(row, id: \.self) { i in
+                        Image(systemName: i < correct ? "star.fill" : "star")
+                            .font(.system(size: dotSize, weight: .black))
+                            .foregroundStyle(
+                                i < correct
+                                    ? Color(red: 1.0, green: 0.80, blue: 0.15)
+                                    : Color.white.opacity(0.55)
+                            )
+                            .shadow(color: .black.opacity(0.12), radius: 2, y: 1)
+                    }
+                }
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("\(correct) / \(total)"))
+    }
+}
+
+/// 採点後の子向け「大きくて押しやすい」選択ボタン。文言はふりがな/ひらがなで描く。
+private struct ChildChoiceButton: View {
+    let systemImage: String
+    let segments: [JapaneseReading.RubySegment]
+    let language: AppLanguage
+    let tint: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 30, weight: .black))
+                FuriganaText(
+                    segments: segments,
+                    baseSize: 26,
+                    baseWeight: .heavy,
+                    design: .rounded,
+                    color: .white,
+                    rubyColor: .white.opacity(0.9)
+                )
+                Spacer(minLength: 0)
+            }
+            .foregroundStyle(.white)
+            .padding(.vertical, 20)
+            .padding(.horizontal, 26)
+            .frame(maxWidth: 540)
+            .background(
+                RoundedRectangle(cornerRadius: 26, style: .continuous).fill(tint.gradient)
+            )
+            .shadow(color: tint.opacity(0.35), radius: 10, y: 6)
+        }
+        .buttonStyle(.plain)
+        .tapFeedback(scale: 0.97, bounce: true)
     }
 }
 

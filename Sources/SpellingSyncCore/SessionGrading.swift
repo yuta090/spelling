@@ -19,6 +19,33 @@ public enum SessionGrading {
         }
     }
 
+    /// 採点後に子へ見せる結果サマリ（「何問中何問せいかい」＋復習に回す単語）。
+    /// - `total`: 出題した**異なる単語数**（同じ単語が複数回出ても1問）。
+    /// - `correctCount`: 直そうにならなかった単語数（＝ `total - needsPractice.count`）。
+    /// - `needsPractice`: 「直そう」の単語（出題順・重複なし）。
+    /// 不変条件: `correctCount + needsPractice.count == total`。
+    public struct ResultSummary: Equatable, Sendable {
+        public var total: Int
+        public var correctCount: Int
+        public var needsPractice: [String]
+
+        public init(total: Int, correctCount: Int, needsPractice: [String]) {
+            self.total = total
+            self.correctCount = correctCount
+            self.needsPractice = needsPractice
+        }
+    }
+
+    /// 採点済み項目から結果サマリを作る（純粋・重複は単語単位で排除）。
+    /// 「1つでも直そう」の単語だけを不正解（復習対象）とし、残りは正解（未採点はOK扱い）。
+    public static func summarize(_ items: [GradedItem]) -> ResultSummary {
+        var distinctKeys = Set<String>()
+        for item in items { distinctKeys.insert(item.word.lowercased()) }
+        let needs = wordsNeedingPractice(items)
+        let total = distinctKeys.count
+        return ResultSummary(total: total, correctCount: total - needs.count, needsPractice: needs)
+    }
+
     /// 「直そう（needsPractice）」になった単語を、出題順のまま・重複なしで返す。
     public static func wordsNeedingPractice(_ items: [GradedItem]) -> [String] {
         var orderedFirstSpelling: [String] = []

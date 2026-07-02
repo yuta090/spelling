@@ -8050,14 +8050,16 @@ struct SessionInlineGradingView: View {
     @EnvironmentObject private var model: AppModel
     let attempts: [SpellingAttempt]
     let language: AppLanguage
-    /// 採点完了時に呼ぶ。引数は「直そう」にした単語（正規化前の綴り・出題順・重複なし）。
-    var onFinished: ([String]) -> Void
+    /// 採点完了時に呼ぶ。結果サマリ（何問中何問せいかい＋復習に回す単語）を渡す。
+    var onFinished: (SessionGrading.ResultSummary) -> Void
     /// 採点せずに閉じる（結果画面へ戻る）。
     var onCancel: () -> Void
 
     // 下書き：採点完了を押すまでモデルには保存しない。未指定はデフォルトOK扱い。
     @State private var decisionDrafts: [UUID: ParentReviewDecision] = [:]
     @State private var exampleDrafts: [UUID: Data] = [:]
+    // OKタップのたびに再生する「派手なお祝い」演出（見ている子を喜ばせる）。
+    @State private var approveCelebrationID = 0
 
     private func draftDecision(for id: UUID, current: ParentReviewDecision) -> ParentReviewDecision {
         decisionDrafts[id] ?? (current == .unreviewed ? .approved : current)
@@ -8075,6 +8077,38 @@ struct SessionInlineGradingView: View {
     }
 
     var body: some View {
+        ZStack {
+            // 専用モーダル：採点だけに集中できるよう不透明背景で他要素を隠す。
+            ParentPalette.surfaceTint.ignoresSafeArea()
+
+            gradingContent
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
+                .padding(.bottom, 22)
+
+            // OKタップの派手演出（中央で紙吹雪＋バースト）。タップ操作は妨げない。
+            if approveCelebrationID > 0 {
+                PuzzleCelebration(pieces: 22, radius: 220)
+                    .id(approveCelebrationID)
+                    .transition(.opacity)
+                    .allowsHitTesting(false)
+                    .zIndex(20)
+            }
+        }
+    }
+
+    /// OKタップ演出を1回再生する（連打しても最新の1回に差し替わる）。
+    private func celebrateApprove() {
+        let next = approveCelebrationID + 1
+        withAnimation(.easeOut(duration: 0.2)) { approveCelebrationID = next }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+            if approveCelebrationID == next {
+                withAnimation(.easeOut(duration: 0.25)) { approveCelebrationID = 0 }
+            }
+        }
+    }
+
+    private var gradingContent: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 12) {
                 Label(language.text(japanese: "テストの採点", english: "Grade this test"), systemImage: "checkmark.seal")
@@ -8113,7 +8147,11 @@ struct SessionInlineGradingView: View {
                             language: language,
                             decision: draftDecision(for: attempt.id, current: attempt.parentReviewDecision),
                             exampleData: exampleDrafts[attempt.id] ?? attempt.parentExampleDrawingData,
-                            setDecision: { decisionDrafts[attempt.id] = $0 },
+                            setDecision: { newDecision in
+                                decisionDrafts[attempt.id] = newDecision
+                                // 親が「OK」を押した瞬間に、見ている子へ派手なごほうび演出。
+                                if newDecision == .approved { celebrateApprove() }
+                            },
                             setExample: { exampleDrafts[attempt.id] = $0 }
                         )
                     }
@@ -8154,7 +8192,7 @@ struct SessionInlineGradingView: View {
                 SessionGrading.GradedItem(word: attempt.word, decision: decision.reviewState)
             )
         }
-        onFinished(SessionGrading.wordsNeedingPractice(gradedItems))
+        onFinished(SessionGrading.summarize(gradedItems))
     }
 }
 
