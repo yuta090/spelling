@@ -33,6 +33,15 @@ struct AccountSyncView: View {
                     signInSection
                 }
                 Section {
+                    NavigationLink {
+                        PairingView(session: session)
+                    } label: {
+                        Label("べつの端末とつなぐ", systemImage: "ipad.and.iphone")
+                    }
+                } footer: {
+                    Text("親のiPadでコードを発行し、子のiPadで入力すると、同じ単語・記録を共有できます。")
+                }
+                Section {
                     Text("アカウントは任意です。サインインしなくても、この端末だけでそのまま使えます。複数の端末で同じ単語・記録を使いたいときに同期します。")
                         .font(.footnote)
                         .foregroundStyle(.secondary)

@@ -1,4 +1,5 @@
 import Foundation
+import SpellingSyncCore
 
 /// 認証と「現在の世帯」状態を保持する、同期用の薄いセッションストア（デバッグ導線の土台）。
 ///
@@ -125,6 +126,41 @@ final class SyncSession: ObservableObject {
         }
     }
 
+    // MARK: - ペアリング（端末をつなぐ）
+
+    enum PairingSessionError: LocalizedError {
+        case noActiveHousehold
+        var errorDescription: String? {
+            switch self {
+            case .noActiveHousehold: return "先に保護者でサインインし、世帯を作成してください。"
+            }
+        }
+    }
+
+    /// 親：この世帯へ子端末をつなぐ6桁コードを発行する（15分・単回）。
+    /// active な世帯が無いと発行できない（サーバも世帯メンバーであることを検証する）。
+    func issuePairingCode(profileID: UUID? = nil) async throws -> SupabaseService.PairingCode {
+        guard let household = activeHouseholdID else { throw PairingSessionError.noActiveHousehold }
+        return try await service.issuePairingCode(householdID: household, profileID: profileID)
+    }
+
+    /// 子端末：6桁コードでこの端末を世帯につなぐ。
+    /// 事前に匿名サインインしてから消費し、成功したら返ってきた世帯を active として永続化する
+    /// （以後の push/pull スコープの前提）。入力は `PairingCodeEntry` で数字6桁に正規化する。
+    @discardableResult
+    func consumePairingCode(_ rawCode: String) async throws -> SupabaseService.PairingConsumeResult {
+        try await service.signInChildAnonymouslyIfNeeded()
+        refreshAuthState()
+        let result = try await service.consumePairingCode(
+            PairingCodeEntry.normalize(rawCode),
+            devicePublicID: devicePublicID()
+        )
+        if result.status == .ok, let household = result.householdID {
+            setActiveHousehold(household)
+        }
+        return result
+    }
+
     // MARK: - 疎通確認
 
     /// profiles 件数を取得（接続/RLS の動作確認）。
@@ -136,5 +172,14 @@ final class SyncSession: ObservableObject {
 
     private func normalized(_ value: String) -> String {
         value.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// この端末を識別する安定 ID（`devices.device_public_id`）。再ペアリングでも同一行を指すよう端末に永続化する。
+    private let devicePublicIDKey = "spellingTrainer.sync.devicePublicID"
+    private func devicePublicID() -> String {
+        if let stored = defaults.string(forKey: devicePublicIDKey) { return stored }
+        let generated = UUID().uuidString
+        defaults.set(generated, forKey: devicePublicIDKey)
+        return generated
     }
 }
