@@ -6767,5 +6767,357 @@
       "talking",
       "tree"
     ]
+  },
+  {
+    "contentLemmas" : [
+      "give",
+      "toy"
+    ],
+    "en" : "I give a toy",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "6A87B6C6-6CBE-5D97-A3C0-4D453B39C1B3",
+    "ja" : "わたしは おもちゃを あげる",
+    "sourceID" : "i-give-a-toy",
+    "tokens" : [
+      "I",
+      "give",
+      "a",
+      "toy"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "get",
+      "gift"
+    ],
+    "en" : "I get a gift",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "D4BCF9F5-DE6E-5BB6-8A65-DDD6806C4F80",
+    "ja" : "ぼくは プレゼントを もらう",
+    "sourceID" : "i-get-a-gift",
+    "tokens" : [
+      "I",
+      "get",
+      "a",
+      "gift"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "put"
+    ],
+    "en" : "I put it here",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "8A5D2B0B-CF60-58A0-928B-01164D0CA3F8",
+    "ja" : "わたしは ここに それを おく",
+    "sourceID" : "i-put-it-here",
+    "tokens" : [
+      "I",
+      "put",
+      "it",
+      "here"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hold",
+      "ball"
+    ],
+    "en" : "I hold a ball",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "02B26FE0-E495-59E4-9C9A-88266408797D",
+    "ja" : "ぼくは ボールを もつ",
+    "sourceID" : "i-hold-a-ball",
+    "tokens" : [
+      "I",
+      "hold",
+      "a",
+      "ball"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "hear",
+      "bird"
+    ],
+    "en" : "I hear a bird",
+    "gradeBand" : 3,
+    "grammar" : "presentSimple",
+    "id" : "1935BCC9-1FAE-5CA8-A23C-633A265715F7",
+    "ja" : "とりの こえが きこえる",
+    "sourceID" : "i-hear-a-bird",
+    "tokens" : [
+      "I",
+      "hear",
+      "a",
+      "bird"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "say",
+      "hello"
+    ],
+    "en" : "I say hello",
+    "gradeBand" : 5,
+    "grammar" : "presentSimple",
+    "id" : "F09E8A7E-5AC2-5C35-9152-5A1987B2A55C",
+    "ja" : "わたしは こんにちはと いう",
+    "sourceID" : "i-say-hello",
+    "tokens" : [
+      "I",
+      "say",
+      "hello"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "tell",
+      "story"
+    ],
+    "en" : "I tell a story",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "25962BE5-6AA4-5C8D-BD0D-519305E4F196",
+    "ja" : "ぼくは おはなしを する",
+    "sourceID" : "i-tell-a-story",
+    "tokens" : [
+      "I",
+      "tell",
+      "a",
+      "story"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "ask",
+      "mom"
+    ],
+    "en" : "I ask my mom",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "1E597AC8-6394-5631-A249-A3C8028731B9",
+    "ja" : "わたしは ママに きく",
+    "sourceID" : "i-ask-my-mom",
+    "tokens" : [
+      "I",
+      "ask",
+      "my",
+      "mom"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "move"
+    ],
+    "en" : "I can move it",
+    "gradeBand" : 1,
+    "grammar" : "canModal",
+    "id" : "966F4DC3-8C88-5EB2-89CD-554FA1B3E7BD",
+    "ja" : "ぼくは それを うごかせる",
+    "sourceID" : "i-can-move-it",
+    "tokens" : [
+      "I",
+      "can",
+      "move",
+      "it"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "build",
+      "house"
+    ],
+    "en" : "I build a house",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "F0427B76-8B8F-5C8B-BC50-24D4E0012A8A",
+    "ja" : "わたしは おうちを つくる",
+    "sourceID" : "i-build-a-house",
+    "tokens" : [
+      "I",
+      "build",
+      "a",
+      "house"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "start",
+      "game"
+    ],
+    "en" : "We start a game",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "E15C9263-9539-5CA7-B1E4-344A0E70E261",
+    "ja" : "ぼくたちは ゲームを はじめる",
+    "sourceID" : "we-start-a-game",
+    "tokens" : [
+      "We",
+      "start",
+      "a",
+      "game"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "pay",
+      "money"
+    ],
+    "en" : "I pay the money",
+    "gradeBand" : 1,
+    "grammar" : "presentSimple",
+    "id" : "4CB7955A-725D-53B7-B8DE-EB04EC4FB487",
+    "ja" : "わたしは おかねを はらう",
+    "sourceID" : "i-pay-the-money",
+    "tokens" : [
+      "I",
+      "pay",
+      "the",
+      "money"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "child"
+    ],
+    "en" : "I am a child",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "B724535E-E551-5A93-95BD-2F9560A662D9",
+    "ja" : "ぼくは こども だよ",
+    "sourceID" : "i-am-a-child",
+    "tokens" : [
+      "I",
+      "am",
+      "a",
+      "child"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "man"
+    ],
+    "en" : "He is a man",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "6EB394D3-E3AD-5B77-BC94-9F5C09EB82A2",
+    "ja" : "あのひとは おとこのひと だよ",
+    "sourceID" : "he-is-a-man",
+    "tokens" : [
+      "He",
+      "is",
+      "a",
+      "man"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "woman"
+    ],
+    "en" : "She is a woman",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "A7C7631B-A988-5363-A761-81A8214D6DBF",
+    "ja" : "あのひとは おんなのひと だよ",
+    "sourceID" : "she-is-a-woman",
+    "tokens" : [
+      "She",
+      "is",
+      "a",
+      "woman"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "money"
+    ],
+    "en" : "This is my money",
+    "gradeBand" : 1,
+    "grammar" : "demonstratives",
+    "id" : "3146C408-F88E-5174-AF38-5B1D1968F97B",
+    "ja" : "これは わたしの おかね だよ",
+    "sourceID" : "this-is-my-money",
+    "tokens" : [
+      "This",
+      "is",
+      "my",
+      "money"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "name",
+      "ken"
+    ],
+    "en" : "My name is Ken",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "C757DD53-8576-5F84-86ED-4890073526B9",
+    "ja" : "ぼくの なまえは ケン だよ",
+    "sourceID" : "my-name-is-ken",
+    "tokens" : [
+      "My",
+      "name",
+      "is",
+      "Ken"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "world",
+      "big"
+    ],
+    "en" : "The world is big",
+    "gradeBand" : 1,
+    "grammar" : "beVerb",
+    "id" : "4A8061CC-4DC3-5A74-9144-52CF7EB3C043",
+    "ja" : "せかいは おおきい",
+    "sourceID" : "the-world-is-big",
+    "tokens" : [
+      "The",
+      "world",
+      "is",
+      "big"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "job"
+    ],
+    "en" : "This is my job",
+    "gradeBand" : 1,
+    "grammar" : "demonstratives",
+    "id" : "E1DA95BD-B7DF-5B6D-9C84-089984C256F0",
+    "ja" : "これは わたしの おしごと だよ",
+    "sourceID" : "this-is-my-job",
+    "tokens" : [
+      "This",
+      "is",
+      "my",
+      "job"
+    ]
+  },
+  {
+    "contentLemmas" : [
+      "work",
+      "mom"
+    ],
+    "en" : "I work with mom",
+    "gradeBand" : 4,
+    "grammar" : "presentSimple",
+    "id" : "27FE193B-484D-5CB4-BA5F-637F8FEC4A32",
+    "ja" : "ぼくは ママと はたらく",
+    "sourceID" : "i-work-with-mom",
+    "tokens" : [
+      "I",
+      "work",
+      "with",
+      "mom"
+    ]
   }
 ]
