@@ -53,4 +53,58 @@ final class SessionGradingTests: XCTestCase {
         let items = [item("Sun", .approved), item("sun", .needsPractice)]
         XCTAssertEqual(SessionGrading.wordsNeedingPractice(items), ["Sun"])
     }
+
+    // MARK: - summarize（採点後の「何問中何問せいかい」＋復習単語）
+
+    func test_summarize_empty() {
+        let s = SessionGrading.summarize([])
+        XCTAssertEqual(s.total, 0)
+        XCTAssertEqual(s.correctCount, 0)
+        XCTAssertEqual(s.needsPractice, [])
+    }
+
+    func test_summarize_allApproved_allCorrect() {
+        let s = SessionGrading.summarize([item("cat", .approved), item("dog", .approved)])
+        XCTAssertEqual(s.total, 2)
+        XCTAssertEqual(s.correctCount, 2)
+        XCTAssertEqual(s.needsPractice, [])
+    }
+
+    func test_summarize_mixed_countsAndOrder() {
+        // 3語中 cat=OK / dog=直そう / sun=直そう → 正解1、復習は出題順（dog, sun）。
+        let items = [item("cat", .approved), item("dog", .needsPractice), item("sun", .needsPractice)]
+        let s = SessionGrading.summarize(items)
+        XCTAssertEqual(s.total, 3)
+        XCTAssertEqual(s.correctCount, 1)
+        XCTAssertEqual(s.needsPractice, ["dog", "sun"])
+    }
+
+    func test_summarize_dedupesSameWord() {
+        // 同じ単語が複数回でも1問として数える。1つでも直そうなら不正解（復習対象）。
+        let items = [item("Cat", .approved), item("cat", .needsPractice)]
+        let s = SessionGrading.summarize(items)
+        XCTAssertEqual(s.total, 1)
+        XCTAssertEqual(s.correctCount, 0)
+        XCTAssertEqual(s.needsPractice, ["Cat"])
+    }
+
+    func test_summarize_unreviewedCountsAsCorrect() {
+        // 未採点（デフォルトOK扱い）は正解に数える＝復習には回さない。
+        let s = SessionGrading.summarize([item("cat", .unreviewed), item("dog", .approved)])
+        XCTAssertEqual(s.total, 2)
+        XCTAssertEqual(s.correctCount, 2)
+        XCTAssertEqual(s.needsPractice, [])
+    }
+
+    func test_summarize_correctPlusNeedsPractice_equalsTotal() {
+        // 不変条件: correctCount + needsPractice.count == total（重複排除後）。
+        let items = [
+            item("a", .approved), item("A", .needsPractice),
+            item("b", .approved),
+            item("c", .needsPractice),
+            item("d", .unreviewed)
+        ]
+        let s = SessionGrading.summarize(items)
+        XCTAssertEqual(s.correctCount + s.needsPractice.count, s.total)
+    }
 }
