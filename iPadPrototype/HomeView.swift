@@ -6117,8 +6117,9 @@ private struct CharacterPickerSheet: View {
     // 子のショップ：なかまをジャンルで絞る（nil = ぜんぶ）。横スクロールのチップで単一選択。
     @State private var selectedBuddyGroup: HomeBuddyGroup?
 
+    // ずかん風カードは1枚を大きめに見せたいので、狭すぎない下限にする。
     private let columns = [
-        GridItem(.adaptive(minimum: 96, maximum: 122), spacing: 8)
+        GridItem(.adaptive(minimum: 112, maximum: 150), spacing: 10)
     ]
 
     private let backgroundColumns = [
@@ -6390,24 +6391,29 @@ private struct CharacterPickerCard: View {
         if isSelected {
             return Color(red: 0.20, green: 0.62, blue: 0.26)
         }
-        if isUnlocked || canUnlock {
-            // 各キャラ固有の色でフチどり。白カードの画一感をなくす。
-            return character.primary.opacity(0.55)
+        if isUnlocked {
+            // 所持済みはキャラ固有色でしっかりフチどり。
+            return character.primary.opacity(0.85)
         }
-        return Color(red: 0.78, green: 0.80, blue: 0.86)
+        if canUnlock {
+            // 買える子は金フチで「GETできる」を強調。
+            return Color(red: 1.0, green: 0.78, blue: 0.24)
+        }
+        return Color(red: 0.80, green: 0.82, blue: 0.88)
     }
 
-    // キャラ固有色のパステル背景。買える子は色を効かせ、買えない子は白っぽく沈める。
-    private var cardBackground: LinearGradient {
+    // カード上部の「窓」の色。所持/買える子はキャラ固有色でしっかり塗り、
+    // まだの子はグレーの図鑑シルエット枠にして「これから集める」を示す。
+    private var windowGradient: LinearGradient {
         if canUnlock {
             return LinearGradient(
-                colors: [character.secondary.opacity(0.70), Color.white.opacity(0.94)],
+                colors: [character.primary, character.secondary],
                 startPoint: .top,
                 endPoint: .bottom
             )
         }
         return LinearGradient(
-            colors: [Color.white.opacity(0.85), Color.white.opacity(0.85)],
+            colors: [Color(red: 0.90, green: 0.91, blue: 0.94), Color(red: 0.82, green: 0.84, blue: 0.89)],
             startPoint: .top,
             endPoint: .bottom
         )
@@ -6419,49 +6425,76 @@ private struct CharacterPickerCard: View {
     }
 
     var body: some View {
-        VStack(spacing: 6) {
-            RewardCharacterAvatar(character: character)
-                .frame(width: 58, height: 58)
-                // 未購入(未所有)はキャラ本体だけ少し薄くして「まだ持っていない」を伝える。
-                // 文字には掛けない。
-                .opacity(isUnlocked ? 1 : 0.5)
-                // アイドルの上下ふわふわ。「いま買える子」だけ動かして誘う。
-                // 所有済み・非対象は静止させ、多数セルへの永続アニメ集積を避ける
-                // （カタログは数百件あり、全カードを常時揺らすと負荷になるため）。
-                .offset(y: (bob && !reduceMotion && isBuyableNow) ? -3 : 0)
-                .animation(
-                    reduceMotion ? nil :
-                        .easeInOut(duration: 1.8).repeatForever(autoreverses: true).delay(bobPhase),
-                    value: bob
-                )
+        VStack(spacing: 0) {
+            // 上段：色付きの「窓」にキャラを大きく置く。図鑑スロット感を出す。
+            ZStack {
+                // ふわっとしたスポットライトの丸。キャラを主役に見せる。
+                Circle()
+                    .fill(Color.white.opacity(canUnlock ? 0.40 : 0.30))
+                    .frame(width: 70, height: 70)
 
-            Text(character.name(language: language))
-                .font(.subheadline.weight(.heavy))
-                .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
-                .lineLimit(1)
-                .minimumScaleFactor(0.56)
-                .legibleLabelHalo()
+                RewardCharacterAvatar(character: character)
+                    .frame(width: 62, height: 62)
+                    // まだ買えない子はシルエット寄りに沈めて「これから集める」を示す。
+                    // 文字（下段プレート）には掛けない。
+                    .opacity(canUnlock ? 1 : 0.42)
+                    .saturation(canUnlock ? 1 : 0.35)
+                    // アイドルの上下ふわふわ。「いま買える子」だけ動かして誘う。
+                    // 所有済み・非対象は静止させ、多数セルへの永続アニメ集積を避ける
+                    // （カタログは数百件あり、全カードを常時揺らすと負荷になるため）。
+                    .offset(y: (bob && !reduceMotion && isBuyableNow) ? -3 : 0)
+                    .animation(
+                        reduceMotion ? nil :
+                            .easeInOut(duration: 1.8).repeatForever(autoreverses: true).delay(bobPhase),
+                        value: bob
+                    )
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 94)
+            .background(windowGradient)
 
-            statePill
+            // 下段：名前＋状態の白い「見出しプレート」。図鑑の説明枠のイメージ。
+            VStack(spacing: 5) {
+                Text(character.name(language: language))
+                    .font(.subheadline.weight(.heavy))
+                    .foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.38))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.56)
+
+                statePill
+            }
+            .padding(.vertical, 9)
+            .padding(.horizontal, 6)
+            .frame(maxWidth: .infinity)
+            .background(Color.white)
         }
-        .frame(maxWidth: .infinity, minHeight: 108)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 6)
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(borderColor, lineWidth: isSelected ? 3 : 1.5)
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(borderColor, lineWidth: isSelected ? 3.5 : 2)
         )
-        // 買える子には右上にキラッと星。「集められるよ！」の合図。
+        // 所持済みには左上に金の星バッジ＝「もってる」の合図。
+        .overlay(alignment: .topLeading) {
+            if isUnlocked && !isSelected {
+                Image(systemName: "star.fill")
+                    .font(.system(size: 11, weight: .black))
+                    .foregroundStyle(.white)
+                    .padding(5)
+                    .background(Circle().fill(Color(red: 1.0, green: 0.80, blue: 0.20)))
+                    .overlay(Circle().stroke(Color.white, lineWidth: 1.5))
+                    .padding(5)
+                    .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
+            }
+        }
+        // 買える子には右上にキラッと星。「いま集められるよ！」の合図。
         .overlay(alignment: .topTrailing) {
             if isBuyableNow {
                 Image(systemName: "sparkles")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Color(red: 1.0, green: 0.80, blue: 0.20))
-                    .shadow(color: .white, radius: 1)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(Color(red: 1.0, green: 0.82, blue: 0.22))
+                    .shadow(color: Color(red: 0.85, green: 0.50, blue: 0.0).opacity(0.4), radius: 1)
                     .padding(6)
-                    .scaleEffect((bob && !reduceMotion) ? 1.12 : 0.9)
+                    .scaleEffect((bob && !reduceMotion) ? 1.15 : 0.9)
                     .animation(
                         reduceMotion ? nil :
                             .easeInOut(duration: 0.9).repeatForever(autoreverses: true),
@@ -6469,11 +6502,11 @@ private struct CharacterPickerCard: View {
                     )
             }
         }
-        .shadow(color: .black.opacity(canUnlock ? 0.08 : 0.02), radius: 6, x: 0, y: 4)
+        .shadow(color: .black.opacity(canUnlock ? 0.12 : 0.05), radius: 6, x: 0, y: 4)
         // 選択中の子は少し大きく見せて「これといっしょ」を強調。
         .scaleEffect(isSelected ? 1.05 : 1.0)
         .animation(reduceMotion ? nil : .spring(response: 0.32, dampingFraction: 0.55), value: isSelected)
-        .contentShape(RoundedRectangle(cornerRadius: 14))
+        .contentShape(RoundedRectangle(cornerRadius: 18))
         .onTapGesture {
             guard canUnlock else {
                 return
@@ -6483,6 +6516,7 @@ private struct CharacterPickerCard: View {
         .onAppear { bob = true }
         .accessibilityLabel(accessibilityText)
         .accessibilityAddTraits(canUnlock ? .isButton : .isStaticText)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     @ViewBuilder
@@ -6529,7 +6563,10 @@ private struct CharacterPickerCard: View {
         if isUnlocked {
             return language.text(japanese: "\(character.name(language: language))、選べます", english: "\(character.name(language: language)), unlocked")
         }
-        return language.text(japanese: "\(character.name(language: language))、\(character.price)コイン", english: "\(character.name(language: language)), \(character.price) coins")
+        if isBuyableNow {
+            return language.text(japanese: "\(character.name(language: language))、\(character.price)コイン、いま かえます", english: "\(character.name(language: language)), \(character.price) coins, ready to unlock")
+        }
+        return language.text(japanese: "\(character.name(language: language))、\(character.price)コイン、まだ かえません", english: "\(character.name(language: language)), \(character.price) coins, not enough yet")
     }
 }
 
