@@ -69,7 +69,25 @@ CLI 引数: `--target-band N`(既定5) / `--grammar-ceiling intro1|intro2|basic1
 
 ### B1：agy で**年齢段階別**に候補を量産（メインの道）
 - **作る人＝agy**（Google Antigravity CLI）。`docs/age-tiered-generation-spec-2026-06-29.md` の4段階のうち**1段階を指定**し、その段階の **band 上限・文法 stage 上限・題材許可リスト・漢字 maxGrade（＝段階の最年少の1学年前。入門はひらがな主体）** をプロンプトに明示して、子ども向けの安全な英文＋やさしい和訳（漢字 maxGrade 以内）＋文法タグ＋gradeBand を**まとめて生成**させ、`scripts/person_templates.authoring.json` に足せる形（id/grammar/gradeBand/fallbackEn/fallbackJa）で出力させる。
-- **agy の確実な呼び方**（非対話・出力取りこぼし対策）はメモ [[agy-cli-reliable-invocation]] に従う：実バイナリ `/Users/takahashiyuuta/.local/bin/agy` ＋ `--dangerously-skip-permissions` を `script -q /dev/null` で pseudo-TTY 包み、出力は scratch から回収。小バッチ・フォアグラウンド推奨。**一度に大量はダメ**（10kダンプの失敗例 [[age-tiered-content-generation]]）。
+
+- **大量生成は必ず pty ラッパ経由で（安定化の肝）**。同梱スクリプト `scripts/agy_text.py` を使う。
+  ```bash
+  # 1) 段階/対象語をプロンプト化して agy で生成（安定・自動）
+  python3 .claude/skills/kotoba-sentence-add/scripts/agy_text.py <prompt.txt> "Gemini 3.1 Pro (High)" 240 > out.json
+  # 2) authoring へ「追記のみ」で統合（フル仕様・ID衝突回避）
+  python3 .claude/skills/kotoba-sentence-add/scripts/integrate_authoring.py out.json scripts/person_templates.authoring.json daily
+  # 3) 機械検査＋書き出し（--grammar-ceiling は applied＝全学年プールを保持。段階の絞りは実行時に効く）
+  swift run sentence-bank-build --target-band 5 --grammar-ceiling applied --write
+  ```
+  なぜラッパが要るか（ハマりどころ）:
+  - **agy は非TTYだと stdout が消える既知バグ**。`> file` / `| pipe` だと 0 バイトになる → `os.openpty()` で pty を割り当てて読む（`agy_text.py` が実装）。
+  - **生 print モード（フラグ無し）は実タスクで許可待ちハングや 5 分タイムアウトが頻発**。→ **`--sandbox`（端末/ツール制限）で回す**。純テキスト生成はツール不要なので `--dangerously-skip-permissions` は不要で、Claude Code の auto-mode 安全分類器にもブロックされない（＝Claude が自動で回せる）。
+  - **出力は最後に一括フラッシュ**。pty で最後まで読み切ってから返す。
+  - **小バッチで**（実測 20 語/バッチ ≈ 66 秒・安定。**一度に大量はダメ**＝ハング/タイムアウト。10kダンプの失敗例 [[age-tiered-content-generation]]）。
+  - authoring は `sentence-bank-build` と `PersonTemplateAuthoring` の**両方**がデコードするため、追記レコードは **plain 完全形**（`category`/`slots:[]`/`en=fallbackEn`/`ja=fallbackJa`）にする＝`integrate_authoring.py` が担保。
+  - 手作業で agy を回す場合（環境で自動化不可のとき）は `--dangerously-skip-permissions` をユーザー自身が `!` 付きで実行して出力を貼る（ユーザー権限なら分類器を通る）。
+
+- 旧メモ [[agy-cli-reliable-invocation]]（`script -q /dev/null`＋`--dangerously-skip-permissions`）は Claude Code の auto-mode では**危険フラグがブロックされ使えない**。上記 `--sandbox`＋pty 方式に置き換え。
 - **レビューする人＝私(Claude Code)**：agy 産の候補を**私が必ず目視**し、**下の「レビュー チェックリスト（和訳・英文の自然さ）」を全項目チェック**（題材が段階に合うか・大人題材でないか・**英文が不自然/場面不明でないか**・**和訳が直訳調でないか**・**漢字が許可学年以内か**・文法タグの正しさ）。怪しい行は捨てるか直す。**その後**で手順A 4〜9（プレビュー→却下0→`--write`→決定論→test）。漢字超過は `KanjiLevelGate` で機械的に検出 → ひらがな化して戻す。
 - **生成プロンプトに自然さガードを明記**：「①子が実際に使う自然な英文だけ（場面不明・不自然な文を作らない）②定型句は定型表現で③和訳は直訳調にせず日本語として自然に・口調と表現を統一」を毎回入れて、**そもそも粗悪候補を作らせない**。
 
