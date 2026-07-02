@@ -7350,7 +7350,9 @@ private struct SettingBlock<Content: View>: View {
             HStack(spacing: 6) {
                 Text(title)
                     .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.secondary)
+                    // ほぼ白の surfaceTint 上なので、.secondary（薄グレー）だと弱い。
+                    // 見出しは濃色 ink で締めて可読性を確保する。
+                    .foregroundStyle(ParentPalette.ink)
                 if let hint {
                     ParentInfoButton(title: title, message: hint, tint: ParentPalette.primary)
                 }
@@ -7375,7 +7377,7 @@ private struct SettingValueRow: View {
             Spacer()
             Text(value)
                 .font(.subheadline.monospacedDigit().weight(.bold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ParentPalette.neutral)
         }
     }
 }
@@ -7394,7 +7396,7 @@ private struct SliderSetting: View {
                 Spacer()
                 Text(String(format: format, value))
                     .font(.subheadline.monospacedDigit().weight(.bold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ParentPalette.neutral)
             }
             Slider(value: $value, in: range)
         }
