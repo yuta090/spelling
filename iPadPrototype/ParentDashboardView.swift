@@ -18,6 +18,9 @@ private enum ParentPalette {
     static let warning = Color(red: 0.84, green: 0.45, blue: 0.10)
     static let warningSoft = Color(red: 1.0, green: 0.95, blue: 0.88)
     static let danger = Color(red: 0.76, green: 0.22, blue: 0.18)
+    // 「きろく」のカード色分け用アクセント。指標ごとに淡い色を割り当てて一目で見分けられるようにする。
+    static let info = Color(red: 0.13, green: 0.52, blue: 0.60)      // 利用時間（ティール）
+    static let accent = Color(red: 0.36, green: 0.36, blue: 0.72)    // 復習（すみれ）
 }
 
 struct ParentDashboardView: View {
@@ -387,19 +390,26 @@ private struct OverviewGhostChip: View {
     }
 }
 
-/// カード共通の白い角丸＋うっすら枠。
+/// カード共通の角丸カード。`tint` で指標ごとに淡い色をつけて見分けやすく＆やわらかい印象にする。
 private struct OverviewCard<Content: View>: View {
+    var tint: Color = ParentPalette.primary
     @ViewBuilder var content: Content
 
     var body: some View {
         content
             .padding(16)
             .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
-            .background(ParentPalette.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background(
+                LinearGradient(
+                    colors: [tint.opacity(0.12), Color.white.opacity(0.94)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 18))
             .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(tint.opacity(0.22), lineWidth: 1)
             )
     }
 }
@@ -475,11 +485,17 @@ private struct OverviewHeroStrip: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity)
-        .background(ParentPalette.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .background(
+            LinearGradient(
+                colors: [ParentPalette.primarySoft, Color.white.opacity(0.95)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 18)
-                .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
         )
     }
 }
@@ -491,7 +507,7 @@ private struct OverviewWordsCard: View {
     var language: AppLanguage
 
     var body: some View {
-        OverviewCard {
+        OverviewCard(tint: ParentPalette.primary) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 10) {
                     OverviewIconChip(systemImage: "book.fill")
@@ -539,11 +555,21 @@ private struct OverviewAccuracyCard: View {
     var stats: OverviewStats
     var language: AppLanguage
 
+    // 数字の色（読みやすさ優先。ok/none は濃いインクで）。
     private var tint: Color {
         switch stats.accuracyBand {
         case .good: return ParentPalette.success
         case .watch: return ParentPalette.warning
         case .ok, .none: return ParentPalette.ink
+        }
+    }
+
+    // カードの淡い色・アイコン色（インクだと沈むので、やわらかい色に振る）。
+    private var cardTint: Color {
+        switch stats.accuracyBand {
+        case .good: return ParentPalette.success
+        case .watch: return ParentPalette.warning
+        case .ok, .none: return ParentPalette.primary
         }
     }
 
@@ -557,10 +583,10 @@ private struct OverviewAccuracyCard: View {
     }
 
     var body: some View {
-        OverviewCard {
+        OverviewCard(tint: cardTint) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 10) {
-                    OverviewIconChip(systemImage: "target")
+                    OverviewIconChip(systemImage: "target", tint: cardTint)
                     Text(language.text(japanese: "正答率", english: "Accuracy"))
                         .font(.headline.weight(.bold))
                         .foregroundStyle(ParentPalette.ink)
@@ -589,10 +615,10 @@ private struct OverviewUsageCard: View {
     var language: AppLanguage
 
     var body: some View {
-        OverviewCard {
+        OverviewCard(tint: ParentPalette.info) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 10) {
-                    OverviewIconChip(systemImage: "clock.fill")
+                    OverviewIconChip(systemImage: "clock.fill", tint: ParentPalette.info)
                     Text(language.text(japanese: "利用時間", english: "Time used"))
                         .font(.headline.weight(.bold))
                         .foregroundStyle(ParentPalette.ink)
@@ -611,7 +637,7 @@ private struct OverviewUsageCard: View {
                 ))
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(ParentPalette.neutral)
-                Sparkline(values: stats.usageWeekSeries, tint: ParentPalette.success)
+                Sparkline(values: stats.usageWeekSeries, tint: ParentPalette.info)
             }
         }
     }
@@ -656,22 +682,42 @@ private struct OverviewWeeklyActivityCard: View {
         language.text(japanese: "月火水木金土日", english: "MTWTFSS").map { String($0) }
     }
 
+    /// 今週バー（月→日）のうち「今日」の位置（月=0 … 日=6）。今日を強調するため。
+    /// 月曜はじまりへの並べ替えは `+5 % 7` の算術で行う（weeklyActivity の並び＝AppModel と同じ）。
+    private var todayIndex: Int {
+        let weekday = Calendar.current.component(.weekday, from: Date()) // 1=日 … 7=土
+        return (weekday + 5) % 7 // 月=0 … 日=6
+    }
+
     var body: some View {
-        OverviewCard {
+        OverviewCard(tint: ParentPalette.primary) {
             VStack(alignment: .leading, spacing: 12) {
-                Text(language.text(japanese: "今週のがんばり", english: "This week"))
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(ParentPalette.ink)
+                HStack(spacing: 10) {
+                    OverviewIconChip(systemImage: "chart.bar.fill")
+                    Text(language.text(japanese: "今週のがんばり", english: "This week"))
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(ParentPalette.ink)
+                }
                 let maxValue = max(stats.weeklyActivity.max() ?? 0, 1)
                 HStack(alignment: .bottom, spacing: 8) {
                     ForEach(Array(stats.weeklyActivity.enumerated()), id: \.offset) { index, value in
+                        let isToday = index == todayIndex
                         VStack(spacing: 6) {
-                            Capsule()
-                                .fill(value > 0 ? ParentPalette.primary.opacity(0.85) : ParentPalette.neutral.opacity(0.18))
-                                .frame(height: max(6, CGFloat(value) / CGFloat(maxValue) * 64))
+                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                .fill(barColor(value: value, isToday: isToday))
+                                .frame(height: max(8, CGFloat(value) / CGFloat(maxValue) * 60))
+                                .overlay(alignment: .top) {
+                                    // 今日のバーには小さな丸ぽち（現在地マーカー）。
+                                    if isToday {
+                                        Circle()
+                                            .fill(ParentPalette.warning)
+                                            .frame(width: 7, height: 7)
+                                            .offset(y: -11)
+                                    }
+                                }
                             Text(index < labels.count ? labels[index] : "")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(ParentPalette.neutral)
+                                .font(.caption2.weight(isToday ? .heavy : .bold))
+                                .foregroundStyle(isToday ? ParentPalette.primary : ParentPalette.neutral)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -679,6 +725,13 @@ private struct OverviewWeeklyActivityCard: View {
                 .frame(height: 84)
             }
         }
+    }
+
+    private func barColor(value: Int, isToday: Bool) -> Color {
+        if value > 0 {
+            return isToday ? ParentPalette.primary : ParentPalette.primary.opacity(0.6)
+        }
+        return isToday ? ParentPalette.primary.opacity(0.22) : ParentPalette.neutral.opacity(0.16)
     }
 }
 
@@ -691,10 +744,10 @@ private struct OverviewReviewCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            OverviewCard {
+            OverviewCard(tint: ParentPalette.accent) {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(spacing: 10) {
-                        OverviewIconChip(systemImage: "arrow.triangle.2.circlepath")
+                        OverviewIconChip(systemImage: "arrow.triangle.2.circlepath", tint: ParentPalette.accent)
                         Text(language.text(japanese: "まちがい復習", english: "Review"))
                             .font(.headline.weight(.bold))
                             .foregroundStyle(ParentPalette.ink)
@@ -710,10 +763,10 @@ private struct OverviewReviewCard: View {
                             Spacer()
                             Text(language.text(japanese: "くわしく", english: "Details"))
                                 .font(.subheadline.weight(.bold))
-                                .foregroundStyle(ParentPalette.primary)
+                                .foregroundStyle(ParentPalette.accent)
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.bold))
-                                .foregroundStyle(ParentPalette.primary)
+                                .foregroundStyle(ParentPalette.accent)
                         }
                     } else {
                         Text(language.text(japanese: "いまは ありません", english: "Nothing right now"))
@@ -1401,20 +1454,25 @@ private struct LearningReportCard: View {
                         .foregroundStyle(.secondary)
                 } else {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 130), spacing: 10)], spacing: 10) {
-                        metric(report.totalEvents, label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"))
-                        metric(report.distinctWords, label: language.text(japanese: "とりくんだ語", english: "Words worked on"))
-                        metric(report.activeDays, label: language.text(japanese: "学習した日数", english: "Active days"))
+                        metric(report.totalEvents, label: language.text(japanese: "練習・テスト回数", english: "Practices/tests"), tint: ParentPalette.primary, systemImage: "checkmark.seal.fill")
+                        metric(report.distinctWords, label: language.text(japanese: "とりくんだ語", english: "Words worked on"), tint: ParentPalette.info, systemImage: "book.fill")
+                        metric(report.activeDays, label: language.text(japanese: "学習した日数", english: "Active days"), tint: ParentPalette.warning, systemImage: "calendar")
                     }
                 }
             }
         }
     }
 
-    private func metric(_ value: Int, label: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("\(value)")
-                .font(.title2.weight(.heavy)).monospacedDigit()
-                .foregroundStyle(ParentPalette.primary)
+    private func metric(_ value: Int, label: String, tint: Color, systemImage: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Image(systemName: systemImage)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(tint)
+                Text("\(value)")
+                    .font(.title2.weight(.heavy)).monospacedDigit()
+                    .foregroundStyle(tint)
+            }
             Text(label)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -1422,8 +1480,18 @@ private struct LearningReportCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
-        .background(ParentPalette.surfaceTint)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .background(
+            LinearGradient(
+                colors: [tint.opacity(0.12), Color.white.opacity(0.9)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(tint.opacity(0.18), lineWidth: 1)
+        )
     }
 }
 
