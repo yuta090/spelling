@@ -423,10 +423,12 @@ struct SpellingSessionView: View {
                                     ForEach(compactPracticeWords, id: \.id) { word in
                                         ExampleHintView(
                                             word: word.text,
+                                            storedMeaning: word.promptText,
                                             language: language,
                                             cast: model.cast,
                                             maxKanjiGrade: model.childMaxKanjiGrade,
                                             showsExample: model.showsChildExampleSentence,
+                                            generatedExample: { model.practiceExampleSentence(for: $0) },
                                             style: .compact,
                                             onSpeak: { speech.speak($0, language: "en-US") }
                                         )
@@ -603,10 +605,12 @@ struct SpellingSessionView: View {
                 if showsPracticeHint {
                     ExampleHintView(
                         word: currentWord.text,
+                        storedMeaning: currentWord.promptText,
                         language: language,
                         cast: model.cast,
                         maxKanjiGrade: model.childMaxKanjiGrade,
                         showsExample: model.showsChildExampleSentence,
+                        generatedExample: { model.practiceExampleSentence(for: $0) },
                         style: .full,
                         onSpeak: { speech.speak($0, language: "en-US") }
                     )
@@ -2931,13 +2935,20 @@ private enum HintStyle {
 /// - 例文の英語は **🔊 で聞ける**（音で伝える）。
 private struct ExampleHintView: View {
     var word: String
+    /// 単語リストが保持する訳（親の手入力・取り込み時の自動付与・コース由来）。
+    /// 意味表示はこれを最優先し、無いときだけ同梱辞書(EJDict)の第1語義に落とす（`MeaningResolver`）。
+    var storedMeaning: String? = nil
     var language: AppLanguage
     /// 例文を名前入りに差し替えるための登場人物（親が登録した Cast）。未登録なら従来の静的例文。
     var cast: Cast
     /// 和訳で許す漢字配当学年(0…6)。これを超える漢字はひらがな読みに落とす。
     var maxKanjiGrade: Int
     /// 英語例文を出すか。低学年（小1・小2）は未習語が混ざるため false（意味だけ出す）。
+    /// ※これは「生成例文が無かった時のフォールバック」の可否。生成例文があれば学年に関係なく出す。
     var showsExample: Bool = true
+    /// 学年に合う生成例文を引くコールバック（`AppModel.practiceExampleSentence`）。
+    /// 本命ソース。田中コーパス直読み（未習語が混ざる）の代わり。無い語は nil を返す。
+    var generatedExample: (String) -> WordExample? = { _ in nil }
     var style: HintStyle = .full
     /// 例文の英語を読み上げるためのコールバック（呼び出し側で SpeechPlayer に渡す）。
     var onSpeak: (String) -> Void = { _ in }
@@ -2978,6 +2989,7 @@ private struct ExampleHintView: View {
         .onValueChange(of: cast) { _ in loadHint() }
         .onValueChange(of: maxKanjiGrade) { _ in loadHint() }
         .onValueChange(of: showsExample) { _ in loadHint() }
+        .onValueChange(of: storedMeaning ?? "") { _ in loadHint() }
     }
 
     @ViewBuilder
@@ -3077,15 +3089,26 @@ private struct ExampleHintView: View {
     }
 
     private func loadHint() {
-        // 意味: 最初の語義だけに絞り（GlossFormatter）、学年ハイブリッド＋ふりがなのかたまりにする。
-        if let raw = WordBank.shared.japanese(for: word) {
-            let sense = GlossFormatter.primarySense(raw)
-            meaningSegments = JapaneseReading.rubySegments(sense, maxGrade: maxKanjiGrade)
+        // 意味: 単語リストが持つ訳(storedMeaning)を最優先し、無いときだけ同梱辞書(EJDict)の第1語義へ。
+        // 学年ハイブリッド＋ふりがなのかたまりにする。
+        let resolvedMeaning = MeaningResolver.resolve(
+            promptText: storedMeaning,
+            dictionaryGloss: WordBank.shared.japanese(for: word)
+        )
+        if let resolvedMeaning {
+            meaningSegments = JapaneseReading.rubySegments(resolvedMeaning, maxGrade: maxKanjiGrade)
         } else {
             meaningSegments = []
         }
 
-        // 低学年（小1・小2）は同梱例文に未習語が混ざるため、英語例文は出さず意味だけにする。
+        // 本命: 学年に合う生成例文（語彙・文法・漢字を段階で制御済み）を最優先で使う。
+        // 田中コーパス直読みと違い未習語が混ざらないので、低学年でもこれは出してよい。
+        if let generated = generatedExample(word) {
+            setExample(generated)
+            return
+        }
+
+        // 生成例文が無い語のフォールバック。低学年（小1・小2）は田中コーパスを出さず意味だけにする。
         guard showsExample else {
             exampleEN = nil
             exampleJASegments = []
@@ -3107,14 +3130,18 @@ private struct ExampleHintView: View {
         }
 
         if let chosen {
-            exampleEN = chosen.en.isEmpty ? nil : chosen.en
-            // 例文の和訳: まず分かち書き（語境界が明確なうちに区切る）→ 学年ハイブリッド＋ふりがなへ。
-            let wakachi = JapaneseReading.wakachi(chosen.ja)
-            exampleJASegments = JapaneseReading.rubySegments(wakachi, maxGrade: maxKanjiGrade)
+            setExample(chosen)
         } else {
             exampleEN = nil
             exampleJASegments = []
         }
+    }
+
+    /// 例文（英＋和）を表示状態に反映する。和訳は分かち書き→学年ハイブリッド＋ふりがなのかたまりへ。
+    private func setExample(_ example: WordExample) {
+        exampleEN = example.en.isEmpty ? nil : example.en
+        let wakachi = JapaneseReading.wakachi(example.ja)
+        exampleJASegments = JapaneseReading.rubySegments(wakachi, maxGrade: maxKanjiGrade)
     }
 }
 

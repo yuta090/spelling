@@ -6523,6 +6523,11 @@ private struct TestSettingsPanel: View {
     // くわしい設定（そうそう変えない項目）は既定で折りたたむ。普段の画面を短く保つ。
     @State private var showDetails = false
     @State private var showingGuide = false   // 「保護者ガイドをもう一度」再表示用
+    // こどもプロファイル管理（追加・改名）。切替そのものは子のホーム（顔タップ）が主導線。
+    @State private var showingAddProfile = false
+    @State private var newProfileName = ""
+    @State private var renamingProfileID: UUID?
+    @State private var renameText = ""
     #if DEBUG
     @State private var showingAvatarDressUp = false   // 開発用: 着せ替えアバターQAプレビュー
     @State private var showingAIJudgment = false      // 開発用: AI-OCR 3モデル判定くらべ
@@ -6603,6 +6608,79 @@ private struct TestSettingsPanel: View {
                 }
                 .sheet(isPresented: $showingAccount) {
                     AccountSyncView(session: session)
+                }
+            }
+
+            // こども（プロファイル）＝親の管理コンソール。1台を兄弟で共有するとき、ここで子を増やす／改名する。
+            // 「誰が今やるか」の切替は子のホーム（名前タップ）に置く。ここは *管理* だけ。
+            SettingBlock(
+                title: language.text(japanese: "こども（プロファイル）", english: "Children (Profiles)"),
+                hint: language.text(
+                    japanese: "1台を きょうだいで つかうとき、ここで こどもを ふやせます。きりかえは こどもの ホーム（なまえを タップ）から。",
+                    english: "Add children to share one iPad. Switching is done from the child's Home (tap the name)."
+                )
+            ) {
+                ForEach(model.profileRegistry.orderedProfiles, id: \.id) { profile in
+                    HStack(spacing: 10) {
+                        Image(systemName: profile.id == model.profileRegistry.activeProfileID
+                              ? "checkmark.circle.fill" : "person.circle")
+                            .foregroundStyle(profile.id == model.profileRegistry.activeProfileID
+                                             ? Color.green : ParentPalette.primary)
+                        Text(profile.displayName.isEmpty
+                             ? language.text(japanese: "（名前なし）", english: "(no name)")
+                             : profile.displayName)
+                            .font(.subheadline.weight(.bold))
+                        if profile.id == model.profileRegistry.activeProfileID {
+                            Text(language.text(japanese: "いま", english: "now"))
+                                .font(.caption2.weight(.bold))
+                                .padding(.horizontal, 6).padding(.vertical, 2)
+                                .background(Capsule().fill(Color.green.opacity(0.15)))
+                                .foregroundStyle(.green)
+                        }
+                        Spacer()
+                        Button(language.text(japanese: "改名", english: "Rename")) {
+                            renamingProfileID = profile.id
+                            renameText = profile.displayName
+                        }
+                        .font(.caption.weight(.bold))
+                        .buttonStyle(.bordered)
+                        .tint(ParentPalette.primary)
+                    }
+                }
+
+                Button {
+                    newProfileName = ""
+                    showingAddProfile = true
+                } label: {
+                    HStack {
+                        Image(systemName: "person.badge.plus")
+                        Text(language.text(japanese: "こどもを ふやす", english: "Add child"))
+                            .font(.subheadline.weight(.bold))
+                    }
+                }
+                .tint(ParentPalette.primary)
+            }
+            .alert(language.text(japanese: "こどもを ふやす", english: "Add child"),
+                   isPresented: $showingAddProfile) {
+                TextField(language.text(japanese: "なまえ", english: "Name"), text: $newProfileName)
+                Button(language.text(japanese: "ついか", english: "Add")) {
+                    model.addProfile(displayName: newProfileName)
+                    newProfileName = ""
+                }
+                Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {}
+            } message: {
+                Text(language.text(japanese: "あとから 改名できます。", english: "You can rename later."))
+            }
+            .alert(language.text(japanese: "なまえを かえる", english: "Rename"),
+                   isPresented: Binding(get: { renamingProfileID != nil },
+                                        set: { if !$0 { renamingProfileID = nil } })) {
+                TextField(language.text(japanese: "なまえ", english: "Name"), text: $renameText)
+                Button(language.text(japanese: "ほぞん", english: "Save")) {
+                    if let id = renamingProfileID { model.renameProfile(id, to: renameText) }
+                    renamingProfileID = nil
+                }
+                Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {
+                    renamingProfileID = nil
                 }
             }
 

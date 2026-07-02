@@ -97,7 +97,8 @@ public final class ProfileScopedStore: @unchecked Sendable {
 ///   ② その後で台帳を**バリア保存**（コピー完了後に確定）
 /// この順なので、途中でプロセスが落ちても台帳が未保存 → 次回また bootstrap → コピーは冪等に再開。
 public enum ProfileStoreMigration {
-    static let profilesKey = "spellingTrainer.profiles"
+    /// 台帳（`ProfileRegistry`）の保存キー。移行マーカー兼、実行時の改名/切替の保存先（アプリからも使う）。
+    public static let profilesKey = "spellingTrainer.profiles"
     static let legacyChildNameKey = "spellingTrainer.childName"
 
     /// アプリ起動時に一度だけ呼ぶ。既に台帳があればそれを返し、無ければ #1 を生成して移行する。
