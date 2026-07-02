@@ -80,6 +80,46 @@ struct WordDTO: SyncedRow {
     }
 }
 
+// MARK: - 解答試行（attempt・append-only）
+struct AttemptDTO: SyncedRow {
+    static let table = "attempts"
+    let id: UUID
+    let householdId: UUID
+    let profileId: UUID?
+    let sessionId: UUID
+    let stepId: UUID?
+    let wordId: UUID?
+    let expectedWord: String
+    let mode: String
+    let recognizedText: String
+    let ocrConfidence: Double?
+    let autoDecision: String
+    let drawingPath: String?
+    let submittedAt: String
+    let updatedAt: String
+    let deletedAt: String?
+    let syncVersion: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case householdId = "household_id"
+        case profileId = "profile_id"
+        case sessionId = "session_id"
+        case stepId = "step_id"
+        case wordId = "word_id"
+        case expectedWord = "expected_word"
+        case mode
+        case recognizedText = "recognized_text"
+        case ocrConfidence = "ocr_confidence"
+        case autoDecision = "auto_decision"
+        case drawingPath = "drawing_path"
+        case submittedAt = "submitted_at"
+        case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
+        case syncVersion = "sync_version"
+    }
+}
+
 // MARK: - プッシュ用ペイロード（upsert）
 //
 // サーバー管理列（sync_version / server_changed_at / created_at）は **送らない**（トリガが採番）。
@@ -106,6 +146,43 @@ struct ProfileUpsert: UpsertRow {
         case displayName = "display_name"
         case appLanguage = "app_language"
         case activeStepId = "active_step_id"
+        case updatedAt = "updated_at"
+        case deletedAt = "deleted_at"
+    }
+}
+
+struct AttemptUpsert: UpsertRow {
+    static let table = "attempts"
+    let id: UUID
+    let householdId: UUID
+    let profileId: UUID?
+    let sessionId: UUID
+    let stepId: UUID?
+    let wordId: UUID?
+    let expectedWord: String
+    let mode: String
+    let recognizedText: String
+    let ocrConfidence: Double?
+    let autoDecision: String
+    let drawingPath: String?
+    let submittedAt: String
+    let updatedAt: String
+    let deletedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case householdId = "household_id"
+        case profileId = "profile_id"
+        case sessionId = "session_id"
+        case stepId = "step_id"
+        case wordId = "word_id"
+        case expectedWord = "expected_word"
+        case mode
+        case recognizedText = "recognized_text"
+        case ocrConfidence = "ocr_confidence"
+        case autoDecision = "auto_decision"
+        case drawingPath = "drawing_path"
+        case submittedAt = "submitted_at"
         case updatedAt = "updated_at"
         case deletedAt = "deleted_at"
     }
