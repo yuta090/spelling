@@ -13,8 +13,9 @@ final class LearningReportTests: XCTestCase {
         cal.date(from: DateComponents(year: y, month: m, day: d, hour: h))!
     }
 
-    private func ev(_ word: String, _ date: Date, _ cleared: Bool) -> LearningEvent {
-        LearningEvent(word: word, date: date, cleared: cleared)
+    /// 既定は「採点確定テスト」として扱う（既存テスト群はもともと "テストのクリア可否" を検証する意図のため）。
+    private func ev(_ word: String, _ date: Date, _ cleared: Bool, kind: LearningEvent.Kind = .test(graded: true)) -> LearningEvent {
+        LearningEvent(word: word, date: date, cleared: cleared, kind: kind)
     }
 
     func testEmptyIsEmptyReport() {
@@ -120,5 +121,57 @@ final class LearningReportTests: XCTestCase {
         XCTAssertEqual(r.activeDays, 1)
         XCTAssertEqual(r.currentStreakDays, 1)
         XCTAssertEqual(r.totalEvents, 2)
+    }
+
+    // MARK: - accuracy の分母（採点確定テストのみ。練習・未採点テストを除外）
+
+    func testPracticeEventsDoNotAffectAccuracy() {
+        // テスト2件（クリア1・未クリア1）＝正答率50%。練習を何件混ぜても変わらない。
+        let events = [
+            ev("cat", at(2026, 6, 10), true, kind: .test(graded: true)),
+            ev("dog", at(2026, 6, 10), false, kind: .test(graded: true)),
+            ev("cat", at(2026, 6, 11), false, kind: .practice),
+            ev("dog", at(2026, 6, 11), false, kind: .practice),
+            ev("sun", at(2026, 6, 12), false, kind: .practice),
+        ]
+        let r = LearningReportBuilder.build(events: events, from: at(2026, 6, 1), to: at(2026, 6, 30), calendar: cal)
+        XCTAssertEqual(r.totalEvents, 5, "練習も『がんばり』の量として全イベント数には入る")
+        XCTAssertEqual(r.gradedTestCount, 2, "分母は採点確定テストの2件のみ")
+        XCTAssertEqual(r.accuracy, 0.5, accuracy: 0.0001, "練習を混ぜても正答率は変わらない")
+    }
+
+    func testUnreviewedTestsAreExcludedFromAccuracyDenominator() {
+        // 未採点（needsReview 相当）のテストは cleared=false で渡ってきても、分母・分子どちらにも入らない。
+        let events = [
+            ev("cat", at(2026, 6, 10), true, kind: .test(graded: true)),
+            ev("dog", at(2026, 6, 10), false, kind: .test(graded: false)),
+            ev("sun", at(2026, 6, 11), false, kind: .test(graded: false)),
+        ]
+        let r = LearningReportBuilder.build(events: events, from: at(2026, 6, 1), to: at(2026, 6, 30), calendar: cal)
+        XCTAssertEqual(r.totalEvents, 3)
+        XCTAssertEqual(r.gradedTestCount, 1, "未採点2件は分母から除外")
+        XCTAssertEqual(r.accuracy, 1.0, accuracy: 0.0001, "採点確定した1件がクリアなので100%")
+    }
+
+    func testAllUnreviewedYieldsAccuracyBandNone() {
+        // 採点確定テストが1件も無ければ、AccuracyBand は「データ待ち」= .none にすべき。
+        let events = [
+            ev("cat", at(2026, 6, 10), false, kind: .test(graded: false)),
+            ev("dog", at(2026, 6, 11), false, kind: .test(graded: false)),
+            ev("sun", at(2026, 6, 12), false, kind: .practice),
+        ]
+        let r = LearningReportBuilder.build(events: events, from: at(2026, 6, 1), to: at(2026, 6, 30), calendar: cal)
+        XCTAssertEqual(r.gradedTestCount, 0)
+        XCTAssertEqual(AccuracyBand.classify(accuracy: r.accuracy, totalEvents: r.gradedTestCount), .none)
+    }
+
+    func testFiveGradedTestsYieldClassifiedBand() {
+        // 採点確定テストが5件そろえば AccuracyBand の最低サンプル数を満たし、.none を脱する。
+        let events = (0..<5).map { i in
+            ev("w\(i)", at(2026, 6, 10), true, kind: .test(graded: true))
+        }
+        let r = LearningReportBuilder.build(events: events, from: at(2026, 6, 1), to: at(2026, 6, 30), calendar: cal)
+        XCTAssertEqual(r.gradedTestCount, 5)
+        XCTAssertEqual(AccuracyBand.classify(accuracy: r.accuracy, totalEvents: r.gradedTestCount), .good, "全クリアなので好調")
     }
 }

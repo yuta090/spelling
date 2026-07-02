@@ -142,6 +142,9 @@ struct OverviewStats: Equatable, Sendable {
     /// 子が選んでいるキャラID（アバター表示用）。
     var avatarCharacterID: String
     var streakDays: Int
+    /// 今日すでに学習があったか。
+    /// true=`streakDays` は今日から遡る連続（今日やった）。false=昨日から遡る連続（今日はまだ）。
+    var streakIsActiveToday: Bool
     var weeklyCount: Int
     /// これまで触れた単語数（累計）。
     var totalWords: Int
@@ -151,12 +154,19 @@ struct OverviewStats: Equatable, Sendable {
     var accuracy: Double
     /// 直近正答率の調子（色分け用）。
     var accuracyBand: AccuracyBand
+    /// 直近14日の正答率 - その前の14日の正答率（パーセントポイント）。
+    /// 両期間とも採点確定テストが5件未満（`AccuracyBand` の最低サンプル数と同じ基準）だと nil（比較を出さない）。
+    var accuracyDeltaPoints: Int?
     /// 今日のアプリ利用秒数。
     var usageTodaySeconds: Int
     /// 今週（月〜日）のアプリ利用秒数合計。
     var usageWeekSeconds: Int
     /// 今週（月→日）の日別利用秒数。スパークライン用。
     var usageWeekSeries: [Int]
+    /// 前週の「今週と同じ経過日数（同じ曜日）まで」のアプリ利用秒数合計。
+    /// 例: 今日が水曜なら前週の月〜水の合計。今週（月〜今日）と同じ土俵で比べるための値で、
+    /// 前週まるごとの合計ではない。今週・前週がどちらも0秒なら nil（比較を出さない）。
+    var usagePrevWeekSeconds: Int?
     /// 今週（月→日）の日別取り組み数。曜日バー用。
     var weeklyActivity: [Int]
     var spellingReviewCount: Int

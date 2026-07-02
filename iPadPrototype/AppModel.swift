@@ -1410,8 +1410,28 @@ final class AppModel: ObservableObject {
         return attempt.decision == .autoCorrect
     }
 
+    /// テスト答案の正解/不正解が「確定」しているか（＝正答率の分母に入れてよいか）。
+    /// 親レビュー済み（approved/needsPractice）は常に確定。未レビューは自動判定の意味論に従う:
+    /// - `autoCorrect` / `autoIncorrect`: はっきり判定できているので確定。
+    /// - `timeExpired`: 時間内に書き切れなかった＝テストとしては不正解確定（`isCleared` は false のまま）。
+    ///   ※子ども向け表示（`ChildGrading`）ではやる気を削がないよう中立(`pending`)扱いだが、
+    ///   親向けの正答率は「テストに正解できたか」の事実を優先し、確定として数える。
+    /// - `needsReview` / `rewrite`: OCRが読めなかっただけ（`ChildGrading.outcome` と同じ `pending`）。
+    ///   親の採点待ちで正誤が定まっていないので**未確定**（分母から除外）。
+    private func isGraded(_ attempt: SpellingAttempt) -> Bool {
+        if attempt.parentReviewDecision != .unreviewed {
+            return true
+        }
+        switch attempt.decision {
+        case .autoCorrect, .autoIncorrect, .timeExpired:
+            return true
+        case .needsReview, .rewrite:
+            return false
+        }
+    }
+
     /// 直近 `days` 日（当日含む）の学習レポートを作る。
-    /// テスト(attempts)はクリア可否つき、練習(practiceSamples)は「取り組み(=未クリア)」として集計に含める。
+    /// テスト(attempts)は採点確定状況つき、練習(practiceSamples)は「取り組み(=採点対象外)」として集計に含める。
     /// 純粋集計は `SpellingSyncCore.LearningReportBuilder`。
     func learningReport(days: Int, now: Date = Date(), calendar: Calendar = .current) -> LearningReport {
         let to = now
@@ -1419,14 +1439,45 @@ final class AppModel: ObservableObject {
         return LearningReportBuilder.build(events: allLearningEvents(), from: from, to: to, calendar: calendar)
     }
 
+    /// `learningReport(days:)` の窓の**すぐ手前・同じ長さで重ならない**期間（トレンド比較の「前の期間」）。
+    /// 例: days=14 なら、今期間は「13日前(暦頭)〜今」。前期間はその1秒前を終端に、そこから遡って14日分
+    /// （＝27日前(暦頭)〜14日前23:59:59）。どちらも同じ「暦日ぶんの幅」になるよう暦頭を起点に組み立てる。
+    func previousLearningReport(days: Int, now: Date = Date(), calendar: Calendar = .current) -> LearningReport {
+        guard let window = previousReportWindow(days: days, now: now, calendar: calendar) else { return .empty }
+        return LearningReportBuilder.build(events: allLearningEvents(), from: window.from, to: window.to, calendar: calendar)
+    }
+
+    /// `previousLearningReport` の窓計算だけを切り出したもの（`overviewStats` からも events を使い回して呼べるように）。
+    private func previousReportWindow(days: Int, now: Date, calendar: Calendar) -> (from: Date, to: Date)? {
+        let clampedDays = max(days, 1)
+        let currentFrom = calendar.date(byAdding: .day, value: -(clampedDays - 1), to: calendar.startOfDay(for: now)) ?? calendar.startOfDay(for: now)
+        guard let previousTo = calendar.date(byAdding: .second, value: -1, to: currentFrom),
+              let previousFrom = calendar.date(byAdding: .day, value: -clampedDays, to: currentFrom) else {
+            return nil
+        }
+        return (previousFrom, previousTo)
+    }
+
+    /// 直近 `days` 日（当日含む）の「よくまちがえる単語」上位 `limit` 件を作る。
+    /// 「まちがい」＝採点確定テストで不正解（`learningReport` の accuracy と同じ「採点確定のみ」方針）。
+    /// 純粋集計は `SpellingSyncCore.StrugglingWordsBuilder`。
+    func strugglingWords(days: Int = 30, limit: Int = 5, now: Date = Date(), calendar: Calendar = .current) -> [StrugglingWord] {
+        let to = now
+        let from = calendar.date(byAdding: .day, value: -(max(days, 1) - 1), to: calendar.startOfDay(for: now)) ?? calendar.startOfDay(for: now)
+        return StrugglingWordsBuilder.build(events: allLearningEvents(), from: from, to: to, limit: limit, calendar: calendar)
+    }
+
     /// テスト(attempts)＋練習(practiceSamples)を学習イベントへ正規化したもの。
-    /// テストはクリア可否つき、練習は「取り組み(=未クリア)」として扱う（learningReport と同じ意味論）。
+    /// テストはクリア可否＋採点確定可否つき、練習は「取り組み(=採点対象外)」として扱う（learningReport と同じ意味論）。
+    /// `totalEvents`/`distinctWords`/`activeDays`/`currentStreakDays`/`learnedWords` は
+    /// 練習込みの全イベントで数える（がんばりの量は練習も含めて正しい）が、
+    /// `accuracy` の分母は `LearningReportBuilder` 側で採点確定テストだけに絞られる。
     private func allLearningEvents() -> [LearningEvent] {
         var events: [LearningEvent] = attempts.map {
-            LearningEvent(word: normalize($0.word), date: $0.date, cleared: isCleared($0))
+            LearningEvent(word: normalize($0.word), date: $0.date, cleared: isCleared($0), kind: .test(graded: isGraded($0)))
         }
         events += practiceSamples.map {
-            LearningEvent(word: normalize($0.word), date: $0.date, cleared: false)
+            LearningEvent(word: normalize($0.word), date: $0.date, cleared: false, kind: .practice)
         }
         // 空テキスト（空白のみ等）は除外。totalLearnedWordCount と数え方を揃え、マスター率が 1 を超えないようにする。
         return events.filter { !$0.word.isEmpty }
@@ -2975,26 +3026,58 @@ final class AppModel: ObservableObject {
             let from = calendar.date(byAdding: .day, value: -(max(days, 1) - 1), to: calendar.startOfDay(for: now)) ?? calendar.startOfDay(for: now)
             return LearningReportBuilder.build(events: events, from: from, to: now, calendar: calendar)
         }
+        func previousReport(days: Int) -> LearningReport {
+            guard let window = previousReportWindow(days: days, now: now, calendar: calendar) else { return .empty }
+            return LearningReportBuilder.build(events: events, from: window.from, to: window.to, calendar: calendar)
+        }
         let weekly = report(days: 7)
-        let monthly = report(days: 30)
         let recent = report(days: 14)
         let allTime = report(days: 3650)
         let weekStarts = currentWeekDayStarts(now: now, calendar: calendar)
         let weekKeys = weekStarts.map { usageDayKey($0, calendar: calendar) }
         let liveLog = liveUsageLog(now: now, calendar: calendar)
+        let usageWeekSecondsValue = UsageLog.total(liveLog, days: weekKeys)
+
+        // 正答率の前14日比。両期間とも採点確定テストが5件未満（=AccuracyBand.classifyの最低サンプル数と同じ基準）
+        // ならブレが大きいので出さない（nil）。
+        let previousRecent = previousReport(days: 14)
+        let accuracyDeltaPoints: Int? = (recent.gradedTestCount >= 5 && previousRecent.gradedTestCount >= 5)
+            ? Trend.accuracyDeltaPoints(current: recent.accuracy, previous: previousRecent.accuracy)
+            : nil
+
+        // 利用時間の前週比（月〜日、今週のすぐ前の週）。
+        // 今週は月〜今日までの部分合計なので、前週も「同じ経過日数ぶん（月〜今日と同じ曜日）」だけを合計する
+        // （そうしないと週の前半は前週まるごとと比べて必ず大幅減に見えてしまう）。
+        // todayIndex は weeklyActivity と同じ「月=0…日=6」（`(weekday + 5) % 7`）の並び。
+        let today = calendar.startOfDay(for: now)
+        let todayIndex = weekStarts.firstIndex(where: { calendar.isDate($0, inSameDayAs: today) }) ?? (weekStarts.count - 1)
+        let previousWeekKeys = weekStarts.prefix(todayIndex + 1)
+            .compactMap { calendar.date(byAdding: .day, value: -7, to: $0) }
+            .map { usageDayKey($0, calendar: calendar) }
+        let previousWeekTotal = UsageLog.total(usageLog, days: previousWeekKeys)
+        // 前週・今週がどちらも0なら比較を出さない（nil）。
+        let usagePrevWeekSeconds: Int? = (usageWeekSecondsValue == 0 && previousWeekTotal == 0) ? nil : previousWeekTotal
+
+        // 連続日数は「今日はまだ学習していない」朝でも昨日までの頑張りが0日に見えないよう、
+        // 全イベントを渡して正確に計算する（LearningReport.currentStreakDays とは別の表示専用ロジック）。
+        let currentStreak = CurrentStreakCalculator.compute(events: events, today: now, calendar: calendar)
+
         return OverviewStats(
             childName: childName,
             grade: selectedGrade,
             avatarCharacterID: selectedCharacterID,
-            streakDays: monthly.currentStreakDays,
+            streakDays: currentStreak.days,
+            streakIsActiveToday: currentStreak.activeToday,
             weeklyCount: weekly.totalEvents,
             totalWords: totalLearnedWordCount,
             masteredWords: allTime.learnedWords,
             accuracy: recent.accuracy,
-            accuracyBand: AccuracyBand.classify(accuracy: recent.accuracy, totalEvents: recent.totalEvents),
+            accuracyBand: AccuracyBand.classify(accuracy: recent.accuracy, totalEvents: recent.gradedTestCount),
+            accuracyDeltaPoints: accuracyDeltaPoints,
             usageTodaySeconds: UsageLog.seconds(liveLog, on: usageDayKey(now, calendar: calendar)),
-            usageWeekSeconds: UsageLog.total(liveLog, days: weekKeys),
+            usageWeekSeconds: usageWeekSecondsValue,
             usageWeekSeries: UsageLog.series(liveLog, days: weekKeys),
+            usagePrevWeekSeconds: usagePrevWeekSeconds,
             weeklyActivity: DailyActivity.counts(events: events, dayStarts: weekStarts, calendar: calendar),
             spellingReviewCount: spellingReviewActiveCount,
             grammarReviewCount: grammarReviewActiveCount,
