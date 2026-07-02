@@ -294,3 +294,99 @@ final class ReviewQueueScenarioTests: XCTestCase {
         XCTAssertFalse(ReviewQueue.isMastered(states[0], currentStep: 1))
     }
 }
+
+// MARK: - remove（項目をキューから外す＝卒業扱い）
+
+final class ReviewQueueRemoveTests: XCTestCase {
+    func testRemovesExistingItem() {
+        var states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        states = ReviewQueue.apply(states, itemID: idB, correct: false, step: 0)
+        let out = ReviewQueue.remove(states, itemID: idA)
+        XCTAssertEqual(out.map(\.id), [idB])
+    }
+
+    func testRemoveAbsentItemIsNoOp() {
+        let states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        let out = ReviewQueue.remove(states, itemID: idX)
+        XCTAssertEqual(out, states)
+    }
+
+    func testRemoveIsIdempotent() {
+        let states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        let once = ReviewQueue.remove(states, itemID: idA)
+        let twice = ReviewQueue.remove(once, itemID: idA)
+        XCTAssertTrue(once.isEmpty)
+        XCTAssertEqual(once, twice)
+    }
+}
+
+// MARK: - applyParentReview（親採点の反映：set-like・冪等）
+
+final class ReviewQueueParentReviewTests: XCTestCase {
+    // 直そう → box1 で登録（未登録時）
+    func testNeedsPracticeEnrollsAtBoxOne() {
+        let out = ReviewQueue.applyParentReview([], itemID: idA, decision: .needsPractice, step: 4)
+        XCTAssertEqual(out.count, 1)
+        XCTAssertEqual(out[0].id, idA)
+        XCTAssertEqual(out[0].box, SRSScheduler.minBox)
+        XCTAssertEqual(out[0].lastSeenStep, 4)
+    }
+
+    // 直そう → 登録済みでも box1 にリセット（set-like：何回・どのステップで呼んでも box1 に収束）
+    func testNeedsPracticeResetsToBoxOneRegardlessOfHistory() {
+        // box を上げておく
+        var states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        states = ReviewQueue.apply(states, itemID: idA, correct: true, step: 1) // box2
+        states = ReviewQueue.apply(states, itemID: idA, correct: true, step: 2) // box3
+        let out = ReviewQueue.applyParentReview(states, itemID: idA, decision: .needsPractice, step: 5)
+        XCTAssertEqual(out.count, 1)
+        XCTAssertEqual(out[0].box, SRSScheduler.minBox)
+        XCTAssertEqual(out[0].lastSeenStep, 5)
+    }
+
+    // OK → キューから削除（卒業扱い）
+    func testApprovedRemovesFromQueue() {
+        let states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        let out = ReviewQueue.applyParentReview(states, itemID: idA, decision: .approved, step: 3)
+        XCTAssertTrue(out.isEmpty)
+    }
+
+    // OK → 未登録なら何もしない
+    func testApprovedOnAbsentItemIsNoOp() {
+        let states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        let out = ReviewQueue.applyParentReview(states, itemID: idX, decision: .approved, step: 3)
+        XCTAssertEqual(out, states)
+    }
+
+    // 未採点 → 何もしない
+    func testUnreviewedIsNoOp() {
+        let states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        let out = ReviewQueue.applyParentReview(states, itemID: idA, decision: .unreviewed, step: 3)
+        XCTAssertEqual(out, states)
+    }
+
+    // 冪等：同じ判定を同一ステップで2回反映しても結果は変わらない（OK＝削除）
+    func testApprovedIsIdempotent() {
+        let states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        let once = ReviewQueue.applyParentReview(states, itemID: idA, decision: .approved, step: 3)
+        let twice = ReviewQueue.applyParentReview(once, itemID: idA, decision: .approved, step: 3)
+        XCTAssertEqual(once, twice)
+    }
+
+    // 冪等：直そうを同一ステップで2回反映しても box は多重に上がらない（box1 のまま）
+    func testNeedsPracticeSameStepDoesNotMultiClimb() {
+        let once = ReviewQueue.applyParentReview([], itemID: idA, decision: .needsPractice, step: 3)
+        let twice = ReviewQueue.applyParentReview(once, itemID: idA, decision: .needsPractice, step: 3)
+        XCTAssertEqual(once, twice)
+        XCTAssertEqual(twice[0].box, SRSScheduler.minBox)
+    }
+
+    // トグル収束：OK→直そう→OK は最終 OK の状態（削除）に収束する
+    func testToggleConvergesToLastDecision() {
+        var states = ReviewQueue.apply([], itemID: idA, correct: false, step: 0)
+        states = ReviewQueue.applyParentReview(states, itemID: idA, decision: .approved, step: 1)     // 削除
+        states = ReviewQueue.applyParentReview(states, itemID: idA, decision: .needsPractice, step: 2) // box1 で復活
+        states = ReviewQueue.applyParentReview(states, itemID: idA, decision: .approved, step: 3)     // 再度削除
+        XCTAssertTrue(states.isEmpty)
+    }
+}
