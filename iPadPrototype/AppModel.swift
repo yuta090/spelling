@@ -447,6 +447,12 @@ final class AppModel: ObservableObject {
         didSet { guard !isReloadingProfile else { return }; persistenceStore.save(hasShownHomeCharacterHint, key: hasShownHomeCharacterHintKey) }
     }
 
+    /// 保護者メニューの初回ガイドを既に見たか。false の間だけ、保護者メニューを開いた時にガイドを出す。
+    /// 設定の「ガイドをもう一度」で false に戻せる。
+    @Published var hasSeenParentGuide: Bool = false {
+        didSet { guard !isReloadingProfile else { return }; persistenceStore.save(hasSeenParentGuide, key: hasSeenParentGuideKey) }
+    }
+
     /// 満点クリア後の「あたらしいクイズがでた！」アンロック演出を、各ステップ（単語セット署名）ごとに
     /// 1回だけ出すための記録。クリア判定そのものではない（クリア＝満点ゲートが唯一の基準）。
     @Published var stepUnlockCelebration: StepUnlockCelebration = StepUnlockCelebration() {
@@ -584,6 +590,7 @@ final class AppModel: ObservableObject {
     private let spellingReviewSeededKey = "spellingTrainer.spellingReviewSeeded"
     private let hasCompletedOnboardingKey = "spellingTrainer.hasCompletedOnboarding"
     private let hasShownHomeCharacterHintKey = "spellingTrainer.hasShownHomeCharacterHint"
+    private let hasSeenParentGuideKey = "spellingTrainer.hasSeenParentGuide"
     private let stepUnlockCelebrationKey = "spellingTrainer.stepUnlockCelebration"
     // 旧 `spellingTrainer.childName` キーは廃止。名前は `profileRegistry.activeProfile.displayName` が
     // 単一の真実（SSOT）。移行元としての読み出しは Core `ProfileStoreMigration.legacyChildNameKey` が担う。
@@ -709,6 +716,7 @@ final class AppModel: ObservableObject {
         spellingReviewSeeded = persistenceStore.load(Bool.self, key: spellingReviewSeededKey) ?? false
         hasCompletedOnboarding = persistenceStore.load(Bool.self, key: hasCompletedOnboardingKey) ?? false
         hasShownHomeCharacterHint = persistenceStore.load(Bool.self, key: hasShownHomeCharacterHintKey) ?? false
+        hasSeenParentGuide = persistenceStore.load(Bool.self, key: hasSeenParentGuideKey) ?? false
         stepUnlockCelebration = persistenceStore.load(StepUnlockCelebration.self, key: stepUnlockCelebrationKey) ?? StepUnlockCelebration()
         selectedGrade = persistenceStore.load(String.self, key: selectedGradeKey) ?? ""
         cast = persistenceStore.load(Cast.self, key: castKey) ?? Cast()
@@ -1917,6 +1925,74 @@ final class AppModel: ObservableObject {
     func resetPracticeSamples() {
         practiceSamples = []
     }
+
+    #if DEBUG
+    // MARK: - デバッグ用リセット（DEBUG専用・項目別）
+    // 未公開アプリ（実ユーザーのデータ無し）につき破壊的でよい。開発中の状態リセット用。
+    // 各メソッドは「その分類だけ」を初期化する。UI（保護者メニュー→設定→デバッグ）で確認ダイアログを出す。
+
+    /// 学習の記録（テスト答案・学校テスト結果・復習キュー・利用時間・連続日数）を消す。
+    func debugResetLearningRecords() {
+        attempts = []
+        schoolTestResults = []
+        grammarReviewStates = []
+        grammarReviewStep = 0
+        spellingReviewStates = []
+        spellingReviewStep = 0
+        spellingReviewSeeded = false
+        usageLog = [:]
+        loginStreak = 0
+        lastLoginDay = nil
+        lastPerfectBonusDay = nil
+        stepUnlockCelebration = StepUnlockCelebration()
+    }
+
+    /// コイン残高と、なかま／はいけいの解放・選択を初期状態へ戻す。
+    func debugResetCoinsAndUnlocks() {
+        rewardCoins = 0
+        unlockedCharacterIDs = Self.defaultUnlockedCharacterIDs
+        selectedCharacterID = Self.defaultCharacterID
+        unlockedBackgroundIDs = Self.defaultUnlockedBackgroundIDs
+        selectedBackgroundID = Self.defaultBackgroundID
+    }
+
+    /// 登録した単語をすべて消す（コース選択・ステップ選択も初期化）。
+    func debugResetWords() {
+        words = []
+        homeReviewWordIDs = []
+        focusedPracticeWordIDs = []
+        selectedStepIDByCourse = [:]
+        selectedCourseID = CourseDirectory.personal.id
+        ensureSelectedWordStepStillExists()
+    }
+
+    /// 初回設定（オンボーディング・学年・ニックネーム・各種初回ヒント）を未実施に戻す。単語や記録は消さない。
+    func debugResetFirstRun() {
+        hasCompletedOnboarding = false
+        hasShownHomeCharacterHint = false
+        hasSeenParentGuide = false
+        selectedGrade = ""
+        childName = ""
+    }
+
+    /// 全部まっさら（新規インストール相当）。上記すべて＋設定・なかま登録・パズル回数などを初期化する。
+    func debugFactoryReset() {
+        debugResetLearningRecords()
+        debugResetCoinsAndUnlocks()
+        debugResetWords()
+        debugResetFirstRun()
+        resetPracticeSamples()
+        clearAIJudgments()
+        aiJudgeConfig = .default   // AI判定の設定も既定へ（新規インストール相当）
+        settings = TestSettings()
+        cast = Cast()
+        childCanSwitchCourses = false
+        allowedCourseIDs = []
+        requiredCompletion = RequiredCompletion()
+        puzzleLastPlayedDay = nil
+        puzzlePlaysToday = 0
+    }
+    #endif
 
     @discardableResult
     func addSchoolTestResult(_ result: SchoolTestResult) -> SchoolTestResult {

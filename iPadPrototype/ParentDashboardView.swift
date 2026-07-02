@@ -25,6 +25,7 @@ struct ParentDashboardView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedSection: ParentSection = UITestSupport.isActive ? .words : .overview
     @State private var showingReviewDetail = false
+    @State private var showingParentGuide = false
 
     private var language: AppLanguage {
         model.settings.appLanguage
@@ -72,11 +73,23 @@ struct ParentDashboardView: View {
                     }
                 }
                 .padding(22)
+                // 保護者メニューを初めて開いたときだけ、大人向けの短いガイドを一度出す。
+                .sheet(isPresented: $showingParentGuide) {
+                    ParentGuideView(language: language) {
+                        model.hasSeenParentGuide = true
+                        showingParentGuide = false
+                    }
+                }
             }
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showingReviewDetail) {
                 ParentReviewDetailSheet(language: language)
                     .environmentObject(model)
+            }
+            .onAppear {
+                if !model.hasSeenParentGuide && !UITestSupport.isActive {
+                    showingParentGuide = true
+                }
             }
         }
     }
@@ -6507,6 +6520,9 @@ private struct TestSettingsPanel: View {
     @EnvironmentObject private var session: SyncSession
     @State private var showingAccount = false
     @State private var showingOnboardingResetConfirm = false
+    // くわしい設定（そうそう変えない項目）は既定で折りたたむ。普段の画面を短く保つ。
+    @State private var showDetails = false
+    @State private var showingGuide = false   // 「保護者ガイドをもう一度」再表示用
     // こどもプロファイル管理（追加・改名）。切替そのものは子のホーム（顔タップ）が主導線。
     @State private var showingAddProfile = false
     @State private var newProfileName = ""
@@ -6515,14 +6531,70 @@ private struct TestSettingsPanel: View {
     #if DEBUG
     @State private var showingAvatarDressUp = false   // 開発用: 着せ替えアバターQAプレビュー
     @State private var showingAIJudgment = false      // 開発用: AI-OCR 3モデル判定くらべ
+    @State private var pendingReset: DebugResetKind?  // 開発用: 項目別リセットの確認対象
     #endif
     var language: AppLanguage
 
     var body: some View {
         ParentPanel(
-            title: language.text(japanese: "テスト設定", english: "Test Settings"),
+            title: language.text(japanese: "設定", english: "Settings"),
             systemImage: "slider.horizontal.3"
         ) {
+            // ── かんたん設定（いつも表示・よく使うものだけ） ──
+            SettingBlock(
+                title: language.text(japanese: "読み上げ", english: "Speech"),
+                hint: language.text(
+                    japanese: "英語の音声（US/UK）と、読み上げの速さ。聞き直しのボタンを何回まで押せるかもここで決めます。",
+                    english: "English voice (US/UK) and speaking speed. Also sets how many times the replay button can be pressed."
+                )
+            ) {
+                Picker(language.text(japanese: "英語音声", english: "Voice"), selection: $model.settings.language) {
+                    Text("US English").tag("en-US")
+                    Text("UK English").tag("en-GB")
+                }
+                .pickerStyle(.segmented)
+
+                SliderSetting(
+                    title: language.text(japanese: "速さ", english: "Speed"),
+                    value: $model.settings.speechRate,
+                    range: 0.30...0.55,
+                    format: "%.2f"
+                )
+
+                Stepper(value: $model.settings.maxReplays, in: 0...5) {
+                    SettingValueRow(
+                        title: language.text(japanese: "聞き直し", english: "Replays"),
+                        value: "\(model.settings.maxReplays)"
+                    )
+                }
+            }
+
+            SettingBlock(
+                title: language.text(japanese: "出題の出し方", english: "Question Format"),
+                hint: language.text(
+                    japanese: "テストで英語の音だけを出すか、文字も見せるか。文字は単語リストの右側を表示します。漢字の読みは「学校[がっこう]」のように書けます。\n\n\(model.settings.testPromptMode.description(language: language))",
+                    english: "Whether the test plays only audio or also shows text. Text prompts use the right side of the word list; add readings with brackets.\n\n\(model.settings.testPromptMode.description(language: language))"
+                )
+            ) {
+                Picker(language.text(japanese: "出題形式", english: "Prompt Mode"), selection: $model.settings.testPromptMode) {
+                    ForEach(TestPromptMode.allCases) { mode in
+                        Text(mode.shortLabel(language: language)).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel(language.text(japanese: "テストの出題形式", english: "Test question format"))
+            }
+
+            SettingBlock(title: language.text(japanese: "表示言語", english: "Screen Language")) {
+                Picker("", selection: $model.settings.appLanguage) {
+                    ForEach(AppLanguage.allCases) { item in
+                        Text(item.displayName).tag(item)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+            }
+
             SettingBlock(title: language.text(japanese: "アカウント・同期", english: "Account & Sync")) {
                 Button {
                     showingAccount = true
@@ -6539,46 +6611,15 @@ private struct TestSettingsPanel: View {
                 }
             }
 
-            SettingBlock(title: language.text(japanese: "初回設定", english: "First-time Setup")) {
-                Button(role: .destructive) {
-                    showingOnboardingResetConfirm = true
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.counterclockwise")
-                        Text(language.text(japanese: "初回設定をやり直す", english: "Redo first-time setup"))
-                    }
-                }
-                .confirmationDialog(
-                    language.text(japanese: "初回設定をやり直しますか？", english: "Redo first-time setup?"),
-                    isPresented: $showingOnboardingResetConfirm,
-                    titleVisibility: .visible
-                ) {
-                    Button(language.text(japanese: "やり直す", english: "Redo"), role: .destructive) {
-                        // 初回体験をもう一度。ホームの「タップで きせかえ」ヒントも復活させる。
-                        model.hasShownHomeCharacterHint = false
-                        // RootView がこれを見てオンボーディングを再表示する（この画面は自動的に閉じる）。
-                        model.hasCompletedOnboarding = false
-                    }
-                    Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {}
-                } message: {
-                    Text(language.text(
-                        japanese: "学年やキャラ・はいけいを選び直せます。登録した単語は消えません。",
-                        english: "Re-pick grade, character and background. Your words are kept."
-                    ))
-                }
-            }
-
             // こども（プロファイル）＝親の管理コンソール。1台を兄弟で共有するとき、ここで子を増やす／改名する。
             // 「誰が今やるか」の切替は子のホーム（名前タップ）に置く。ここは *管理* だけ。
-            SettingBlock(title: language.text(japanese: "こども（プロファイル）", english: "Children (Profiles)")) {
-                Text(language.text(
+            SettingBlock(
+                title: language.text(japanese: "こども（プロファイル）", english: "Children (Profiles)"),
+                hint: language.text(
                     japanese: "1台を きょうだいで つかうとき、ここで こどもを ふやせます。きりかえは こどもの ホーム（なまえを タップ）から。",
                     english: "Add children to share one iPad. Switching is done from the child's Home (tap the name)."
-                ))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
+                )
+            ) {
                 ForEach(model.profileRegistry.orderedProfiles, id: \.id) { profile in
                     HStack(spacing: 10) {
                         Image(systemName: profile.id == model.profileRegistry.activeProfileID
@@ -6643,241 +6684,18 @@ private struct TestSettingsPanel: View {
                 }
             }
 
-            SettingBlock(title: language.text(japanese: "表示言語", english: "Screen Language")) {
-                Picker("", selection: $model.settings.appLanguage) {
-                    ForEach(AppLanguage.allCases) { item in
-                        Text(item.displayName).tag(item)
-                    }
-                }
-                .labelsHidden()
-                .pickerStyle(.segmented)
-            }
-
-            SettingBlock(title: language.text(japanese: "読み上げ", english: "Speech")) {
-                Picker(language.text(japanese: "英語音声", english: "Voice"), selection: $model.settings.language) {
-                    Text("US English").tag("en-US")
-                    Text("UK English").tag("en-GB")
-                }
-                .pickerStyle(.segmented)
-
-                SliderSetting(
-                    title: language.text(japanese: "速さ", english: "Speed"),
-                    value: $model.settings.speechRate,
-                    range: 0.30...0.55,
-                    format: "%.2f"
-                )
-
-                Stepper(value: $model.settings.maxReplays, in: 0...5) {
-                    SettingValueRow(
-                        title: language.text(japanese: "聞き直し", english: "Replays"),
-                        value: "\(model.settings.maxReplays)"
-                    )
-                }
-            }
-
-            SettingBlock(title: language.text(japanese: "出題の出し方", english: "Question Format")) {
-                Picker(language.text(japanese: "出題形式", english: "Prompt Mode"), selection: $model.settings.testPromptMode) {
-                    ForEach(TestPromptMode.allCases) { mode in
-                        Text(mode.shortLabel(language: language)).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel(language.text(japanese: "テストの出題形式", english: "Test question format"))
-
-                Text(model.settings.testPromptMode.description(language: language))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(language.text(
-                    japanese: "文字は単語リストの右側を表示します。漢字の読みは「学校[がっこう]」のように書けます。",
-                    english: "Text prompts use the right side of the word list. Add readings with brackets when needed."
-                ))
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            }
-
-            SettingBlock(title: language.text(japanese: "練習・テストの書く場所", english: "Practice/Test Writing Area")) {
-                Picker(language.text(japanese: "大きさ", english: "Size"), selection: $model.settings.writingAreaSize) {
-                    ForEach(WritingAreaSize.allCases) { size in
-                        Text(size.label(language: language)).tag(size)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel(language.text(japanese: "練習とテストの入力欄の大きさ", english: "Practice and test writing area size"))
-
-                Text(language.text(
-                    japanese: "書く欄の高さ・最大幅・お手本の文字サイズに反映されます。\(model.settings.writingAreaSize.description(language: language))",
-                    english: "Changes the writing area height, max width, and model-word size. \(model.settings.writingAreaSize.description(language: language))"
-                ))
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            SettingBlock(title: language.text(japanese: "テスト", english: "Test")) {
-                Stepper(value: $model.settings.secondsPerWord, in: 10...90, step: 5) {
-                    SettingValueRow(
-                        title: language.text(japanese: "1単語の時間", english: "Seconds per word"),
-                        value: "\(model.settings.secondsPerWord)"
-                    )
-                }
-            }
-
-            SettingBlock(title: language.text(japanese: "れんしゅう", english: "Practice")) {
-                Stepper(value: $model.settings.practiceRepetitions, in: 3...5) {
-                    SettingValueRow(
-                        title: language.text(japanese: "初回に同じ単語を書く回数", english: "First practice writes"),
-                        value: "\(model.settings.practiceRepetitions)"
-                    )
-                }
-
-                Text(language.text(japanese: "日本語訳・例文のヒント", english: "Meaning & example hint"))
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                Text(language.text(
-                    japanese: "練習中は、単語の下にいつも日本語訳と例文を表示します。",
-                    english: "During practice the meaning and example always appear below the word."
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-                Text(language.text(
-                    japanese: "最後のラウンドでは、なぞるお手本の文字がゆっくり消えて、自分で書く練習になります。",
-                    english: "On the final round the model letters fade out so the child writes from memory."
-                ))
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            }
-
-            SettingBlock(title: language.text(japanese: "ことばパズル", english: "Word Puzzle")) {
-                Toggle(isOn: $model.settings.humorEnabled) {
-                    Text(language.text(japanese: "おもしろ問題を出す", english: "Show funny questions"))
-                        .font(.subheadline.weight(.bold))
-                }
-                .tint(ParentPalette.primary)
-                Text(language.text(
-                    japanese: "ときどき「わざと変な」たのしい文を混ぜます。英語とつづりはいつも正しいままです。",
-                    english: "Occasionally mixes in playful 'deliberately silly' sentences. The English and spelling stay correct."
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-                Divider()
-
-                Toggle(isOn: $model.settings.hintsEnabled) {
-                    Text(language.text(japanese: "ヒントを出す", english: "Show hints"))
-                        .font(.subheadline.weight(.bold))
-                }
-                .tint(ParentPalette.primary)
-                Text(language.text(
-                    japanese: "問題を解いている途中に「？」で、意味や音などのヒントを見られます。",
-                    english: "During a question, the '?' button reveals hints such as meaning and sound."
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            }
-
-            SettingBlock(title: language.text(japanese: "OCR判定", english: "OCR Grading")) {
-                SliderSetting(
-                    title: language.text(japanese: "書き直し", english: "Rewrite"),
-                    value: $model.settings.lowConfidence,
-                    range: 0.10...0.60,
-                    format: "%.2f"
-                )
-            }
+            // ── くわしい設定（そうそう変えない・既定は閉じる） ──
+            detailedSettings
 
             #if DEBUG
-            SettingBlock(title: language.text(japanese: "デバッグ（開発用）", english: "Debug (Dev)")) {
-                Toggle(isOn: $model.debugUnlockAll) {
-                    Text(language.text(japanese: "有料コンテンツを全解放", english: "Unlock all paid content"))
-                        .font(.subheadline.weight(.bold))
-                }
-                .tint(ParentPalette.primary)
-                Toggle(isOn: $model.debugDisableDailyLimit) {
-                    Text(language.text(japanese: "1日10語の上限を無効化", english: "Disable 10-words/day limit"))
-                        .font(.subheadline.weight(.bold))
-                }
-                .tint(ParentPalette.primary)
-
-                Divider()
-                BenchExportRow()
-
-                Divider()
-                Button {
-                    showingAIJudgment = true
-                } label: {
-                    HStack {
-                        Image(systemName: "brain.head.profile")
-                        Text("AI判定くらべ（3モデル）")
-                            .font(.subheadline.weight(.bold))
-                    }
-                }
-                .tint(ParentPalette.primary)
-
-                Divider()
-                Button {
-                    model.awardPracticeCoins(1000)
-                } label: {
-                    HStack {
-                        Image(systemName: "dollarsign.circle.fill")
-                        Text(language.text(japanese: "コインを1000枚追加", english: "Add 1000 coins"))
-                            .font(.subheadline.weight(.bold))
-                    }
-                }
-                .tint(ParentPalette.primary)
-
-                Divider()
-                Button {
-                    showingAvatarDressUp = true
-                } label: {
-                    HStack {
-                        Image(systemName: "tshirt.fill")
-                        Text(language.text(japanese: "着せ替えアバター（プレビュー）", english: "Dress-up avatar (preview)"))
-                            .font(.subheadline.weight(.bold))
-                    }
-                }
-                .tint(ParentPalette.primary)
-
-                Text(language.text(
-                    japanese: "開発ビルドのみ表示。課金ゲートと新規導入上限の動作確認、AI-OCRベンチ用の書き出し（手書きPNG＋親判定ラベル）、着せ替えアバターの合成プレビュー。効果は DEBUG ビルドのみ。",
-                    english: "Dev build only. Content gate / daily-limit testing, AI-OCR bench export (handwriting PNG + parent-decision labels), and dress-up avatar composition preview."
-                ))
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            debugSettings
             #endif
-
-            SettingBlock(title: language.text(japanese: "クレジット", english: "Credits")) {
-                Text(language.text(
-                    japanese: "例文: Tanaka Corpus（CC BY 2.0 FR）\n英和辞書: EJDict-hand（パブリックドメイン）\n品詞: Moby Part-of-Speech（パブリックドメイン）",
-                    english: "Examples: Tanaka Corpus (CC BY 2.0 FR)\nEN–JA dictionary: EJDict-hand (Public Domain)\nParts of speech: Moby Part-of-Speech (Public Domain)"
-                ))
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .sheet(isPresented: $showingGuide) {
+            ParentGuideView(language: language) {
+                model.hasSeenParentGuide = true
+                showingGuide = false
             }
-
-            Button {
-                model.settings = model.settings
-            } label: {
-                Label(language.text(japanese: "設定を保存", english: "Save Settings"), systemImage: "square.and.arrow.down.fill")
-                    .font(.headline.weight(.bold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 11)
-            }
-            .buttonStyle(.borderedProminent)
-            .tapFeedback()
         }
         #if DEBUG
         .sheet(isPresented: $showingAvatarDressUp) {
@@ -6904,8 +6722,341 @@ private struct TestSettingsPanel: View {
                     }
             }
         }
+        .confirmationDialog(
+            language.text(japanese: "この項目をリセットしますか？", english: "Reset this item?"),
+            isPresented: Binding(get: { pendingReset != nil }, set: { if !$0 { pendingReset = nil } }),
+            titleVisibility: .visible,
+            presenting: pendingReset
+        ) { kind in
+            Button(language.text(japanese: "リセットする", english: "Reset"), role: .destructive) {
+                performReset(kind)
+                pendingReset = nil
+            }
+            Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) { pendingReset = nil }
+        } message: { kind in
+            Text(kind.message(language: language))
+        }
         #endif
     }
+
+    // MARK: - くわしい設定（折りたたみ）
+
+    @ViewBuilder
+    private var detailedSettings: some View {
+        DisclosureGroup(isExpanded: $showDetails) {
+            VStack(spacing: 12) {
+                SettingBlock(
+                    title: language.text(japanese: "練習・テストの書く場所", english: "Practice/Test Writing Area"),
+                    hint: language.text(
+                        japanese: "書く欄の高さ・最大幅・お手本の文字サイズに反映されます。\(model.settings.writingAreaSize.description(language: language))",
+                        english: "Changes the writing area height, max width, and model-word size. \(model.settings.writingAreaSize.description(language: language))"
+                    )
+                ) {
+                    Picker(language.text(japanese: "大きさ", english: "Size"), selection: $model.settings.writingAreaSize) {
+                        ForEach(WritingAreaSize.allCases) { size in
+                            Text(size.label(language: language)).tag(size)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityLabel(language.text(japanese: "練習とテストの入力欄の大きさ", english: "Practice and test writing area size"))
+                }
+
+                SettingBlock(
+                    title: language.text(japanese: "テスト", english: "Test"),
+                    hint: language.text(japanese: "テストで1単語に使える時間（秒）。", english: "Time allowed per word in a test (seconds).")
+                ) {
+                    Stepper(value: $model.settings.secondsPerWord, in: 10...90, step: 5) {
+                        SettingValueRow(
+                            title: language.text(japanese: "1単語の時間", english: "Seconds per word"),
+                            value: "\(model.settings.secondsPerWord)"
+                        )
+                    }
+                }
+
+                SettingBlock(
+                    title: language.text(japanese: "れんしゅう", english: "Practice"),
+                    hint: language.text(
+                        japanese: "初回に同じ単語を書く回数。練習中は単語の下にいつも日本語訳と例文を表示します。最後のラウンドでは、なぞるお手本の文字がゆっくり消えて、自分で書く練習になります。",
+                        english: "How many times a new word is written first. During practice the meaning and example always appear below the word, and on the final round the model letters fade out so the child writes from memory."
+                    )
+                ) {
+                    Stepper(value: $model.settings.practiceRepetitions, in: 3...5) {
+                        SettingValueRow(
+                            title: language.text(japanese: "初回に同じ単語を書く回数", english: "First practice writes"),
+                            value: "\(model.settings.practiceRepetitions)"
+                        )
+                    }
+                }
+
+                SettingBlock(title: language.text(japanese: "ことばパズル", english: "Word Puzzle")) {
+                    hintedToggle(
+                        title: language.text(japanese: "おもしろ問題を出す", english: "Show funny questions"),
+                        hint: language.text(
+                            japanese: "ときどき「わざと変な」たのしい文を混ぜます。英語とつづりはいつも正しいままです。",
+                            english: "Occasionally mixes in playful 'deliberately silly' sentences. The English and spelling stay correct."
+                        ),
+                        isOn: $model.settings.humorEnabled
+                    )
+
+                    Divider()
+
+                    hintedToggle(
+                        title: language.text(japanese: "ヒントを出す", english: "Show hints"),
+                        hint: language.text(
+                            japanese: "問題を解いている途中に「？」で、意味や音などのヒントを見られます。",
+                            english: "During a question, the '?' button reveals hints such as meaning and sound."
+                        ),
+                        isOn: $model.settings.hintsEnabled
+                    )
+                }
+
+                SettingBlock(
+                    title: language.text(japanese: "OCR判定", english: "OCR Grading"),
+                    hint: language.text(
+                        japanese: "手書きの読み取りがあいまいなとき、どのくらいで「書き直し」にするか。大きいほど書き直しが増えます。",
+                        english: "How uncertain handwriting recognition must be before asking the child to rewrite. Higher means more rewrites."
+                    )
+                ) {
+                    SliderSetting(
+                        title: language.text(japanese: "書き直し", english: "Rewrite"),
+                        value: $model.settings.lowConfidence,
+                        range: 0.10...0.60,
+                        format: "%.2f"
+                    )
+                }
+
+                firstRunBlock
+                creditsBlock
+            }
+            .padding(.top, 8)
+        } label: {
+            Label(language.text(japanese: "くわしい設定", english: "More settings"), systemImage: "gearshape")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(ParentPalette.primary)
+        }
+        .tint(ParentPalette.primary)
+        .padding(10)
+        .background(ParentPalette.neutralSoft)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var firstRunBlock: some View {
+        SettingBlock(
+            title: language.text(japanese: "初回設定・ガイド", english: "First-time Setup & Guide"),
+            hint: language.text(
+                japanese: "「やり直す」で学年やキャラ・はいけいを選び直せます。登録した単語や記録は消えません。",
+                english: "“Redo” lets you re-pick grade, character and background. Your words and records are kept."
+            )
+        ) {
+            Button(role: .destructive) {
+                showingOnboardingResetConfirm = true
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.counterclockwise")
+                    Text(language.text(japanese: "初回設定をやり直す", english: "Redo first-time setup"))
+                }
+            }
+            .confirmationDialog(
+                language.text(japanese: "初回設定をやり直しますか？", english: "Redo first-time setup?"),
+                isPresented: $showingOnboardingResetConfirm,
+                titleVisibility: .visible
+            ) {
+                Button(language.text(japanese: "やり直す", english: "Redo"), role: .destructive) {
+                    // 初回体験をもう一度。ホームの「タップで きせかえ」ヒントも復活させる。
+                    model.hasShownHomeCharacterHint = false
+                    // RootView がこれを見てオンボーディングを再表示する（この画面は自動的に閉じる）。
+                    model.hasCompletedOnboarding = false
+                }
+                Button(language.text(japanese: "キャンセル", english: "Cancel"), role: .cancel) {}
+            } message: {
+                Text(language.text(
+                    japanese: "学年やキャラ・はいけいを選び直せます。登録した単語は消えません。",
+                    english: "Re-pick grade, character and background. Your words are kept."
+                ))
+            }
+
+            Divider()
+
+            Button {
+                showingGuide = true
+            } label: {
+                HStack {
+                    Image(systemName: "hand.wave.fill")
+                    Text(language.text(japanese: "保護者ガイドをもう一度見る", english: "Show the parent guide again"))
+                }
+            }
+            .tint(ParentPalette.primary)
+        }
+    }
+
+    private var creditsBlock: some View {
+        SettingBlock(
+            title: language.text(japanese: "クレジット", english: "Credits"),
+            hint: language.text(
+                japanese: "例文: Tanaka Corpus（CC BY 2.0 FR）\n英和辞書: EJDict-hand（パブリックドメイン）\n品詞: Moby Part-of-Speech（パブリックドメイン）",
+                english: "Examples: Tanaka Corpus (CC BY 2.0 FR)\nEN–JA dictionary: EJDict-hand (Public Domain)\nParts of speech: Moby Part-of-Speech (Public Domain)"
+            )
+        ) {
+            Text(language.text(
+                japanese: "オープンデータ（Tanaka Corpus ほか）を利用しています。詳しくは ⓘ から。",
+                english: "Uses open data (Tanaka Corpus and others). See ⓘ for details."
+            ))
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    /// トグル＋ⓘヒント（説明文の代わり）。ラベルは左、スイッチは右。
+    private func hintedToggle(title: String, hint: String, isOn: Binding<Bool>) -> some View {
+        HStack(spacing: 6) {
+            Text(title)
+                .font(.subheadline.weight(.bold))
+            ParentInfoButton(title: title, message: hint, tint: ParentPalette.primary)
+            Spacer(minLength: 8)
+            Toggle("", isOn: isOn)
+                .labelsHidden()
+                .tint(ParentPalette.primary)
+        }
+    }
+
+    #if DEBUG
+    // MARK: - デバッグ（開発用・DEBUGのみ）
+
+    @ViewBuilder
+    private var debugSettings: some View {
+        SettingBlock(
+            title: language.text(japanese: "デバッグ（開発用）", english: "Debug (Dev)"),
+            hint: language.text(
+                japanese: "開発ビルドのみ表示。課金ゲート／新規導入上限の動作確認、AI-OCRベンチ書き出し、着せ替えアバターのプレビュー、状態のリセット。効果は DEBUG ビルドのみ。",
+                english: "Dev build only. Content-gate / daily-limit testing, AI-OCR bench export, dress-up avatar preview, and state resets."
+            )
+        ) {
+            Toggle(isOn: $model.debugUnlockAll) {
+                Text(language.text(japanese: "有料コンテンツを全解放", english: "Unlock all paid content"))
+                    .font(.subheadline.weight(.bold))
+            }
+            .tint(ParentPalette.primary)
+            Toggle(isOn: $model.debugDisableDailyLimit) {
+                Text(language.text(japanese: "1日10語の上限を無効化", english: "Disable 10-words/day limit"))
+                    .font(.subheadline.weight(.bold))
+            }
+            .tint(ParentPalette.primary)
+
+            Divider()
+            BenchExportRow()
+
+            Divider()
+            Button {
+                showingAIJudgment = true
+            } label: {
+                HStack {
+                    Image(systemName: "brain.head.profile")
+                    Text("AI判定くらべ（3モデル）")
+                        .font(.subheadline.weight(.bold))
+                }
+            }
+            .tint(ParentPalette.primary)
+
+            Divider()
+            Button {
+                model.awardPracticeCoins(1000)
+            } label: {
+                HStack {
+                    Image(systemName: "dollarsign.circle.fill")
+                    Text(language.text(japanese: "コインを1000枚追加", english: "Add 1000 coins"))
+                        .font(.subheadline.weight(.bold))
+                }
+            }
+            .tint(ParentPalette.primary)
+
+            Divider()
+            Button {
+                showingAvatarDressUp = true
+            } label: {
+                HStack {
+                    Image(systemName: "tshirt.fill")
+                    Text(language.text(japanese: "着せ替えアバター（プレビュー）", english: "Dress-up avatar (preview)"))
+                        .font(.subheadline.weight(.bold))
+                }
+            }
+            .tint(ParentPalette.primary)
+
+            Divider()
+            Text(language.text(japanese: "リセット（項目別）", english: "Reset (by item)"))
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            ForEach(DebugResetKind.allCases) { kind in
+                Button(role: .destructive) {
+                    pendingReset = kind
+                } label: {
+                    HStack {
+                        Image(systemName: kind.systemImage)
+                        Text(kind.label(language: language))
+                            .font(.subheadline.weight(.bold))
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+
+    /// 項目別リセットの種類（DEBUG専用UI）。
+    enum DebugResetKind: String, CaseIterable, Identifiable {
+        case records, practice, ai, coins, words, firstRun, everything
+        var id: String { rawValue }
+
+        var systemImage: String {
+            switch self {
+            case .records: return "chart.bar.xaxis"
+            case .practice: return "pencil.slash"
+            case .ai: return "brain.head.profile"
+            case .coins: return "dollarsign.circle"
+            case .words: return "textformat.abc"
+            case .firstRun: return "arrow.counterclockwise"
+            case .everything: return "trash"
+            }
+        }
+
+        func label(language: AppLanguage) -> String {
+            switch self {
+            case .records: return language.text(japanese: "記録を消す（テスト・復習・利用時間）", english: "Clear records (tests, review, usage)")
+            case .practice: return language.text(japanese: "練習サンプルを消す", english: "Clear practice samples")
+            case .ai: return language.text(japanese: "AI判定の記録を消す", english: "Clear AI judgments")
+            case .coins: return language.text(japanese: "コイン・解放をリセット", english: "Reset coins & unlocks")
+            case .words: return language.text(japanese: "登録した単語を全消去", english: "Delete all words")
+            case .firstRun: return language.text(japanese: "初回設定に戻す", english: "Reset first-time setup")
+            case .everything: return language.text(japanese: "全部まっさら（新規相当）", english: "Factory reset (like new)")
+            }
+        }
+
+        func message(language: AppLanguage) -> String {
+            switch self {
+            case .everything:
+                return language.text(
+                    japanese: "単語・コイン・解放・記録・初回設定をすべて消して、新規インストール直後の状態に戻します。取り消せません。",
+                    english: "Erase words, coins, unlocks, records and first-time setup — back to a fresh install. This cannot be undone."
+                )
+            default:
+                return language.text(japanese: "この項目のデータを消します。取り消せません。", english: "This item's data will be erased. This cannot be undone.")
+            }
+        }
+    }
+
+    private func performReset(_ kind: DebugResetKind) {
+        switch kind {
+        case .records: model.debugResetLearningRecords()
+        case .practice: model.resetPracticeSamples()
+        case .ai: model.clearAIJudgments()
+        case .coins: model.debugResetCoinsAndUnlocks()
+        case .words: model.debugResetWords()
+        case .firstRun: model.debugResetFirstRun()
+        case .everything: model.debugFactoryReset()
+        }
+    }
+    #endif
 }
 
 /// コース設定（親）：いま練習するコースを選ぶ＋「子にも自分でえらばせる」トグル。
@@ -7109,18 +7260,27 @@ private struct CourseSettingsControls: View {
 
 private struct SettingBlock<Content: View>: View {
     var title: String
+    /// あれば見出しの横に ⓘ を出し、長い説明文の代わりに popover で見せる（地の文を減らす）。
+    var hint: String?
     var content: Content
 
-    init(title: String, @ViewBuilder content: () -> Content) {
+    init(title: String, hint: String? = nil, @ViewBuilder content: () -> Content) {
         self.title = title
+        self.hint = hint
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
-            Text(title)
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(.secondary)
+            HStack(spacing: 6) {
+                Text(title)
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(.secondary)
+                if let hint {
+                    ParentInfoButton(title: title, message: hint, tint: ParentPalette.primary)
+                }
+                Spacer(minLength: 0)
+            }
             content
         }
         .padding(10)

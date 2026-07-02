@@ -11,7 +11,7 @@ struct OnboardingView: View {
     @ObservedObject var session: SyncSession
 
     private enum Step: Int, CaseIterable {
-        case welcome, grade, lookAndFeel, coinGift
+        case welcome, grade, lookAndFeel, coinGift, parentHandoff
     }
 
     /// 初回プレゼントするコイン数（なかま40〜60・はいけい80〜のので、最初の解放を体験できる量）。
@@ -135,7 +135,7 @@ struct OnboardingView: View {
     private var primaryTitle: String {
         switch step {
         case .welcome: return "はじめる"
-        case .coinGift: return "やってみる！"   // 最後のステップ
+        case .parentHandoff: return "はじめる！"   // 最後のステップ（子がタップして完了）
         default: return "つぎへ"
         }
     }
@@ -152,6 +152,8 @@ struct OnboardingView: View {
         case .lookAndFeel:
             advance()
         case .coinGift:
+            advance()
+        case .parentHandoff:
             advance()   // 最後のステップなので finish() に落ちる
         }
     }
@@ -165,6 +167,7 @@ struct OnboardingView: View {
         case .grade: gradeStep
         case .lookAndFeel: lookAndFeelStep
         case .coinGift: coinGiftStep
+        case .parentHandoff: parentHandoffStep
         }
     }
 
@@ -370,6 +373,59 @@ struct OnboardingView: View {
         coinBurst = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
             withAnimation(.easeOut(duration: 0.18)) { coinPop = false }
+        }
+    }
+
+    /// 最後の1枚は**保護者向け**の引き継ぎ案内。子の演出のあとに、
+    /// 「単語登録・設定はホーム右上の⚙️から」を大人向けの文で伝える（右上の歯車を指し示す）。
+    private var parentHandoffStep: some View {
+        VStack(spacing: 20) {
+            // 画面の右上に歯車がある、というレイアウトを小さな模型で示す。
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(Color(.secondarySystemBackground))
+                    .frame(width: 190, height: 128)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                    )
+                    .overlay(
+                        Image(systemName: "house.fill")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundStyle(.secondary.opacity(0.5))
+                    )
+
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(Color.accentColor))
+                    .shadow(color: Color.accentColor.opacity(0.4), radius: hintPulse ? 12 : 5, y: 3)
+                    .scaleEffect(hintPulse ? 1.12 : 1.0)
+                    .offset(x: 12, y: -12)
+            }
+            .padding(.top, 8)
+
+            Text("保護者の方へ")
+                .font(.system(size: 28, weight: .heavy, design: .rounded))
+                .foregroundStyle(.primary)
+
+            VStack(spacing: 8) {
+                Text("単語の登録・レベル・設定は\nホーム右上の ⚙️ から。")
+                    .font(.title3.weight(.bold))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.primary)
+                Text("お子さんの画面には出ません。かんたんな計算で開きます。")
+                    .font(.subheadline.weight(.semibold))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
+                hintPulse = true
+            }
         }
     }
 
