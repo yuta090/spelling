@@ -6373,8 +6373,17 @@ private struct CharacterPickerCard: View {
     var language: AppLanguage
     var action: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    // アイドルの「ふわふわ」揺れ。onAppear で true にして repeatForever を回す。
+    @State private var bob = false
+
     private var canUnlock: Bool {
         isUnlocked || coinBalance >= character.price
+    }
+
+    // 買えるのにまだ持っていない子。「いま集められるよ！」をキラッと見せて収集意欲を促す。
+    private var isBuyableNow: Bool {
+        !isUnlocked && canUnlock
     }
 
     private var borderColor: Color {
@@ -6382,9 +6391,31 @@ private struct CharacterPickerCard: View {
             return Color(red: 0.20, green: 0.62, blue: 0.26)
         }
         if isUnlocked || canUnlock {
-            return Color(red: 0.66, green: 0.78, blue: 0.95)
+            // 各キャラ固有の色でフチどり。白カードの画一感をなくす。
+            return character.primary.opacity(0.55)
         }
         return Color(red: 0.78, green: 0.80, blue: 0.86)
+    }
+
+    // キャラ固有色のパステル背景。買える子は色を効かせ、買えない子は白っぽく沈める。
+    private var cardBackground: LinearGradient {
+        if canUnlock {
+            return LinearGradient(
+                colors: [character.secondary.opacity(0.70), Color.white.opacity(0.94)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
+        return LinearGradient(
+            colors: [Color.white.opacity(0.85), Color.white.opacity(0.85)],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
+    // 揺れの位相をキャラごとにずらして、全部が一斉に動かないようにする。
+    private var bobPhase: Double {
+        Double(abs(character.id.hashValue) % 10) / 10.0
     }
 
     var body: some View {
@@ -6394,6 +6425,15 @@ private struct CharacterPickerCard: View {
                 // 未購入(未所有)はキャラ本体だけ少し薄くして「まだ持っていない」を伝える。
                 // 文字には掛けない。
                 .opacity(isUnlocked ? 1 : 0.5)
+                // アイドルの上下ふわふわ。「いま買える子」だけ動かして誘う。
+                // 所有済み・非対象は静止させ、多数セルへの永続アニメ集積を避ける
+                // （カタログは数百件あり、全カードを常時揺らすと負荷になるため）。
+                .offset(y: (bob && !reduceMotion && isBuyableNow) ? -3 : 0)
+                .animation(
+                    reduceMotion ? nil :
+                        .easeInOut(duration: 1.8).repeatForever(autoreverses: true).delay(bobPhase),
+                    value: bob
+                )
 
             Text(character.name(language: language))
                 .font(.subheadline.weight(.heavy))
@@ -6407,20 +6447,40 @@ private struct CharacterPickerCard: View {
         .frame(maxWidth: .infinity, minHeight: 108)
         .padding(.vertical, 8)
         .padding(.horizontal, 6)
-        .background(.white.opacity(canUnlock ? 0.95 : 0.85))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .background(cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(borderColor, lineWidth: isSelected ? 2.5 : 1.2)
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(borderColor, lineWidth: isSelected ? 3 : 1.5)
         )
-        .shadow(color: .black.opacity(canUnlock ? 0.05 : 0.02), radius: 6, x: 0, y: 4)
-        .contentShape(RoundedRectangle(cornerRadius: 8))
+        // 買える子には右上にキラッと星。「集められるよ！」の合図。
+        .overlay(alignment: .topTrailing) {
+            if isBuyableNow {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Color(red: 1.0, green: 0.80, blue: 0.20))
+                    .shadow(color: .white, radius: 1)
+                    .padding(6)
+                    .scaleEffect((bob && !reduceMotion) ? 1.12 : 0.9)
+                    .animation(
+                        reduceMotion ? nil :
+                            .easeInOut(duration: 0.9).repeatForever(autoreverses: true),
+                        value: bob
+                    )
+            }
+        }
+        .shadow(color: .black.opacity(canUnlock ? 0.08 : 0.02), radius: 6, x: 0, y: 4)
+        // 選択中の子は少し大きく見せて「これといっしょ」を強調。
+        .scaleEffect(isSelected ? 1.05 : 1.0)
+        .animation(reduceMotion ? nil : .spring(response: 0.32, dampingFraction: 0.55), value: isSelected)
+        .contentShape(RoundedRectangle(cornerRadius: 14))
         .onTapGesture {
             guard canUnlock else {
                 return
             }
             action()
         }
+        .onAppear { bob = true }
         .accessibilityLabel(accessibilityText)
         .accessibilityAddTraits(canUnlock ? .isButton : .isStaticText)
     }
