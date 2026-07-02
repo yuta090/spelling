@@ -6157,21 +6157,20 @@ private struct CharacterPickerSheet: View {
     }
 
     // ジャンル切り替えチップ（子＝やる人：アイコン＋ふりがな・単一選択・1タップ＋即フィードバック）。
+    // 子は「横に隠れたもの」を見つけないので、横スクロールにせず折り返し（flow）で全ジャンルを常時表示する。
     private var buddyCategoryChips: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                buddyChip(title: language.text(japanese: "ぜんぶ", english: "All"),
-                          icon: "⭐️",
-                          isSelected: selectedBuddyGroup == nil) { selectedBuddyGroup = nil }
-                ForEach(availableBuddyGroups) { group in
-                    buddyChip(title: group.title(language: language),
-                              icon: group.icon,
-                              isSelected: selectedBuddyGroup == group) { selectedBuddyGroup = group }
-                }
+        PuzzleFlowLayout(spacing: 8) {
+            buddyChip(title: language.text(japanese: "ぜんぶ", english: "All"),
+                      icon: "⭐️",
+                      isSelected: selectedBuddyGroup == nil) { selectedBuddyGroup = nil }
+            ForEach(availableBuddyGroups) { group in
+                buddyChip(title: group.title(language: language),
+                          icon: group.icon,
+                          isSelected: selectedBuddyGroup == group) { selectedBuddyGroup = group }
             }
-            .padding(.vertical, 2)
-            .padding(.horizontal, 2)
         }
+        .padding(.vertical, 2)
+        .padding(.horizontal, 2)
     }
 
     private func buddyChip(title: String, icon: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
