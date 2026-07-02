@@ -309,7 +309,9 @@ final class AppModel: ObservableObject {
     }
 
     /// AI判定の実行パラメータ（モデル/temperature/max_tokens）。ページで編集し送信時に反映。
-    @Published var aiJudgeConfig: AIJudgeConfig {
+    /// 宣言時デフォルトを持たせる：init 冒頭の loadChildScopedState() は self 経由の呼び出しなので、
+    /// その時点で全 stored property が初期化済みである必要がある（実値は同メソッドが再ロードする）。
+    @Published var aiJudgeConfig: AIJudgeConfig = .default {
         didSet { persistenceStore.save(aiJudgeConfig, key: aiJudgeConfigKey) }
     }
 
