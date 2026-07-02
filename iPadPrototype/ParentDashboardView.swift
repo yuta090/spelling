@@ -37,33 +37,40 @@ struct ParentDashboardView: View {
                 ParentBackground()
 
                 VStack(spacing: 18) {
-                    header
-                    // 採点待ちがある時だけ最上段にCTA（やることがある時だけ前に出す）。
-                    // スコアボードは「ようす」タブに畳んだ（先頭タブ＝ホーム）。
-                    if model.pendingGradingCount > 0 {
-                        ParentGradingCTABanner(count: model.pendingGradingCount, language: language) {
-                            selectedSection = .grading
+                    if selectedSection == .grading {
+                        // 採点は「採点専用画面」：他のメインメニュー（タブ）を隠し、採点だけに集中させる。
+                        // 網羅一覧（2列グリッド）を全幅で使いたいので、外側の ScrollView にも包まない
+                        // （採点パネルが自前でスクロールを持つ）。
+                        gradingFocusHeader
+                        ParentGradingPanel(language: language)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        header
+                        // 採点待ちがある時だけ最上段にCTA（やることがある時だけ前に出す）。
+                        // スコアボードは「ようす」タブに畳んだ（先頭タブ＝ホーム）。
+                        if model.pendingGradingCount > 0 {
+                            ParentGradingCTABanner(count: model.pendingGradingCount, language: language) {
+                                withAnimation(.easeInOut(duration: 0.16)) { selectedSection = .grading }
+                            }
                         }
-                    }
-                    ParentSectionSwitcher(selectedSection: $selectedSection, language: language)
-                    // 記録タブは自分の単語（personal）のステップに紐づくのでここで固定表示。
-                    // 単語タブのステップカードは「コース選択の下」に置く（コース→ステップの順）ため
-                    // selectedPanel(.words) 側へ移した。
-                    if selectedSection == .records {
-                        ParentCurrentStepCard(language: language, track: .personal)
-                    }
-
-                    GeometryReader { proxy in
-                        ScrollView {
-                            selectedPanel(width: proxy.size.width)
-                                .frame(maxWidth: .infinity, alignment: .top)
-                                .padding(.bottom, 8)
+                        ParentSectionSwitcher(selectedSection: $selectedSection, language: language)
+                        // 記録タブは自分の単語（personal）のステップに紐づくのでここで固定表示。
+                        // 単語タブのステップカードは「コース選択の下」に置く（コース→ステップの順）ため
+                        // selectedPanel(.words) 側へ移した。
+                        if selectedSection == .records {
+                            ParentCurrentStepCard(language: language, track: .personal)
                         }
-                    }
-                    .animation(.easeInOut(duration: 0.16), value: selectedSection)
-                    .frame(maxHeight: .infinity)
 
-                    if selectedSection != .grading {
+                        GeometryReader { proxy in
+                            ScrollView {
+                                selectedPanel(width: proxy.size.width)
+                                    .frame(maxWidth: .infinity, alignment: .top)
+                                    .padding(.bottom, 8)
+                            }
+                        }
+                        .animation(.easeInOut(duration: 0.16), value: selectedSection)
+                        .frame(maxHeight: .infinity)
+
                         Text(language.text(
                             japanese: "※ データは端末内に保存されます。iCloud同期にはまだ対応していません。",
                             english: "Data is saved on this device. iCloud sync is not included yet."
@@ -104,7 +111,9 @@ struct ParentDashboardView: View {
                 onRegisterWords: { selectedSection = .words }
             )
         case .grading:
-            ParentGradingPanel(language: language)
+            // 採点は body 側で「採点専用画面」として先に分岐して描画する（selectedPanel は
+            // 非採点タブ専用）。ここには来ないが switch の網羅性のため EmptyView を置く。
+            EmptyView()
         case .words:
             // 「何を練習するか」＝コース選択を先頭に置き、その下に「うちのれんしゅう」の単語登録を常時出す。
             // コースは旧「レベル」の発展形＝単語“管理”の一部なので、設定ではなくこのタブに集約する（CLAUDE.md 親側方針）。
@@ -140,6 +149,54 @@ struct ParentDashboardView: View {
         case .settings:
             TestSettingsPanel(language: language)
                 .frame(maxWidth: 820, alignment: .topLeading)
+        }
+    }
+
+    /// 採点専用画面のヘッダー。左に「もどる」（メニューへ戻る）、中央に採点タイトル、右に「閉じる」。
+    private var gradingFocusHeader: some View {
+        HStack(spacing: 12) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.16)) { selectedSection = .overview }
+            } label: {
+                Label(language.text(japanese: "もどる", english: "Back"), systemImage: "chevron.left")
+                    .font(.headline.weight(.bold))
+                    .padding(.vertical, 9)
+                    .padding(.horizontal, 12)
+            }
+            .buttonStyle(.plain)
+            .tapFeedback()
+            .foregroundStyle(ParentPalette.primary)
+            .background(ParentPalette.surfaceRaised)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
+            )
+            .accessibilityLabel(language.text(japanese: "メニューへもどる", english: "Back to menu"))
+
+            Label(language.text(japanese: "採点", english: "Grade"), systemImage: "checkmark.seal.fill")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(ParentPalette.primary)
+
+            Spacer()
+
+            Button {
+                dismiss()
+            } label: {
+                Label(language.text(japanese: "閉じる", english: "Close"), systemImage: "xmark")
+                    .font(.headline.weight(.bold))
+                    .padding(.vertical, 9)
+                    .padding(.horizontal, 12)
+            }
+            .buttonStyle(.plain)
+            .tapFeedback()
+            .foregroundStyle(ParentPalette.primary)
+            .background(ParentPalette.surfaceRaised)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
+            )
         }
     }
 
@@ -7465,10 +7522,13 @@ private struct ParentGradingPanel: View {
     var body: some View {
         let activeSession = filteredSessions.first { $0.id == selectedSessionID } ?? filteredSessions.first
 
+        // 採点は専用画面（呼び出し側で「もどる／閉じる」ヘッダーを出す）。ここではパネルの
+        // 見出しは重複するので出さず、網羅一覧を全幅で使う。
         ParentPanel(
             title: language.text(japanese: "採点", english: "Grade"),
             systemImage: "checkmark.seal.fill",
-            tint: ParentPalette.primary
+            tint: ParentPalette.primary,
+            showsHeader: false
         ) {
             if sessions.isEmpty {
                 EmptyStateView(
@@ -7478,68 +7538,44 @@ private struct ParentGradingPanel: View {
                 )
                 .frame(minHeight: 240)
             } else {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 10) {
+                    // 上部バー：フィルタ（未採点/ぜんぶ）＋ セッションを横チップで選ぶ＋残り件数。
+                    // 左サイドバー（縦一覧）は廃止し、2列グリッドを全幅で使えるようにした。
+                    // 種別バッジ・回名・残り件数はここに集約し、カード側は手書き一覧に専念させる。
+                    HStack(alignment: .center, spacing: 12) {
+                        ParentGradingFilterPicker(filter: $sessionFilter, language: language)
+                            .frame(width: 200)
+
+                        ParentGradingSessionStrip(
+                            sessions: filteredSessions,
+                            selectedID: activeSession?.id,
+                            language: language,
+                            select: { selectedSessionID = $0 }
+                        )
+
+                        if let activeSession {
+                            ParentGradingRemainingPill(count: activeSession.unreviewedCount, language: language)
+                        }
+                    }
+
                     if filteredSessions.isEmpty {
                         EmptyStateView(
                             sessionFilter.emptyTitle(language: language),
                             systemImage: "checkmark.seal",
                             description: Text(sessionFilter.emptyMessage(language: language))
                         )
-                        .frame(minHeight: 260)
-                    } else {
-                        ViewThatFits(in: .horizontal) {
-                            HStack(alignment: .top, spacing: 10) {
-                                VStack(spacing: 8) {
-                                    ParentGradingFilterPicker(filter: $sessionFilter, language: language)
-
-                                    ParentGradingSessionPicker(
-                                        sessions: filteredSessions,
-                                        selectedID: activeSession?.id,
-                                        language: language,
-                                        select: { selectedSessionID = $0 }
-                                    )
-                                }
-                                .frame(width: 172)
-
-                                Group {
-                                    if let activeSession {
-                                        ParentGradingSessionCard(
-                                            session: activeSession,
-                                            showsOnlyUngraded: sessionFilter == .unreviewed,
-                                            language: language
-                                        )
-                                            .environmentObject(model)
-                                    }
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: 700)
-                            }
-
-                            VStack(alignment: .leading, spacing: 12) {
-                                ParentGradingFilterPicker(filter: $sessionFilter, language: language)
-
-                                ParentGradingSessionPicker(
-                                    sessions: filteredSessions,
-                                    selectedID: activeSession?.id,
-                                    language: language,
-                                    select: { selectedSessionID = $0 }
-                                )
-                                .frame(maxHeight: 160)
-
-                                Group {
-                                    if let activeSession {
-                                        ParentGradingSessionCard(
-                                            session: activeSession,
-                                            showsOnlyUngraded: sessionFilter == .unreviewed,
-                                            language: language
-                                        )
-                                            .environmentObject(model)
-                                    }
-                                }
-                                .frame(maxHeight: 760)
-                            }
-                        }
+                        .frame(maxWidth: .infinity, minHeight: 260)
+                    } else if let activeSession {
+                        ParentGradingSessionCard(
+                            session: activeSession,
+                            showsOnlyUngraded: sessionFilter == .unreviewed,
+                            language: language
+                        )
+                        .environmentObject(model)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .onAppear {
                     scheduleSelectedSessionSync(filteredSessions.map(\.id))
                 }
@@ -7702,18 +7738,6 @@ private enum ParentGradingSessionKind: Equatable {
         }
     }
 
-    /// パッと見で分かる短いラベル。
-    func shortLabel(language: AppLanguage) -> String {
-        switch self {
-        case .test:
-            return language.text(japanese: "テスト", english: "Test")
-        case .practice:
-            return language.text(japanese: "れんしゅう", english: "Practice")
-        case .review:
-            return language.text(japanese: "ふくしゅう", english: "Review")
-        }
-    }
-
     var systemImage: String {
         switch self {
         case .test:
@@ -7780,15 +7804,18 @@ private struct ParentGradingSession: Identifiable {
     }
 }
 
-private struct ParentGradingSessionPicker: View {
+/// 採点する回を「上部の横チップ」で選ぶ。左サイドバー（縦一覧）の置き換え。
+/// チップは中身（回名）に合わせて横に伸ばし、複数を横スクロールで並べる
+/// （回名が途切れないようにする）。
+private struct ParentGradingSessionStrip: View {
     var sessions: [ParentGradingSession]
     var selectedID: String?
     var language: AppLanguage
     var select: (String) -> Void
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 8) {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
                 ForEach(sessions) { session in
                     Button {
                         withAnimation(.easeInOut(duration: 0.12)) {
@@ -7802,13 +7829,14 @@ private struct ParentGradingSessionPicker: View {
                         )
                     }
                     .buttonStyle(.plain)
-            .tapFeedback()
+                    .tapFeedback()
                     .contentShape(RoundedRectangle(cornerRadius: 8))
                     .accessibilityAddTraits(session.id == selectedID ? .isSelected : [])
                 }
             }
             .padding(2)
         }
+        .frame(maxWidth: .infinity)
         .background(Color.white.opacity(0.58))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
@@ -7825,14 +7853,14 @@ private struct ParentGradingSessionChip: View {
                 Text(session.title(language: language))
                     .font(.caption.weight(.heavy))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.72)
+                    .fixedSize(horizontal: true, vertical: false)
                 Text(formattedLocalizedDateTime(session.date, language: language))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(isSelected ? .white.opacity(0.82) : .secondary)
                     .lineLimit(1)
             }
 
-            Spacer(minLength: 4)
+            Spacer(minLength: 6)
 
             VStack(spacing: 2) {
                 Image(systemName: session.kind.systemImage)
@@ -7843,12 +7871,37 @@ private struct ParentGradingSessionChip: View {
             .frame(width: 42)
         }
         .foregroundStyle(isSelected ? .white : session.kind.tint)
-        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+        .frame(minWidth: 150, minHeight: 48, alignment: .leading)
         .padding(.vertical, 6)
         .padding(.horizontal, 8)
         .background(isSelected ? session.kind.tint : Color.white.opacity(0.88))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(isSelected ? 0.08 : 0.04), radius: 7, x: 0, y: 4)
+    }
+}
+
+/// 上部バー右端の「あと N件 / 採点済み」表示（旧カードヘッダーから移設）。
+private struct ParentGradingRemainingPill: View {
+    var count: Int
+    var language: AppLanguage
+
+    var body: some View {
+        Text(count > 0
+            ? language.text(japanese: "あと \(count)件", english: "\(count) left")
+            : language.text(japanese: "採点済み", english: "Done")
+        )
+        .font(.subheadline.monospacedDigit().weight(.heavy))
+        .foregroundStyle(count > 0 ? ParentPalette.warning : ParentPalette.success)
+        .lineLimit(1)
+        .fixedSize()
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(count > 0 ? ParentPalette.warningSoft : ParentPalette.successSoft)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityLabel(count > 0
+            ? language.text(japanese: "未採点 あと \(count)件", english: "\(count) left to grade")
+            : language.text(japanese: "この回は採点済み", english: "This session is graded")
+        )
     }
 }
 
@@ -7861,7 +7914,6 @@ private struct ParentGradingSessionCard: View {
     // 下書き：採点完了を押すまでモデルには保存しない。未指定はデフォルトOK扱い。
     @State private var decisionDrafts: [UUID: ParentReviewDecision] = [:]
     @State private var exampleDrafts: [UUID: Data] = [:]
-    @State private var showsGuide = false
 
     private var visibleAttempts: [SpellingAttempt] {
         guard showsOnlyUngraded else {
@@ -7890,73 +7942,16 @@ private struct ParentGradingSessionCard: View {
         decisionDrafts[id] ?? (current == .unreviewed ? .approved : current)
     }
 
+    // 画面幅に応じて列数を自動で増やす（iPad mini 横向きで3列、大きいiPadはさらに多く）。
+    // 手書きが読める下限として最小幅を確保しつつ、なるべく多く並べる。
     private var gradingColumns: [GridItem] {
-        [
-            GridItem(.flexible(minimum: 250), spacing: 10, alignment: .top),
-            GridItem(.flexible(minimum: 250), spacing: 10, alignment: .top)
-        ]
+        [GridItem(.adaptive(minimum: 232), spacing: 10, alignment: .top)]
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .center, spacing: 12) {
-                Label(session.kind.shortLabel(language: language), systemImage: session.kind.systemImage)
-                    .font(.subheadline.weight(.heavy))
-                    .foregroundStyle(.white)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 12)
-                    .background(session.kind.tint)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(session.title(language: language))
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(ParentPalette.ink)
-                        .lineLimit(1)
-                    Text(formattedLocalizedDateTime(session.date, language: language))
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-
-                Spacer()
-
-                if visibleCount > 0 {
-                    Button {
-                        showsGuide = true
-                    } label: {
-                        Image(systemName: "info.circle")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(ParentPalette.primary)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(language.text(japanese: "採点のヒント", english: "Grading tip"))
-                    .popover(isPresented: $showsGuide) {
-                        Text(language.text(
-                            japanese: "ぜんぶOKがデフォルトです。直すものだけ「直そう」にして、最後に採点完了を押してください。",
-                            english: "Everything defaults to OK. Mark only the ones to fix, then tap Done."
-                        ))
-                        .font(.callout.weight(.semibold))
-                        .foregroundStyle(.primary)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(16)
-                        .frame(width: 280)
-                        .presentationCompactAdaptation(.popover)
-                    }
-                }
-
-                Text(session.unreviewedCount > 0
-                    ? language.text(japanese: "あと \(session.unreviewedCount)件", english: "\(session.unreviewedCount) left")
-                    : language.text(japanese: "採点済み", english: "Done")
-                )
-                .font(.subheadline.monospacedDigit().weight(.heavy))
-                .foregroundStyle(session.unreviewedCount > 0 ? ParentPalette.warning : ParentPalette.success)
-                .padding(.vertical, 6)
-                .padding(.horizontal, 10)
-                .background((session.unreviewedCount > 0 ? ParentPalette.warningSoft : ParentPalette.successSoft))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-
+        // 種別バッジ・回名・日付・残り件数は上部バー（ParentGradingPanel）で見せるので、
+        // カード内ではヘッダーを持たず、手書きの一覧に画面を最大限使う。
+        VStack(alignment: .leading, spacing: 8) {
             ScrollView {
                 LazyVGrid(columns: gradingColumns, alignment: .leading, spacing: 10) {
                     ForEach(visibleAttempts) { attempt in
@@ -8000,16 +7995,16 @@ private struct ParentGradingSessionCard: View {
                             : language.text(japanese: "ぜんぶOKで採点完了", english: "Mark all OK & Done"),
                         systemImage: "checkmark.seal.fill"
                     )
-                    .font(.headline.weight(.heavy))
+                    .font(.subheadline.weight(.heavy))
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, 9)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(ParentPalette.success)
                 .tapFeedback(scale: 0.96, bounce: true)
             }
         }
-        .padding(10)
+        .padding(8)
         .background(ParentPalette.surfaceTint)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .shadow(color: .black.opacity(0.05), radius: 9, x: 0, y: 5)
@@ -8069,11 +8064,10 @@ struct SessionInlineGradingView: View {
         attempts.filter { draftDecision(for: $0.id, current: $0.parentReviewDecision) == .needsPractice }.count
     }
 
+    // 画面幅に応じて列数を自動で増やす（iPad mini 横向きで3列、大きいiPadはさらに多く）。
+    // 手書きが読める下限として最小幅を確保しつつ、なるべく多く並べる。
     private var gradingColumns: [GridItem] {
-        [
-            GridItem(.flexible(minimum: 250), spacing: 10, alignment: .top),
-            GridItem(.flexible(minimum: 250), spacing: 10, alignment: .top)
-        ]
+        [GridItem(.adaptive(minimum: 232), spacing: 10, alignment: .top)]
     }
 
     var body: some View {
@@ -8261,7 +8255,7 @@ private struct ParentAttemptGradingCard: View {
                 )
             }
         }
-        .padding(10)
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .background(gradingBackground(for: decision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -8319,7 +8313,7 @@ private struct ParentPracticeGradingCard: View {
                 )
             }
         }
-        .padding(10)
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .background(gradingBackground(for: decision))
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -8420,8 +8414,8 @@ private struct ParentReviewToggleButton: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.76)
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: 44)
-                .padding(.vertical, 8)
+                .frame(minHeight: 32)
+                .padding(.vertical, 5)
                 .padding(.horizontal, 8)
                 .foregroundStyle(isSelected ? .white : tint)
                 .background(isSelected ? tint : Color.clear)
@@ -8438,7 +8432,7 @@ private struct GradingDrawingPreview: View {
     var drawingData: Data
     var mode: PracticeMode
     var storedCanvasSize: DrawingCanvasSize?
-    var height: CGFloat = 172
+    var height: CGFloat = 150
 
     private var canvasSize: CGSize {
         let defaultSize = CGSize(width: 960, height: mode == .practice ? 300 : 330)
@@ -8552,11 +8546,17 @@ enum WritingGuideSnapshotRenderer {
                 return
             }
 
-            let drawingImage = drawing.image(
-                from: CGRect(origin: contentOffset, size: canvasSize),
-                scale: scale
-            )
-            drawingImage.draw(in: CGRect(origin: .zero, size: canvasSize))
+            // PencilKit のインク色は端末の外観（ダークモード）に追従するため、そのまま描くと
+            // ダーク時に黒インクが白抜けして見えなくなる。採点プレビューは常に白紙＋黒インクで
+            // 見たいので、ライトのトレイトに固定してスナップショットする。
+            var drawingImage: UIImage?
+            UITraitCollection(userInterfaceStyle: .light).performAsCurrent {
+                drawingImage = drawing.image(
+                    from: CGRect(origin: contentOffset, size: canvasSize),
+                    scale: scale
+                )
+            }
+            drawingImage?.draw(in: CGRect(origin: .zero, size: canvasSize))
         }
     }
 
@@ -8641,15 +8641,16 @@ private struct ParentApprovedBanner: View {
     var language: AppLanguage
 
     var body: some View {
-        HStack(spacing: 10) {
+        // 一覧の密度を優先し、承認の表示は控えめな1行に（承認は見出しの「OK」バッジと
+        // 選択中のOKボタンでも分かる）。
+        HStack(spacing: 6) {
             Image(systemName: "sparkles")
             Text(language.text(japanese: "OK! よく書けています", english: "OK! Nicely written"))
-            Image(systemName: "star.fill")
         }
-        .font(.headline.weight(.heavy))
+        .font(.caption.weight(.heavy))
         .foregroundStyle(ParentPalette.success)
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        .padding(.vertical, 4)
         .background(ParentPalette.successSoft)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
