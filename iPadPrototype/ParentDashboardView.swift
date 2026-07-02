@@ -133,31 +133,12 @@ struct ParentDashboardView: View {
             // ここには来ないが switch の網羅性のため EmptyView を置く。
             EmptyView()
         case .words:
-            // 「何を練習するか」＝コース選択を先頭に置き、その下に「うちのれんしゅう」の単語登録を常時出す。
-            // コースは旧「レベル」の発展形＝単語“管理”の一部なので、設定ではなくこのタブに集約する（CLAUDE.md 親側方針）。
+            // コース・ステップの選択は1行の「コンテキストバー」に圧縮し、画面の主役を下の単語一覧に譲る
+            // （旧: コース選択ブロック＋今の単語集カード＋ステップ管理パネルの3段積み）。切り替えは低頻度の
+            // 操作なので面積を恒常的に使わない。詳細設定・登録の管理・全単語はバー右端の「⋯」に退避。
             VStack(spacing: 14) {
-                SettingBlock(title: language.text(japanese: "コース（れんしゅうする内容）", english: "Course")) {
-                    CourseSettingsControls(language: language)
-                }
-
-                // コース選択の“下”に、いま選んだコースのステップ（子と同じ `wordSteps`）を出す。
-                // 合成コースの読み取り専用ステップも見えるようにする（親が中身を確認できる）。
-                ParentCurrentStepCard(language: language, track: .course)
-
-                if width >= 900 {
-                    HStack(alignment: .top, spacing: 14) {
-                        ParentWordStepPanel(language: language)
-                            .frame(width: min(max(width * 0.34, 330), 430), alignment: .top)
-
-                        ParentWordListPanel(language: language)
-                            .frame(maxWidth: .infinity, alignment: .top)
-                    }
-                } else {
-                    VStack(spacing: 14) {
-                        ParentWordStepPanel(language: language)
-                        ParentWordListPanel(language: language)
-                    }
-                }
+                ParentCourseStepBar(language: language)
+                ParentWordListPanel(language: language)
             }
         case .cast:
             ParentCastPanel(language: language)
@@ -1289,6 +1270,274 @@ private struct ParentCurrentStepCard: View {
             }
             .environmentObject(model)
             .presentationDetents([.large])
+        }
+    }
+}
+
+/// 「コース・単語」タブ先頭の1行コンテキストバー。コース選択／ステップ切り替え／新規ステップ作成／
+/// 二次アクション（詳細設定・登録の管理・全単語）をこの1行に集約し、画面の主役を下の単語一覧に譲る。
+private struct ParentCourseStepBar: View {
+    @EnvironmentObject private var model: AppModel
+    @State private var showingStepChooser = false
+    @State private var showingNewStep = false
+    @State private var showingCourseSettings = false
+    @State private var showingBatchManager = false
+    @State private var showingAllWords = false
+    var language: AppLanguage
+
+    private var steps: [WordStep] { model.wordSteps }
+    private var selectedStep: WordStep? { model.selectedWordStep }
+    private var isPersonal: Bool { model.activeCourse.kind == .personal }
+
+    /// メニューへ直接並べるステップ。personal は新しい順に20件まで（それ以前は「一覧から選ぶ」で検索）。
+    /// 合成コースは番号順そのものが道筋なので全件出す。
+    private var menuSteps: [WordStep] {
+        isPersonal ? Array(steps.reversed().prefix(20)) : steps
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            courseMenu
+            stepControl
+
+            Spacer(minLength: 0)
+
+            Button {
+                showingNewStep = true
+            } label: {
+                Label(language.text(japanese: "ステップ", english: "Step"), systemImage: "plus.circle.fill")
+                    .font(.subheadline.weight(.bold))
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 10)
+            }
+            .buttonStyle(.bordered)
+            .tapFeedback()
+            .tint(ParentPalette.primary)
+            .accessibilityLabel(language.text(japanese: "新しいステップを作る", english: "Create a new step"))
+
+            moreMenu
+        }
+        .padding(12)
+        .background(ParentPalette.surfaceRaised)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .shadow(color: .black.opacity(0.07), radius: 12, x: 0, y: 6)
+        .sheet(isPresented: $showingStepChooser) {
+            ParentStepChooserSheet(
+                title: language.text(japanese: "ステップを選ぶ", english: "Choose Step"),
+                language: language,
+                steps: steps,
+                selectedStepID: model.selectedWordStepID,
+                // 合成コースのステップは登録日が無い（epoch）ので、月ごとの束ね表示はしない。
+                groupByMonth: isPersonal
+            ) { step in
+                model.selectedWordStepID = step.id
+            }
+            .environmentObject(model)
+            .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showingNewStep) {
+            ParentNewStepSheet(language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showingCourseSettings) {
+            CourseAdvancedSettingsSheet(language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showingBatchManager) {
+            WordRegistrationManagerView(language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showingAllWords) {
+            ParentAllWordsSheet(language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
+        }
+    }
+
+    private var courseMenu: some View {
+        Menu {
+            Section(language.text(japanese: "うちのれんしゅう", english: "Personal")) {
+                courseRow(CourseDirectory.personal)
+            }
+            Section(language.text(japanese: "きほん", english: "Basics")) {
+                courseRow(CourseDirectory.dolch)
+            }
+            Section(language.text(japanese: "学年", english: "Grade")) {
+                ForEach(CourseDirectory.grades) { courseRow($0) }
+            }
+            Section(language.text(japanese: "英検", english: "Eiken")) {
+                ForEach(CourseDirectory.eiken) { courseRow($0) }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Text(model.activeCourse.emoji)
+                Text(model.activeCourse.parentTitle)
+                    .font(.subheadline.weight(.bold))
+                    .lineLimit(1)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2.weight(.bold))
+            }
+            .foregroundStyle(ParentPalette.primary)
+            .padding(.vertical, 9)
+            .padding(.horizontal, 10)
+            .background(ParentPalette.primarySoft)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .tint(ParentPalette.primary)
+        .accessibilityLabel(language.text(japanese: "コースを選ぶ", english: "Choose course"))
+    }
+
+    @ViewBuilder
+    private func courseRow(_ course: Course) -> some View {
+        Button {
+            model.selectCourse(course.id)
+        } label: {
+            if model.selectedCourseID == course.id {
+                Label("\(course.emoji) \(course.parentTitle)", systemImage: "checkmark")
+            } else {
+                Text("\(course.emoji) \(course.parentTitle)")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var stepControl: some View {
+        if steps.isEmpty {
+            Text(language.text(japanese: "ステップなし", english: "No step"))
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.secondary)
+                .padding(.vertical, 9)
+                .padding(.horizontal, 10)
+        } else {
+            Menu {
+                ForEach(menuSteps) { step in
+                    Button {
+                        model.selectedWordStepID = step.id
+                    } label: {
+                        let title = language.text(
+                            japanese: "\(step.title(language: language))・\(step.words.count)語",
+                            english: "\(step.title(language: language)) · \(step.words.count) words"
+                        )
+                        if step.id == selectedStep?.id {
+                            Label(title, systemImage: "checkmark")
+                        } else {
+                            Text(title)
+                        }
+                    }
+                }
+                // 件数が多いときは検索できる一覧シートへ逃がす（メニューは直近だけ）。
+                if menuSteps.count < steps.count || steps.count > 8 {
+                    Divider()
+                    Button {
+                        showingStepChooser = true
+                    } label: {
+                        Label(
+                            language.text(japanese: "一覧から選ぶ（検索）", english: "Browse all (search)"),
+                            systemImage: "magnifyingglass"
+                        )
+                    }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "rectangle.stack.fill")
+                        .font(.caption.weight(.bold))
+                    Text(selectedStep?.title(language: language) ?? "")
+                        .font(.subheadline.monospacedDigit().weight(.bold))
+                        .lineLimit(1)
+                    Text(language.text(
+                        japanese: "\(selectedStep?.words.count ?? 0)語",
+                        english: "\(selectedStep?.words.count ?? 0)w"
+                    ))
+                    .font(.caption.monospacedDigit().weight(.heavy))
+                    .foregroundStyle(ParentPalette.primary)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2.weight(.bold))
+                }
+                .foregroundStyle(ParentPalette.ink)
+                .padding(.vertical, 9)
+                .padding(.horizontal, 10)
+                .background(ParentPalette.surfaceTint)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
+                )
+            }
+            .tint(ParentPalette.primary)
+            .accessibilityLabel(language.text(japanese: "ステップを切り替え", english: "Switch step"))
+        }
+    }
+
+    private var moreMenu: some View {
+        Menu {
+            Button {
+                showingCourseSettings = true
+            } label: {
+                // 折りたたまれていても「子に選ばせる」ON に気づけるよう、状態をラベルに含める。
+                Label(
+                    model.childCanSwitchCourses
+                        ? language.text(japanese: "詳細設定（子に選ばせる: オン）", english: "Settings (child switch: on)")
+                        : language.text(japanese: "詳細設定（子に選ばせる）", english: "Settings (child switch)"),
+                    systemImage: "gearshape"
+                )
+            }
+            Button {
+                showingBatchManager = true
+            } label: {
+                Label(language.text(japanese: "登録の管理", english: "Manage batches"), systemImage: "calendar.badge.clock")
+            }
+            Button {
+                showingAllWords = true
+            } label: {
+                Label(language.text(japanese: "全単語を見る", english: "All words"), systemImage: "tray.full.fill")
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(ParentPalette.primary)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 6)
+        }
+        .tint(ParentPalette.primary)
+        .accessibilityLabel(language.text(japanese: "その他の管理", english: "More"))
+    }
+}
+
+/// コースの詳細設定シート（子に選ばせるか・許可コース）。毎回見せる設定ではないのでバーの「⋯」から開く。
+private struct CourseAdvancedSettingsSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    var language: AppLanguage
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                ParentBackground()
+
+                ScrollView {
+                    VStack(spacing: 16) {
+                        SettingBlock(title: language.text(japanese: "コースの詳細設定", english: "Course Settings")) {
+                            CourseSettingsControls(language: language)
+                        }
+                    }
+                    .frame(maxWidth: 640)
+                    .frame(maxWidth: .infinity)
+                    .padding(24)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Label(language.text(japanese: "閉じる", english: "Close"), systemImage: "xmark")
+                    }
+                    .font(.headline.weight(.bold))
+                    .tapFeedback()
+                }
+            }
         }
     }
 }
@@ -3588,109 +3837,6 @@ private struct ParentPanel<Content: View>: View {
     }
 }
 
-private struct ParentWordStepPanel: View {
-    @EnvironmentObject private var model: AppModel
-    @State private var showingNewStep = false
-    var language: AppLanguage
-
-    private var orderedSteps: [WordStep] {
-        Array(model.personalWordSteps.reversed())
-    }
-
-    var body: some View {
-        ParentPanel(
-            title: language.text(japanese: "ステップ管理", english: "Step Management"),
-            systemImage: "rectangle.stack.fill"
-        ) {
-            ParentNewStepButton(language: language) {
-                showingNewStep = true
-            }
-
-            if orderedSteps.isEmpty {
-                EmptyStateView(
-                    language.text(japanese: "ステップがありません", english: "No steps yet"),
-                    systemImage: "rectangle.stack.fill",
-                    description: Text(language.text(japanese: "最初のステップを作ってください。", english: "Create the first step."))
-                )
-                .frame(minHeight: 120)
-            } else {
-                HStack(spacing: 10) {
-                    Image(systemName: "rectangle.stack.fill")
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(ParentPalette.primary)
-                        .frame(width: 34, height: 34)
-                        .background(ParentPalette.primarySoft)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                    Text(language.text(japanese: "登録済み", english: "Registered"))
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(ParentPalette.ink)
-
-                    Spacer()
-
-                    Text("\(model.personalWordSteps.count)")
-                        .font(.title3.monospacedDigit().weight(.heavy))
-                        .foregroundStyle(ParentPalette.primary)
-                        .padding(.vertical, 7)
-                        .padding(.horizontal, 12)
-                        .background(ParentPalette.primarySoft)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-                .padding(12)
-                .background(ParentPalette.surfaceTint)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-        }
-        .sheet(isPresented: $showingNewStep) {
-            ParentNewStepSheet(language: language)
-                .environmentObject(model)
-                .presentationDetents([.large])
-        }
-    }
-}
-
-private struct ParentNewStepButton: View {
-    var language: AppLanguage
-    var action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: "plus.circle.fill")
-                    .font(.title.weight(.bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 50, height: 50)
-                    .background(ParentPalette.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(language.text(japanese: "新しいステップを作る", english: "Create New Step"))
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(ParentPalette.ink)
-                    Text(language.text(japanese: "日付と単語を入力", english: "Enter date and words"))
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer(minLength: 0)
-
-                Image(systemName: "chevron.right")
-                    .font(.headline.weight(.heavy))
-                    .foregroundStyle(ParentPalette.primary)
-            }
-            .padding(12)
-            .background(ParentPalette.primarySoft)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-        .tapFeedback()
-    }
-}
-
 /// カメラ取り込みの日本語訳オプション（親・子で共用）。設定に直接ひもづくので自動保存・次回適用。
 /// トグルを切り替えると、入力欄のテキストにもその場で日本語訳を付け直す。
 struct ImportJapaneseOptionsView: View {
@@ -4284,7 +4430,10 @@ private struct ParentNewStepSheet: View {
     @StateObject private var scanProgress = ScanProgressModel()
     @State private var statusMessage: String?
     @State private var statusSucceeded = false
+    // 合成コースを見ながら開いた場合は既定ON（このシートを開く動機＝いまのコースの途中に出す、が大半。
+    // OFF のままだと作成結果がいまの画面に現れず「保存されなかった」ように見える）。onAppear で1回だけ初期化。
     @State private var linkToCourse = false
+    @State private var didInitializeLinkToCourse = false
     var language: AppLanguage
 
     private var entries: [WordListEntry] {
@@ -4489,6 +4638,12 @@ private struct ParentNewStepSheet: View {
                 .ignoresSafeArea()
             }
         }
+        .onAppear {
+            // カメラの fullScreenCover から戻る等で再 appear してもユーザーの選択を上書きしない（初期値のみ）。
+            guard !didInitializeLinkToCourse else { return }
+            didInitializeLinkToCourse = true
+            linkToCourse = linkableCourse != nil
+        }
     }
 
     /// 「いまのコースの途中に出す」紐付けスイッチ。合成コースを見ているときだけ表示。
@@ -4540,6 +4695,11 @@ private struct ParentNewStepSheet: View {
             linkedCourseID: linkedCourseID, linkedBeforeStepID: linkedBeforeStepID
         )
         if result.added > 0 || result.updated > 0 {
+            // 合成コースを見ながら「コースに出す」を切って作った場合、保管先は personal なので
+            // いまの画面には現れない。保管先へ切り替えて作成結果を見せる（「保存が消えた」誤解を防ぐ）。
+            if !linkToCourse, model.activeCourse.kind != .personal {
+                model.selectCourse(CourseDirectory.personal.id)
+            }
             dismiss()
             return
         }
@@ -4665,69 +4825,18 @@ private struct ParentNewStepSheet: View {
     }
 }
 
-private struct ParentWordStepCard: View {
-    var step: WordStep
-    var language: AppLanguage
-    var isSelected: Bool
-    var action: () -> Void
-
-    private var wordSummary: String {
-        step.words.map(\.text).joined(separator: ", ")
-    }
-
-    var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .top, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(step.title(language: language))
-                            .font(.title3.monospacedDigit().weight(.heavy))
-                            .foregroundStyle(ParentPalette.ink)
-                        Text("\(formattedStepDate(step.registeredDate, language: language)) ・ \(step.words.count) \(language.text(japanese: "単語", english: "words"))")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    if isSelected {
-                        Label(language.text(japanese: "選択中", english: "Selected"), systemImage: "checkmark.circle.fill")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(ParentPalette.primary)
-                            .padding(.vertical, 5)
-                            .padding(.horizontal, 8)
-                            .background(ParentPalette.primarySoft)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-
-                Text(wordSummary)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(ParentPalette.ink)
-                    .lineLimit(3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(12)
-            .background(isSelected ? ParentPalette.primarySoft : ParentPalette.surfaceTint)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .shadow(color: .black.opacity(isSelected ? 0.07 : 0.04), radius: 8, x: 0, y: 4)
-        }
-        .buttonStyle(.plain)
-            .tapFeedback()
-    }
-}
-
 private struct ParentWordListPanel: View {
     @EnvironmentObject private var model: AppModel
-    @State private var rawWords = ""
-    @State private var showingWordCamera = false
-    @State private var showingAllWords = false
-    @State private var showingBatchManager = false
     @State private var showingLevelSet = false
-    @State private var isScanningWordImage = false
-    @StateObject private var scanProgress = ScanProgressModel()
-    @State private var importMessage: String?
-    @State private var importSucceeded = false
+    @State private var showingBulkEditor = false
+    // インライン編集の状態（1度に1行だけ開く）。カメラ・一括入力は「まとめて編集」シート側が持つ。
+    // 対象は index ではなく単語IDで持つ（編集中に他経路で語配列が変わっても別の語を上書きしないため）。
+    @State private var editingWordID: UUID?
+    @State private var editText = ""
+    @State private var editPrompt = ""
+    @State private var newWordText = ""
+    @State private var feedbackMessage: String?
+    @State private var feedbackSucceeded = false
     var language: AppLanguage
 
     // 親のコース連動カード（track: .course）と同じステップを対象にする。
@@ -4886,6 +4995,336 @@ private struct ParentWordListPanel: View {
         )
     }
 
+    var body: some View {
+        ParentPanel(
+            title: language.text(japanese: "このステップの単語", english: "Step Words"),
+            systemImage: "list.bullet.rectangle"
+        ) {
+            if let step = selectedStep {
+              if isEditable {
+                if let course = linkedCourse(for: step) {
+                    courseLinkBadge(step: step, course: course)
+                }
+
+                HStack(alignment: .center, spacing: 12) {
+                    Text(language.text(
+                        japanese: "\(step.words.count)単語",
+                        english: "\(step.words.count) words"
+                    ))
+                    .font(.headline.monospacedDigit().weight(.heavy))
+                    .foregroundStyle(ParentPalette.ink)
+
+                    Spacer()
+
+                    Button {
+                        showingLevelSet = true
+                    } label: {
+                        Label(language.text(japanese: "レベルで作成", english: "By Level"), systemImage: "chart.bar.doc.horizontal")
+                            .font(.subheadline.weight(.bold))
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("parent.byLevel")
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
+
+                    Button {
+                        // 開きっぱなしのインライン編集行を閉じてから移る（シート側の保存と競合させない）。
+                        editingWordID = nil
+                        showingBulkEditor = true
+                    } label: {
+                        Label(language.text(japanese: "まとめて編集", english: "Bulk Edit"), systemImage: "square.and.pencil")
+                            .font(.subheadline.weight(.bold))
+                    }
+                    .buttonStyle(.bordered)
+                    .tapFeedback()
+                    .tint(ParentPalette.primary)
+                }
+
+                editableWordList(step)
+
+                addWordRow(step)
+
+                if let feedbackMessage {
+                    WordImportStatusBanner(
+                        message: feedbackMessage,
+                        isSuccess: feedbackSucceeded,
+                        isScanning: false,
+                        scanProgress: 0
+                    )
+                }
+              } else {
+                readOnlyStepView(step)
+              }
+            } else {
+                EmptyStateView(
+                    language.text(japanese: "ステップがありません", english: "No step"),
+                    systemImage: "rectangle.stack.fill",
+                    description: Text(language.text(japanese: "先に新しいステップを作ってください。", english: "Create a step first."))
+                )
+                .frame(minHeight: 220)
+            }
+        }
+        .onValueChange(of: model.selectedWordStepID) { _ in
+            resetTransientState()
+        }
+        .sheet(isPresented: $showingLevelSet) {
+            WordLevelSetSheet(language: language)
+                .environmentObject(model)
+                .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showingBulkEditor) {
+            if let step = selectedStep {
+                ParentBulkWordEditorSheet(language: language, step: step)
+                    .environmentObject(model)
+                    .presentationDetents([.large])
+            }
+        }
+    }
+
+    /// 編集可能ステップも読み取り専用と同じ「番号・英語・訳」の行リストで常時見せる
+    /// （旧: テキスト一括編集だけで、一覧確認に「全単語を見る」シートが要った）。行タップでその場編集。
+    @ViewBuilder
+    private func editableWordList(_ step: WordStep) -> some View {
+        if step.words.isEmpty {
+            EmptyStateView(
+                language.text(japanese: "単語がありません", english: "No words"),
+                systemImage: "tray",
+                description: Text(language.text(japanese: "下の入力欄から単語を追加してください。", english: "Add words with the field below."))
+            )
+            .frame(minHeight: 120)
+        } else {
+            VStack(spacing: 0) {
+                ForEach(Array(step.words.enumerated()), id: \.element.id) { index, word in
+                    if editingWordID == word.id {
+                        wordEditRow(step, index: index, word: word)
+                    } else {
+                        wordDisplayRow(index: index, word: word)
+                    }
+
+                    if index < step.words.count - 1 {
+                        Divider().opacity(0.4)
+                    }
+                }
+            }
+            .background(ParentPalette.surfaceRaised)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(ParentPalette.primary.opacity(0.12), lineWidth: 1)
+            )
+        }
+    }
+
+    private func wordDisplayRow(index: Int, word: SpellingWord) -> some View {
+        Button {
+            beginEdit(word: word)
+        } label: {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text("\(index + 1)")
+                    .font(.subheadline.monospacedDigit().weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 28, alignment: .trailing)
+
+                Text(word.text)
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(ParentPalette.ink)
+
+                Spacer(minLength: 8)
+
+                if !word.promptText.isEmpty {
+                    Text(word.promptText)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing)
+                }
+
+                Image(systemName: "pencil")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary.opacity(0.55))
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(language.text(japanese: "\(word.text) を編集", english: "Edit \(word.text)"))
+    }
+
+    private func wordEditRow(_ step: WordStep, index: Int, word: SpellingWord) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                Text("\(index + 1)")
+                    .font(.subheadline.monospacedDigit().weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 28, alignment: .trailing)
+
+                TextField(language.text(japanese: "英単語", english: "Word"), text: $editText)
+                    .font(.title3.monospaced().weight(.bold))
+                    .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+
+                TextField(language.text(japanese: "日本語（ヒント）", english: "Hint"), text: $editPrompt)
+                    .font(.body)
+                    .textFieldStyle(.roundedBorder)
+            }
+
+            HStack(spacing: 10) {
+                Button(role: .destructive) {
+                    deleteWord(step, wordID: word.id)
+                } label: {
+                    Label(language.text(japanese: "削除", english: "Delete"), systemImage: "trash")
+                        .font(.subheadline.weight(.bold))
+                }
+                .buttonStyle(.bordered)
+                .tapFeedback()
+                // 保存経路（replaceWords）は空リストを受け付けないため、最後の1語はここでは消せない。
+                // ステップごと消すときはバーの「⋯ → 登録の管理」でまとめて削除する。
+                .disabled(step.words.count <= 1)
+
+                Spacer()
+
+                Button {
+                    editingWordID = nil
+                } label: {
+                    Text(language.text(japanese: "キャンセル", english: "Cancel"))
+                        .font(.subheadline.weight(.bold))
+                }
+                .buttonStyle(.bordered)
+                .tapFeedback()
+
+                Button {
+                    commitEdit(step, wordID: word.id)
+                } label: {
+                    Label(language.text(japanese: "保存", english: "Save"), systemImage: "checkmark")
+                        .font(.subheadline.weight(.bold))
+                }
+                .buttonStyle(.borderedProminent)
+                .tapFeedback()
+                .tint(ParentPalette.primary)
+                .disabled(normalize(editText).isEmpty)
+            }
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(ParentPalette.primarySoft.opacity(0.45))
+    }
+
+    /// 末尾の「＋単語を追加」固定行。1語ならここで完結する（`|` の右に日本語ヒントも書ける）。追加は即保存。
+    private func addWordRow(_ step: WordStep) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "plus.circle.fill")
+                .font(.title3.weight(.bold))
+                .foregroundStyle(ParentPalette.primary)
+
+            TextField(
+                language.text(japanese: "単語を追加（例: cat | ねこ）", english: "Add a word (e.g. cat | cat)"),
+                text: $newWordText
+            )
+            .font(.body.monospaced())
+            .textFieldStyle(.roundedBorder)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .onSubmit { addNewWord(step) }
+
+            Button {
+                addNewWord(step)
+            } label: {
+                Text(language.text(japanese: "追加", english: "Add"))
+                    .font(.subheadline.weight(.bold))
+            }
+            .buttonStyle(.borderedProminent)
+            .tapFeedback()
+            .tint(ParentPalette.primary)
+            .disabled(parseWordListEntries(from: newWordText).isEmpty)
+        }
+        .padding(10)
+        .background(ParentPalette.surfaceTint)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    /// 単語→エディタ1行（`cat | ねこ`）。保存経路を既存の `replaceWords(in:from:)` 一本に保つための橋。
+    private func editorLine(for word: SpellingWord) -> String {
+        wordListEditorText([word])
+    }
+
+    private func beginEdit(word: SpellingWord) {
+        editingWordID = word.id
+        editText = word.text
+        editPrompt = word.promptText
+        feedbackMessage = nil
+    }
+
+    /// 行編集は即保存（1語の修正で「保存し忘れ」を作らない）。まとめて編集シートだけ明示保存。
+    /// 対象行は保存時点の `step.words` から ID で引き直す（編集中に配列が変わっても別の語を上書きしない）。
+    private func commitEdit(_ step: WordStep, wordID: UUID) {
+        guard let index = step.words.firstIndex(where: { $0.id == wordID }) else {
+            editingWordID = nil
+            return
+        }
+        var lines = step.words.map(editorLine(for:))
+        let prompt = editPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        lines[index] = prompt.isEmpty ? editText : "\(editText) | \(prompt)"
+        _ = model.replaceWords(in: step, from: lines.joined(separator: "\n"))
+        editingWordID = nil
+    }
+
+    private func deleteWord(_ step: WordStep, wordID: UUID) {
+        guard let index = step.words.firstIndex(where: { $0.id == wordID }), step.words.count > 1 else {
+            editingWordID = nil
+            return
+        }
+        var lines = step.words.map(editorLine(for:))
+        lines.remove(at: index)
+        _ = model.replaceWords(in: step, from: lines.joined(separator: "\n"))
+        editingWordID = nil
+    }
+
+    private func addNewWord(_ step: WordStep) {
+        let entries = parseWordListEntries(from: newWordText)
+        guard !entries.isEmpty else { return }
+
+        let before = step.words.count
+        let joined = (step.words.map(editorLine(for:)) + [newWordText]).joined(separator: "\n")
+        let count = model.replaceWords(in: step, from: joined)
+        newWordText = ""
+
+        feedbackSucceeded = true
+        if count > before {
+            feedbackMessage = language.text(
+                japanese: "\(count - before)単語を追加しました。",
+                english: "Added \(count - before) word(s)."
+            )
+        } else {
+            // parse は同じ綴りを1語に統合する＝件数が増えないのは既存語（ヒントだけ上書きされ得る）。
+            feedbackMessage = language.text(
+                japanese: "すでに入っている単語でした（ヒントは更新）。",
+                english: "Already in this step (hint updated)."
+            )
+        }
+    }
+
+    private func resetTransientState() {
+        editingWordID = nil
+        newWordText = ""
+        feedbackMessage = nil
+    }
+}
+
+/// 選択中ステップの単語を1画面の大きいテキストエディタでまとめて編集するシート。
+/// 大量入力・貼り付け・カメラ読み取りはここで行う（旧: 一覧パネル内の小さい TextEditor を全画面へ昇格）。
+private struct ParentBulkWordEditorSheet: View {
+    @EnvironmentObject private var model: AppModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var rawWords = ""
+    @State private var showingWordCamera = false
+    @State private var isScanningWordImage = false
+    @StateObject private var scanProgress = ScanProgressModel()
+    @State private var importMessage: String?
+    @State private var importSucceeded = false
+    var language: AppLanguage
+    var step: WordStep
+
     private var demoWordListText: String {
         """
         cat | ねこ
@@ -4903,206 +5342,165 @@ private struct ParentWordListPanel: View {
     }
 
     var body: some View {
-        ParentPanel(
-            title: language.text(japanese: "このステップの単語", english: "Step Words"),
-            systemImage: "list.bullet.rectangle"
-        ) {
-            if let step = selectedStep {
-              if isEditable {
-                if let course = linkedCourse(for: step) {
-                    courseLinkBadge(step: step, course: course)
+        NavigationStack {
+            ZStack {
+                ParentBackground()
+
+                VStack(spacing: 0) {
+                    ParentPanel(
+                        title: language.text(
+                            japanese: "\(step.title(language: language)) をまとめて編集",
+                            english: "Bulk Edit \(step.title(language: language))"
+                        ),
+                        systemImage: "square.and.pencil"
+                    ) {
+                        HStack(alignment: .center, spacing: 10) {
+                            Label(
+                                language.text(japanese: "1行に1単語。日本語は | の右に書きます。", english: "One word per line. Put prompts after |."),
+                                systemImage: "text.alignleft"
+                            )
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+
+                            Spacer()
+
+                            Text(language.text(
+                                japanese: "\(parseWordListEntries(from: rawWords).count) 単語",
+                                english: "\(parseWordListEntries(from: rawWords).count) words"
+                            ))
+                            .font(.headline.monospacedDigit().weight(.heavy))
+                            .foregroundStyle(ParentPalette.primary)
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 10)
+                            .background(ParentPalette.primarySoft)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                            Button {
+                                appendDemoWords()
+                            } label: {
+                                Label(language.text(japanese: "デモ単語を挿入", english: "Insert Demo Words"), systemImage: "plus.circle.fill")
+                                    .font(.caption.weight(.heavy))
+                            }
+                            .buttonStyle(.bordered)
+                            .tapFeedback()
+                            .tint(ParentPalette.primary)
+                        }
+
+                        ZStack(alignment: .topLeading) {
+                            TextEditor(text: $rawWords)
+                                .font(.title3.monospaced())
+                                .frame(minHeight: 280, maxHeight: .infinity)
+                                .padding(8)
+                                .background(ParentPalette.surfaceTint)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
+                                )
+
+                            if rawWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                Text(wordInputPlaceholder)
+                                    .font(.title3.monospaced())
+                                    .foregroundStyle(.secondary.opacity(0.55))
+                                    .padding(.top, 16)
+                                    .padding(.leading, 14)
+                                    .allowsHitTesting(false)
+                            }
+                        }
+
+                        if let importMessage {
+                            WordImportStatusBanner(
+                                message: importMessage,
+                                isSuccess: importSucceeded,
+                                isScanning: isScanningWordImage,
+                                scanProgress: scanProgress.fraction
+                            )
+                        }
+
+                        ImportJapaneseOptionsView(language: language, draftText: $rawWords)
+
+                        HStack(spacing: 10) {
+                            Button {
+                                startCameraImport()
+                            } label: {
+                                Label(
+                                    isScanningWordImage ? language.text(japanese: "読み取り中", english: "Scanning") : language.text(japanese: "カメラで読み取り", english: "Scan Camera"),
+                                    systemImage: "camera.fill"
+                                )
+                                .font(.subheadline.weight(.bold))
+                            }
+                            .buttonStyle(.bordered)
+                            .tapFeedback()
+                            .tint(ParentPalette.primary)
+                            .disabled(isScanningWordImage)
+
+                            Button {
+                                reloadFromStep()
+                            } label: {
+                                Label(language.text(japanese: "戻す", english: "Reload"), systemImage: "arrow.clockwise")
+                                    .font(.subheadline.weight(.bold))
+                            }
+                            .buttonStyle(.bordered)
+                            .tapFeedback()
+
+                            Spacer()
+
+                            Button {
+                                saveAndClose()
+                            } label: {
+                                Label(language.text(japanese: "このステップを保存", english: "Save This Step"), systemImage: "square.and.arrow.down.fill")
+                                    .font(.headline.weight(.heavy))
+                                    .padding(.vertical, 6)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tapFeedback()
+                            .tint(ParentPalette.primary)
+                            .disabled(parseWordListEntries(from: rawWords).isEmpty)
+                        }
+                    }
+                    .frame(maxWidth: 760)
                 }
-
-                HStack(alignment: .center, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(language.text(
-                            japanese: "\(step.words.count)単語を編集中",
-                            english: "Editing \(step.words.count) words"
-                        ))
-                        .font(.headline.monospacedDigit().weight(.heavy))
-                        .foregroundStyle(ParentPalette.ink)
-                    }
-
-                    Spacer()
-
+                .padding(24)
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        showingLevelSet = true
+                        dismiss()
                     } label: {
-                        Label(language.text(japanese: "レベルで作成", english: "By Level"), systemImage: "chart.bar.doc.horizontal")
-                            .font(.subheadline.weight(.bold))
+                        Label(language.text(japanese: "閉じる", english: "Close"), systemImage: "xmark")
                     }
-                    .buttonStyle(.bordered)
-                    .accessibilityIdentifier("parent.byLevel")
-                    .tapFeedback()
-                    .tint(ParentPalette.primary)
-
-                    Button {
-                        showingBatchManager = true
-                    } label: {
-                        Label(language.text(japanese: "登録の管理", english: "Manage"), systemImage: "calendar.badge.clock")
-                            .font(.subheadline.weight(.bold))
-                    }
-                    .buttonStyle(.bordered)
-                    .tapFeedback()
-                    .tint(ParentPalette.primary)
-
-                    Button {
-                        showingAllWords = true
-                    } label: {
-                        Label(language.text(japanese: "全単語を見る", english: "All Words"), systemImage: "tray.full.fill")
-                            .font(.subheadline.weight(.bold))
-                    }
-                    .buttonStyle(.bordered)
-                    .tapFeedback()
-                    .tint(ParentPalette.primary)
-                }
-
-                Button {
-                    startCameraImport()
-                } label: {
-                    Label(
-                        isScanningWordImage ? language.text(japanese: "読み取り中", english: "Scanning") : language.text(japanese: "カメラで読み取り", english: "Scan Camera"),
-                        systemImage: "camera.fill"
-                    )
                     .font(.headline.weight(.bold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 4)
-                }
-                .buttonStyle(.borderedProminent)
-                .tapFeedback()
-                .tint(ParentPalette.primary)
-                .disabled(isScanningWordImage)
-
-                HStack(alignment: .center, spacing: 10) {
-                    Label(
-                        language.text(japanese: "1行に1単語。日本語は | の右に書きます。", english: "One word per line. Put prompts after |."),
-                        systemImage: "text.alignleft"
-                    )
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                    Spacer()
-
-                    Button {
-                        appendDemoWords()
-                    } label: {
-                        Label(language.text(japanese: "デモ単語を挿入", english: "Insert Demo Words"), systemImage: "plus.circle.fill")
-                            .font(.caption.weight(.heavy))
-                    }
-                    .buttonStyle(.bordered)
                     .tapFeedback()
-                    .tint(ParentPalette.primary)
                 }
-
-                ZStack(alignment: .topLeading) {
-                    TextEditor(text: $rawWords)
-                        .font(.title3.monospaced())
-                        .frame(minHeight: 180, maxHeight: 230)
-                        .padding(8)
-                        .background(ParentPalette.surfaceTint)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(ParentPalette.primary.opacity(0.16), lineWidth: 1)
-                        )
-
-                    if rawWords.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        Text(wordInputPlaceholder)
-                            .font(.title3.monospaced())
-                            .foregroundStyle(.secondary.opacity(0.55))
-                            .padding(.top, 16)
-                            .padding(.leading, 14)
-                            .allowsHitTesting(false)
-                    }
+            }
+            .fullScreenCover(isPresented: $showingWordCamera) {
+                WordCameraImportSheet(language: language) { image in
+                    scanWordImage(image)
                 }
-
-                if let importMessage {
-                    WordImportStatusBanner(
-                        message: importMessage,
-                        isSuccess: importSucceeded,
-                        isScanning: isScanningWordImage,
-                        scanProgress: scanProgress.fraction
-                    )
-                }
-
-                ImportJapaneseOptionsView(language: language, draftText: $rawWords)
-
-                HStack(spacing: 10) {
-                    Button {
-                        reloadSelectedStep()
-                    } label: {
-                        Label(language.text(japanese: "戻す", english: "Reload"), systemImage: "arrow.clockwise")
-                            .font(.subheadline.weight(.bold))
-                    }
-                    .buttonStyle(.bordered)
-                    .tapFeedback()
-
-                    Button {
-                        saveSelectedStep(step)
-                    } label: {
-                        Label(language.text(japanese: "このステップを保存", english: "Save This Step"), systemImage: "square.and.arrow.down.fill")
-                            .font(.title3.weight(.heavy))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tapFeedback()
-                    .tint(ParentPalette.primary)
-                    .disabled(parseWordListEntries(from: rawWords).isEmpty)
-                }
-              } else {
-                readOnlyStepView(step)
-              }
-            } else {
-                EmptyStateView(
-                    language.text(japanese: "ステップがありません", english: "No step"),
-                    systemImage: "rectangle.stack.fill",
-                    description: Text(language.text(japanese: "先に新しいステップを作ってください。", english: "Create a step first."))
-                )
-                .frame(minHeight: 220)
+                .ignoresSafeArea()
             }
         }
         .onAppear {
-            reloadSelectedStep()
-        }
-        .onValueChange(of: model.selectedWordStepID) { _ in
-            reloadSelectedStep()
-        }
-        .fullScreenCover(isPresented: $showingWordCamera) {
-            WordCameraImportSheet(language: language) { image in
-                scanWordImage(image)
-            }
-            .ignoresSafeArea()
-        }
-        .sheet(isPresented: $showingAllWords) {
-            ParentAllWordsSheet(language: language)
-                .environmentObject(model)
-                .presentationDetents([.large])
-        }
-        .sheet(isPresented: $showingBatchManager) {
-            WordRegistrationManagerView(language: language)
-                .environmentObject(model)
-                .presentationDetents([.large])
-        }
-        .sheet(isPresented: $showingLevelSet) {
-            WordLevelSetSheet(language: language)
-                .environmentObject(model)
-                .presentationDetents([.large])
+            reloadFromStep()
         }
     }
 
-    private func reloadSelectedStep() {
-        rawWords = wordListEditorText(selectedStep?.words ?? [])
+    private func reloadFromStep() {
+        rawWords = wordListEditorText(step.words)
         importMessage = nil
     }
 
-    private func saveSelectedStep(_ step: WordStep) {
+    private func saveAndClose() {
         let count = model.replaceWords(in: step, from: rawWords)
-        importSucceeded = true
-        importMessage = language.text(
-            japanese: "\(count)単語をこのステップに保存しました。",
-            english: "Saved \(count) words in this step."
-        )
+        guard count > 0 else {
+            importSucceeded = false
+            importMessage = language.text(
+                japanese: "単語がありません。1行に1単語で入力してください。",
+                english: "No words to save. Enter one word per line."
+            )
+            return
+        }
+        dismiss()
     }
 
     private func appendDemoWords() {
@@ -7330,47 +7728,10 @@ private struct CourseSettingsControls: View {
     @EnvironmentObject private var model: AppModel
     var language: AppLanguage
 
-    // 「子にも選ばせる」などそうそう変えない項目は折りたたんで奥に隠す（既定は閉じる）。
-    @State private var showAdvanced = false
-
+    // コース選択そのものはバー（ParentCourseStepBar）へ移った。ここは「⋯→詳細設定」シートの中身
+    // ＝そうそう変えない設定（子に選ばせるか・許可コース）だけを常時展開で見せる。
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // 親がコースを選ぶ（親には級/学年ラベルを出してよい＝parentTitle）。
-            Menu {
-                Section(language.text(japanese: "うちのれんしゅう", english: "Personal")) {
-                    courseRow(CourseDirectory.personal)
-                }
-                Section(language.text(japanese: "きほん", english: "Basics")) {
-                    courseRow(CourseDirectory.dolch)
-                }
-                Section(language.text(japanese: "学年", english: "Grade")) {
-                    ForEach(CourseDirectory.grades) { courseRow($0) }
-                }
-                Section(language.text(japanese: "英検", english: "Eiken")) {
-                    ForEach(CourseDirectory.eiken) { courseRow($0) }
-                }
-            } label: {
-                HStack(spacing: 8) {
-                    Text(model.activeCourse.emoji)
-                    Text(model.activeCourse.parentTitle)
-                        .font(.subheadline.weight(.bold))
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.caption.weight(.bold))
-                }
-                .foregroundStyle(ParentPalette.primary)
-                .padding(.vertical, 9)
-                .padding(.horizontal, 12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(ParentPalette.surfaceRaised)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(ParentPalette.primary.opacity(0.18), lineWidth: 1)
-                )
-            }
-            .tint(ParentPalette.primary)
-
             Text(language.text(
                 japanese: "学校のテストがある場合は「うちのれんしゅう」に取り込み、ない場合は学年・英検コースをそのまま練習させられます。",
                 english: "Import school tests into Personal, or use a Grade/Eiken course when there's no weekly test."
@@ -7379,53 +7740,27 @@ private struct CourseSettingsControls: View {
             .foregroundStyle(.secondary)
             .fixedSize(horizontal: false, vertical: true)
 
-            // 詳細設定（そうそう変えない）：子にも切り替えさせるか＋許可コース。既定は折りたたみ。
-            DisclosureGroup(isExpanded: $showAdvanced) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Toggle(isOn: $model.childCanSwitchCourses) {
-                        Label(
-                            language.text(japanese: "子にも自分でえらばせる", english: "Let the child switch courses"),
-                            systemImage: "hand.tap.fill"
-                        )
-                        .font(.subheadline.weight(.bold))
-                    }
-                    .tint(ParentPalette.primary)
-
-                    Text(model.childCanSwitchCourses
-                         ? language.text(japanese: "子のステップ画面でコースを切り替えられます。下で選んだコースだけにしぼれます。",
-                                         english: "The child can switch courses on their step screen. Limit them with the checklist below.")
-                         : language.text(japanese: "オフのあいだは、子はコースを切り替えられません（親が決めたコースだけ）。",
-                                         english: "While off, the child can't switch courses (only the one you chose)."))
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                    if model.childCanSwitchCourses {
-                        allowedCourseChecklist
-                    }
-                }
-                .padding(.top, 6)
-            } label: {
-                HStack(spacing: 8) {
-                    Label(
-                        language.text(japanese: "詳細設定（子に選ばせる）", english: "Advanced (let child switch)"),
-                        systemImage: "gearshape"
-                    )
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(ParentPalette.primary)
-
-                    // 折りたたんでいても「子に選ばせる」が ON なら気づけるよう、状態バッジを出す。
-                    if model.childCanSwitchCourses {
-                        Text(language.text(japanese: "オン", english: "On"))
-                            .font(.caption2.weight(.bold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 2)
-                            .background(ParentPalette.primary, in: Capsule())
-                    }
-                }
+            Toggle(isOn: $model.childCanSwitchCourses) {
+                Label(
+                    language.text(japanese: "子にも自分でえらばせる", english: "Let the child switch courses"),
+                    systemImage: "hand.tap.fill"
+                )
+                .font(.subheadline.weight(.bold))
             }
             .tint(ParentPalette.primary)
+
+            Text(model.childCanSwitchCourses
+                 ? language.text(japanese: "子のステップ画面でコースを切り替えられます。下で選んだコースだけにしぼれます。",
+                                 english: "The child can switch courses on their step screen. Limit them with the checklist below.")
+                 : language.text(japanese: "オフのあいだは、子はコースを切り替えられません（親が決めたコースだけ）。",
+                                 english: "While off, the child can't switch courses (only the one you chose)."))
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+
+            if model.childCanSwitchCourses {
+                allowedCourseChecklist
+            }
         }
     }
 
@@ -7509,18 +7844,6 @@ private struct CourseSettingsControls: View {
         .buttonStyle(.plain)
     }
 
-    @ViewBuilder
-    private func courseRow(_ course: Course) -> some View {
-        Button {
-            model.selectCourse(course.id)
-        } label: {
-            if model.selectedCourseID == course.id {
-                Label("\(course.emoji) \(course.parentTitle)", systemImage: "checkmark")
-            } else {
-                Text("\(course.emoji) \(course.parentTitle)")
-            }
-        }
-    }
 }
 
 private struct SettingBlock<Content: View>: View {
